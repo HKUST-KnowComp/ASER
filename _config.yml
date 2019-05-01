@@ -10,6 +10,7 @@ title:            ASER
 tagline:          'A Large-scale Eventuality Knowledge Graph'
 description:      ''
 baseurl: ''
+url: 'https://hkust-knowcomp.github.io/ASER/'
 
 author:
   name:           'HKUST-KnowComp'
