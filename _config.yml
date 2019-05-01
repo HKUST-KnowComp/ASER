@@ -1,1 +1,24 @@
-theme: jekyll-theme-minimal
+# Dependencies
+markdown:         redcarpet
+pygments:         true
+
+# Permalinks
+permalink:        pretty
+
+# Setup
+title:            ASER
+tagline:          'A Large-scale Eventuality Knowledge Graph'
+description:      ''
+url:              https://hkust-knowcomp.github.io/ASER/
+
+author:
+  name:           'HKUST-KnowComp'
+  url:            https://github.com/HKUST-KnowComp
+
+paginate:         5
+
+# Custom vars
+version:          0.1.0
+
+github:
+  repo:           https://github.com/HKUST-KnowComp/ASER
