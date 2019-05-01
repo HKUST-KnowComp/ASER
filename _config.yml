@@ -9,6 +9,7 @@ permalink:        pretty
 title:            ASER
 tagline:          'A Large-scale Eventuality Knowledge Graph'
 description:      ''
+baseurl: ''
 
 author:
   name:           'HKUST-KnowComp'
