@@ -1,3 +1,0 @@
-## ASER
-
-Hello world
