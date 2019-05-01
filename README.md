@@ -1,2 +1,2 @@
 # ASER
-Homepage of the ASER project.
+A Large-scale Eventuality Knowledge Graph
