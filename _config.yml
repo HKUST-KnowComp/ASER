@@ -9,7 +9,7 @@ permalink:        pretty
 title:            ASER
 tagline:          'A Large-scale Eventuality Knowledge Graph'
 description:      ''
-baseurl: '/ASER/'
+baseurl: '/ASER'
 url: 'https://hkust-knowcomp.github.io/ASER/'
 
 author:
