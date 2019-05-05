@@ -7,6 +7,6 @@ We are from Knowledge Computation Group@HKUST, led by Prof. [Yangqiu Song](https
 
 ## Members
 
-* Hongming Zhang, PHD student, Knowledge Computation Group, HKUST.
+* [Hongming Zhang](https://www.cse.ust.hk/~hzhangal/), PHD student, Knowledge Computation Group, HKUST.
 * [Xin Liu](http://www.cse.ust.hk/~xliucr/), PHD student, Knowledge Computation Group, HKUST.
 * [Haojie Pan](http://scarletpan.github.io/about/), Mphil student, Knowledge Computation Group, HKUST.
