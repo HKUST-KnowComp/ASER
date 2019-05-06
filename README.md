@@ -10,5 +10,5 @@ Citation:
       journal   = {CoRR},
       volume    = {abs/1905.00270},
       year      = {2019},
-      url = {https://arxiv.org/abs/1905.00270}
+      url       = {https://arxiv.org/abs/1905.00270}
     }
