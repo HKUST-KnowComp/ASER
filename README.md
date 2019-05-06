@@ -9,5 +9,6 @@ Citation:
       title     = {ASER: A Large-scale Eventuality Knowledge Graph},
       journal   = {CoRR},
       volume    = {abs/1905.00270},
-      year      = {2019}
+      year      = {2019},
+      url = {https://arxiv.org/abs/1905.00270}
     }
