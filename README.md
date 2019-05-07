@@ -4,9 +4,7 @@ ASER (activities, states, events, and their relations), a large-scale eventualit
 
 Some APIs are provided, please check the Jupyter Notebook [ASER.ipynb](ASER.ipynb).
 
-The latest preprint is on [https://arxiv.org/abs/1905.00270](https://arxiv.org/abs/1905.00270).
-
-Project homepage is on [https://hkust-knowcomp.github.io/ASER](https://hkust-knowcomp.github.io/ASER/).
+Project and data homepage is [https://hkust-knowcomp.github.io/ASER](https://hkust-knowcomp.github.io/ASER/).
 
 Citation:
 
@@ -18,3 +16,5 @@ Citation:
       year      = {2019},
       url       = {https://arxiv.org/abs/1905.00270}
     }
+
+The latest preprint is on [https://arxiv.org/abs/1905.00270](https://arxiv.org/abs/1905.00270).
