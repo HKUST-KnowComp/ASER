@@ -2,6 +2,8 @@
 
 Project homepage is on [https://hkust-knowcomp.github.io/ASER/](https://hkust-knowcomp.github.io/ASER/)
 
+Here is the arxiv [link](https://arxiv.org/abs/1905.00270).
+
 Citation:
 
     @article{ASER2019,
