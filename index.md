@@ -11,7 +11,7 @@ ASER (activities, states, events,and their relations) is a large-scale eventuali
 <strong>Talks:</strong>
 
 <ul>
-<li>2019 Summer: ASER: A Large scale Eventuality Knowledge Graph, Yangqiu Song. [<a href="http://home.cse.ust.hk/~yqsong/papers/ASER-YangqiuSong.pdf">pdf</a>], [<a href="http://home.cse.ust.hk/~yqsong/papers/ASER-YangqiuSong.ppt">ppt</a>] </li>
+<li>2019 Summer: ASER: A Large scale Eventuality Knowledge Graph, Yangqiu Song. [<a href="http://home.cse.ust.hk/~yqsong/papers/ASER-YangqiuSong.pdf">pdf</a>], [<a href="http://home.cse.ust.hk/~yqsong/papers/ASER-YangqiuSong.ppt">pptx</a>] </li>
 </ul>
 
 <strong>Publications:</strong>
