@@ -1,0 +1,53 @@
+{
+  "meta": {
+    "model": "knowly2seq",
+    "data_dir": "data",
+    "data_cache_dir": "cache/exp_knowly2seq/data/",
+    "vocab_path": "data/vocab.pt",
+    "save_model": "cache/exp_knowly2seq/model",
+    "save_results": "cache/exp_knowly2seq/results",
+    "save_log": "cache/exp_knowly2seq/log/",
+    "use_pre_word_emb": false,
+    "batch_size": 64,
+    "valid_batch_size": 32,
+    "epochs": null,
+    "print_every": 100,
+    "valid_every": 500,
+    "total_steps": 5000,
+    "use_cuda": true,
+    "gpu": 3,
+    "max_post_length": 25,
+    "max_response_length": 20,
+    "max_aser_triples": 20,
+    "max_omcs_triples": 20,
+    "max_knowly_triples": 20,
+    "n_workers": 0
+  },
+  "optimizer": {
+    "optim": "adam",
+    "normalization": "sents",
+    "accum_count": 1,
+    "adagrad_accumulator_init": 0,
+    "max_grad_norm": 5,
+    "truncated_decoder": 0,
+    "adam_beta1": 0.9,
+    "adam_beta2": 0.999,
+    "adam_eps": 1e-09,
+    "label_smoothing": 0.0,
+    "learning_rate": 0.0005,
+    "learning_rate_decay": 0.5,
+    "start_decay_steps": 3000,
+    "decay_steps": 500,
+    "decay_method": "",
+    "warmup_steps": 4000
+  },
+  "model": {
+    "vocab_size": null,
+    "word_embed_size": 300,
+    "rnn_hidden_size": 512,
+    "n_layers": 2,
+    "attn_score_method": "dot",
+    "dropout": 0.1,
+    "use_word_attn": true
+  }
+}
