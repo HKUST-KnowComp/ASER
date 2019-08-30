@@ -5,6 +5,7 @@
 # Author: Haojie Pan
 # Email:  myscarletpan@gmail.com
 
+import time
 from pycorenlp import StanfordCoreNLP
 from aser.server.utils import is_port_occupied
 import subprocess
@@ -38,6 +39,9 @@ class StanfordCoreNLPServer(object):
             ]
             subprocess.Popen(args=corenlp_args, stdin=None, stdout=None, stderr=None, close_fds=True)
             print("[CoreNLP] connect port {} succeed".format(port))
+            time.sleep(2)
+            # nlp = StanfordCoreNLP("http://localhost:{}".format(port))
+            # nlp.annotate("hello world")
 
 
     def __exit__(self, exc_type, exc_val, exc_tb):
