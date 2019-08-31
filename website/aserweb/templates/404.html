@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>ASER</title>
+
+	<link rel="stylesheet" href="/static/css/header-search.css">
+    <link href="/static/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="/static/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="/static/css/animate.css" rel="stylesheet">
+    <link href="/static/css/style.css?v=4.1.0" rel="stylesheet">
+	<link href='http://fonts.googleapis.com/css?family=Cookie' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Cookie' rel='stylesheet' type='text/css'>
+    <script src="/static/js/jquery.min.js?v=2.1.4"></script>
+
+    <!-- 全局js -->
+    <script src="/static/js/jquery.min.js?v=2.1.4"></script>
+    <script src="/static/js/bootstrap.min.js?v=3.3.6"></script>
+
+
+</head>
+
+
+<header class="header-search">
+
+	<div class="header-limiter">
+
+		<h1><a href="index">ASE<span>R</span></a></h1>
+
+		<nav>
+			<a href="#" class="selected">Explore</a>
+			<a href="#">Tutorial</a>
+			<a href="#">Download</a>
+			<a href="#">About</a>
+		</nav>
+
+		<form method="get" action="search">
+			<input type="search" placeholder="Search!" name="query" style="color: black"/>
+		</form>
+
+	</div>
+
+</header>
+
+
+<body class="gray-bg">
+
+	<div class="wrapper wrapper-content animated fadeIn">
+		<div class="middle-box text-center animated fadeInDown">
+			<div class="ibox-content">
+				<h1>404</h1>
+				<h3 class="font-bold">Cannot extract event from this query</h3>
+			</div>
+		</div>
+	</div>
+
+</body>
+
+<script>
+
+	$(document).ready(function() {
+
+		$('.header-search form').on('click', function(e) {
+
+			// If the form (which is turned into the search button) was
+			// clicked directly, toggle the visibility of the search box.
+
+			if(e.target == this) {
+				$(this).find('input').toggle();
+			}
+
+		});
+	});
+
+</script>
+
+
+</html>
