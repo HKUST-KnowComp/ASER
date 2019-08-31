@@ -9,15 +9,13 @@ class ASERClient(object):
         self.socket = context.socket(zmq.REQ)
         self.socket.connect("tcp://localhost:{}".format(port))
 
-
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
     def close(self):
         self.socket.close()
 
-
-    def extract_eventualities(self, sentence):
+    def extract_eventualities_struct(self, sentence):
         self.socket.send_string("extract_event")
         self.socket.recv()
         self.socket.send_string(sentence)
@@ -26,12 +24,20 @@ class ASERClient(object):
         event['pattern'] = pattern
         return event
 
+    def extract_eventualities(self, sentence):
+        self.socket.send_string("extract_event")
+        self.socket.recv()
+        self.socket.send_string(sentence)
+        msg = self.socket.recv_json()
+        pattern, event  = msg[0]['activity_list'][0]
+        event['pattern'] = pattern
+        e = preprocess_event(event, pattern)
+        return e
+
     def get_exact_match_event(self, event):
         self.socket.send_string("exact_match_event")
         self.socket.recv()
-        pattern = event['pattern']
-        del event['pattern']
-        eid = preprocess_event(event, pattern)['_id']
+        eid = event['_id']
         self.socket.send_string(eid)
         matched_event = self.socket.recv_json()
         return matched_event
@@ -46,3 +52,10 @@ class ASERClient(object):
         matched_relation = self.socket.recv_json()
         return matched_relation
 
+    def get_related_events(self, event):
+        eid = event['_id']
+        self.socket.send_string("get_related_events")
+        self.socket.recv()
+        self.socket.send_string(eid)
+        related_events = self.socket.recv_json()
+        return related_events

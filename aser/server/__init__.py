@@ -1,3 +1,5 @@
+import json
+import os
 import time
 from aser.database.db_API import KG_Connection
 from aser.server.corenlp import StanfordCoreNLPServer
@@ -15,7 +17,10 @@ class ASERServer(object):
 
         st = time.time()
         print("Connect to the KG...")
-        self.kg_conn = KG_Connection(db_path=kwargs.get("db_path", "./KG.db"), mode='cache')
+        db_dir = kwargs.get("db_dir", "./")
+        self.kg_conn = KG_Connection(db_path=os.path.join(db_dir, "KG.db"), mode='cache')
+        with open(os.path.join(db_dir, "inverted_table.json"), "r") as f:
+            self.kg_inverted_table = json.load(f)
         print("Connect to the KG finished in {:.4f} s".format(time.time() - st))
 
         self.context = zmq.Context()
@@ -27,24 +32,37 @@ class ASERServer(object):
     def run(self):
         cnt = 0
         while True:
-            mode = self.socket.recv_string()
-            self.socket.send(b'yes')
-            if mode == "extract_event":
-                sentence = self.socket.recv_string()
-                print("Received sentence: %s" % sentence)
-                rst = extract_activity_struct_from_sentence(sentence, cnt % len(self.corenlp_servers))
-                cnt += 1
-                self.socket.send_json(rst)
-            elif mode == "exact_match_event":
-                eid = self.socket.recv_string()
-                matched_event = self.kg_conn.get_exact_match_event(eid)
-                self.socket.send_json(matched_event)
-            elif mode == "exact_match_relation":
-                msg = self.socket.recv_string()
-                eid1, eid2 = msg.split('$')
-                matched_relation = self.kg_conn.get_exact_match_relation([eid1, eid2])
-                self.socket.send_json(matched_relation)
-
+            try:
+                mode = self.socket.recv_string()
+                self.socket.send(b'yes')
+                if mode == "extract_event":
+                    sentence = self.socket.recv_string()
+                    print("Received sentence: %s" % sentence)
+                    rst = extract_activity_struct_from_sentence(sentence, cnt % len(self.corenlp_servers))
+                    cnt += 1
+                    self.socket.send_json(rst)
+                elif mode == "exact_match_event":
+                    eid = self.socket.recv_string()
+                    matched_event = self.kg_conn.get_exact_match_event(eid)
+                    self.socket.send_json(matched_event)
+                elif mode == "exact_match_relation":
+                    msg = self.socket.recv_string()
+                    eid1, eid2 = msg.split('$')
+                    matched_relation = self.kg_conn.get_exact_match_relation([eid1, eid2])
+                    self.socket.send_json(matched_relation)
+                elif mode == "get_related_events":
+                    eid = self.socket.recv_string()
+                    if eid in self.kg_inverted_table:
+                        related_eids = self.kg_inverted_table[eid]
+                        related_events = {}
+                        for rel, rel_eids in related_eids.items():
+                            related_events[rel] = self.kg_conn.get_exact_match_events(rel_eids)
+                    else:
+                        related_events = {}
+                    self.socket.send_json(related_events)
+            except:
+                self.close()
+                break
 
 
     def close(self):
