@@ -20,8 +20,11 @@ class ASERClient(object):
         self.socket.recv()
         self.socket.send_string(sentence)
         msg = self.socket.recv_json()
-        pattern, event  = msg[0]['activity_list'][0]
-        event['pattern'] = pattern
+        if msg and msg[0]['activity_list']:
+            pattern, event  = msg[0]['activity_list'][0]
+            event['pattern'] = pattern
+        else:
+            pattern, event = None, None
         return event
 
     def extract_eventualities(self, sentence):
@@ -29,9 +32,11 @@ class ASERClient(object):
         self.socket.recv()
         self.socket.send_string(sentence)
         msg = self.socket.recv_json()
-        pattern, event  = msg[0]['activity_list'][0]
-        event['pattern'] = pattern
-        e = preprocess_event(event, pattern)
+        if msg and msg[0]['activity_list']:
+            pattern, event  = msg[0]['activity_list'][0]
+            e = preprocess_event(event, pattern)
+        else:
+            e = None
         return e
 
     def get_exact_match_event(self, event):
