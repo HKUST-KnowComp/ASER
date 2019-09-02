@@ -9,6 +9,7 @@ import zmq
 
 class ASERServer(object):
     def __init__(self, *args, **kwargs):
+        total_st = time.time()
         self.corenlp_servers = \
             [StanfordCoreNLPServer(
                 corenlp_path=kwargs.get("corenlp_path", "./"),
@@ -23,11 +24,15 @@ class ASERServer(object):
             self.kg_inverted_table = json.load(f)
         print("Connect to the KG finished in {:.4f} s".format(time.time() - st))
 
+        # Preloading coreNLP
+        for i in range(len(self.corenlp_servers)):
+            extract_activity_struct_from_sentence("I am hungry", i)
+
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.REP)
         self.socket.bind("tcp://*:{}".format(kwargs.get("port", 8000)))
+        print("Loading Server Finished in {:.4f} s".format(time.time() - total_st))
         self.run()
-        print("Loading Server Done..")
 
     def run(self):
         cnt = 0
