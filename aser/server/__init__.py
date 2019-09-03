@@ -38,25 +38,24 @@ class ASERServer(object):
         cnt = 0
         while True:
             try:
-                mode = self.socket.recv_string()
-                self.socket.send(b'yes')
+                data = self.socket.recv_multipart()
+                mode = data[0].decode("ascii")
                 if mode == "extract_event":
-                    sentence = self.socket.recv_string()
+                    sentence = data[1].decode("ascii")
                     print("Received sentence: %s" % sentence)
                     rst = extract_activity_struct_from_sentence(sentence, cnt % len(self.corenlp_servers))
                     cnt += 1
                     self.socket.send_json(rst)
                 elif mode == "exact_match_event":
-                    eid = self.socket.recv_string()
+                    eid = data[1].decode("ascii")
                     matched_event = self.kg_conn.get_exact_match_event(eid)
                     self.socket.send_json(matched_event)
                 elif mode == "exact_match_relation":
-                    msg = self.socket.recv_string()
-                    eid1, eid2 = msg.split('$')
+                    eid1, eid2 = data[1].decode("ascii"), data[2].decode("ascii")
                     matched_relation = self.kg_conn.get_exact_match_relation([eid1, eid2])
                     self.socket.send_json(matched_relation)
                 elif mode == "get_related_events":
-                    eid = self.socket.recv_string()
+                    eid = data[1].decode("ascii")
                     if eid in self.kg_inverted_table:
                         related_eids = self.kg_inverted_table[eid]
                         related_events = {}
