@@ -1,4 +1,5 @@
 import socket
+import zmq
 
 
 def is_port_occupied(ip='127.0.0.1', port=80):
@@ -9,3 +10,8 @@ def is_port_occupied(ip='127.0.0.1', port=80):
         return True
     except:
         return False
+
+
+def sockets_ipc_bind(socket):
+    socket.bind("ipc://*")
+    return socket.getsockopt(zmq.LAST_ENDPOINT).decode('ascii')
