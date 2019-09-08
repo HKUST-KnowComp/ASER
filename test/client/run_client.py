@@ -3,7 +3,7 @@ from aser.client import ASERClient
 
 
 if __name__ == "__main__":
-    client = ASERClient(port=8000)
+    client = ASERClient(port=8000, port_out=8001)
 
     # s1 = 'they yucca look leggy'
     # s2 = 'they african violet refuse to flower'
@@ -25,7 +25,7 @@ if __name__ == "__main__":
     rel = client.get_exact_match_relation(e1, e2)
     print(rel)
 
-    # print("Related events: ")
-    # related_events = client.get_related_events(e1)
-    # print(related_events)
+    print("Related events: ")
+    related_events = client.get_related_events(e1)
+    print(related_events)
 
