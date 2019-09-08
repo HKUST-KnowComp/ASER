@@ -17,6 +17,8 @@ class ASERClient(object):
         self.receiver.setsockopt(zmq.LINGER, 0)
         self.receiver.setsockopt(zmq.SUBSCRIBE, self.client_id)
         self.receiver.connect("tcp://localhost:%d" % port_out)
+        self.receiver_poller = zmq.Poller()
+        self.receiver_poller.register(self.receiver)
         self.request_num = 0
         self.timeout = timeout
         # this is a hack, waiting for connection between SUB/PUB
@@ -27,6 +29,11 @@ class ASERClient(object):
         self.receiver.close()
 
     def _timeout(func):
+        """
+            Raise timeout error while there's no response for a while
+            this code is from https://github.com/hanxiao/bert-as-service/
+            blob/master/client/bert_serving/client/__init__.py
+        """
         @wraps(func)
         def arg_wrapper(self, *args, **kwargs):
             if 'blocking' in kwargs and not kwargs['blocking']:
@@ -42,32 +49,40 @@ class ASERClient(object):
                     'is the server still online? is the network broken? are "port" and "port_out" correct? '
                     'are you encoding a huge amount of data whereas the timeout is too small for that?' % self.timeout)
                 raise t_e
-
             finally:
                 self.receiver.setsockopt(zmq.RCVTIMEO, -1)
 
         return arg_wrapper
 
-
-    @_timeout
-    def extract_eventualities_struct(self, sentence):
+    def _send(self, cmd, data):
         request_id = b"%d" % self.request_num
         self.sender.send_multipart([
-            self.client_id, request_id,
-            ASERCmd.extract_events, sentence.encode("ascii")])
+            self.client_id, request_id, cmd, data])
         self.request_num += 1
-        while True:
-            response = self.receiver.recv_multipart()
-            if response[1] == request_id:
-                msg = json.loads(response[-1].decode("ascii"))
-                if msg and msg[0]['activity_list']:
-                    pattern, event  = msg[0]['activity_list'][0]
-                    event['pattern'] = pattern
-                else:
-                    pattern, event = None, None
-                return event
+        return request_id
 
     @_timeout
+    def _recv(self, request_id):
+        try:
+            while True:
+                response = self.receiver.recv_multipart()
+                if response[1] == request_id:
+                    msg = json.loads(response[-1].decode("ascii"))
+                    return msg
+        except Exception as e:
+            raise e
+
+    def extract_eventualities_struct(self, sentence):
+        request_id = self._send(
+            ASERCmd.extract_events, sentence.encode("ascii"))
+        msg = self._recv(request_id)
+        if msg and msg[0]['activity_list']:
+            pattern, event  = msg[0]['activity_list'][0]
+            event['pattern'] = pattern
+        else:
+            pattern, event = None, None
+        return event
+
     def extract_eventualities(self, sentence):
         event = self.extract_eventualities_struct(sentence)
         if event is None:
@@ -78,44 +93,20 @@ class ASERClient(object):
             e = preprocess_event(event, pattern)
             return e
 
-    @_timeout
     def get_exact_match_event(self, event):
-        request_id = b"%d" % self.request_num
         eid = event['_id'].encode("ascii")
-        self.sender.send_multipart(
-            [self.client_id, request_id,
-             ASERCmd.exact_match_event, eid])
-        self.request_num += 1
-        while True:
-            response = self.receiver.recv_multipart()
-            if response[1] == request_id:
-                msg = json.loads(response[-1].decode("ascii"))
-                return msg
+        request_id = self._send(ASERCmd.exact_match_event, eid)
+        msg = self._recv(request_id)
+        return msg
 
-    @_timeout
     def get_exact_match_relation(self, event1, event2):
-        request_id = b"%d" % self.request_num
-        eid = (event1['_id'] + "$" + event2['_id']).encode("ascii")
-        self.sender.send_multipart(
-            [self.client_id, request_id,
-             ASERCmd.exact_match_relation, eid])
-        self.request_num += 1
-        while True:
-            response = self.receiver.recv_multipart()
-            if response[1] == request_id:
-                msg = json.loads(response[-1].decode("ascii"))
-                return msg
+        data = (event1['_id'] + "$" + event2['_id']).encode("ascii")
+        request_id = self._send(ASERCmd.exact_match_relation, data)
+        msg = self._recv(request_id)
+        return msg
 
-    @_timeout
     def get_related_events(self, event):
-        request_id = b"%d" % self.request_num
         eid = event['_id'].encode("ascii")
-        self.sender.send_multipart(
-            [self.client_id, request_id,
-             ASERCmd.fetch_related_events, eid])
-        self.request_num += 1
-        while True:
-            response = self.receiver.recv_multipart()
-            if response[1] == request_id:
-                msg = json.loads(response[-1].decode("ascii"))
-                return msg
+        request_id = self._send(ASERCmd.fetch_related_events, eid)
+        msg = self._recv(request_id)
+        return msg
