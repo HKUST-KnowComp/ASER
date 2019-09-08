@@ -8,6 +8,14 @@ from aser.utils.config import ASERCmd
 
 class ASERClient(object):
     def __init__(self, port=8000, port_out=8001, timeout=-1):
+        """ A client object of ASER
+
+        :param port <int>: port for push request from a client to the server
+        :param port_out <int>: port for Subscribe return data from the server
+        to a server
+        :param timeout: client receiver timeout (milliseconds), -1 means no
+        timeout
+        """
         self.client_id = str(uuid.uuid4()).encode("ascii")
         context = zmq.Context()
         self.sender = context.socket(zmq.PUSH)
@@ -74,6 +82,31 @@ class ASERClient(object):
 
     def extract_eventualities(self, sentence, only_events=False,
                               ret_type="tokens"):
+
+        """ Extract all eventualities from input sentence
+
+        :param sentence <str>: input sentence. only support one sentence now.
+        :param only_events <bool>: output eventualities only
+        :param ret_type <str>: "tokens" or "parsed_relations"
+
+        :return: a dictionary, here is a example while ret_type is "tokens"
+            Input: 'I am in the kitchen .'
+
+            Output:
+            {
+                "sentence": 'I am in the kitchen .'
+                "eventualities": [
+                    {
+                        'eid': '2489e3d0a017aca73d30ccc334140869950aad90',
+                        'frequency': 800.0,
+                        'pattern': 's-be-a',
+                        'skeleton_words': 'i be kitchen',
+                        'verbs': 'be',
+                        'words': 'i be in the kitchen'
+                    }
+                ]
+            }
+        """
         request_id = self._send(
             ASERCmd.extract_events, sentence.encode("ascii"))
         msg = self._recv(request_id)
@@ -116,12 +149,29 @@ class ASERClient(object):
             ret_dict["eventualities"] = events
             return ret_dict
 
-    def predict_relation(self, event1, event2):
+    def predict_relation(self, event1, event2, only_exact=False):
+        """ Predict relations between two events
+
+        :param event1 <dict>: eventuality dict, should include "eid"
+        :param event2 <dict>: eventuality dict, should include "eid"
+        :param only_exact <bool>: only return exactly matched relations
+        :return: a dictionary of dictionaries
+        """
         ret_dict = dict()
-        ret_dict["exact_match"] = self._exact_match_relation(event1, event2)
-        return ret_dict
+        exact_match_rels = self._exact_match_relation(event1, event2)
+        if only_exact:
+            return exact_match_rels
+        else:
+            ret_dict["exact_match"] = exact_match_rels
+            #TODO probabilistic match results
+            return ret_dict
 
     def fetch_related_events(self, event):
+        """ Fetch related events given one event
+
+        :param event <dict>: eventuality dict, should include "eid"
+        :return: a dictionary of each relation-related events
+        """
         eid = event['eid'].encode("ascii")
         request_id = self._send(ASERCmd.fetch_related_events, eid)
         msg = self._recv(request_id)
