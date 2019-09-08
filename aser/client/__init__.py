@@ -72,41 +72,78 @@ class ASERClient(object):
         except Exception as e:
             raise e
 
-    def extract_eventualities_struct(self, sentence):
+    def extract_eventualities(self, sentence, only_events=False,
+                              ret_type="tokens"):
         request_id = self._send(
             ASERCmd.extract_events, sentence.encode("ascii"))
         msg = self._recv(request_id)
-        if msg and msg[0]['activity_list']:
-            pattern, event  = msg[0]['activity_list'][0]
-            event['pattern'] = pattern
-        else:
-            pattern, event = None, None
-        return event
-
-    def extract_eventualities(self, sentence):
-        event = self.extract_eventualities_struct(sentence)
-        if event is None:
+        if not msg:
             return None
-        else:
-            pattern = event["pattern"]
-            del event["pattern"]
-            e = preprocess_event(event, pattern)
-            return e
+        msg = msg[0]
+        ret_dict = dict()
+        if not only_events:
+            if ret_type == "parsed_relation":
+                ret_dict["sentence"] = msg["sentence_parsed_relations"]
+            elif ret_type == "tokens":
+                ret_dict["sentence"] = " ".join(msg["sentence_tokens"])
+            else:
+                raise RuntimeError("`ret_type` should be 'tokens' or 'parsed_relations'")
 
-    def get_exact_match_event(self, event):
-        eid = event['_id'].encode("ascii")
+        events = list()
+        for pattern, activity in msg['activity_list']:
+            e = preprocess_event(activity, pattern)
+            e["eid"] = e["_id"]
+            tmp = self._exact_match_event(e)
+            e = tmp if tmp else e
+            event_dict = dict()
+            event_dict["eid"] = e["_id"]
+            event_dict["pattern"] = pattern
+            event_dict["verbs"] = e["verbs"]
+            event_dict["frequency"] = e["frequency"] if tmp else 0.0
+            if ret_type == "parsed_relation":
+                event_dict["skeleton_words"] = activity["skeleton_words"]
+                event_dict["words"] = activity["words"]
+            elif ret_type == "tokens":
+                event_dict["skeleton_words"] = e["skeleton_words"]
+                event_dict["words"] = e["words"]
+            else:
+                raise RuntimeError("`ret_type` should be 'tokens' or 'parsed_relations'")
+            events.append(event_dict)
+
+        if only_events:
+            return events
+        else:
+            ret_dict["eventualities"] = events
+            return ret_dict
+
+    def predict_relation(self, event1, event2):
+        ret_dict = dict()
+        ret_dict["exact_match"] = self._exact_match_relation(event1, event2)
+        return ret_dict
+
+    def fetch_related_events(self, event):
+        eid = event['eid'].encode("ascii")
+        request_id = self._send(ASERCmd.fetch_related_events, eid)
+        msg = self._recv(request_id)
+        for rel_type, elist in msg.items():
+            for e in elist:
+                e["eid"] = e.pop("_id")
+                del e["skeleton_words_clean"]
+        return msg
+
+    def _exact_match_event(self, event):
+        eid = event['eid'].encode("ascii")
         request_id = self._send(ASERCmd.exact_match_event, eid)
         msg = self._recv(request_id)
         return msg
 
-    def get_exact_match_relation(self, event1, event2):
-        data = (event1['_id'] + "$" + event2['_id']).encode("ascii")
+    def _exact_match_relation(self, event1, event2):
+        data = (event1['eid'] + "$" + event2['eid']).encode("ascii")
         request_id = self._send(ASERCmd.exact_match_relation, data)
         msg = self._recv(request_id)
-        return msg
-
-    def get_related_events(self, event):
-        eid = event['_id'].encode("ascii")
-        request_id = self._send(ASERCmd.fetch_related_events, eid)
-        msg = self._recv(request_id)
-        return msg
+        if not msg:
+            return {}
+        del msg['_id']
+        del msg['event1_id']
+        del msg['event2_id']
+        return {key: val for key, val in msg.items() if val > 0.0}
