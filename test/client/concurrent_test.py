@@ -18,14 +18,13 @@ s3 = "I have no money"
 
 
 
-
-# Helper Function `extract_eventualities_struct`
+# Helper Function `extract_eventualities`
 def fn1(s, n_iter, ans, prefix):
     client = ASERClient(port=ASER_PORT)
     st = time.time()
     for _ in range(n_iter):
         try:
-            tmp = client.extract_eventualities_struct(s)
+            tmp = client.extract_eventualities(s)
             assert json.dumps(tmp) == ans, "[{}] Wrong answer".format(prefix)
         except Exception:
             print("[{}] Wrong answer".format(prefix))
@@ -39,53 +38,13 @@ def fn1(s, n_iter, ans, prefix):
     client.close()
     return (end - st) / n_iter * 1000
 
-# Helper Function `extract_eventualities`
-def fn2(s, n_iter, ans, prefix):
+# Helper Function `predict_relation`
+def fn2(e1, e2, n_iter, ans, prefix):
     client = ASERClient(port=ASER_PORT)
     st = time.time()
     for _ in range(n_iter):
         try:
-            tmp = client.extract_eventualities(s)
-            assert json.dumps(tmp) == ans, "[{}] Wrong answer".format(prefix)
-        except Exception:
-            print("[{}] Wrong answer".format(prefix))
-            print(traceback.format_exc())
-            client.close()
-            return
-    end = time.time()
-    print("[{}] passed, {} ms / call".format(
-        prefix, (end - st) / n_iter * 1000))
-    client.close()
-    return (end - st) / n_iter * 1000
-
-
-# Helper Function `get_exact_match_event`
-def fn3(event, n_iter, ans, prefix):
-    client = ASERClient(port=ASER_PORT)
-    st = time.time()
-    for _ in range(n_iter):
-        try:
-            tmp = client.get_exact_match_event(event)
-            assert json.dumps(tmp) == ans, "[{}] Wrong answer".format(prefix)
-        except Exception:
-            print("[{}] Wrong answer".format(prefix))
-            print(traceback.format_exc())
-            client.close()
-            return
-    end = time.time()
-    print("[{}] passed, {} ms / call".format(
-        prefix, (end - st) / n_iter * 1000))
-    client.close()
-    return (end - st) / n_iter * 1000
-
-
-# Helper Function `get_exact_match_relation`
-def fn4(e1, e2, n_iter, ans, prefix):
-    client = ASERClient(port=ASER_PORT)
-    st = time.time()
-    for _ in range(n_iter):
-        try:
-            tmp = client.get_exact_match_relation(e1, e2)
+            tmp = client.predict_relation(e1, e2)
             assert json.dumps(tmp) == ans, "[{}] Wrong answer".format(prefix)
         except Exception:
             print("[{}] Wrong answer".format(prefix))
@@ -100,13 +59,13 @@ def fn4(e1, e2, n_iter, ans, prefix):
     return (end - st) / n_iter * 1000
 
 
-# Helper Function `get_related_events`
-def fn5(e, n_iter, ans, prefix):
+# Helper Function `fetch_related_events`
+def fn3(e, n_iter, ans, prefix):
     client = ASERClient(port=ASER_PORT)
     st = time.time()
     for _ in range(n_iter):
         try:
-            tmp = client.get_related_events(e)
+            tmp = client.fetch_related_events(e)
             assert json.dumps(tmp) == ans, "[{}] Wrong answer".format(prefix)
         except Exception:
             print("[{}] Wrong answer".format(prefix))
@@ -118,38 +77,12 @@ def fn5(e, n_iter, ans, prefix):
         prefix, (end - st) / n_iter * 1000))
     client.close()
     return (end - st) / n_iter * 1000
-
-
-def test_extract_eventualities_struct():
-    client = ASERClient(port=ASER_PORT)
-
-    print("=" * 50)
-    print("Testing extract struct...")
-    ans1 = json.dumps(client.extract_eventualities_struct(s1))
-    ans2 = json.dumps(client.extract_eventualities_struct(s2))
-    client.close()
-
-    results_list = []
-    n_workers = 10
-    n_iter = 50
-    pool = Pool(n_workers)
-    for i in range(n_workers // 2):
-        r = pool.apply_async(fn1, args=(s1, n_iter, ans1, "`ext_event_struct_1`({})".format(i),))
-        results_list.append(r)
-        r = pool.apply_async(fn1, args=(s2, n_iter, ans2, "`ext_event_struct_2`({})".format(i),))
-        results_list.append(r)
-    pool.close()
-    pool.join()
-    avg_t = np.mean([r.get() for r in results_list]) / n_workers
-
-    print("`ext_event_struct` {:.2f} ms / call in average".format(avg_t))
-
 
 def test_extract_eventualities():
     client = ASERClient(port=ASER_PORT)
 
     print("=" * 50)
-    print("Testing extract event...")
+    print("Testing extract struct...")
     ans1 = json.dumps(client.extract_eventualities(s1))
     ans2 = json.dumps(client.extract_eventualities(s2))
     client.close()
@@ -159,55 +92,26 @@ def test_extract_eventualities():
     n_iter = 50
     pool = Pool(n_workers)
     for i in range(n_workers // 2):
-        r = pool.apply_async(fn2, args=(s1, n_iter, ans1, "`ext_event_1`({})".format(i),))
+        r = pool.apply_async(fn1, args=(s1, n_iter, ans1, "`ext_event_1`({})".format(i),))
         results_list.append(r)
-        r = pool.apply_async(fn2, args=(s2, n_iter, ans2, "`ext_event_2`({})".format(i),))
-        results_list.append(r)
-    pool.close()
-    pool.join()
-    avg_t = np.mean([r.get() for r in results_list]) / n_workers
-
-    print("`ext_event` {:.2f} ms / call in average".format(avg_t))
-
-
-def test_get_exact_match_event():
-    client = ASERClient(port=ASER_PORT)
-
-    print("=" * 50)
-    print("Testing match event...")
-    event1 = client.extract_eventualities(s1)
-    event2 = client.extract_eventualities(s2)
-    ans1 = json.dumps(client.get_exact_match_event(event1))
-    ans2 = json.dumps(client.get_exact_match_event(event2))
-    client.close()
-
-    results_list = []
-    n_workers = 10
-    n_iter = 50
-    pool = Pool(n_workers)
-    # pool.apply_async(fn3, args=(event1, 500, ans1, "`match_event_1`({})".format(0),))
-    for i in range(n_workers // 2):
-        r = pool.apply_async(fn3, args=(event1, n_iter, ans1, "`match_event_1`({})".format(i),))
-        results_list.append(r)
-        r = pool.apply_async(fn3, args=(event2, n_iter, ans2, "`match_event_2`({})".format(i),))
+        r = pool.apply_async(fn1, args=(s2, n_iter, ans2, "`ext_event_2`({})".format(i),))
         results_list.append(r)
     pool.close()
     pool.join()
     avg_t = np.mean([r.get() for r in results_list]) / n_workers
 
-    print("`ext_struct` {:.2f} ms / call in average".format(avg_t))
+    print("`ext_event_struct` {:.2f} ms / call in average".format(avg_t))
 
-
-def test_get_exact_match_relation():
+def test_predict_relation():
     client = ASERClient(port=ASER_PORT)
 
     print("=" * 50)
     print("Testing match relation...")
-    event1 = client.extract_eventualities(s1)
-    event2 = client.extract_eventualities(s2)
-    event3 = client.extract_eventualities(s3)
-    ans1 = json.dumps(client.get_exact_match_relation(event1, event2))
-    ans2 = json.dumps(client.get_exact_match_relation(event1, event3))
+    event1 = client.extract_eventualities(s1, only_events=True)[0]
+    event2 = client.extract_eventualities(s2, only_events=True)[0]
+    event3 = client.extract_eventualities(s3, only_events=True)[0]
+    ans1 = json.dumps(client.predict_relation(event1, event2))
+    ans2 = json.dumps(client.predict_relation(event1, event3))
     client.close()
 
     results_list = []
@@ -215,9 +119,9 @@ def test_get_exact_match_relation():
     n_iter = 50
     pool = Pool(n_workers)
     for i in range(n_workers // 2):
-        r = pool.apply_async(fn4, args=(event1, event2, n_iter, ans1, "`match_relation_1`({})".format(i),))
+        r = pool.apply_async(fn2, args=(event1, event2, n_iter, ans1, "`predict_relation_1`({})".format(i),))
         results_list.append(r)
-        r = pool.apply_async(fn4, args=(event1, event3, n_iter, ans2, "`match_relation_2`({})".format(i),))
+        r = pool.apply_async(fn2, args=(event1, event3, n_iter, ans2, "`predict_relation_2`({})".format(i),))
         results_list.append(r)
     pool.close()
     pool.join()
@@ -226,15 +130,15 @@ def test_get_exact_match_relation():
     print("`match_relation` {:.2f} ms / call in average".format(avg_t))
 
 
-def test_get_related_events():
+def test_fetch_related_events():
     client = ASERClient(port=ASER_PORT)
 
     print("=" * 50)
     print("Testing get related events...")
-    event1 = client.extract_eventualities(s1)
-    event2 = client.extract_eventualities(s2)
-    ans1 = json.dumps(client.get_related_events(event1))
-    ans2 = json.dumps(client.get_related_events(event2))
+    event1 = client.extract_eventualities(s1, only_events=True)[0]
+    event2 = client.extract_eventualities(s2, only_events=True)[0]
+    ans1 = json.dumps(client.fetch_related_events(event1))
+    ans2 = json.dumps(client.fetch_related_events(event2))
     client.close()
 
     results_list = []
@@ -242,9 +146,9 @@ def test_get_related_events():
     n_iter = 50
     pool = Pool(n_workers)
     for i in range(n_workers // 2):
-        r = pool.apply_async(fn5, args=(event1, n_iter, ans1, "`get_related_events_1`({})".format(i),))
+        r = pool.apply_async(fn3, args=(event1, n_iter, ans1, "`fetch_related_events_1`({})".format(i),))
         results_list.append(r)
-        r = pool.apply_async(fn5, args=(event2, n_iter, ans2, "`get_related_events_2`({})".format(i),))
+        r = pool.apply_async(fn3, args=(event2, n_iter, ans2, "`fetch_related_events_2`({})".format(i),))
         results_list.append(r)
     pool.close()
     pool.join()
@@ -255,34 +159,28 @@ def test_get_related_events():
 
 def test_all_apis():
     client = ASERClient(port=ASER_PORT)
-    event_struct_1 = client.extract_eventualities_struct(s1)
-    event_struct_2 = client.extract_eventualities_struct(s2)
-    event1 = client.extract_eventualities(s1)
-    event2 = client.extract_eventualities(s2)
-    event3 = client.extract_eventualities(s3)
-    e1 = client.get_exact_match_event(event1)
-    e2 = client.get_exact_match_event(event2)
-    e3 = client.get_exact_match_event(event3)
-    rel1 = client.get_exact_match_relation(e1, e2)
-    rel2 = client.get_exact_match_relation(e1, e3)
-    related_events1 = client.get_related_events(e1)
-    related_events2 = client.get_related_events(e2)
+    event_info_1 = client.extract_eventualities(s1)
+    event1 = event_info_1["eventualities"][0]
+    event_info_2 = client.extract_eventualities(s2)
+    event2 = event_info_2["eventualities"][0]
+    event_info_3 = client.extract_eventualities(s3)
+    event3 = event_info_3["eventualities"][0]
+    rel1 = client.predict_relation(event1, event2)
+    rel2 = client.predict_relation(event1, event3)
+    related_events1 = client.fetch_related_events(event1)
+    related_events2 = client.fetch_related_events(event2)
     client.close()
 
     st = time.time()
     n_workers = 10
     n_iter = 50
     pool = Pool(n_workers)
-    pool.apply_async(fn1, args=(s1, n_iter, json.dumps(event_struct_1), "`ext_event_strcut_1`"))
-    pool.apply_async(fn1, args=(s2, n_iter, json.dumps(event_struct_2), "`ext_event_strcut_2`"))
-    pool.apply_async(fn2, args=(s1, n_iter, json.dumps(event1), "`ext_event_3`"))
-    pool.apply_async(fn2, args=(s2, n_iter, json.dumps(event2), "`ext_event_4`"))
-    pool.apply_async(fn3, args=(event1, n_iter, json.dumps(e1), "`match_event_5`"))
-    pool.apply_async(fn3, args=(event2, n_iter, json.dumps(e2), "`match_event_6`"))
-    pool.apply_async(fn4, args=(event1, event2, n_iter, json.dumps(rel1), "`match_relation_7`"))
-    pool.apply_async(fn4, args=(event1, event3, n_iter, json.dumps(rel2), "`match_relation_8`"))
-    pool.apply_async(fn5, args=(e1, n_iter, json.dumps(related_events1), "`get_related_events_9`"))
-    pool.apply_async(fn5, args=(e2, n_iter, json.dumps(related_events2), "`get_related_events_10`"))
+    pool.apply_async(fn1, args=(s1, n_iter, json.dumps(event_info_1), "`ext_event_0`"))
+    pool.apply_async(fn1, args=(s2, n_iter, json.dumps(event_info_2), "`ext_event_1`"))
+    pool.apply_async(fn2, args=(event1, event2, n_iter, json.dumps(rel1), "`match_relation_2`"))
+    pool.apply_async(fn2, args=(event1, event3, n_iter, json.dumps(rel2), "`match_relation_3`"))
+    pool.apply_async(fn3, args=(event1, n_iter, json.dumps(related_events1), "`get_related_events_4`"))
+    pool.apply_async(fn3, args=(event2, n_iter, json.dumps(related_events2), "`get_related_events_5`"))
     pool.close()
     pool.join()
     end = time.time()
@@ -290,9 +188,7 @@ def test_all_apis():
 
 
 if __name__ == "__main__":
-    test_extract_eventualities_struct()
     test_extract_eventualities()
-    test_get_exact_match_event()
-    # test_get_exact_match_relation()
-    test_get_related_events()
+    test_predict_relation()
+    test_fetch_related_events()
     test_all_apis()
