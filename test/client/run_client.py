@@ -8,8 +8,8 @@ if __name__ == "__main__":
 
     # s1 = 'they yucca look leggy'
     # s2 = 'they african violet refuse to flower'
-    s1 = 'After eating lunch, Obama and Mike is very hungry.'
-    s2 = 'I eat food.'
+    s1 = 'I am hungry.'
+    s2 = 'I am in the kitchen.'
 
     event1 = client.extract_eventualities(s1)
     event2 = client.extract_eventualities(s2)

@@ -113,7 +113,7 @@ class ASERClient(object):
         msg = msg[0]
         ret_dict = dict()
         if not only_events:
-            if ret_type == "parsed_relation":
+            if ret_type == "parsed_relations":
                 ret_dict["sentence"] = msg["sentence_parsed_relations"]
             elif ret_type == "tokens":
                 ret_dict["sentence"] = " ".join(msg["sentence_tokens"])
@@ -131,7 +131,7 @@ class ASERClient(object):
             event_dict["pattern"] = pattern
             event_dict["verbs"] = e["verbs"]
             event_dict["frequency"] = e["frequency"] if tmp else 0.0
-            if ret_type == "parsed_relation":
+            if ret_type == "parsed_relations":
                 event_dict["skeleton_words"] = activity["skeleton_words"]
                 event_dict["words"] = activity["words"]
             elif ret_type == "tokens":
