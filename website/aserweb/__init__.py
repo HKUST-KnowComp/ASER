@@ -22,18 +22,17 @@ def create_app(test_config=None):
     @app.route('/<sentence>')
     def get_event(sentence):
         data = dict()
-        event = aser_client.extract_eventualities(sentence)
-        if not event:
+        try:
+            event = aser_client.extract_eventualities(sentence, only_events=True)[0]
+        except:
             return render_template("404.html")
-        exact_event = aser_client.get_exact_match_event(event)
-        event = exact_event if exact_event else event
-        related_events = aser_client.get_related_events(event)
+        related_events = aser_client.fetch_related_events(event)
         data["sentence"] = sentence
         data["verbs"] = event["verbs"]
         data["skeleton_words"] = event["skeleton_words"]
         data["words"] = event["words"]
         data["frequency"] = str(event["frequency"])
-        data["show_in_kg"] = "no" if exact_event is None else "yes"
+        data["show_in_kg"] = "no" if event["frequency"] < 0.0 is None else "yes"
         data["related_events"] = {}
         for rel, rel_e in related_events.items():
             if rel not in data["related_events"]:
