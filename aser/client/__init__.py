@@ -25,8 +25,6 @@ class ASERClient(object):
         self.receiver.setsockopt(zmq.LINGER, 0)
         self.receiver.setsockopt(zmq.SUBSCRIBE, self.client_id)
         self.receiver.connect("tcp://localhost:%d" % port_out)
-        self.receiver_poller = zmq.Poller()
-        self.receiver_poller.register(self.receiver)
         self.request_num = 0
         self.timeout = timeout
         # this is a hack, waiting for connection between SUB/PUB
