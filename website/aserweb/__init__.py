@@ -9,7 +9,7 @@ from aser.client import ASERClient
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
 
-    aser_client = ASERClient(port=8000)
+    aser_client = ASERClient(ip="songcpu4.cse.ust.hk", port=20002, port_out=20003)
 
     @app.route('/index')
     def index():
