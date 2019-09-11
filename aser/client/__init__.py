@@ -7,7 +7,7 @@ from aser.database.db_API import preprocess_event
 from aser.utils.config import ASERCmd
 
 class ASERClient(object):
-    def __init__(self, port=8000, port_out=8001, timeout=-1):
+    def __init__(self, ip="localhost", port=8000, port_out=8001, timeout=-1):
         """ A client object of ASER
 
         :param port <int>: port for push request from a client to the server
@@ -20,11 +20,11 @@ class ASERClient(object):
         context = zmq.Context()
         self.sender = context.socket(zmq.PUSH)
         self.sender.setsockopt(zmq.LINGER, 0)
-        self.sender.connect("tcp://localhost:%d" % port)
+        self.sender.connect("tcp://{}:{}".format(ip, port))
         self.receiver = context.socket(zmq.SUB)
         self.receiver.setsockopt(zmq.LINGER, 0)
         self.receiver.setsockopt(zmq.SUBSCRIBE, self.client_id)
-        self.receiver.connect("tcp://localhost:%d" % port_out)
+        self.receiver.connect("tcp://{}:{}".format(ip, port_out))
         self.request_num = 0
         self.timeout = timeout
         # this is a hack, waiting for connection between SUB/PUB
@@ -88,6 +88,10 @@ class ASERClient(object):
         :param ret_type <str>: "tokens" or "parsed_relations"
 
         :return: a dictionary, here is a example while ret_type is "tokens"
+
+        .. highlight:: python
+        .. code-block:: python
+
             Input: 'I am in the kitchen .'
 
             Output:
