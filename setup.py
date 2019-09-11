@@ -19,4 +19,7 @@ setup(
     python_requires='>=3',
     packages=find_packages(exclude=('data')),
     install_requires=reqs.strip().split('\n'),
+    entry_points={
+        'console_scripts': ['aser-server=aser.server.cli:main'],
+    },
 )
