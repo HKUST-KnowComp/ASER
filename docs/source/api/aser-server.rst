@@ -1,11 +1,11 @@
 ASER-Server
 ===========
 
-You can get the aser usage via:
+You can get the aser-server usage via:
 
 .. code:: bash
 
-   aser-serving --help
+   aser-server --help
 
 .. argparse::
    :ref: aser.utils.config.get_server_args_parser
