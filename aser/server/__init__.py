@@ -8,9 +8,8 @@ import traceback
 import zmq
 import zmq.decorators as zmqd
 from aser.database.db_API import KG_Connection
-from aser.server.corenlp import StanfordCoreNLPServer
 from aser.server.utils import *
-from aser.extract.extractor import extract_activity_struct_from_sentence
+from aser.extract.event_extractor import EventualityExtractor
 from aser.utils.config import ASERCmd
 
 
@@ -20,7 +19,6 @@ class ASERServer(object):
         self.port = opt.port
         self.n_concurrent_back_socks = opt.n_concurrent_back_socks
         self.n_workers = opt.n_workers
-        self.corenlp_servers = None
         self.aser_sink = None
         self.aser_db = None
         self.aser_workers = []
@@ -44,11 +42,6 @@ class ASERServer(object):
     @zmqd.socket(zmq.PUSH)
     def _run(self, ctx, client_msg_receiver, sink_addr_receiver, db_sender):
         total_st = time.time()
-        self.corenlp_servers = \
-            [StanfordCoreNLPServer(
-                corenlp_path=self.opt.corenlp_path,
-                port=self.opt.base_corenlp_port + i)
-                for i in range(self.opt.n_workers)]
 
         client_msg_receiver.bind("tcp://*:%d" % self.port)
 
@@ -78,13 +71,9 @@ class ASERServer(object):
 
         for i in range(self.n_workers):
             self.aser_workers.append(
-                ASERWorker(i, worker_addr_list, sink_receiver_addr)
+                ASERWorker(self.opt, i, worker_addr_list, sink_receiver_addr)
             )
             self.aser_workers[i].start()
-
-        # Preloading coreNLP
-        for i in range(len(self.corenlp_servers)):
-            extract_activity_struct_from_sentence("I am hungry", i)
 
         print("Loading Server Finished in {:.4f} s".format(time.time() - total_st))
         worker_sender_id = -1
@@ -199,11 +188,14 @@ class ASERDataBase(Process):
 
 
 class ASERWorker(Process):
-    def __init__(self, id, worker_addr_list, sink_addr):
+    def __init__(self, opt, id, worker_addr_list, sink_addr):
         super().__init__()
         self.worker_id = id
         self.worker_addr_list = worker_addr_list
         self.sink_addr = sink_addr
+        os.environ["CORENLP_HOME"] = opt.corenlp_path
+        self.event_extractor = EventualityExtractor(
+            port=opt.base_corenlp_port + id)
         self.is_ready = multiprocessing.Event()
 
     def run(self):
@@ -211,6 +203,7 @@ class ASERWorker(Process):
 
     def close(self):
         self.is_ready.clear()
+        self.event_extractor.close()
         self.terminate()
         self.join()
 
@@ -248,7 +241,7 @@ class ASERWorker(Process):
 
     def handle_extract_events(self, data):
         sentence = data.decode("ascii")
-        rst = extract_activity_struct_from_sentence(sentence, self.worker_id)
+        rst = self.event_extractor.extract(sentence)
         ret_data = json.dumps(rst).encode("ascii")
         return ret_data
 

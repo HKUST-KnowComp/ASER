@@ -3,75 +3,6 @@ import numpy as np
 import collections
 import random
 from itertools import islice
-# import torch
-# import torch.nn as nn
-# import torch.nn.functional as F
-# from aser.models.example import Training_Example, Two_Sentence_Training_Example
-# from aser.models.activity import Activity
-
-# class SA_Classifier:
-#     def __init__(self, training_data=None, embedding_path='glove.txt', model_link=None):
-
-#         self.embedding_dict = load_embedding(embedding_path)
-#         if model_link is None:
-#             self.model = Model()
-#         else:
-#             self.model = Model()
-#         self.optimizer = torch.optim.SGD(self.model.parameters(), lr=0.2)
-#         self.loss_func = torch.nn.CrossEntropyLoss()
-#         if training_data is not None:
-#             self.training_data = training_data
-#             self.X_train, self.Y_train = self.tensorize_examples()
-#         self.softmax = torch.nn.Softmax()
-
-#     def load_data(self, current_data):
-#         random.shuffle(current_data)
-#         self.training_data = current_data
-#         self.X_train, self.Y_train = self.tensorize_examples()
-
-#     def tensorize_examples(self):
-#         tensorized_example_list = list()
-#         labels = list()
-#         for t in self.training_data:
-#             tensorized_example_list.append(t['example'].tensorize(self.embedding_dict))
-#             if t['label'] == 1:
-#                 labels.append(torch.LongTensor([1]))
-#             else:
-#                 labels.append(torch.LongTensor([0]))
-#         # print(np.asarray(tensorized_example_list).shape)
-#         return tensorized_example_list, labels
-
-#     def train(self):
-#         # print(self.X_train)
-#         # print(self.X_train.shape)
-#         # print(self.Y_train)
-#         # print(self.Y_train.shape)
-#         for tmp_iter in range(10):
-#             print('Training iteration:', tmp_iter)
-#             for i in range(len(self.X_train)):
-#                 predict = self.model(self.X_train[i])
-#                 # print(predict, predict.size())
-#                 # print(self.Y_train[i].unsqueeze(0), self.Y_train[i].unsqueeze(0).size())
-#                 tmp_loss = self.loss_func(predict, self.Y_train[i])
-#                 self.optimizer.zero_grad()
-#                 tmp_loss.backward()
-#                 self.optimizer.step()
-
-#     def predict(self, test_example):
-#         # print(test_example.tensorize(self.embedding_dict))
-#         tmp_predict = self.model(test_example.tensorize(self.embedding_dict))
-#         predict_after_softmax = self.softmax(tmp_predict)
-#         # print(predict_after_softmax)
-#         # print(torch.max(tmp_predict, 1)[1].data.numpy().squeeze())
-#         return predict_after_softmax.squeeze().data.numpy()[1]
-
-
-# def check_activity_contain_token(edge_list, token):
-#     for relation in edge_list:
-#         if relation[0] == token or relation[1] == token:
-#             return True
-#     return False
-
 
 def shrink_example(tmp_example):
     new_edges = list()
@@ -249,3 +180,98 @@ def check_and_mkdir(path, verbose=True):
         os.mkdir(path)
         if verbose:
             print("mkdir ", path)
+
+
+############################################################################
+
+valid_chars = frozenset("""qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890`~!@#$%^&*/?., ;:"'""")
+
+def parse_sentense_with_stanford(input_sentence, corenlp_client):
+    def clean_sentence_for_parsing(input_sentence):
+        new_sentence = ''
+        for char in input_sentence:
+            if char in valid_chars:
+                new_sentence += char
+            else:
+                new_sentence += '\n'
+        return new_sentence
+    cleaned_sentence = clean_sentence_for_parsing(input_sentence)
+    tmp_output = corenlp_client.annotate(cleaned_sentence, output_format="json")
+    parsed_examples = list()
+    for s in tmp_output['sentences']:
+        enhanced_dependency_list = s['enhancedPlusPlusDependencies']
+        stored_dependency_list = list()
+        for relation in enhanced_dependency_list:
+            if relation['dep'] == 'ROOT':
+                continue
+            governor_position = relation['governor']
+            dependent_position = relation['dependent']
+            stored_dependency_list.append(
+                [
+                    [governor_position,
+                     s['tokens'][governor_position - 1]['lemma'],
+                     s['tokens'][governor_position - 1]['pos']],
+
+                    relation['dep'],
+
+                    [dependent_position,
+                     s['tokens'][dependent_position - 1]['lemma'],
+                     s['tokens'][dependent_position - 1]['pos']]
+                ]
+            )
+        tokens = list()
+        for token in s['tokens']:
+            tokens.append(token['word'])
+        parsed_examples.append(
+            {'dependencies': stored_dependency_list, 'tokens': tokens})
+    return parsed_examples
+
+
+def sort_dependencies_position(dependencies, fix_position=True):
+    """ Fix absolute position into relevant position and sort.
+
+        Input example:
+        [[[8, 'hungry', 'JJ'], 'cop', [7, 'be', 'VBP']],
+         [[8, 'hungry', 'JJ'], 'nsubj', [6, 'I', 'PRP']]]
+
+        Output example if fix_position:
+        [[[2, 'hungry', 'JJ'], 'nsubj', [0, 'I', 'PRP']],
+         [[2, 'hungry', 'JJ'], 'cop', [1, 'be', 'VBP']]]
+
+        Output example if not fix_position:
+        [[[8, 'hungry', 'JJ'], 'nsubj', [7, 'I', 'PRP']],
+         [[8, 'hungry', 'JJ'], 'cop', [6, 'be', 'VBP']]]
+
+    """
+    if fix_position:
+        positions = set()
+        for head, _, tail in dependencies:
+            positions.add(head[0])
+            positions.add(tail[0])
+        positions = list(sorted(positions))
+        position_map = dict(zip(positions, range(len(positions))))
+
+        for i in range(len(dependencies)):
+            head, _, tail = dependencies[i]
+            head[0] = position_map[head[0]]
+            tail[0] = position_map[tail[0]]
+    dependencies.sort(key=lambda x: (x[0][0], x[2][0]))
+
+
+def extract_tokens_from_dependencies(dependencies):
+    """ Extract all tokens from dependencies
+
+        Input example:
+        [[[8, 'hungry', 'JJ'], 'cop', [7, 'be', 'VBP']],
+         [[8, 'hungry', 'JJ'], 'nsubj', [6, 'I', 'PRP']]]
+
+        Output example:
+        [['I', 'PRP'], ['be', 'VBP'], ['hungry', 'JJ']]
+    """
+    pos_and_tokens = set()
+    for governor, _, dependent in dependencies:
+        pos_and_tokens.add(tuple(governor))
+        pos_and_tokens.add(tuple(dependent))
+    tokens = [[t[1], t[2]] for t in
+              sorted(pos_and_tokens, key=lambda x: x[0])]
+    return tokens

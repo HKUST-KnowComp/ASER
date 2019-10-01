@@ -85,7 +85,7 @@ class ASERClient(object):
 
         :param sentence <str>: input sentence. only support one sentence now.
         :param only_events <bool>: output eventualities only
-        :param ret_type <str>: "tokens" or "parsed_relations"
+        :param ret_type <str>: "tokens" or "dependencies"
 
         :return: a dictionary, here is a example while ret_type is "tokens"
 
@@ -117,33 +117,18 @@ class ASERClient(object):
         msg = msg[0]
         ret_dict = dict()
         if not only_events:
-            if ret_type == "parsed_relations":
-                ret_dict["sentence"] = msg["sentence_parsed_relations"]
+            if ret_type == "dependencies":
+                ret_dict["sentence"] = msg["sentence_dependencies"]
             elif ret_type == "tokens":
                 ret_dict["sentence"] = " ".join(msg["sentence_tokens"])
             else:
-                raise RuntimeError("`ret_type` should be 'tokens' or 'parsed_relations'")
+                raise RuntimeError("`ret_type` should be 'tokens' or 'dependencies'")
 
         events = list()
-        for pattern, activity in msg['eventuality_list']:
-            e = preprocess_event(activity, pattern)
-            e["eid"] = e["_id"]
-            tmp = self._exact_match_event(e)
-            e = tmp if tmp else e
-            event_dict = dict()
-            event_dict["eid"] = e["_id"]
-            event_dict["pattern"] = pattern
-            event_dict["verbs"] = e["verbs"]
-            event_dict["frequency"] = e["frequency"] if tmp else 0.0
-            if ret_type == "parsed_relations":
-                event_dict["skeleton_words"] = activity["skeleton_parsed_relations"]
-                event_dict["words"] = activity["parsed_relations"]
-            elif ret_type == "tokens":
-                event_dict["skeleton_words"] = e["skeleton_words"]
-                event_dict["words"] = e["words"]
-            else:
-                raise RuntimeError("`ret_type` should be 'tokens' or 'parsed_relations'")
-            events.append(event_dict)
+        for eventuality in msg['eventuality_list']:
+            tmp = self._exact_match_event(eventuality)
+            eventuality["frequency"] = tmp["frequency"] if tmp else 0.0
+            events.append(eventuality)
 
         if only_events:
             return events

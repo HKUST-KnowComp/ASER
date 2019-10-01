@@ -1,8 +1,8 @@
-import math
-from multiprocessing import Pool
-from aser.extract.parser import no_nlp_server, parse_sentense_with_stanford
+from stanfordnlp.server import CoreNLPClient
+from aser.eventuality import Eventuality
 from aser.extract.activity import Activity
 from aser.extract.rule import All_activity_rules
+from aser.extract.utils import parse_sentense_with_stanford
 
 connective_list = {'before', 'afterward', 'next', 'then', 'till', 'until', 'after', 'earlier', 'once', 'previously',
                    'meantime', 'meanwhile', 'simultaneously', 'because', 'for', 'accordingly', 'consequently', 'so',
@@ -73,35 +73,8 @@ def filter_special_case(extracted_eventualities):
                 new_eventualities.append(tmp_e)
         extracted_eventualities[relation] = new_eventualities
 
-    # if len(extracted_eventualities['v-o'])>0:
-    #     tmp_v_o = list()
-    #     for e in extracted_eventualities['v-o']:
-    #         for edge in e.parsed_relations:
-    #             if edge[1] == 'mark':
-    #                 if edge[2][1] not in ['to', 'for']:
-    #                     e.remove_one_edge(edge)
-    #                     tmp_v_o.append(e)
-    #     extracted_eventualities['v-o'] = tmp_v_o
-    # if len(extracted_eventualities['v-o-o'])>0:
-    #     tmp_v_o_o = list()
-    #     for e in extracted_eventualities['v-o-o']:
-    #         for edge in e.parsed_relations:
-    #             if edge[1] == 'mark':
-    #                 if edge[2][1] not in ['to', 'for']:
-    #                     e.remove_one_edge(edge)
-    #                     tmp_v_o_o.append(e)
-    #     extracted_eventualities['v-o-o'] = tmp_v_o_o
-    # if len(extracted_eventualities['v-X-o']) > 0:
-    #     tmp_v_X_o = list()
-    #     for e in extracted_eventualities['v-X-o']:
-    #         for edge in e.parsed_relations:
-    #             if edge[1] == 'mark':
-    #                 if edge[2][1] not in ['to', 'for']:
-    #                     e.remove_one_edge(edge)
-    #                     tmp_v_X_o.append(e)
-    #     extracted_eventualities['v-X-o'] = tmp_v_X_o
-
     return extracted_eventualities
+
 
 def match_rule_r_and_dep_r(rule_r, dep_r, current_dict):
     tmp_dict = current_dict
@@ -147,7 +120,7 @@ def match_rule_r_and_dep_r(rule_r, dep_r, current_dict):
     return False, current_dict
 
 
-def extract_activity_with_fixed_target(parsed_result, activity_rule, verb_position):
+def extract_activity_with_fixed_target(parsed_result, activity_rule, verb_position, rule_name):
     selected_edges = list()
     selected_skeleton_edges = list()
     local_dict = {'V1': verb_position}
@@ -177,16 +150,18 @@ def extract_activity_with_fixed_target(parsed_result, activity_rule, verb_positi
             if decision:
                 # print('found one negative relation')
                 return None
+
     if len(selected_edges) > 0:
-        tmp_activity = Activity(None)
-        tmp_activity.parsed_relations = selected_edges
-        tmp_activity.skeleton_parsed_relations = selected_skeleton_edges
-        tmp_activity.find_skeleton_words()
-        return tmp_activity
+        event = Eventuality(pattern=rule_name,
+                            dependencies=selected_edges,
+                            skeleton_dependencies=selected_skeleton_edges)
+        return event
     else:
         return None
 
-def extract_activities_from_parsed_result_with_single_rule(parsed_result, activity_rule):
+
+def extract_activities_from_parsed_result_with_single_rule(parsed_result, activity_rule,
+                                                           rule_name):
     local_activities = list()
     verb_positions = list()
     for relation in parsed_result:
@@ -197,121 +172,57 @@ def extract_activities_from_parsed_result_with_single_rule(parsed_result, activi
 
     verb_positions = list(set(verb_positions))
     for verb_position in verb_positions:
-        tmp_a = extract_activity_with_fixed_target(parsed_result, activity_rule, verb_position)
+        tmp_a = extract_activity_with_fixed_target(
+            parsed_result, activity_rule, verb_position, rule_name)
         if tmp_a is not None:
             local_activities.append(tmp_a)
     return local_activities
 
+
 def extract_activities_from_parsed_result(parsed_result, activity_rules):
-    all_activities = dict()
+    all_activities = []
     for rule_name in activity_rules:
         tmp_activities = extract_activities_from_parsed_result_with_single_rule(parsed_result,
-                                                                                activity_rules[rule_name])
-        all_activities[rule_name] = tmp_activities
+                                                                                activity_rules[rule_name],
+                                                                                rule_name)
+        all_activities.extend(tmp_activities)
     return all_activities
 
-def extract_activity_from_sentence(s, nlp_id=0):
-    """ extract all the activities from an input sentence
-    Args:
-        s: string, the input sentence.
-    Returns:
-        activities: list, [(activity_pattern, activity), ...]
-    """
-    activities = []
-    sentences = parse_sentense_with_stanford(s, nlp_id=nlp_id)
-    for sentence in sentences:
-        activity = extract_activities_from_parsed_result(sentence["parsed_relations"], All_activity_rules)
-        for key, val in activity.items():
-            for act in val:
-                activities.append((key, act.to_dict()))
-    return activities
 
-def extract_activity_from_sentences(s_list, nlp_id=0):
-    """ for each sentence in the list, extract all the activities
-    Args:
-        s_list: list of string.
+class EventualityExtractor(object):
+    def __init__(self, port):
+        self.corenlp_client = CoreNLPClient(
+            annotators=['tokenize', 'ssplit', 'pos', 'lemma', 'depparse'], timeout=60000,
+            memory='5G', endpoint="http://localhost:%d" % port,
+            start_server=True, be_quiet=False)
+        self.corenlp_client.annotate("hello world")
+        pass
 
-    Returns:
-        list of activity list
-    """
-    return [extract_activity_from_sentence(s, nlp_id=nlp_id) for s in s_list]
+    def close(self):
+        self.corenlp_client.stop()
 
-def extract_activity_from_sentences_multicore(s_list, n_workers=8):
-    """ multicore version of extract_activity_from_sentences
-    """
-    batch_size = math.ceil(len(s_list) / n_workers)
-    pool = Pool(n_workers)
-    pool_results = []
-    for i in range(0, len(s_list), batch_size):
-        j = min(len(s_list), i+batch_size)
-        pool_results.append(pool.apply_async(extract_activity_from_sentences, args=(s_list[i:j], i//batch_size%no_nlp_server)))
-    extracted_results = []
-    for x in pool_results:
-        extracted_results.extend(x.get())
-    return extracted_results
+    def extract(self, sentence):
+        """ extract all the eventualities from an input sentence
+                Args:
+                    s: string, the input sentence.
 
-def extract_activity_struct_from_sentence(s, nlp_id=0):
-    """ extract all the activities from an input sentence
-    Args:
-        s: string, the input sentence.
+                Returns:
+                    activities: list, [
+                    {"sentence_dependencies": ...,
+                     "sentence_tokens": ...,
+                     "eventuality_list": ...}, ...]
+                """
+        rst_list = []
+        sentences = parse_sentense_with_stanford(sentence, self.corenlp_client)
+        for sentence in sentences:
+            eventualities = extract_activities_from_parsed_result(
+                sentence["dependencies"], All_activity_rules)
+            tmp = [e.to_dict() for e in eventualities]
+            rst_list.append(
+                {"sentence_dependencies": sentence["dependencies"],
+                 "sentence_tokens": sentence["tokens"],
+                 "eventuality_list": tmp})
+        return rst_list
 
-    Returns:
-        activities: list, [
-        {"sentence_parsed_relations": ...,
-         "sentence_tokens": ...,
-         "activity_list": ...}, ...]
-    """
-    activities = []
-    sentences = parse_sentense_with_stanford(s, nlp_id=nlp_id)
-    for sentence in sentences:
-        activity = extract_activities_from_parsed_result(sentence["parsed_relations"], All_activity_rules)
-        tmp = []
-        for key, val in activity.items():
-            for act in val:
-                tmp.append((key, act.to_dict()))
-        activities.append(
-            {"sentence_parsed_relations": sentence["parsed_relations"],
-             "sentence_tokens": sentence["tokens"],
-             "activity_list": tmp})
-        # activities.append(activity)
-    return activities
-
-def extract_activity_struct_from_sentences(s_list, nlp_id=0):
-    """ for each sentence in the list, extract activity
-    """
-    return [extract_activity_struct_from_sentence(s, nlp_id=nlp_id) for s in s_list]
-
-def extract_activity_struct_from_sentences_multicore(s_list, n_workers=8):
-    """ multicore version of extract_activity_from_sentences
-    """
-    batch_size = math.ceil(len(s_list) / n_workers)
-    pool = Pool(n_workers)
-    pool_result = []
-    for i in range(0, len(s_list), batch_size):
-        j = min(len(s_list), i+batch_size)
-        pool_result.append(pool.apply_async(extract_activity_struct_from_sentences, args=(s_list[i:j], i//batch_size%no_nlp_server)))
-    res = []
-    for x in pool_result:
-        res.extend(x.get())
-    return res
-
-
-def get_time_str(t):
-    import time
-    ISFORMAT = "%Y-%m-%d %H:%M:%S"
-    return time.strftime(ISFORMAT, time.localtime(t))
-
-
-if __name__ == "__main__":
-    import time
-    sentences = ["Ms. Thayer 53 be keep name"] * 50 + \
-                 ["that will not erase stigmatize name however"] * 50 + \
-                 ["A dog barks and run away"] * 50 + \
-                 ["The food is good and the dog barks"] * 50 + \
-                 ["The dog barks because the food is good"] * 50
-    st = time.time()
-    extract_activity_from_sentences(sentences)
-    print("Single Core Time: ", time.time() - st)
-    st = time.time()
-    extract_activity_from_sentences_multicore(sentences)
-    print("Multi Core Time: ", time.time() - st)
+    def extract_from_dependencies(self, dependencies):
+        pass
