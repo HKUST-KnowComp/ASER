@@ -4,7 +4,7 @@ from aser.utils.config import get_server_args_parser
 if __name__ == "__main__":
     parser = get_server_args_parser()
     args = parser.parse_args([
-        "-n_workers", "2",
+        "-n_workers", "1",
         "-n_concurrent_back_socks", "10",
         "-port", "12000",
         "-port_out", "12001",

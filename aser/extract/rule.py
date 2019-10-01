@@ -1,3 +1,6 @@
+activity_rule_names = ['s-be-a', 's-v', 's-v-a', 's-v-a-X-o', 's-v-be-a', 's-v-be-o', 's-v-o', 's-v-o-o', 's-v-o-X-o',
+                       's-v-v', 's-v-v-o', 's-v-X-o', 'spass-v', 'spass-v-X-o']
+
 class Rule:
     def __init__(self, rules):
         if rules is None:
@@ -7,15 +10,11 @@ class Rule:
             self.positive_rules = rules['positive_rules']
             self.negative_rules = rules['negative_rules']
 
-
-class Activity_Rule:
+class Activity_Rule(object):
     def __init__(self):
         self.positive_rules = list()
         self.possible_rules = list()
         self.negative_rules = list()
-
-activity_rule_names = ['s-be-a', 's-v', 's-v-a', 's-v-a-X-o', 's-v-be-a', 's-v-be-o', 's-v-o', 's-v-o-o', 's-v-o-X-o',
-                       's-v-v', 's-v-v-o', 's-v-X-o', 'spass-v', 'spass-v-X-o']
 
 All_activity_rules = dict()
 # # subject-verb-dobj
@@ -258,7 +257,7 @@ A_rule.positive_rules.append(('A1',
 A_rule.positive_rules.append(('O1', 'case', 'P1'))
 A_rule.possible_rules.append(('A1', '+advmod/neg/aux/compound:prt/amod/mark', 'NA'))
 A_rule.possible_rules.append(('S1', '+amod/neg/nummod/compound/det/nmod:poss/mark/det:qmod/case', 'NA'))
-A_rule.possible_rules.append(('O1', '+amod/neg/nummod/compound/det/nmod:poss/mark/det:qmod/case', 'NA'))
+A_rule.possible_rules.append(('O1', '+amod/neg/nummod/compound/det/nmod:poss/mark/det:qmod', 'NA'))
 A_rule.negative_rules.append(('A1',
                               """-ccomp/parataxis/conj:but/advcl/dep/cc/punct/mark/conj:and/nmod:tmod/nsubj:xsubj/advcl:to/advcl:though/advcl:after/advcl:if/advcl:while/advcl:as/advcl:for/advcl:in/advcl:since/advcl:from/advcl:before/advcl:because/advcl:based_on/advcl:with/advcl:although/advcl:by/advcl:so/advcl:at/advcl:on/advcl:upon/advcl:until/advcl:'s/advcl:instead_of/advcl:despite/advcl:through/advcl:unless/advcl:in_order/advcl:ago""",
                               'NA'))
