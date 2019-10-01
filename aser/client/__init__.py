@@ -125,7 +125,7 @@ class ASERClient(object):
                 raise RuntimeError("`ret_type` should be 'tokens' or 'parsed_relations'")
 
         events = list()
-        for pattern, activity in msg['activity_list']:
+        for pattern, activity in msg['eventuality_list']:
             e = preprocess_event(activity, pattern)
             e["eid"] = e["_id"]
             tmp = self._exact_match_event(e)
@@ -136,8 +136,8 @@ class ASERClient(object):
             event_dict["verbs"] = e["verbs"]
             event_dict["frequency"] = e["frequency"] if tmp else 0.0
             if ret_type == "parsed_relations":
-                event_dict["skeleton_words"] = activity["skeleton_words"]
-                event_dict["words"] = activity["words"]
+                event_dict["skeleton_words"] = activity["skeleton_parsed_relations"]
+                event_dict["words"] = activity["parsed_relations"]
             elif ret_type == "tokens":
                 event_dict["skeleton_words"] = e["skeleton_words"]
                 event_dict["words"] = e["words"]
