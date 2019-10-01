@@ -288,7 +288,7 @@ A_rule.positive_rules.append(('V1',
 A_rule.positive_rules.append(('O1', 'case', 'P1'))
 A_rule.possible_rules.append(('V1', '+advmod/neg/aux/compound:prt/mark', 'NA'))
 A_rule.possible_rules.append(('S1', '+amod/neg/nummod/compound/det/nmod:poss/mark/det:qmod/case', 'NA'))
-A_rule.possible_rules.append(('O1', '+amod/neg/nummod/compound/det/nmod:poss/mark/det:qmod/case', 'NA'))
+A_rule.possible_rules.append(('O1', '+amod/neg/nummod/compound/det/nmod:poss/mark/det:qmod', 'NA'))
 A_rule.negative_rules.append(('V1',
                               """-ccomp/parataxis/conj:but/advcl/dep/cc/punct/mark/conj:and/nmod:tmod/nsubj:xsubj/advcl:to/advcl:though/advcl:after/advcl:if/advcl:while/advcl:as/advcl:for/advcl:in/advcl:since/advcl:from/advcl:before/advcl:because/advcl:based_on/advcl:with/advcl:although/advcl:by/advcl:so/advcl:at/advcl:on/advcl:upon/advcl:until/advcl:'s/advcl:instead_of/advcl:despite/advcl:through/advcl:unless/advcl:in_order/advcl:ago""",
                               'NA'))
@@ -305,7 +305,7 @@ A_rule.positive_rules.append(('V1',
 A_rule.positive_rules.append(('O1', 'case', 'P1'))
 A_rule.possible_rules.append(('V1', '+advmod/neg/aux/auxpass/compound:prt/mark', 'NA'))
 A_rule.possible_rules.append(('S1', '+amod/neg/nummod/compound/det/nmod:poss/mark/det:qmod/case', 'NA'))
-A_rule.possible_rules.append(('O1', '+amod/neg/nummod/compound/det/nmod:poss/mark/det:qmod/case', 'NA'))
+A_rule.possible_rules.append(('O1', '+amod/neg/nummod/compound/det/nmod:poss/mark/det:qmod', 'NA'))
 A_rule.negative_rules.append(('V1',
                               """-ccomp/parataxis/auxpass/conj:but/advcl/dep/cc/punct/mark/conj:and/nmod:tmod/advcl:to/advcl:though/advcl:after/advcl:if/advcl:while/advcl:as/advcl:for/advcl:in/advcl:since/advcl:from/advcl:before/advcl:because/advcl:based_on/advcl:with/advcl:although/advcl:by/advcl:so/advcl:at/advcl:on/advcl:upon/advcl:until/advcl:'s/advcl:instead_of/advcl:despite/advcl:through/advcl:unless/advcl:in_order/advcl:ago""",
                               'NA'))
@@ -323,7 +323,7 @@ A_rule.positive_rules.append(('O2', 'case', 'P1'))
 A_rule.possible_rules.append(('V1', '+advmod/neg/aux/compound:prt/mark', 'NA'))
 A_rule.possible_rules.append(('S1', '+amod/neg/nummod/compound/det/nmod:poss/mark/det:qmod/case', 'NA'))
 A_rule.possible_rules.append(('O1', '+amod/neg/nummod/compound/det/nmod:poss/mark/det:qmod/case', 'NA'))
-A_rule.possible_rules.append(('O2', '+amod/neg/nummod/compound/det/nmod:poss/mark/det:qmod/case', 'NA'))
+A_rule.possible_rules.append(('O2', '+amod/neg/nummod/compound/det/nmod:poss/mark/det:qmod', 'NA'))
 A_rule.negative_rules.append(('V1',
                               """-ccomp/parataxis/conj:but/advcl/dep/cc/punct/mark/conj:and/nmod:tmod/advcl:to/advcl:though/advcl:after/advcl:if/advcl:while/advcl:as/advcl:for/advcl:in/advcl:since/advcl:from/advcl:before/advcl:because/advcl:based_on/advcl:with/advcl:although/advcl:by/advcl:so/advcl:at/advcl:on/advcl:upon/advcl:until/advcl:'s/advcl:instead_of/advcl:despite/advcl:through/advcl:unless/advcl:in_order/advcl:ago""",
                               'NA'))
