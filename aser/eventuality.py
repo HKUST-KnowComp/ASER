@@ -19,7 +19,7 @@ class Eventuality(object):
         sort_dependencies_position(self.dependencies, fix_position=False)
         self.words = extract_tokens_from_dependencies(self.dependencies)
         sort_dependencies_position(self.skeleton_dependencies, fix_position=False)
-        self.skeleton_words = extract_tokens_from_dependencies(self.dependencies)
+        self.skeleton_words = extract_tokens_from_dependencies(self.skeleton_dependencies)
         self.verbs = ' '.join(
             [x[0].lower() for x in self.skeleton_words if x[1].startswith('VB')])
         self.eid = self._generate_eid(self.words)

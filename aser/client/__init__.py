@@ -80,65 +80,72 @@ class ASERClient(object):
         except Exception as e:
             raise e
 
-    def extract_eventualities(self, sentence, only_events=False,
-                              ret_type="tokens"):
-        """ Extract all eventualities from input sentence
+    def extract_eventualities(self, sentence, only_events=False):
+        """ Extract and linking all eventualities from input sentence
 
         :type sentence: str
         :type only_events: bool
-        :type ret_type: str
         :param sentence: input sentence. only support one sentence now.
         :param only_events: output eventualities only
-        :param ret_type: "tokens" or "parsed_relations"
         :return: a dictionary, here is a example while ret_type is "tokens"
         :rtype: dict
 
         .. highlight:: python
         .. code-block:: python
 
-            Input: 'I am in the kitchen .'
+            Input: 'The dog barks loudly'
 
             Output:
-            {
-                "sentence": 'I am in the kitchen .'
-                "eventualities": [
-                    {
-                        'eid': '2489e3d0a017aca73d30ccc334140869950aad90',
-                        'frequency': 800.0,
-                        'pattern': 's-be-a',
-                        'skeleton_words': 'i be kitchen',
-                        'verbs': 'be',
-                        'words': 'i be in the kitchen'
-                    }
-                ]
-            }
+
+            [{'eventuality_list': [{'dependencies': [[[2, 'dog', 'NN'],
+                                                      'det',
+                                                      [1, 'the', 'DT']],
+                                                     [[3, 'bark', 'VBZ'],
+                                                      'nsubj',
+                                                      [2, 'dog', 'NN']],
+                                                     [[3, 'bark', 'VBZ'],
+                                                      'advmod',
+                                                      [4, 'loudly', 'RB']]],
+                                    'eid': 'b47ba21a77206552509f2cb0c751b959aaa3a625',
+                                    'frequency': 0.0,
+                                    'pattern': 's-v',
+                                    'skeleton_dependencies': [[[3, 'bark', 'VBZ'],
+                                                               'nsubj',
+                                                               [2, 'dog', 'NN']]],
+                                    'skeleton_words': [['dog', 'NN'],
+                                                       ['bark', 'VBZ']],
+                                    'verbs': 'bark',
+                                    'words': [['the', 'DT'],
+                                              ['dog', 'NN'],
+                                              ['bark', 'VBZ'],
+                                              ['loudly', 'RB']]}],
+            'sentence_dependencies': [[[2, 'dog', 'NN'], 'det', [1, 'the', 'DT']],
+                                      [[3, 'bark', 'VBZ'], 'nsubj', [2, 'dog', 'NN']],
+                                      [[3, 'bark', 'VBZ'], 'advmod', [4, 'loudly', 'RB']],
+                                      [[3, 'bark', 'VBZ'], 'punct', [5, '.', '.']]],
+            'sentence_tokens': [['the', 'DT'],
+                                ['dog', 'NN'],
+                                ['bark', 'VBZ'],
+                                ['loudly', 'RB'],
+                                ['.', '.']]}]
         """
         request_id = self._send(
             ASERCmd.extract_events, sentence.encode("ascii"))
         msg = self._recv(request_id)
         if not msg:
             return None
-        msg = msg[0]
-        ret_dict = dict()
-        if not only_events:
-            if ret_type == "dependencies":
-                ret_dict["sentence"] = msg["sentence_dependencies"]
-            elif ret_type == "tokens":
-                ret_dict["sentence"] = " ".join(msg["sentence_tokens"])
+
+        rst_list = []
+        for rst in msg:
+            for eventuality in rst["eventuality_list"]:
+                tmp = self._exact_match_event(eventuality)
+                eventuality["frequency"] = tmp["frequency"] if tmp else 0.0
+            if only_events:
+                rst_list.extend(rst["eventuality_list"])
             else:
-                raise RuntimeError("`ret_type` should be 'tokens' or 'dependencies'")
+                rst_list.append(rst)
+        return rst_list
 
-        events = list()
-        for eventuality in msg['eventuality_list']:
-            tmp = self._exact_match_event(eventuality)
-            eventuality["frequency"] = tmp["frequency"] if tmp else 0.0
-            events.append(eventuality)
-
-        if only_events:
-            return events
-        else:
-            ret_dict["eventualities"] = events
-            return ret_dict
 
     def predict_relation(self, event1, event2, only_exact=False):
         """ Predict relations between two events

@@ -193,9 +193,9 @@ class ASERWorker(Process):
         self.worker_id = id
         self.worker_addr_list = worker_addr_list
         self.sink_addr = sink_addr
-        os.environ["CORENLP_HOME"] = opt.corenlp_path
         self.event_extractor = EventualityExtractor(
-            port=opt.base_corenlp_port + id)
+            corenlp_path = opt.corenlp_path,
+            corenlp_port=opt.base_corenlp_port + id)
         self.is_ready = multiprocessing.Event()
 
     def run(self):
@@ -241,7 +241,8 @@ class ASERWorker(Process):
 
     def handle_extract_events(self, data):
         sentence = data.decode("ascii")
-        rst = self.event_extractor.extract(sentence)
+        rst = self.event_extractor.extract_eventualities(
+            sentence, only_events=False, output_format="json")
         ret_data = json.dumps(rst).encode("ascii")
         return ret_data
 
