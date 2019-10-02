@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template, request, send_from_directory
 from aser.database._kg_connection import relation_senses
 from aser.client import ASERClient
@@ -6,7 +7,10 @@ from aser.client import ASERClient
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
 
-    aser_client = ASERClient(ip="songcpu4.cse.ust.hk", port=20002, port_out=20003)
+    aser_client = ASERClient(
+        ip=os.environ["ASER_HOST"],
+        port=int(os.environ["ASER_PORT"]),
+        port_out=int(os.environ["ASER_PORT_OUT"]))
 
     @app.route('/js/<path:path>')
     def send_js(path):
@@ -34,10 +38,10 @@ def create_app(test_config=None):
         related_events = aser_client.fetch_related_events(event)
         data["sentence"] = sentence
         data["verbs"] = event["verbs"]
-        data["skeleton_words"] = event["skeleton_words"]
-        data["words"] = event["words"]
+        data["skeleton_words"] = ' '.join([t[0] for t in event["skeleton_words"]])
+        data["words"] = ' '.join([t[0] for t in event["words"]])
         data["frequency"] = str(event["frequency"])
-        data["show_in_kg"] = "no" if event["frequency"] < 0.0 is None else "yes"
+        data["show_in_kg"] = "no" if event["frequency"] <= 0.0 else "yes"
         data["related_events"] = {}
         for rel, rel_e in related_events.items():
             if rel not in data["related_events"]:
