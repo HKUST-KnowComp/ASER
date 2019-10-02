@@ -5,6 +5,7 @@ import uuid
 import zmq
 from aser.utils.config import ASERCmd
 
+
 class ASERClient(object):
     def __init__(self, ip="localhost", port=8000, port_out=8001, timeout=-1):
         """ A client object of ASER
