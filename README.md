@@ -8,9 +8,9 @@ Project and data homepage is [https://hkust-knowcomp.github.io/ASER](https://hku
 
 Here is the arxiv [link](https://arxiv.org/abs/1905.00270).
 
-Here is the [demo](http://songcpu4.cse.ust.hk:20000)
+Here is the [demo](http://songcpu1.cse.ust.hk/aser/demo).
 
-Here is the full [documentation](http://songcpu4.cse.ust.hk:20001)
+Here is the full [documentation](http://songcpu1.cse.ust.hk/aser/document).
 
 Citation:
 

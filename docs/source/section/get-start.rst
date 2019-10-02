@@ -43,6 +43,9 @@ You can start aser server from command line
 Please wait patiently until  `"Loading Server Finished in xx s"` shows up in your console
 
 
+.. note:: Currently we have run a server on songcpu4.cse.ust.hk with port 20002 and port_out 20003 for our group.
+
+
 Access ASER via aser-client
 ---------------------------
 Now you can access ASER from your python code
@@ -51,7 +54,7 @@ Now you can access ASER from your python code
 .. code-block:: python
 
     from aser.client import ASERClient
-    client = ASERClient(port=11000, port_out=11001)
+    client = ASERClient(ip="songcpu4.cse.ust.hk", port=20002, port_out=20003)
 
 And you can extract the eventualities
 

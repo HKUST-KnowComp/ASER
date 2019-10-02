@@ -1,7 +1,4 @@
-import json
-import os
-
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_from_directory
 from aser.database._kg_connection import relation_senses
 from aser.client import ASERClient
 
@@ -10,6 +7,14 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
 
     aser_client = ASERClient(ip="songcpu4.cse.ust.hk", port=20002, port_out=20003)
+
+    @app.route('/js/<path:path>')
+    def send_js(path):
+        return send_from_directory('js', path)
+
+    @app.route('/css/<path:path>')
+    def send_css(path):
+        return send_from_directory('css', path)
 
     @app.route('/index')
     def index():
