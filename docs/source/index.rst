@@ -12,4 +12,4 @@ Contents
    section/get-start
    api/aser-server
    api/aser-client
-   api/event-extractor
+   api/extractor

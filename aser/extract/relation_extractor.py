@@ -41,79 +41,80 @@ class SeedRuleRelationExtractor(BaseRelationExtractor):
         pass
 
     def extract(self, sentences):
-        """
+        """ This methods extract relations among extracted eventualities based on seed rule
 
-        :param sentences: list of dict returned by `EventualityExtractor.extract_eventualities`
-        :return: list of triples of format (eid1, relation, eid2)
+            :type sentences: list
+            :param sentences: list of dict returned by `EventualityExtractor.extract_eventualities`
+            :return: list of triples of format (eid1, relation, eid2)
 
-        .. highlight:: python
-        .. code-block:: python
+            .. highlight:: python
+            .. code-block:: python
 
-        Input Example:
-            [{'eventuality_list': [{'dependencies': [[[8, 'hungry', 'JJ'], 'nsubj', [6, 'I', 'PRP']],
-                                                     [[8, 'hungry', 'JJ'], 'cop', [7, 'be', 'VBP']]],
-                                   'eid': 'c08b06c1b3a3e9ada88dd7034618d0969ae2b244',
-                                   'frequency': 0.0,
-                                   'pattern': 's-be-a',
-                                   'skeleton_dependencies': [[[8, 'hungry', 'JJ'], 'nsubj', [6, 'I', 'PRP']],
+                Input Example:
+                    [{'eventuality_list': [{'dependencies': [[[8, 'hungry', 'JJ'], 'nsubj', [6, 'I', 'PRP']],
                                                              [[8, 'hungry', 'JJ'], 'cop', [7, 'be', 'VBP']]],
-                                   'skeleton_words': [['I', 'PRP'],
-                                                      ['be', 'VBP'],
-                                                      ['hungry', 'JJ']],
-                                   'verbs': 'be',
-                                   'words': [['I', 'PRP'],
-                                             ['be', 'VBP'],
-                                             ['hungry', 'JJ']]},
-                                  {'dependencies': [[[2, 'go', 'VBP'],
-                                                     'nsubj',
-                                                     [1, 'I', 'PRP']],
-                                                    [[2, 'go', 'VBP'],
-                                                     'nmod:to',
-                                                     [4, 'lunch', 'NN']],
-                                                    [[4, 'lunch', 'NN'],
-                                                     'case',
-                                                     [3, 'to', 'TO']],
-                                                    [[4, 'lunch', 'NN'],
-                                                     'case',
-                                                     [3, 'to', 'TO']]],
-                                   'eid': 'a53fd728f8a4dd955e7ed2bd72ff07ffabb8e7f5',
-                                   'frequency': 0.0,
-                                   'pattern': 's-v-X-o',
-                                   'skeleton_dependencies': [[[2, 'go', 'VBP'],
-                                                              'nsubj',
-                                                              [1, 'I', 'PRP']],
-                                                             [[2, 'go', 'VBP'],
-                                                              'nmod:to',
-                                                              [4, 'lunch', 'NN']],
-                                                             [[4, 'lunch', 'NN'],
-                                                              'case',
-                                                              [3, 'to', 'TO']]],
-                                   'skeleton_words': [['I', 'PRP'],
-                                                      ['go', 'VBP'],
-                                                      ['to', 'TO'],
-                                                      ['lunch', 'NN']],
-                                   'verbs': 'go',
-                                   'words': [['I', 'PRP'],
-                                             ['go', 'VBP'],
-                                             ['to', 'TO'],
-                                             ['lunch', 'NN']]}],
-            'sentence_dependencies': [[[2, 'go', 'VBP'], 'nsubj', [1, 'I', 'PRP']],
-                                      [[4, 'lunch', 'NN'], 'case', [3, 'to', 'TO']],
-                                      [[2, 'go', 'VBP'], 'nmod:to', [4, 'lunch', 'NN']],
-                                      [[8, 'hungry', 'JJ'], 'mark', [5, 'because', 'IN']],
-                                      [[8, 'hungry', 'JJ'], 'nsubj', [6, 'I', 'PRP']],
-                                      [[8, 'hungry', 'JJ'], 'cop', [7, 'be', 'VBP']],
-                                      [[2, 'go', 'VBP'], 'advcl:because', [8, 'hungry', 'JJ']],
-                                      [[2, 'go', 'VBP'], 'punct', [9, '.', '.']]],
-            'sentence_tokens': ['I', 'go', 'to', 'lunch', 'because', 'I', 'am', 'hungry', '.']}]
+                                           'eid': 'c08b06c1b3a3e9ada88dd7034618d0969ae2b244',
+                                           'frequency': 0.0,
+                                           'pattern': 's-be-a',
+                                           'skeleton_dependencies': [[[8, 'hungry', 'JJ'], 'nsubj', [6, 'I', 'PRP']],
+                                                                     [[8, 'hungry', 'JJ'], 'cop', [7, 'be', 'VBP']]],
+                                           'skeleton_words': [['I', 'PRP'],
+                                                              ['be', 'VBP'],
+                                                              ['hungry', 'JJ']],
+                                           'verbs': 'be',
+                                           'words': [['I', 'PRP'],
+                                                     ['be', 'VBP'],
+                                                     ['hungry', 'JJ']]},
+                                          {'dependencies': [[[2, 'go', 'VBP'],
+                                                             'nsubj',
+                                                             [1, 'I', 'PRP']],
+                                                            [[2, 'go', 'VBP'],
+                                                             'nmod:to',
+                                                             [4, 'lunch', 'NN']],
+                                                            [[4, 'lunch', 'NN'],
+                                                             'case',
+                                                             [3, 'to', 'TO']],
+                                                            [[4, 'lunch', 'NN'],
+                                                             'case',
+                                                             [3, 'to', 'TO']]],
+                                           'eid': 'a53fd728f8a4dd955e7ed2bd72ff07ffabb8e7f5',
+                                           'frequency': 0.0,
+                                           'pattern': 's-v-X-o',
+                                           'skeleton_dependencies': [[[2, 'go', 'VBP'],
+                                                                      'nsubj',
+                                                                      [1, 'I', 'PRP']],
+                                                                     [[2, 'go', 'VBP'],
+                                                                      'nmod:to',
+                                                                      [4, 'lunch', 'NN']],
+                                                                     [[4, 'lunch', 'NN'],
+                                                                      'case',
+                                                                      [3, 'to', 'TO']]],
+                                           'skeleton_words': [['I', 'PRP'],
+                                                              ['go', 'VBP'],
+                                                              ['to', 'TO'],
+                                                              ['lunch', 'NN']],
+                                           'verbs': 'go',
+                                           'words': [['I', 'PRP'],
+                                                     ['go', 'VBP'],
+                                                     ['to', 'TO'],
+                                                     ['lunch', 'NN']]}],
+                    'sentence_dependencies': [[[2, 'go', 'VBP'], 'nsubj', [1, 'I', 'PRP']],
+                                              [[4, 'lunch', 'NN'], 'case', [3, 'to', 'TO']],
+                                              [[2, 'go', 'VBP'], 'nmod:to', [4, 'lunch', 'NN']],
+                                              [[8, 'hungry', 'JJ'], 'mark', [5, 'because', 'IN']],
+                                              [[8, 'hungry', 'JJ'], 'nsubj', [6, 'I', 'PRP']],
+                                              [[8, 'hungry', 'JJ'], 'cop', [7, 'be', 'VBP']],
+                                              [[2, 'go', 'VBP'], 'advcl:because', [8, 'hungry', 'JJ']],
+                                              [[2, 'go', 'VBP'], 'punct', [9, '.', '.']]],
+                    'sentence_tokens': ['I', 'go', 'to', 'lunch', 'because', 'I', 'am', 'hungry', '.']}]
 
-        Output Example:
-            [('a53fd728f8a4dd955e7ed2bd72ff07ffabb8e7f5',
-              'Co_Occurrence',
-              'c08b06c1b3a3e9ada88dd7034618d0969ae2b244'),
-             ('a53fd728f8a4dd955e7ed2bd72ff07ffabb8e7f5',
-              'Reason',
-              'c08b06c1b3a3e9ada88dd7034618d0969ae2b244')
+                Output Example:
+                    [('a53fd728f8a4dd955e7ed2bd72ff07ffabb8e7f5',
+                      'Co_Occurrence',
+                      'c08b06c1b3a3e9ada88dd7034618d0969ae2b244'),
+                     ('a53fd728f8a4dd955e7ed2bd72ff07ffabb8e7f5',
+                      'Reason',
+                      'c08b06c1b3a3e9ada88dd7034618d0969ae2b244')
         """
         rst_extracted_relations = []
         for sentence in sentences:
