@@ -2,5 +2,4 @@ pandas
 tqdm
 stanfordnlp
 zmq
-pycorenlp
 flask
