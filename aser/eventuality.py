@@ -13,7 +13,8 @@ class Eventuality(object):
         self.skeleton_words = list()
         self.verbs = ''
         self.frequency = 0.0
-        self._construct()
+        if pattern and dependencies and skeleton_dependencies:
+            self._construct()
 
     def _construct(self):
         sort_dependencies_position(self.dependencies, fix_position=False)
@@ -29,15 +30,23 @@ class Eventuality(object):
         return hashlib.sha1(key.encode('utf-8')).hexdigest()
 
     def to_dict(self):
-        rst = {
-            "eid": self.eid,
-            "pattern": self.pattern,
-            "frequency": self.frequency,
-            "dependencies": self.dependencies,
-            "words": self.words,
-            "skeleton_dependencies": self.skeleton_dependencies,
-            "skeleton_words": self.skeleton_words,
-            "verbs": self.verbs,
+        return self.__dict__
 
-        }
-        return rst
+    def from_dict(self, d):
+        for attr_name in self.__dict__:
+            self.__setattr__(attr_name, d[attr_name])
+        return self
+
+    @property
+    def position(self):
+        """
+        :return: this property returns average position of eventuality in a sentence.
+                 this property only make sense when this eventuality are constructed while
+                 extraction, instead of recovered from database.
+        """
+        positions = set()
+        for governor, _, dependent in self.dependencies:
+            positions.add(governor[0])
+            positions.add(dependent[0])
+        avg_position = sum(positions) / len(positions) if positions else 0.0
+        return avg_position

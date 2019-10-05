@@ -18,15 +18,25 @@ def is_port_occupied(ip='127.0.0.1', port=80):
 def get_corenlp_client(corenlp_path, port):
     os.environ["CORENLP_HOME"] = corenlp_path
 
-    assert not is_port_occupied(port), "Port {} is occupied by other process".format(port)
-    corenlp_client = CoreNLPClient(
-        annotators=['tokenize', 'ssplit', 'pos', 'lemma', 'depparse'], timeout=60000,
-        memory='5G', endpoint="http://localhost:%d" % port,
-        start_server=True, be_quiet=True)
-    corenlp_client.annotate("hello world",
-                            annotators=['tokenize', 'ssplit', 'pos', 'lemma', 'depparse'],
-                            output_format="json")
-    return corenlp_client
+    try:
+        corenlp_client = CoreNLPClient(
+            annotators=['tokenize', 'ssplit', 'pos', 'lemma', 'depparse'], timeout=60000,
+            memory='5G', endpoint="http://localhost:%d" % port,
+            start_server=False, be_quiet=True)
+        corenlp_client.annotate("hello world",
+                                annotators=['tokenize', 'ssplit', 'pos', 'lemma', 'depparse'],
+                                output_format="json")
+        return corenlp_client
+    except:
+        assert not is_port_occupied(port), "Port {} is occupied by other process".format(port)
+        corenlp_client = CoreNLPClient(
+            annotators=['tokenize', 'ssplit', 'pos', 'lemma', 'depparse'], timeout=60000,
+            memory='5G', endpoint="http://localhost:%d" % port,
+            start_server=True, be_quiet=True)
+        corenlp_client.annotate("hello world",
+                                annotators=['tokenize', 'ssplit', 'pos', 'lemma', 'depparse'],
+                                output_format="json")
+        return corenlp_client
 
 
 def parse_sentense_with_stanford(input_sentence, corenlp_client):
@@ -39,7 +49,9 @@ def parse_sentense_with_stanford(input_sentence, corenlp_client):
                 new_sentence += '\n'
         return new_sentence
     cleaned_sentence = clean_sentence_for_parsing(input_sentence)
-    tmp_output = corenlp_client.annotate(cleaned_sentence, output_format="json")
+    tmp_output = corenlp_client.annotate(cleaned_sentence,
+                                         annotators=['tokenize', 'ssplit', 'pos', 'lemma', 'depparse'],
+                                         output_format="json")
 
     dependencies_list = list()
     for s in tmp_output['sentences']:
