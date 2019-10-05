@@ -3,6 +3,8 @@ import traceback
 from pprint import pprint as print
 from tqdm import tqdm
 from aser.extract.event_extractor import EventualityExtractor
+from aser.extract.relation_extractor import SeedRuleRelationExtractor
+
 
 def equal_dependencies(dep1, dep2):
     d1 = set()
@@ -18,17 +20,27 @@ def equal_dependencies(dep1, dep2):
     return dep1_str == dep2_str
 
 
+def equal_relations(rels1, rels2):
+    rs1 = list(sorted(rels1))
+    rs2 = list(sorted(rels2))
+    if len(rs1) != len(rs2):
+        return False
+    for r1, r2 in zip(rs1, rs2):
+        if r1 != r2:
+            return False
+    return True
+
+
 if __name__ == "__main__":
     e_extractor = EventualityExtractor(
         corenlp_path="/home/software/stanford-corenlp/stanford-corenlp-full-2018-02-27/",
         corenlp_port=11001)
+    r_extractor = SeedRuleRelationExtractor()
     with open("test/vc/nyt_2007_06_sActivityNet.json") as f:
         test_data = json.load(f)
 
     is_passed = True
     for i, document in tqdm(enumerate(test_data)):
-        if i < 385:
-            continue
         try:
             text = document["doc"]
 
@@ -53,7 +65,19 @@ if __name__ == "__main__":
                     print("DOCUMENT %d" % i)
                     print(pred_e)
                     print(grt_e)
-                    raise RuntimeError("Dependencies is ot equal")
+                    raise RuntimeError("Skeleton Dependencies is ot equal")
+            grt_relations = list()
+            for eid1, eid2, rel in document["seed_single_relations"]:
+                grt_relations.append((eid1, rel, eid2))
+            for eid1, eid2, rel in document["seed_double_relations"]:
+                grt_relations.append((eid1, rel, eid2))
+
+            pred_relations = r_extractor.extract(pred_sentences)
+            pred_relations = [t for t in pred_relations if t[1] != 'Co_Occurrence']
+            if not equal_relations(grt_relations, pred_relations):
+                print(sorted(grt_relations))
+                print(sorted(pred_relations))
+                raise RuntimeError("Relations not equal")
         except:
             traceback.print_exc()
             is_passed = False
