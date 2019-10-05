@@ -326,7 +326,8 @@ class EventualityExtractor(object):
                             continue
                         new_edges.append(edge)
 
-                    new_e = Eventuality(dependencies=new_edges,
+                    new_e = Eventuality(pattern=relation,
+                                        dependencies=new_edges,
                                         skeleton_dependencies=tmp_e.skeleton_dependencies)
                     tmp_e = new_e
                 if len(tmp_e.dependencies) > 0:
