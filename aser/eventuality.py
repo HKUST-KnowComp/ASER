@@ -1,4 +1,3 @@
-import copy
 import hashlib
 import json
 import pprint
@@ -43,6 +42,35 @@ class Eventuality(object):
         return self._render_dependencies(self._dependencies)
 
     @property
+    def _raw_dependencies(self):
+        if not self.raw_sent_mapping:
+            return self._dependencies
+        new_dependencies = list()
+        for governor, dep, dependent in self._dependencies:
+            new_dependencies.append(
+                (self.raw_sent_mapping[governor],
+                 dep,
+                 self.raw_sent_mapping[dependent])
+            )
+        return new_dependencies
+
+    @property
+    def raw_dependencies(self):
+        if not self.raw_sent_mapping:
+            return self.dependencies
+        tmp_dependencies = self.dependencies
+        new_dependencies = list()
+        for governor, dep, dependent in tmp_dependencies:
+            g_pos, g_word, g_tag = governor
+            d_pos, d_word, d_tag = dependent
+            new_dependencies.append(
+                ((self.raw_sent_mapping[g_pos], g_word, g_tag),
+                 dep,
+                 (self.raw_sent_mapping[d_pos], d_word, d_tag))
+            )
+        return new_dependencies
+
+    @property
     def skeleton_dependencies(self):
         dependencies = [self._dependencies[i] for i in self._skeleton_dependencies]
         return self._render_dependencies(dependencies)
@@ -67,7 +95,7 @@ class Eventuality(object):
                  extraction, instead of recovered from database.
         """
         positions = set()
-        for governor, _, dependent in self.dependencies:
+        for governor, _, dependent in self._dependencies:
             positions.add(self.raw_sent_mapping[governor])
             positions.add(self.raw_sent_mapping[dependent])
         avg_position = sum(positions) / len(positions) if positions else 0.0
