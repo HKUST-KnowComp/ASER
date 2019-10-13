@@ -1,28 +1,24 @@
-from aser.eventuality import Eventuality
+from aser.eventuality import Eventuality, EventualityList
 from aser.extract.rule import ALL_EVENTUALITY_RULES, CONNECTIVE_LIST, CLAUSE_WORDS
 from aser.extract.utils import get_corenlp_client, parse_sentense_with_stanford
 
 
 class EventualityExtractor(object):
     def __init__(self, corenlp_path, corenlp_port):
-        self.corenlp_client = get_corenlp_client(
+        self.corenlp_client, self.is_externel_corenlp = get_corenlp_client(
             corenlp_path=corenlp_path, port=corenlp_port)
 
     def close(self):
-        self.corenlp_client.stop()
+        if not self.is_externel_corenlp:
+            self.corenlp_client.stop()
 
-    def extract_eventualities(self, text, only_events=True,
-                              output_format="eventuality"):
+    def extract_eventualities(self, text):
         """ This method would firstly split text into sentences and extract
             all eventualities for each sentence.
 
             :type text: str
-            :type only_events: bool
-            :type output_format: "eventuality" or "json"
             :param text: input text
-            :param only_events: only output eventualities if True, otherwise output eventualities with sentences parsed results
-            :param output_format: output eventualities of `eventuality` object or a `json` dict
-            :return: a list of eventualities with/without sentence information
+            :return: a list of `EventualityList` object
 
             .. highlight:: python
             .. code-block:: python
@@ -30,163 +26,114 @@ class EventualityExtractor(object):
                 Input: 'The dog barks loudly. Because he is hungry.'
 
                 Output:
-                [{'eventuality_list': [{'dependencies': [[[2, 'dog', 'NN'],
-                                                          'det',
-                                                          [1, 'the', 'DT']],
-                                                         [[3, 'bark', 'VBZ'],
-                                                          'nsubj',
-                                                          [2, 'dog', 'NN']],
-                                                         [[3, 'bark', 'VBZ'],
-                                                          'advmod',
-                                                          [4, 'loudly', 'RB']]],
-                                        'eid': 'b47ba21a77206552509f2cb0c751b959aaa3a625',
-                                        'frequency': 0.0,
-                                        'pattern': 's-v',
-                                        'skeleton_dependencies': [[[3, 'bark', 'VBZ'],
-                                                                   'nsubj',
-                                                                   [2, 'dog', 'NN']]],
-                                        'skeleton_words': [['dog', 'NN'], ['bark', 'VBZ']],
-                                        'verbs': 'bark',
-                                        'words': [['the', 'DT'],
-                                                  ['dog', 'NN'],
-                                                  ['bark', 'VBZ'],
-                                                  ['loudly', 'RB']]}],
-                  'sentence_dependencies': [[[2, 'dog', 'NN'], 'det', [1, 'the', 'DT']],
-                                            [[3, 'bark', 'VBZ'], 'nsubj', [2, 'dog', 'NN']],
-                                            [[3, 'bark', 'VBZ'], 'advmod', [4, 'loudly', 'RB']],
-                                            [[3, 'bark', 'VBZ'], 'punct', [5, '.', '.']]],
-                  'sentence_tokens': ['The', 'dog', 'barks', 'loudly', '.']},
-                 {'eventuality_list': [{'dependencies': [[[4, 'hungry', 'JJ'],
-                                                          'nsubj',
-                                                          [2, 'he', 'PRP']],
-                                                         [[4, 'hungry', 'JJ'],
-                                                          'cop',
-                                                          [3, 'be', 'VBZ']]],
-                                        'eid': 'f2a6b813bdfbad5354da5514e85ca97b666ef8d1',
-                                        'frequency': 0.0,
-                                        'pattern': 's-be-a',
-                                        'skeleton_dependencies': [[[4, 'hungry', 'JJ'],
-                                                                   'nsubj',
-                                                                   [2, 'he', 'PRP']],
-                                                                  [[4, 'hungry', 'JJ'],
-                                                                   'cop',
-                                                                   [3, 'be', 'VBZ']]],
-                                        'skeleton_words': [['he', 'PRP'],
-                                                           ['be', 'VBZ'],
-                                                           ['hungry', 'JJ']],
-                                        'verbs': 'be',
-                                        'words': [['he', 'PRP'],
-                                                  ['be', 'VBZ'],
-                                                  ['hungry', 'JJ']]}],
-                  'sentence_dependencies': [[[4, 'hungry', 'JJ'], 'mark', [1, 'because', 'IN']],
-                                            [[4, 'hungry', 'JJ'], 'nsubj', [2, 'he', 'PRP']],
-                                            [[4, 'hungry', 'JJ'], 'cop', [3, 'be', 'VBZ']],
-                                            [[4, 'hungry', 'JJ'], 'punct', [5, '.', '.']]],
-                  'sentence_tokens': ['Because', 'he', 'is', 'hungry', '.']}]
+                [
+                EventualityList([
+                    Eventuality({'dependencies': [((1, 'dog', 'NN'), 'det', (0, 'the', 'DT')),
+                                                 ((2, 'bark', 'VBZ'), 'nsubj', (1, 'dog', 'NN')),
+                                                 ((2, 'bark', 'VBZ'), 'advmod', (3, 'loudly', 'RB'))],
+                                 'eid': 'c605e3d855d7d27cf25ed7e4d4e33962d9b10713',
+                                 'pattern': 's-v',
+                                 'pos_tags': ['DT', 'NN', 'VBZ', 'RB'],
+                                 'skeleton_dependencies': [((2, 'bark', 'VBZ'), 'nsubj', (1, 'dog', 'NN'))],
+                                 'skeleton_words': ['dog', 'bark'],
+                                 'verbs': ['bark'],
+                                 'words': ['the', 'dog', 'bark', 'loudly']})]),
+
+                 EventualityList(
+                    [Eventuality({'dependencies': [((2, 'hungry', 'JJ'), 'nsubj', (0, 'he', 'PRP')),
+                                                  ((2, 'hungry', 'JJ'), 'cop', (1, 'be', 'VBZ'))],
+                                  'eid': 'dae842ef792d3ae786db5f71e36b50305dda14a4',
+                                  'pattern': 's-be-a',
+                                  'pos_tags': ['PRP', 'VBZ', 'JJ'],
+                                  'skeleton_dependencies': [((2, 'hungry', 'JJ'), 'nsubj', (0, 'he', 'PRP')),
+                                                            ((2, 'hungry', 'JJ'), 'cop', (1, 'be', 'VBZ'))],
+                                  'skeleton_words': ['he', 'be', 'hungry'],
+                                  'verbs': ['be'],
+                                  'words': ['he', 'be', 'hungry']})])
+                ]
         """
-        rst_list = []
+        eventualities_list = []
         parsed_results = parse_sentense_with_stanford(text, self.corenlp_client)
         for parsed_result in parsed_results:
-            rst = self.extract_eventualities_from_parsed_result(parsed_result, only_events, output_format)
-            rst_list.append(rst)
-        return rst_list
+            eventualities = self.extract_eventualities_from_parsed_result(parsed_result)
+            eventualities_list.append(eventualities)
+        return eventualities_list
 
-    def extract_eventualities_from_parsed_result(
-            self, parsed_result, only_events=True, output_format="eventuality"):
+    def extract_eventualities_from_parsed_result(self, parsed_result):
         """ This method would extract eventualities from parsed_result of one sentence
 
         :type parsed_result: dict
-        :type only_events: bool
-        :type output_format: "eventuality" or "json"
         :param parsed_result: a dict generated by `aser.extract.utils.parse_sentense_with_stanford`
-        :param only_events: only output eventualities if True, otherwise output eventualities with sentences parsed results
-        :param output_format: output eventualities of `eventuality` object or a `json` dict
-        :return: a list of eventuality with/without sentence information
+        :return: An `EventualityList` Object
 
         .. highlight:: python
         .. code-block:: python
 
             Input:
-                {'dependencies': [[[2, 'dog', 'NN'], 'det', [1, 'the', 'DT']],
-                                  [[3, 'bark', 'VBZ'], 'nsubj', [2, 'dog', 'NN']],
-                                  [[3, 'bark', 'VBZ'], 'advmod', [4, 'loudly', 'RB']],
-                                  [[3, 'bark', 'VBZ'], 'punct', [5, '.', '.']]],
-                 'tokens': ['The', 'dog', 'barks', 'loudly', '.']}
+                {'dependencies': [(1, 'nsubj', 0),
+                                  (1, 'nmod:to', 3),
+                                  (1, 'advcl:because', 7),
+                                  (1, 'punct', 8),
+                                  (3, 'case', 2),
+                                  (7, 'mark', 4),
+                                  (7, 'nsubj', 5),
+                                  (7, 'cop', 6)],
+                 'lemma': ['I', 'go', 'to', 'lunch', 'because', 'I', 'be', 'hungry', '.'],
+                 'pos_tags': ['PRP', 'VBP', 'TO', 'NN', 'IN', 'PRP', 'VBP', 'JJ', '.'],
+                 'tokens': ['I', 'go', 'to', 'lunch', 'because', 'I', 'am', 'hungry', '.']}
 
             Output:
-                {'eventuality_list': [{'dependencies': [[[2, 'dog', 'NN'],
-                                                         'det',
-                                                         [1, 'the', 'DT']],
-                                                        [[3, 'bark', 'VBZ'],
-                                                         'nsubj',
-                                                         [2, 'dog', 'NN']],
-                                                        [[3, 'bark', 'VBZ'],
-                                                         'advmod',
-                                                         [4, 'loudly', 'RB']]],
-                                       'eid': 'b47ba21a77206552509f2cb0c751b959aaa3a625',
-                                       'frequency': 0.0,
-                                       'pattern': 's-v',
-                                       'skeleton_dependencies': [[[3, 'bark', 'VBZ'],
-                                                                  'nsubj',
-                                                                  [2, 'dog', 'NN']]],
-                                       'skeleton_words': [['dog', 'NN'], ['bark', 'VBZ']],
-                                       'verbs': 'bark',
-                                       'words': [['the', 'DT'],
-                                                 ['dog', 'NN'],
-                                                 ['bark', 'VBZ'],
-                                                 ['loudly', 'RB']]}],
-                 'sentence_dependencies': [[[2, 'dog', 'NN'], 'det', [1, 'the', 'DT']],
-                                           [[3, 'bark', 'VBZ'], 'nsubj', [2, 'dog', 'NN']],
-                                           [[3, 'bark', 'VBZ'], 'advmod', [4, 'loudly', 'RB']],
-                                           [[3, 'bark', 'VBZ'], 'punct', [5, '.', '.']]],
-                 'sentence_tokens': ['The', 'dog', 'barks', 'loudly', '.']}
-        """
-        eventualities = self._extract_eventualities_from_parsed_result(
-            parsed_result, ALL_EVENTUALITY_RULES)
-        if output_format == "json":
-            eventualities = [e.to_dict() for e in eventualities]
-        else:
-            assert output_format == "eventuality", \
-                "Output format `{}` is not support".format(output_format)
-        if only_events:
-            return eventualities
-        else:
-            rst = {
-                    "sentence_dependencies": parsed_result["dependencies"],
-                    "sentence_tokens": parsed_result["tokens"],
-                    "eventuality_list": eventualities
-                  }
-            return rst
+                EventualityList(
+                    [Eventuality({'dependencies': [((2, 'hungry', 'JJ'), 'nsubj', (0, 'I', 'PRP')),
+                                      ((2, 'hungry', 'JJ'), 'cop', (1, 'be', 'VBP'))],
+                                 'eid': 'eae8741fad51a57e78092017def1b5cb4f620d7e',
+                                 'pattern': 's-be-a',
+                                 'pos_tags': ['PRP', 'VBP', 'JJ'],
+                                 'skeleton_dependencies': [((2, 'hungry', 'JJ'), 'nsubj', (0, 'I', 'PRP')),
+                                                           ((2, 'hungry', 'JJ'), 'cop', (1, 'be', 'VBP'))],
+                                 'skeleton_words': ['I', 'be', 'hungry'],
+                                 'verbs': ['be'],
+                                 'words': ['I', 'be', 'hungry']}),
 
-    def _extract_eventualities_from_parsed_result(self, parsed_result, eventuality_rules):
+                     Eventuality({'dependencies': [((1, 'go', 'VBP'), 'nsubj', (0, 'I', 'PRP')),
+                                                  ((1, 'go', 'VBP'), 'nmod:to', (3, 'lunch', 'NN')),
+                                                  ((3, 'lunch', 'NN'), 'case', (2, 'to', 'TO'))],
+                                 'eid': '12b4aa577e56f2f5d96f4716bc97c633d6272ec4',
+                                 'pattern': 's-v-X-o',
+                                 'pos_tags': ['PRP', 'VBP', 'TO', 'NN'],
+                                 'skeleton_dependencies': [((1, 'go', 'VBP'), 'nsubj', (0, 'I', 'PRP')),
+                                                           ((1, 'go', 'VBP'), 'nmod:to', (3, 'lunch', 'NN')),
+                                                           ((3, 'lunch', 'NN'), 'case', (2, 'to', 'TO'))],
+                                 'skeleton_words': ['I', 'go', 'to', 'lunch'],
+                                 'verbs': ['go'],
+                                 'words': ['I', 'go', 'to', 'lunch']})]
+                )
+        """
         # If it is a sentence that has clause word, just skip it
         if set(parsed_result["tokens"]) & CLAUSE_WORDS:
-            return []
+            return EventualityList()
         all_eventualities = dict()
-        for rule_name in eventuality_rules:
+        for rule_name in ALL_EVENTUALITY_RULES:
             tmp_eventualities = self._extract_eventualities_from_dependencies_with_single_rule(
-                parsed_result["dependencies"], eventuality_rules[rule_name], rule_name)
+                parsed_result, ALL_EVENTUALITY_RULES[rule_name], rule_name)
             all_eventualities[rule_name] = tmp_eventualities
         all_eventualities = self._filter_special_case(all_eventualities)
-        eventuality_list = [e for elist in all_eventualities.values() for e in elist]
-        return eventuality_list
+        eventualities = EventualityList()
+        for elist in all_eventualities.values():
+            eventualities.extend(elist)
+        return eventualities
+
 
     def _extract_eventualities_from_dependencies_with_single_rule(self, parsed_result, eventuality_rule,
                                                                rule_name):
-        local_eventualities = list()
-        verb_positions = list()
-        for relation in parsed_result:
-            if 'VB' in relation[0][2]:
-                verb_positions.append(relation[0][0])
-            if 'VB' in relation[2][2]:
-                verb_positions.append(relation[2][0])
-
-        verb_positions = list(set(verb_positions))
+        local_eventualities = EventualityList()
+        verb_positions = [i for i, tag in enumerate(parsed_result["pos_tags"])
+                          if tag.startswith("VB")]
         for verb_position in verb_positions:
-            tmp_a = self._extract_eventuality_with_fixed_target(
+            tmp_e = self._extract_eventuality_with_fixed_target(
                 parsed_result, eventuality_rule, verb_position, rule_name)
-            if tmp_a is not None:
-                local_eventualities.append(tmp_a)
+            if tmp_e is not None:
+                local_eventualities.append(tmp_e)
         return local_eventualities
 
 
@@ -196,7 +143,7 @@ class EventualityExtractor(object):
         local_dict = {'V1': verb_position}
         for tmp_rule_r in eventuality_rule.positive_rules:
             foundmatch = False
-            for dep_r in parsed_result:
+            for dep_r in parsed_result["dependencies"]:
                 decision, local_dict = self._match_rule_r_and_dep_r(tmp_rule_r, dep_r, local_dict)
                 if decision:
                     selected_edges.append(dep_r)
@@ -206,13 +153,15 @@ class EventualityExtractor(object):
             if not foundmatch:
                 # print('Miss one positive relation')
                 return None
+
         for tmp_rule_r in eventuality_rule.possible_rules:
-            for dep_r in parsed_result:
+            for dep_r in parsed_result["dependencies"]:
                 decision, local_dict = self._match_rule_r_and_dep_r(tmp_rule_r, dep_r, local_dict)
                 if decision:
                     selected_edges.append(dep_r)
+
         for tmp_rule_r in eventuality_rule.negative_rules:
-            for dep_r in parsed_result:
+            for dep_r in parsed_result["dependencies"]:
                 if dep_r in selected_edges:
                     # print('This edge is selected by the positive example, so we will skip it')
                     continue
@@ -224,17 +173,18 @@ class EventualityExtractor(object):
         if len(selected_edges) > 0:
             event = Eventuality(pattern=rule_name,
                                 dependencies=selected_edges,
-                                skeleton_dependencies=selected_skeleton_edges)
+                                skeleton_dependencies=selected_skeleton_edges,
+                                sent_parsed_results=parsed_result)
             return event
         else:
             return None
 
     @staticmethod
     def _match_rule_r_and_dep_r(rule_r, dep_r, current_dict):
-        tmp_dict = current_dict
+        tmp_dict = {key: val for key, val in current_dict.items()}
         if rule_r[1][0] == '-':
             tmp_relations = rule_r[1][1:].split('/')
-            if rule_r[0] in current_dict and dep_r[0][0] == current_dict[rule_r[0]]:
+            if rule_r[0] in current_dict and dep_r[0] == current_dict[rule_r[0]]:
                 if dep_r[1] in tmp_relations:
                     return False, current_dict
                 else:
@@ -242,9 +192,9 @@ class EventualityExtractor(object):
                     return True, tmp_dict
         if rule_r[1][0] == '+':
             tmp_relations = rule_r[1][1:].split('/')
-            if rule_r[0] in current_dict and dep_r[0][0] == current_dict[rule_r[0]]:
+            if rule_r[0] in current_dict and dep_r[0] == current_dict[rule_r[0]]:
                 if dep_r[1] in tmp_relations:
-                    tmp_dict[rule_r[2]] = dep_r[2][0]
+                    tmp_dict[rule_r[2]] = dep_r[2]
                     return True, tmp_dict
                 else:
                     # print(dep_r[1])
@@ -259,17 +209,17 @@ class EventualityExtractor(object):
             tmp_rule_r.append(rule_r[1][1:])
             tmp_rule_r.append(rule_r[0])
             if tmp_rule_r[1] == tmp_dep_r[1]:
-                if tmp_rule_r[0] in current_dict and tmp_dep_r[0][0] == current_dict[tmp_rule_r[0]]:
+                if tmp_rule_r[0] in current_dict and tmp_dep_r[0] == current_dict[tmp_rule_r[0]]:
                     if tmp_rule_r[2] not in tmp_dict:
-                        tmp_dict[tmp_rule_r[2]] = tmp_dep_r[2][0]
+                        tmp_dict[tmp_rule_r[2]] = tmp_dep_r[2]
                         return True, tmp_dict
         else:
             tmp_dep_r = dep_r
             tmp_rule_r = rule_r
             if tmp_rule_r[1] == tmp_dep_r[1]:
-                if tmp_rule_r[0] in current_dict and tmp_dep_r[0][0] == current_dict[tmp_rule_r[0]]:
+                if tmp_rule_r[0] in current_dict and tmp_dep_r[0] == current_dict[tmp_rule_r[0]]:
                     if tmp_rule_r[2] not in tmp_dict:
-                        tmp_dict[tmp_rule_r[2]] = tmp_dep_r[2][0]
+                        tmp_dict[tmp_rule_r[2]] = tmp_dep_r[2]
                         return True, tmp_dict
         return False, current_dict
 
@@ -314,25 +264,10 @@ class EventualityExtractor(object):
         for relation in extracted_eventualities:
             new_eventualities = list()
             for tmp_e in extracted_eventualities[relation]:
-                found_connective = False
-                for edge in tmp_e.dependencies:
-                    if edge[2][1] in CONNECTIVE_LIST:
-                        found_connective = True
-                        break
-                if found_connective:
-                    new_edges = list()
-                    for edge in tmp_e.dependencies:
-                        if edge[2][1] in CONNECTIVE_LIST:
-                            continue
-                        new_edges.append(edge)
+                tmp_e._filter_dependency_by_word_list(CONNECTIVE_LIST, target="dependent")
 
-                    new_e = Eventuality(pattern=relation,
-                                        dependencies=new_edges,
-                                        skeleton_dependencies=tmp_e.skeleton_dependencies)
-                    tmp_e = new_e
                 if len(tmp_e.dependencies) > 0:
                     new_eventualities.append(tmp_e)
             extracted_eventualities[relation] = new_eventualities
 
         return extracted_eventualities
-
