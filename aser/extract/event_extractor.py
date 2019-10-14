@@ -12,7 +12,7 @@ class EventualityExtractor(object):
         if not self.is_externel_corenlp:
             self.corenlp_client.stop()
 
-    def extract_eventualities(self, text):
+    def extract(self, text):
         """ This method would firstly split text into sentences and extract
             all eventualities for each sentence.
 
@@ -55,11 +55,11 @@ class EventualityExtractor(object):
         eventualities_list = []
         parsed_results = parse_sentense_with_stanford(text, self.corenlp_client)
         for parsed_result in parsed_results:
-            eventualities = self.extract_eventualities_from_parsed_result(parsed_result)
+            eventualities = self.extract_from_parsed_result(parsed_result)
             eventualities_list.append(eventualities)
         return eventualities_list
 
-    def extract_eventualities_from_parsed_result(self, parsed_result):
+    def extract_from_parsed_result(self, parsed_result):
         """ This method would extract eventualities from parsed_result of one sentence
 
         :type parsed_result: dict

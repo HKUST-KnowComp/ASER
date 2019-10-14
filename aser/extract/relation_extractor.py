@@ -51,7 +51,42 @@ class SeedRuleRelationExtractor(BaseRelationExtractor):
             .. code-block:: python
 
                 Input Example:
+                    [({'dependencies': [(1, 'nsubj', 0),
+                                    (1, 'nmod:to', 3),
+                                    (1, 'advcl:because', 7),
+                                    (1, 'punct', 8),
+                                    (3, 'case', 2),
+                                    (7, 'mark', 4),
+                                    (7, 'nsubj', 5),
+                                    (7, 'cop', 6)],
+                        'lemmas': ['I', 'go', 'to', 'lunch', 'because', 'I', 'be', 'hungry', '.'],
+                        'pos_tags': ['PRP', 'VBP', 'TO', 'NN', 'IN', 'PRP', 'VBP', 'JJ', '.'],
+                        'tokens': ['I', 'go', 'to', 'lunch', 'because', 'I', 'am', 'hungry', '.']},
 
+                        EventualityList([
+                            Eventuatlity({'dependencies': [((2, 'hungry', 'JJ'), 'nsubj', (0, 'I', 'PRP')),
+                                                          ((2, 'hungry', 'JJ'), 'cop', (1, 'be', 'VBP'))],
+                                          'eid': 'eae8741fad51a57e78092017def1b5cb4f620d7e',
+                                          'pattern': 's-be-a',
+                                          'pos_tags': ['PRP', 'VBP', 'JJ'],
+                                          'skeleton_dependencies': [((2, 'hungry', 'JJ'), 'nsubj', (0, 'I', 'PRP')),
+                                                                    ((2, 'hungry', 'JJ'), 'cop', (1, 'be', 'VBP'))],
+                                          'skeleton_words': ['I', 'be', 'hungry'],
+                                          'verbs': ['be'],
+                                          'words': ['I', 'be', 'hungry']}),
+                            Eventuatlity({'dependencies': [((1, 'go', 'VBP'), 'nsubj', (0, 'I', 'PRP')),
+                                                          ((1, 'go', 'VBP'), 'nmod:to', (3, 'lunch', 'NN')),
+                                                          ((3, 'lunch', 'NN'), 'case', (2, 'to', 'TO'))],
+                                          'eid': '12b4aa577e56f2f5d96f4716bc97c633d6272ec4',
+                                          'pattern': 's-v-X-o',
+                                          'pos_tags': ['PRP', 'VBP', 'TO', 'NN'],
+                                          'skeleton_dependencies': [((1, 'go', 'VBP'), 'nsubj', (0, 'I', 'PRP')),
+                                                                    ((1, 'go', 'VBP'), 'nmod:to', (3, 'lunch', 'NN')),
+                                                                    ((3, 'lunch', 'NN'), 'case', (2, 'to', 'TO'))],
+                                          'skeleton_words': ['I', 'go', 'to', 'lunch'],
+                                          'verbs': ['go'],
+                                          'words': ['I', 'go', 'to', 'lunch']})
+                        ])]
 
                 Output Example:
                     [('a53fd728f8a4dd955e7ed2bd72ff07ffabb8e7f5',
@@ -164,7 +199,7 @@ class SeedRuleRelationExtractor(BaseRelationExtractor):
         if not found_advcl:
             return False
         connective_position = get_connective_position(connective_words)
-        e1_position, e2_position = head_eventuality.position + 1, tail_eventuality.position + 1
+        e1_position, e2_position = head_eventuality.position, tail_eventuality.position
         if 'instead' not in connective_words:
             if e1_position < connective_position < e2_position:
                 return True

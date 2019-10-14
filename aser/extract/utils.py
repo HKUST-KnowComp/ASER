@@ -70,10 +70,17 @@ def parse_sentense_with_stanford(input_sentence, corenlp_client, annotators=_ANN
                  dependent_pos - 1))
         dependencies = list(dependencies)
         dependencies.sort(key=lambda x: (x[0], x[2]))
+
+        if s['tokens']:
+            char_st = s['tokens'][0]['characterOffsetBegin']
+            char_end = s['tokens'][-1]['characterOffsetEnd']
+        else:
+            char_st, char_end = 0, 0
         parsed_rst_list.append({
+            "text": cleaned_sentence[char_st:char_end],
             "dependencies": dependencies,
             "tokens": [t['word'] for t in s['tokens']],
-            "lemma": [t['lemma'] for t in s['tokens']],
+            "lemmas": [t['lemma'] for t in s['tokens']],
             "pos_tags": [t['pos'] for t in s['tokens']]
         })
     return parsed_rst_list

@@ -11,19 +11,19 @@ def fn(i):
 
     text = "The dog barks loudly. Because he is hungry."
     # text = "I go to lunch because I am hungry. I go to kitchen before I find some food"
-    res1 = e_extractor.extract_eventualities(text)
+    res1 = e_extractor.extract(text)
     parsed_result = parse_sentense_with_stanford(text, e_extractor.corenlp_client)[0]
-    res2 = e_extractor.extract_eventualities_from_parsed_result(parsed_result)
+    res2 = e_extractor.extract_from_parsed_result(parsed_result)
     print()
 
-    print("=" * 10 + "`EventualityExtractor.extract_eventualities`" + "=" * 10)
+    print("=" * 10 + "`EventualityExtractor.extract`" + "=" * 10)
     print("Input: ", text)
     print("Output: ")
     for elist in res1:
         print(elist)
 
     print("\n")
-    print("=" * 10 + "`EventualityExtractor.extract_eventualities_from_parsed_result`" + "=" * 10)
+    print("=" * 10 + "`EventualityExtractor.extract_from_parsed_result`" + "=" * 10)
     print("Input: ")
     pprint(parsed_result)
     print("Output: ")

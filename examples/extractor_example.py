@@ -15,7 +15,7 @@ if __name__ == "__main__":
     ##############################################################
 
     text = "I go to lunch because I am hungry. I go to kitchen before I find some food"
-    eventualities_list = e_extractor.extract_eventualities(text)
+    eventualities_list = e_extractor.extract(text)
 
     print("=" * 10 + "`EventualityExtractor.extract_eventualities`" + "=" * 10)
     print("Input: ", text)
@@ -38,11 +38,11 @@ if __name__ == "__main__":
                                       (7, 'mark', 4),
                                       (7, 'nsubj', 5),
                                       (7, 'cop', 6)],
-                     'lemma': ['I', 'go', 'to', 'lunch', 'because', 'I', 'be', 'hungry', '.'],
+                     'lemmas': ['I', 'go', 'to', 'lunch', 'because', 'I', 'be', 'hungry', '.'],
                      'pos_tags': ['PRP', 'VBP', 'TO', 'NN', 'IN', 'PRP', 'VBP', 'JJ', '.'],
                      'tokens': ['I', 'go', 'to', 'lunch', 'because', 'I', 'am', 'hungry', '.']}
 
-    eventualities = e_extractor.extract_eventualities_from_parsed_result(parsed_result)
+    eventualities = e_extractor.extract_from_parsed_result(parsed_result)
     print("=" * 10 + "`EventualityExtractor.extract_eventualities_from_parsed_result`" + "=" * 10)
     print("Input: ")
     pprint(parsed_result)
@@ -55,16 +55,20 @@ if __name__ == "__main__":
     ##
     ##############################################################
 
-    text = "I go to lunch because I am hungry. I go to kitchen before I find some food"
+    text = "I go to lunch because I am hungry."
     parsed_results = parse_sentense_with_stanford(text, corenlp_client=e_extractor.corenlp_client)
-
+    print(parsed_results)
     sentences = list()
     for parsed_result in parsed_results:
-        eventualities = e_extractor.extract_eventualities_from_parsed_result(parsed_result)
+        eventualities = e_extractor.extract_from_parsed_result(parsed_result)
         sentences.append(
             (parsed_result, eventualities))
 
+    print("=" * 10 + "`SeedRuleRelationExtractor.extract`" + "=" * 10)
+    print("Input: ")
+    pprint(sentences)
     r_extractor = SeedRuleRelationExtractor()
+    print("Output: ")
     pprint(r_extractor.extract(sentences))
 
     e_extractor.close()

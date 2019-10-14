@@ -103,7 +103,7 @@ class Eventuality(object):
 
     def _construct(self, dependencies, skeleton_dependencies, sent_parsed_results):
         word_indices = extract_indices_from_dependencies(dependencies)
-        self.words = [sent_parsed_results["lemma"][i] for i in word_indices]
+        self.words = [sent_parsed_results["lemmas"][i].lower() for i in word_indices]
         self.pos_tags = [sent_parsed_results["pos_tags"][i] for i in word_indices]
         dependencies, raw2reset_idx, reset2raw_idx = sort_dependencies_position(
             dependencies, reset_position=True)
@@ -277,6 +277,9 @@ class EventualityList(object):
         s += "\n".join(e.__str__() for e in self.eventualities)
         s += '\n]'
         return s
+
+    def __repr__(self):
+        return self.__str__()
 
     def __getitem__(self, item):
         return self.eventualities[item]

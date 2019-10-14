@@ -54,12 +54,10 @@ if __name__ == "__main__":
     print(len(test_data))
     is_passed = True
     for i, document in tqdm(enumerate(test_data)):
-        if i < 3210:
-            continue
         try:
             text = document["doc"]
             sent_parsed_results = parse_sentense_with_stanford(text, e_extractor.corenlp_client)
-            pred_eventualities_list = [e_extractor.extract_eventualities_from_parsed_result(t)
+            pred_eventualities_list = [e_extractor.extract_from_parsed_result(t)
                                        for t in sent_parsed_results]
             grt_eventualities = document["eventualities"]
             grt_eventualities.sort(key=lambda x: " ".join([t[1] for t in x["tokens"]]))
@@ -67,7 +65,7 @@ if __name__ == "__main__":
                                   for e in elist.eventualities]
             pred_eventualities.sort(key=lambda x: x.__repr__())
             if len(grt_eventualities) != len(pred_eventualities):
-                pred_sentences = e_extractor.extract_eventualities(text)
+                pred_sentences = e_extractor.extract(text)
                 print("DOCUMENT %d" % i)
                 pprint(grt_eventualities)
                 print(pred_eventualities)
