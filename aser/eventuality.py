@@ -17,7 +17,7 @@ class Eventuality(object):
         self._skeleton_words = None
         self._verbs = None
         self.raw_sent_mapping = None
-        self.frequency = 0.0
+        self.frequency = 1.0
         if pattern and dependencies and skeleton_dependencies and sent_parsed_results:
             self._construct(dependencies, skeleton_dependencies, sent_parsed_results)
 
@@ -134,21 +134,12 @@ class Eventuality(object):
         self.eid = self._generate_eid(self.words)
 
     def encode(self, encoding="utf-8"):
-        encoded_dict = {
-            "pattern": self.pattern,
-            "dependencies": self._dependencies,
-            "skeleton_dependencies": self._skeleton_dependencies,
-            "skeleton_words": self._skeleton_words,
-            "verbs": self._verbs,
-            "words": self.words,
-            "pos_tags":self.pos_tags
-        }
         if encoding == "utf-8":
-            msg = json.dumps(encoded_dict).encode("utf-8")
+            msg = json.dumps(self.__dict__).encode("utf-8")
         elif encoding == "ascii":
-            msg = json.dumps(encoded_dict).encode("ascii")
+            msg = json.dumps(self.__dict__).encode("ascii")
         else:
-            msg = encoded_dict
+            msg = self.__dict__
         return msg
 
     def decode(self, msg, encoding="utf-8"):
@@ -158,13 +149,8 @@ class Eventuality(object):
             decoded_dict = json.loads(msg.decode("ascii"))
         else:
             decoded_dict = msg
-        self._dependencies = decoded_dict["dependencies"]
-        self.pattern = decoded_dict["pattern"]
-        self._skeleton_dependencies = decoded_dict["skeleton_dependencies"]
-        self._skeleton_words = decoded_dict["skeleton_words"]
-        self._verbs = decoded_dict["verbs"]
-        self.words = decoded_dict["words"]
-        self.pos_tags = decoded_dict["pos_tags"]
+        self.from_dict(decoded_dict)
+        return self
 
     def to_dict(self):
         return self.__dict__
@@ -172,6 +158,10 @@ class Eventuality(object):
     def from_dict(self, d):
         for attr_name in self.__dict__:
             self.__setattr__(attr_name, d[attr_name])
+        keys = self.raw_sent_mapping.keys()
+        if not all([isinstance(key, int) for key in keys]):
+            for key in keys:
+                self.raw_sent_mapping[int(key)] = self.raw_sent_mapping.pop(key)
         return self
 
     def _render_dependencies(self, dependencies):
@@ -221,7 +211,8 @@ class Eventuality(object):
         for dependency in self._dependencies:
             dependency[0] = new_word_index_mapping[dependency[0]]
             dependency[2] = new_word_index_mapping[dependency[2]]
-        self._verbs = [new_word_index_mapping[i] for i in self._verbs]
+        self._verbs = [new_word_index_mapping[i] for i in self._verbs 
+                                if i in new_word_index_mapping]
         self._skeleton_words = [new_word_index_mapping[i] for i in self._skeleton_words
                                 if i in new_word_index_mapping]
 
@@ -268,6 +259,15 @@ class EventualityList(object):
             e = Eventuality()
             e.decode(decoded_dict, encoding="None")
             self.eventualities.append(e)
+        
+    def filter_by_frequency(self, lower_bound=None, upper_bound=None):
+        if not lower_bound and not upper_bound:
+            return
+        if not lower_bound:
+            lower_bound = 0.0
+        if not upper_bound:
+            upper_bound = float("inf")
+        self.eventualities = list(filter(lambda e: e.frequency >= lower_bound and e.frequency <= upper_bound, self.eventualities))
 
     def __iter__(self):
         return self.eventualities.__iter__()
@@ -280,6 +280,9 @@ class EventualityList(object):
 
     def __repr__(self):
         return self.__str__()
+
+    def __setitem__(self, idx, item):
+        self.eventualities[idx] = item
 
     def __getitem__(self, item):
         return self.eventualities[item]
