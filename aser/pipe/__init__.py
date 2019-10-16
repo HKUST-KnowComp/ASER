@@ -193,12 +193,12 @@ class ASERPipe(object):
                 pbar.update()
 
             for idx, processed_para in enumerate(processed_data):
-                # pool_results.append(pool.apply_async(
-                #     extract_eventualities_from_parsed_paragraph, 
-                #     args=(self.event_extractors[idx%len(self.event_extractors)], processed_para),
-                #     callback=update))
-                eventualities.append(extract_eventualities_from_parsed_paragraph(
-                    self.event_extractors[idx%len(self.event_extractors)], processed_para))
+                pool_results.append(pool.apply_async(
+                    extract_eventualities_from_parsed_paragraph, 
+                    args=(self.event_extractors[idx%len(self.event_extractors)], processed_para),
+                    callback=update))
+                # eventualities.append(extract_eventualities_from_parsed_paragraph(
+                #     self.event_extractors[idx%len(self.event_extractors)], processed_para))
             pool.close()
             pool.join()
             for x in pool_results:
@@ -215,12 +215,12 @@ class ASERPipe(object):
                 pbar.update()
 
             for idx, (processed_para, eventualities_para) in enumerate(zip(processed_data, eventuality_lists)):
-                # pool_results.append(pool.apply_async(extract_relations_from_parsed_paragraph,
-                #     args=(self.relation_extractors[idx%len(self.relation_extractors)], processed_para, eventualities_para),
-                #     callback=update))
-                relations.append(extract_relations_from_parsed_paragraph(
-                    self.relation_extractors[idx%len(self.relation_extractors)], 
-                    processed_para, eventualities_para))
+                pool_results.append(pool.apply_async(extract_relations_from_parsed_paragraph,
+                    args=(self.relation_extractors[idx%len(self.relation_extractors)], processed_para, eventualities_para),
+                    callback=update))
+                # relations.append(extract_relations_from_parsed_paragraph(
+                #     self.relation_extractors[idx%len(self.relation_extractors)], 
+                #     processed_para, eventualities_para))
             pool.close()
             pool.join()
             for x in pool_results:

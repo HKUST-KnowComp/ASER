@@ -50,10 +50,10 @@ class _BaseConnection(object):
     def select_rows(self, table_name, _ids, columns):
         raise NotImplementedError
 
-    def insert_row(self, table_name, row, columns):
+    def insert_row(self, table_name, row):
         raise NotImplementedError
 
-    def insert_rows(self, table_name, rows, columns):
+    def insert_rows(self, table_name, rows):
         raise NotImplementedError
 
     def update_row(self, table_name, row, update_op, update_columns):
@@ -112,16 +112,15 @@ class _SqliteConnection(_BaseConnection):
         else:
             return []
 
-    def insert_row(self, table_name, row, columns):
-        insert_table = "INSERT INTO %s VALUES (%s)" % (
-            table_name, ",".join(['?'] * (len(columns))))
-        self._conn.execute(insert_table, [row[k] for k in columns])
+    def insert_row(self, table_name, row):
+        insert_table = "INSERT INTO %s VALUES (%s)" % (table_name, ",".join(['?'] * (len(row))))
+        self._conn.execute(insert_table, row.values())
         self._conn.commit()
 
-    def insert_rows(self, table_name, rows, columns):
+    def insert_rows(self, table_name, rows):
         if len(rows) > 0:
             insert_table = "INSERT INTO %s VALUES (%s)" % (table_name, ",".join(['?'] * (len(columns))))
-            self._conn.executemany(insert_table, [[row[k] for k in columns] for row in rows])
+            self._conn.executemany(insert_table, [row.values() for row in rows])
             self._conn.commit()
 
     def _update_update_op(self, row, update_op, update_columns):
@@ -230,25 +229,25 @@ class _MongoDBConnection(_BaseConnection):
     def create_table(self, table_name, columns, columns_types):
         self._conn[table_name]
 
-    def get_columns(self, table_name, columns):
+    def __get_projection(self, columns):
         projection = {"_id": 0}
         for k in columns:
             projection[k] = 1
+        return projection
+
+    def get_columns(self, table_name, columns):
+        projection = self.__get_projection(columns)
         results = list(self._conn[table_name].find({}, projection))
         return results
 
     def select_row(self, table_name, _id, columns):
-        projection = {"_id": 0}
-        for k in columns:
-            projection[k] = 1
+        projection = self.__get_projection(columns)
         return self._conn[table_name].find_one({"_id": _id}, projection)
 
     def select_rows(self, table_name, _ids, columns):
         table = self._conn[table_name]
         exact_match_rows = []
-        projection = {"_id": 0}
-        for k in columns:
-            projection[k] = 1
+        projection = self.__get_projection(columns)
         for idx in range(0, len(_ids), self.chunksize):
             query = {"_id": {'$in': _ids[idx:idx+self.chunksize]}}
             exact_match_rows.extend(table.find(query, projection))
@@ -256,10 +255,10 @@ class _MongoDBConnection(_BaseConnection):
         exact_match_rows = [row_cache.get(_id, None) for _id in _ids]
         return exact_match_rows
 
-    def insert_row(self, table_name, row, columns):
+    def insert_row(self, table_name, row):
         self._conn[table_name].insert_one(row)
 
-    def insert_rows(self, table_name, rows, columns):
+    def insert_rows(self, table_name, rows):
         self._conn[table_name].insert_many(rows)
 
     def _update_update_op(self, row, update_op, update_columns):
@@ -345,9 +344,7 @@ class _MongoDBConnection(_BaseConnection):
 
     def get_rows_by_keys(self, table_name, bys, keys, columns, order_bys=None, reverse=False, top_n=None):
         query = OrderedDict(zip(bys, keys))
-        projection = {"_id": 0}
-        for k in columns:
-            projection[k] = 1
+        projection = self.__get_projection(columns)
         cursor = self._conn[table_name].find(query, projection)
         if order_bys:
             direction = -1 if reverse else 1
@@ -451,6 +448,9 @@ class KGConnection(object):
         for k in self.partial2eids_cache:
             self.partial2eids_cache[k].clear()
 
+    """
+    KG (Eventualities)
+    """
     def _convert_event_to_row(self, event):
         row = OrderedDict({"_id": event.eid})
         for c in self.event_columns[1:-1]:
@@ -470,7 +470,7 @@ class KGConnection(object):
 
     def _insert_event(self, event):
         row = self._convert_event_to_row(event)
-        self._conn.insert_row(self.event_table_name, row, self.event_columns)
+        self._conn.insert_row(self.event_table_name, row)
         if self.mode == 'insert':
             self.eids.add(event.eid)
         elif self.mode == 'cache':
@@ -491,7 +491,7 @@ class KGConnection(object):
 
     def _insert_events(self, events):
         rows = list(map(self._convert_event_to_row, events))
-        self._conn.insert_rows(self.event_table_name, rows, self.event_columns)
+        self._conn.insert_rows(self.event_table_name, rows)
         if self.mode == 'insert':
             for event in events:
                 self.eids.add(event.eid)
@@ -725,9 +725,8 @@ class KGConnection(object):
         return []
 
     """
-    KG (relations)
+    KG (Relations)
     """
-
     def _convert_relation_to_row(self, relation):
         row = OrderedDict({"_id": relation.rid})
         for c in self.relation_columns[1:-len(relation_senses)]:
@@ -737,16 +736,14 @@ class KGConnection(object):
         return row
 
     def _convert_row_to_relation(self, row):
-        row.pop("_id")
-        heid, teid = row.pop("heid"), row.pop("teid")
-        return Relation(heid, teid, row)
+        return Relation(row["heid"], row["teid"], {r: cnt for r, cnt in row.items() if isinstance(cnt, float) and cnt > 0.0})
 
     def get_relation_columns(self, columns):
         return self._conn.get_columns(self.relation_table_name, columns)
 
     def _insert_relation(self, relation):
         row = self._convert_relation_to_row(relation)
-        self._conn.insert_row(self.relation_table_name, row, self.relation_columns)
+        self._conn.insert_row(self.relation_table_name, row)
         if self.mode == 'insert':
             self.rids.add(relation.rid)
         else:
@@ -756,7 +753,7 @@ class KGConnection(object):
 
     def _insert_relations(self, relations):
         rows = list(map(self._convert_relation_to_row, relations))
-        self._conn.insert_rows(self.relation_table_name, rows, self.relation_columns)
+        self._conn.insert_rows(self.relation_table_name, rows)
         if self.mode == 'insert':
             for relation in relations:
                 self.rids.add(relation.rid)
