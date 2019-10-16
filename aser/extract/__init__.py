@@ -1,1 +1,0 @@
-from aser.extract.event_extractor import EventualityExtractor

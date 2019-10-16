@@ -4,13 +4,19 @@ from aser.extract.utils import get_corenlp_client, parse_sentense_with_stanford
 
 
 class EventualityExtractor(object):
-    def __init__(self, corenlp_path, corenlp_port):
-        self.corenlp_client, self.is_externel_corenlp = get_corenlp_client(
-            corenlp_path=corenlp_path, port=corenlp_port)
+    def __init__(self, corenlp_path=None, corenlp_port=None):
+        if corenlp_path and corenlp_port:
+            self.corenlp_client, self.is_externel_corenlp = get_corenlp_client(
+                corenlp_path=corenlp_path, port=corenlp_port)
+        else:
+            self.corenlp_client, self.is_externel_corenlp = None, False
 
     def close(self):
-        if not self.is_externel_corenlp:
+        if not self.is_externel_corenlp and self.corenlp_client:
             self.corenlp_client.stop()
+
+    def __del__(self):
+        self.close()
 
     def extract(self, text):
         """ This method would firstly split text into sentences and extract

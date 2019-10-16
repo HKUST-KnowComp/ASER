@@ -17,7 +17,7 @@ class Eventuality(object):
         self._skeleton_words = None
         self._verbs = None
         self.raw_sent_mapping = None
-        self.frequency = 0.0
+        self.frequency = 1.0
         if pattern and dependencies and skeleton_dependencies and sent_parsed_results:
             self._construct(dependencies, skeleton_dependencies, sent_parsed_results)
 
@@ -165,6 +165,7 @@ class Eventuality(object):
         self._verbs = decoded_dict["verbs"]
         self.words = decoded_dict["words"]
         self.pos_tags = decoded_dict["pos_tags"]
+        return self
 
     def to_dict(self):
         return self.__dict__
@@ -221,7 +222,8 @@ class Eventuality(object):
         for dependency in self._dependencies:
             dependency[0] = new_word_index_mapping[dependency[0]]
             dependency[2] = new_word_index_mapping[dependency[2]]
-        self._verbs = [new_word_index_mapping[i] for i in self._verbs]
+        self._verbs = [new_word_index_mapping[i] for i in self._verbs 
+                                if i in new_word_index_mapping]
         self._skeleton_words = [new_word_index_mapping[i] for i in self._skeleton_words
                                 if i in new_word_index_mapping]
 
@@ -268,6 +270,15 @@ class EventualityList(object):
             e = Eventuality()
             e.decode(decoded_dict, encoding="None")
             self.eventualities.append(e)
+        
+    def filter_by_frequency(self, lower_bound=None, upper_bound=None):
+        if not lower_bound and not upper_bound:
+            return
+        if not lower_bound:
+            lower_bound = 0.0
+        if not upper_bound:
+            upper_bound = float("inf")
+        self.eventualities = list(filter(lambda e: e.frequency >= lower_bound and e.frequency <= upper_bound, self.eventualities))
 
     def __iter__(self):
         return self.eventualities.__iter__()
@@ -280,6 +291,9 @@ class EventualityList(object):
 
     def __repr__(self):
         return self.__str__()
+
+    def __setitem__(self, idx, item):
+        self.eventualities[idx] = item
 
     def __getitem__(self, item):
         return self.eventualities[item]
