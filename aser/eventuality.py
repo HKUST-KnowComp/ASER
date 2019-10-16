@@ -158,6 +158,10 @@ class Eventuality(object):
     def from_dict(self, d):
         for attr_name in self.__dict__:
             self.__setattr__(attr_name, d[attr_name])
+        keys = self.raw_sent_mapping.keys()
+        if not all([isinstance(key, int) for key in keys]):
+            for key in keys:
+                self.raw_sent_mapping[int(key)] = self.raw_sent_mapping.pop(key)
         return self
 
     def _render_dependencies(self, dependencies):
