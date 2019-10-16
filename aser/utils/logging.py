@@ -18,3 +18,9 @@ def init_logger(log_file=None):
         logger.addHandler(file_handler)
 
     return logger
+
+def close_logger(logger):
+    handlers = logger.handlers[:]
+    for handler in handlers:
+        handler.close()
+        logger.removeHandler(handler)
