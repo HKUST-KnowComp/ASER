@@ -134,21 +134,12 @@ class Eventuality(object):
         self.eid = self._generate_eid(self.words)
 
     def encode(self, encoding="utf-8"):
-        encoded_dict = {
-            "pattern": self.pattern,
-            "dependencies": self._dependencies,
-            "skeleton_dependencies": self._skeleton_dependencies,
-            "skeleton_words": self._skeleton_words,
-            "verbs": self._verbs,
-            "words": self.words,
-            "pos_tags":self.pos_tags
-        }
         if encoding == "utf-8":
-            msg = json.dumps(encoded_dict).encode("utf-8")
+            msg = json.dumps(self.__dict__).encode("utf-8")
         elif encoding == "ascii":
-            msg = json.dumps(encoded_dict).encode("ascii")
+            msg = json.dumps(self.__dict__).encode("ascii")
         else:
-            msg = encoded_dict
+            msg = self.__dict__
         return msg
 
     def decode(self, msg, encoding="utf-8"):
@@ -158,13 +149,7 @@ class Eventuality(object):
             decoded_dict = json.loads(msg.decode("ascii"))
         else:
             decoded_dict = msg
-        self._dependencies = decoded_dict["dependencies"]
-        self.pattern = decoded_dict["pattern"]
-        self._skeleton_dependencies = decoded_dict["skeleton_dependencies"]
-        self._skeleton_words = decoded_dict["skeleton_words"]
-        self._verbs = decoded_dict["verbs"]
-        self.words = decoded_dict["words"]
-        self.pos_tags = decoded_dict["pos_tags"]
+        self.from_dict(decoded_dict)
         return self
 
     def to_dict(self):
