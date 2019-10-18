@@ -114,13 +114,13 @@ class _SqliteConnection(_BaseConnection):
 
     def insert_row(self, table_name, row):
         insert_table = "INSERT INTO %s VALUES (%s)" % (table_name, ",".join(['?'] * (len(row))))
-        self._conn.execute(insert_table, row.values())
+        self._conn.execute(insert_table, list(row.values()))
         self._conn.commit()
 
     def insert_rows(self, table_name, rows):
         if len(rows) > 0:
             insert_table = "INSERT INTO %s VALUES (%s)" % (table_name, ",".join(['?'] * (len(columns))))
-            self._conn.executemany(insert_table, [row.values() for row in rows])
+            self._conn.executemany(insert_table, [list(row.values()) for row in rows])
             self._conn.commit()
 
     def _update_update_op(self, row, update_op, update_columns):
@@ -397,6 +397,7 @@ class KGConnection(object):
             self.partial2eids_cache = {"verbs": dict()}
         else:
             self.partial2eids_cache = dict()
+        self.partial2rids_cache = {"heid": dict()}
 
         self.init()
 
@@ -432,6 +433,12 @@ class KGConnection(object):
             for r in self._conn.get_columns(self.relation_table_name, self.relation_columns):
                 self.rids.add(r["_id"])
                 self.rid2relation_cache[r["_id"]] = r
+                # handle another cache
+                for k, v in self.partial2rids_cache.items():
+                    if r[k] not in v:
+                        v[r[k]] = [r["_id"]]
+                    else:
+                        v[r[k]].append(r["_id"])
         else:
             for e in self._conn.get_columns(self.event_table_name, ["_id"]):
                 self.eids.add(e["_id"])
@@ -447,6 +454,8 @@ class KGConnection(object):
         # close another cache
         for k in self.partial2eids_cache:
             self.partial2eids_cache[k].clear()
+        for k in self.partial2rids_cache:
+            self.partial2rids_cache[k].clear()
 
     """
     KG (Eventualities)
@@ -521,16 +530,17 @@ class KGConnection(object):
         for event in events:
             if event:
                 self.eid2event_cache[event.eid] = event
-                if self.mode == 'cache':
-                    for k, v in self.partial2eids_cache.items():
-                        if event.get(k) in v:
-                            v[event.get(k)].append(event.eid)
-                elif self.mode == 'memory':
-                    for k, v in self.partial2eids_cache.items():
-                        if event.get(k) not in v:
-                            v[event.get(k)] = [event.eid]
-                        else:
-                            v[event.get(k)].append(event.eid)
+                # It seems not to need to append
+                # if self.mode == 'cache':
+                #     for k, v in self.partial2eids_cache.items():
+                #         if event.get(k) in v:
+                #             v[event.get(k)].append(event.eid)
+                # elif self.mode == 'memory':
+                #     for k, v in self.partial2eids_cache.items():
+                #         if event.get(k) not in v:
+                #             v[event.get(k)] = [event.eid]
+                #         else:
+                #             v[event.get(k)].append(event.eid)
         return events
 
     def _update_event(self, event):
@@ -746,9 +756,20 @@ class KGConnection(object):
         self._conn.insert_row(self.relation_table_name, row)
         if self.mode == 'insert':
             self.rids.add(relation.rid)
-        else:
+        elif self.mode == 'cache':
             self.rids.add(relation.rid)
             self.rid2relation_cache[relation.rid] = relation
+            for k, v in self.partial2rids_cache.items():
+                if relation.get(k) in v:
+                    v[relation.get(k)].append(relation.rid)
+        elif self.mode == 'memory':
+            self.rids.add(relation.rid)
+            self.rid2relation_cache[relation.rid] = relation
+            for k, v in self.partial2rids_cache.items():
+                if relation.get(k) not in v:
+                    v[relation.get(k)] = [relation.rid]
+                else:
+                    v[relation.get(k)].append(relation.rid)
         return relation
 
     def _insert_relations(self, relations):
@@ -757,10 +778,22 @@ class KGConnection(object):
         if self.mode == 'insert':
             for relation in relations:
                 self.rids.add(relation.rid)
-        else:
+        elif self.mode == 'cache':
             for relation in relations:
                 self.rids.add(relation.rid)
                 self.rid2relation_cache[relation.rid] = relation
+                for k, v in self.partial2rids_cache.items():
+                    if relation.get(k) in v:
+                        v[relation.get(k)].append(relation.rid)
+        elif self.mode == 'memory':
+            for relation in relations:
+                self.rids.add(relation.rid)
+                self.rid2relation_cache[relation.rid] = relation
+                for k, v in self.partial2rids_cache.items():
+                    if relation.get(k) not in v:
+                        v[relation.get(k)] = [relation.rid]
+                    else:
+                        v[relation.get(k)].append(relation.rid)
         return relations
 
     def _get_relation_and_store_in_cache(self, rid):
@@ -911,4 +944,40 @@ class KGConnection(object):
 
     def get_relations_by_keys(self, bys, keys, order_bys=None, reverse=False, top_n=None):
         assert len(bys) == len(keys)
+        for i in range(len(bys)-1, -1, -1):
+            if bys[i] not in self.relation_columns:
+                bys.pop(i)
+                keys.pop(i)
+        if len(bys) == 0:
+            return []
+        cache = None
+        by_index = -1
+        for k in ["heid", "teid"]:
+            if k in bys and k in self.partial2rids_cache:
+                cache = self.partial2rids_cache[k]
+                by_index = bys.index(k)
+                break
+        if cache:
+            if keys[by_index] in cache:
+                key_match_relations = [self.rid2relation_cache[rid] for rid in cache[keys[by_index]]]
+            else:
+                if self.mode == 'memory':
+                    return []
+                key_cache = []
+                key_match_relations = list(map(self._convert_row_to_relation, 
+                    self._conn.get_rows_by_keys(self.relation_table_name, [bys[by_index]], [keys[by_index]], self.relation_columns)))
+                for key_match_relation in key_match_relations:
+                    if key_match_relation.rid not in self.rid2relation_cache:
+                        self.rid2relation_cache[key_match_relation.rid] = key_match_relation
+                    key_cache.append(key_match_relation.rid)
+                cache[keys[by_index]] = key_cache
+            for i in range(len(bys)):
+                if i == by_index:
+                    continue
+                key_match_relations = list(filter(lambda x: x[bys[i]] == keys[i], key_match_relations))
+            if order_bys:
+                key_match_relations.sort(key=operator.itemgetter(*order_bys), reverse=reverse)
+            if top_n:
+                key_match_relations = key_match_relations[:top_n]
+            return key_match_relations
         return self._conn.get_rows_by_keys(self.relation_table_name, bys, keys, self.relation_columns, order_bys=order_bys, reverse=reverse, top_n=top_n)
