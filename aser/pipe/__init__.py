@@ -172,7 +172,7 @@ class ASERPipe(object):
 
     def load_processed_data(self, processed_dir):
         with multiprocessing.Pool(self.n_workers) as pool:
-            file_names = [file_name for file_name in iter_files(processed_dir) if file_name.endswith(".json")]
+            file_names = [file_name for file_name in iter_files(processed_dir) if file_name.endswith(".jsonl")]
             parsed_reader = ParsedReader()
             processed_data = list()
 
