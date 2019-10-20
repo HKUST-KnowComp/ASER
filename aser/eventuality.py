@@ -28,11 +28,12 @@ class Eventuality(JsonSerializedObject):
             "eid": self.eid,
             "pattern": self.pattern,
             "dependencies": self.dependencies,
+            "words": self.words,
+            "pos_tags":self.pos_tags,
             "skeleton_dependencies": self.skeleton_dependencies,
             "skeleton_words": self.skeleton_words,
             "verbs": self.verbs,
-            "words": self.words,
-            "pos_tags":self.pos_tags
+            "frequency": self.frequency
         }
         return pprint.pformat(repr_dict)
 
@@ -133,15 +134,16 @@ class Eventuality(JsonSerializedObject):
 
         self._verbs = [i for i, tag in enumerate(self.pos_tags) if tag.startswith('VB')]
 
-        self.eid = self._generate_eid(self.words)
+        self.eid = Eventuality.generate_eid(self)
 
     def from_dict(self, d):
-        for attr_name in self.__dict__:
+        for attr_name in d:
             self.__setattr__(attr_name, d[attr_name])
-        keys = self.raw_sent_mapping.keys()
-        if not all([isinstance(key, int) for key in keys]):
-            for key in keys:
-                self.raw_sent_mapping[int(key)] = self.raw_sent_mapping.pop(key)
+        if self.raw_sent_mapping:
+            keys = self.raw_sent_mapping.keys()
+            if not all([isinstance(key, int) for key in keys]):
+                for key in keys:
+                    self.raw_sent_mapping[int(key)] = self.raw_sent_mapping.pop(key)
         return self
 
     def _render_dependencies(self, dependencies):
@@ -153,9 +155,10 @@ class Eventuality(JsonSerializedObject):
             edges.append(edge)
         return edges
 
-    def _generate_eid(self, words):
-        key = ' '.join([x[0].lower() for x in words])
-        return hashlib.sha1(key.encode('utf-8')).hexdigest()
+    @classmethod
+    def generate_eid(cls, eventuality):
+        msg = json.dumps([eventuality.dependencies, eventuality.words, eventuality.pos_tags])
+        return hashlib.sha1(msg.encode('utf-8')).hexdigest()
 
     def _filter_dependency_by_word_list(self, word_list, target="all"):
         position_mapping = dict()
