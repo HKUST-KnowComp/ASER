@@ -698,7 +698,8 @@ class KGConnection(object):
             if top_n:
                 key_match_events = key_match_events[:top_n]
             return key_match_events
-        return self._conn.get_rows_by_keys(self.event_table_name, bys, keys, self.event_columns, order_bys=order_bys, reverse=reverse, top_n=top_n)
+        return list(map(self._convert_row_to_event, 
+            self._conn.get_rows_by_keys(self.event_table_name, bys, keys, self.event_columns, order_bys=order_bys, reverse=reverse, top_n=top_n)))
 
     def get_partial_match_events(self, event, bys, top_n=None, threshold=0.1, sort=True):
         """
@@ -980,4 +981,5 @@ class KGConnection(object):
             if top_n:
                 key_match_relations = key_match_relations[:top_n]
             return key_match_relations
-        return self._conn.get_rows_by_keys(self.relation_table_name, bys, keys, self.relation_columns, order_bys=order_bys, reverse=reverse, top_n=top_n)
+        return list(map(self._convert_row_to_relation, 
+            self._conn.get_rows_by_keys(self.relation_table_name, bys, keys, self.relation_columns, order_bys=order_bys, reverse=reverse, top_n=top_n)))
