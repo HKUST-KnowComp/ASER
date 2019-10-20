@@ -1,4 +1,8 @@
 import hashlib
+try:
+    import ujson as json
+except:
+    import json
 
 relation_senses = [
     'Precedence', 'Succession', 'Synchronous',
