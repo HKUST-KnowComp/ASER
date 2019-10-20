@@ -468,11 +468,15 @@ class KGConnection(object):
                 row[c] = " ".join(d)
             else:
                 row[c] = d
-        row["info"] = event.encode()
+        row["info"] = json.dumps(event.to_dict(minimum=True)).encode("utf-8")
         return row
     
     def _convert_row_to_event(self, row):
-        return Eventuality().decode(row["info"])
+        event = Eventuality().from_dict(json.loads(row["info"].decode("utf-8")))
+        event.eid = row["_id"]
+        event.frequency = row["frequency"]
+        event.pattern = row["pattern"]
+        return event
 
     def get_event_columns(self, columns):
         return self._conn.get_columns(self.event_table_name, columns)
