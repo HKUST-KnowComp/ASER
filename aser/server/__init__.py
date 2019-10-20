@@ -241,8 +241,8 @@ class ASERWorker(Process):
 
     def handle_extract_events(self, data):
         sentence = data.decode("ascii")
-        rst = self.event_extractor.extract_eventualities(
-            sentence, only_events=False, output_format="json")
+        eventualities_list = self.event_extractor.extract_eventualities(sentence)
+        rst = [eventualities.encode(encoding=None) for eventualities in eventualities_list]
         ret_data = json.dumps(rst).encode("ascii")
         return ret_data
 
