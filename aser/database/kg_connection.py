@@ -421,7 +421,7 @@ class KGConnection(object):
         except:
             pass
         if self.mode == 'memory':
-            for e in self._conn.get_columns(self.event_table_name, self.event_columns):
+            for e in map(self._convert_row_to_event, self._conn.get_columns(self.event_table_name, self.event_columns)):
                 self.eids.add(e["_id"])
                 self.eid2event_cache[e["_id"]] = e
                 # handle another cache
@@ -430,7 +430,7 @@ class KGConnection(object):
                         v[e[k]] = [e["_id"]]
                     else:
                         v[e[k]].append(e["_id"])
-            for r in self._conn.get_columns(self.relation_table_name, self.relation_columns):
+            for r in map(self._convert_row_to_relation, self._conn.get_columns(self.relation_table_name, self.relation_columns)):
                 self.rids.add(r["_id"])
                 self.rid2relation_cache[r["_id"]] = r
                 # handle another cache
