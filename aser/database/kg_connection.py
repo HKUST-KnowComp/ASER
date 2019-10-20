@@ -361,7 +361,7 @@ class _MongoDBConnection(_BaseConnection):
 
 
 class KGConnection(object):
-
+    # TODO: use iterator to retrieve eventualities and relations in case of out of memory
     def __init__(self, db_path, db="sqlite", mode='cache', grain=None, chunksize=-1):
         if db == 'sqlite':
             self._conn = _SqliteConnection(db_path, chunksize if chunksize > 0 else CHUNKSIZE)
@@ -422,23 +422,23 @@ class KGConnection(object):
             pass
         if self.mode == 'memory':
             for e in map(self._convert_row_to_event, self._conn.get_columns(self.event_table_name, self.event_columns)):
-                self.eids.add(e["_id"])
-                self.eid2event_cache[e["_id"]] = e
+                self.eids.add(e.eid)
+                self.eid2event_cache[e.eid] = e
                 # handle another cache
                 for k, v in self.partial2eids_cache.items():
-                    if e[k] not in v:
-                        v[e[k]] = [e["_id"]]
+                    if getattr(e, k) not in v:
+                        v[getattr(e, k)] = [e.eid]
                     else:
-                        v[e[k]].append(e["_id"])
+                        v[getattr(e, k)].append(e.eid)
             for r in map(self._convert_row_to_relation, self._conn.get_columns(self.relation_table_name, self.relation_columns)):
-                self.rids.add(r["_id"])
-                self.rid2relation_cache[r["_id"]] = r
+                self.rids.add(r.rid)
+                self.rid2relation_cache[r.rid] = r
                 # handle another cache
                 for k, v in self.partial2rids_cache.items():
-                    if r[k] not in v:
-                        v[r[k]] = [r["_id"]]
+                    if getattr(r, k) not in v:
+                        v[getattr(r, k)] = [r.rid]
                     else:
-                        v[r[k]].append(r["_id"])
+                        v[getattr(r, k)].append(r.rid)
         else:
             for e in self._conn.get_columns(self.event_table_name, ["_id"]):
                 self.eids.add(e["_id"])
