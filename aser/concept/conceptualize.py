@@ -1,4 +1,4 @@
-import copy
+from itertools import combinations
 import pickle
 from tqdm import tqdm
 from pbconcept.conceptualize import ProbaseConcept
@@ -23,6 +23,32 @@ class ASERConceptDB(object):
                 self.probase_topk = probase_topk
             else:
                 raise NotImplementedError
+
+    def conceptualize(self, eventuality):
+        if eventuality.eid in self.instance_to_concept:
+            concept_ids, scores = zip(*self.instance_to_concept[eventuality.eid])
+            concepts = list(zip(self.get_exact_match_concepts(concept_ids), scores))
+            return concepts
+        else:
+            concept_strs = self._conceptualize_from_raw(eventuality)
+            return self.get_concepts(concept_strs)
+
+    def instantiate(self, concept):
+        pass
+
+    def get_related_concepts(aser_concept_db, concept):
+        rst_list = list()
+        if concept.cid not in aser_concept_db.concept_to_related_concepts:
+            return rst_list
+        related_concept_ids = aser_concept_db.concept_to_related_concepts[concept.cid]
+        hcid = concept.cid
+        for tcid in related_concept_ids:
+            rid = hcid + "$" + tcid
+            for rel_sense, score in aser_concept_db.concept_relations[rid].items():
+                if score > 0.0:
+                    rst_list.append((aser_concept_db.get_exact_match_concept(tcid), rel_sense, score))
+        rst_list.sort(key=lambda x: x[-1], reverse=True)
+        return rst_list
 
     def save(self, db_path):
         with open(db_path, "wb") as f:
@@ -59,9 +85,6 @@ class ASERConceptDB(object):
     def get_exact_match_concepts(self, concept_ids):
         return [self.get_exact_match_concept(cid) for cid in concept_ids]
 
-    def get_exact_match_instance(self, eventuality):
-        pass
-
     def insert_instance(self, eventuality, concept_list):
         for concept, _ in concept_list:
             if concept.cid not in self.id2concepts:
@@ -70,9 +93,9 @@ class ASERConceptDB(object):
             if eventuality.eid not in self.concept_to_instances[concept.cid]:
                 self.concept_to_instances[concept.cid].append(eventuality.eid)
             if concept.cid not in self.concept_count:
-                self.concept_count = [0.0, 0.0]
-            self.concept_count[0] += 1
-            self.concept_count[1] += eventuality.frequency
+                self.concept_count[concept.cid] = [0.0, 0.0]
+            self.concept_count[concept.cid][0] += 1
+            self.concept_count[concept.cid][1] += eventuality.frequency
         self.instance_to_concept[eventuality.eid] = \
             [(c.cid, score) for c, score in concept_list]
 
@@ -115,18 +138,6 @@ class ASERConceptDB(object):
     def build_concept_db_from_lower_level(self):
         pass
 
-    def conceptualize(self, eventuality):
-        if eventuality.eid in self.instance_to_concept:
-            concept_ids, scores = zip(*self.instance_to_concept[eventuality.eid])
-            concepts = list(zip(self.get_exact_match_concepts(concept_ids), scores))
-            return concepts
-        else:
-            concept_strs = self._conceptualize_from_raw(eventuality)
-            return self.get_concepts(concept_strs)
-
-    def instantiate(self, concept):
-        pass
-
     def _conceptualize_from_raw(self, eventuality):
         concept_after_seed_rule = self._get_seed_concepts(eventuality)
         if self.source == "probase":
@@ -162,7 +173,8 @@ class ASERConceptDB(object):
     def _get_probase_concepts(self, skeleton_words, patterns):
         words, patterns = skeleton_words.split(" "), \
                           patterns.split('-')
-        output_words_list = [[[], 1.0]]
+        matched_probase_concepts = dict()
+
         for i in range(len(patterns)):
             if i >= len(words):
                 break
@@ -170,30 +182,37 @@ class ASERConceptDB(object):
             pattern = patterns[i]
             if pattern == 's' or pattern == 'o':
                 if seedConcept.is_seed_concept(word) or seedConcept.is_pronoun(word):
-                    for output_words, _ in output_words_list:
-                        output_words.append(word)
+                    continue
                 else:
                     concepts = self.probase.conceptualize(word, score_method="likelihood")
                     if concepts:
-                        new_output_words_list = list()
-                        for output_words, prob in output_words_list:
-                            for concept, c_prob in concepts[:self.probase_topk]:
-                                tmp_output_words = copy.deepcopy(output_words)
-                                tmp_output_words.append(concept)
-                                new_output_words_list.append(
-                                    [tmp_output_words, prob * c_prob])
-                            del output_words
-                        del output_words_list
-                        output_words_list = new_output_words_list
+                        matched_probase_concepts[i] = concepts[:self.probase_topk]
                     else:
-                        for output_words, _ in output_words_list:
-                            output_words.append(word)
-            else:
-                for output_words, _ in output_words_list:
-                    output_words.append(word)
+                        continue
+
+        matched_indices = list(matched_probase_concepts.keys())
+
+        replace_indices_tuples = list()
+        for i in range(1, len(matched_indices) + 1):
+            replace_indices_tuples.extend(list(combinations(matched_indices, i)))
+
+        output_words_list = list()
+        for indices_tuple in replace_indices_tuples:
+            tmp_words_list = [[words, 1.0]]
+            for idx in indices_tuple:
+                new_tmp_words_list = list()
+                for tmp_words, prob in tmp_words_list:
+                    for concept, c_prob in matched_probase_concepts[idx]:
+                        _tmp_words = tmp_words[:]
+                        _tmp_words[idx] = concept
+                        new_tmp_words_list.append([_tmp_words, prob * c_prob])
+                del tmp_words_list
+                tmp_words_list = new_tmp_words_list
+            output_words_list.extend(tmp_words_list)
+
         for i in range(len(output_words_list)):
             tmp = output_words_list[i][0]
             output_words_list[i][0] = " ".join(tmp)
             del tmp
-        output_words_list.sort(key=lambda x: x[1])
+        output_words_list.sort(key=lambda x: x[1], reverse=True)
         return output_words_list
