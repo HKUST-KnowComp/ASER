@@ -1,3 +1,4 @@
+from collections import Counter
 import hashlib
 import re
 from aser.base import JsonSerializedObject
@@ -50,7 +51,7 @@ class ASERConcept(JsonSerializedObject):
         :type instance: list
         :type source: str
         :param words: list of word of concept
-        :param instances: list of eids, ...
+        :param instances: list of (eid, pattern) s, ...
         :param source: where the concept from, "probase" or "wordnet" or "wiki"
         """
         super().__init__()
@@ -62,6 +63,11 @@ class ASERConcept(JsonSerializedObject):
     @staticmethod
     def generate_cid(concept_str):
         return hashlib.sha1(concept_str.encode('utf-8')).hexdigest()
+
+    @property
+    def pattern(self):
+        cnter = Counter([t[1] for t in self.instances])
+        return cnter.most_common(1)[0][0]
 
     def __str__(self):
         return " ".join(self.words)
@@ -75,7 +81,7 @@ class ASERConcept(JsonSerializedObject):
     def instantiate(self, kg_conn=None):
         if kg_conn:
             eventualities = kg_conn.get_exact_match_events(
-                self.instances)
+                [t[0] for t in self.instances])
             return eventualities
         else:
             return self.instances

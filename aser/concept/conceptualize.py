@@ -91,7 +91,8 @@ class ASERConceptDB(object):
                 self.id2concepts[concept.cid] = concept.to_str()
                 self.concept_to_instances[concept.cid] = list()
             if eventuality.eid not in self.concept_to_instances[concept.cid]:
-                self.concept_to_instances[concept.cid].append(eventuality.eid)
+                self.concept_to_instances[concept.cid].append(
+                    (eventuality.eid, eventuality.pattern))
             if concept.cid not in self.concept_count:
                 self.concept_count[concept.cid] = [0.0, 0.0]
             self.concept_count[concept.cid][0] += 1
@@ -216,3 +217,7 @@ class ASERConceptDB(object):
             del tmp
         output_words_list.sort(key=lambda x: x[1], reverse=True)
         return output_words_list
+
+class ASERConceptAPI(object):
+    def __init__(self, db_path):
+        self.aser_concept_db = ASERConceptDB(db_path)
