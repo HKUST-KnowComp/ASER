@@ -148,6 +148,8 @@ class ASERConceptDB(object):
         concept_after_seed_rule = self._get_seed_concepts(eventuality)
         if self.source == "probase":
             concept_strs = self._get_probase_concepts(concept_after_seed_rule, eventuality.pattern)
+            if not concept_strs and concept_after_seed_rule != " ".join(eventuality.skeleton_words):
+                concept_strs = [(concept_after_seed_rule, 1.0)]
         else:
             raise NotImplementedError
         return concept_strs
