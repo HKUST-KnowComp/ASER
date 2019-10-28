@@ -86,13 +86,13 @@ class ASERConceptDB(object):
         return [self.get_exact_match_concept(cid) for cid in concept_ids]
 
     def insert_instance(self, eventuality, concept_list):
-        for concept, _ in concept_list:
+        for concept, score in concept_list:
             if concept.cid not in self.id2concepts:
                 self.id2concepts[concept.cid] = concept.to_str()
                 self.concept_to_instances[concept.cid] = list()
             if eventuality.eid not in self.concept_to_instances[concept.cid]:
                 self.concept_to_instances[concept.cid].append(
-                    (eventuality.eid, eventuality.pattern))
+                    (eventuality.eid, eventuality.pattern, score))
             if concept.cid not in self.concept_count:
                 self.concept_count[concept.cid] = [0.0, 0.0]
             self.concept_count[concept.cid][0] += 1
@@ -128,7 +128,7 @@ class ASERConceptDB(object):
         print("Building Concepts relations")
         for h_concept_id in tqdm(self.id2concepts):
             instances = self.concept_to_instances[h_concept_id]
-            for h_eid, _ in instances:
+            for h_eid, _, instance_score in instances:
                 relations = aser_kg_conn.get_relations_by_keys(
                     bys=["heid"], keys=[h_eid])
                 for rel in relations:
@@ -137,7 +137,7 @@ class ASERConceptDB(object):
                     for rel_sense, count in rel.relations.items():
                         for t_concept, prob in t_concepts:
                             self.insert_relation(
-                                h_concept_id, t_concept.cid, rel_sense, count * prob)
+                                h_concept_id, t_concept.cid, rel_sense, count * prob * instance_score)
         self.build_concept_to_related_concepts()
         print("[Statistics] Overall concept-by-concept relations: %d" % len(self.concept_relations))
 
@@ -194,7 +194,8 @@ class ASERConceptDB(object):
                 else:
                     concepts = self.probase.conceptualize(word, score_method="likelihood")
                     if concepts:
-                        matched_probase_concepts[i] = concepts[:self.probase_topk]
+                        matched_probase_concepts[i] = \
+                            [(t[0].replace(" ", "-"), t[1]) for t in concepts[:self.probase_topk]]
                     else:
                         continue
 
