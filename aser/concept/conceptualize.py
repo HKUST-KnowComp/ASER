@@ -120,11 +120,15 @@ class ASERConceptDB(object):
         for i, eid in tqdm(enumerate(aser_kg_conn.eids)):
             event = aser_kg_conn.get_exact_match_event(eid)
             concepts = self.conceptualize(event)
-            self.insert_instance(event, concepts)
+            if concepts:
+                self.insert_instance(event, concepts)
+        print("[Statistics] Overall unique eventualities: %d" % len(aser_kg_conn.eids))
+        print("[Statistics] Overall unique concepts: %d" % len(self.id2concepts))
+
         print("Building Concepts relations")
         for h_concept_id in tqdm(self.id2concepts):
             instances = self.concept_to_instances[h_concept_id]
-            for h_eid in instances:
+            for h_eid, _ in instances:
                 relations = aser_kg_conn.get_relations_by_keys(
                     bys=["heid"], keys=[h_eid])
                 for rel in relations:
@@ -135,6 +139,7 @@ class ASERConceptDB(object):
                             self.insert_relation(
                                 h_concept_id, t_concept.cid, rel_sense, count * prob)
         self.build_concept_to_related_concepts()
+        print("[Statistics] Overall concept-by-concept relations: %d" % len(self.concept_relations))
 
     def build_concept_db_from_lower_level(self):
         pass
