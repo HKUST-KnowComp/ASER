@@ -23,7 +23,7 @@ EVENT_TABLE_NAME = "Eventualities"
 EVENT_COLUMNS = ["_id", "frequency", "pattern", "verbs", "skeleton_words", "words", "info"]
 EVENT_COLUMN_TYPES = ["PRIMARY KEY", "REAL", "TEXT", "TEXT", "TEXT", "TEXT", "BLOB"]
 RELATION_TABLE_NAME = "Relations"
-RELATION_COLUMNS = ["_id", "heid", "teid"] + relation_senses
+RELATION_COLUMNS = ["_id", "hid", "tid"] + relation_senses
 RELATION_COLUMN_TYPES = ["PRIMARY KEY", "TEXT", "TEXT"] + ["REAL"] * len(relation_senses)
 
 class _BaseConnection(object):
@@ -397,7 +397,7 @@ class KGConnection(object):
             self.partial2eids_cache = {"verbs": dict()}
         else:
             self.partial2eids_cache = dict()
-        self.partial2rids_cache = {"heid": dict()}
+        self.partial2rids_cache = {"hid": dict()}
 
         self.init()
 
@@ -751,7 +751,7 @@ class KGConnection(object):
         return row
 
     def _convert_row_to_relation(self, row):
-        return Relation(row["heid"], row["teid"], {r: cnt for r, cnt in row.items() if isinstance(cnt, float) and cnt > 0.0})
+        return Relation(row["hid"], row["tid"], {r: cnt for r, cnt in row.items() if isinstance(cnt, float) and cnt > 0.0})
 
     def get_relation_columns(self, columns):
         return self._conn.get_columns(self.relation_table_name, columns)
@@ -900,9 +900,9 @@ class KGConnection(object):
             elif isinstance(relation[0], str) and isinstance(relation[1], str):
                 rid = Relation.generate_rid(relation[0], relation[1])
             else:
-                raise ValueError("Error: relation should be (an instance of Eventuality, an instance of Eventuality) or (heid, teid).")
+                raise ValueError("Error: relation should be (an instance of Eventuality, an instance of Eventuality) or (hid, tid).")
         else:
-            raise ValueError("Error: relation should be an instance of Relation, a dictionary, rid, (an instance of Eventuality, an instance of Eventuality), or (heid, teid).")
+            raise ValueError("Error: relation should be an instance of Relation, a dictionary, rid, (an instance of Eventuality, an instance of Eventuality), or (hid, tid).")
         
         if rid not in self.rids:
             return None
@@ -929,9 +929,9 @@ class KGConnection(object):
                 elif isinstance(relations[0][0], str) and isinstance(relations[0][1], str):
                     rids = [Relation.generate_rid(relation[0], relation[1]) for relation in relations]
                 else:
-                    raise ValueError("Error: relations should be [(an instance of Eventuality, an instance of Eventuality), ...] or [(heid, teid), ...].")
+                    raise ValueError("Error: relations should be [(an instance of Eventuality, an instance of Eventuality), ...] or [(hid, tid), ...].")
             else:
-                raise ValueError("Error: relations should be instances of Relation, dictionaries, rids, [(an instance of Eventuality, an instance of Eventuality), ...], or [(heid, teid), ...].")
+                raise ValueError("Error: relations should be instances of Relation, dictionaries, rids, [(an instance of Eventuality, an instance of Eventuality), ...], or [(hid, tid), ...].")
 
             missed_indices = []
             missed_rids = []
@@ -957,7 +957,7 @@ class KGConnection(object):
             return []
         cache = None
         by_index = -1
-        for k in ["heid", "teid"]:
+        for k in ["hid", "tid"]:
             if k in bys and k in self.partial2rids_cache:
                 cache = self.partial2rids_cache[k]
                 by_index = bys.index(k)

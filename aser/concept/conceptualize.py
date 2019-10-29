@@ -130,7 +130,7 @@ class ASERConceptDB(object):
             instances = self.concept_to_instances[h_concept_id]
             for h_eid, _, instance_score in instances:
                 relations = aser_kg_conn.get_relations_by_keys(
-                    bys=["heid"], keys=[h_eid])
+                    bys=["hid"], keys=[h_eid])
                 for rel in relations:
                     t_event = aser_kg_conn.get_exact_match_event(rel.teid)
                     t_concepts = self.conceptualize(t_event)

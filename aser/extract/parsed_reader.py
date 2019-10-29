@@ -10,12 +10,6 @@ class ParsedReader:
     def __init__(self):
         pass
 
-    def recover_dependencies(self, parsed_result):
-        new_dependencies = list()
-        for dep_r in parsed_result["dependencies"]:
-            new_dependencies.append([dep_r[0]-1, dep_r[1], dep_r[2]-1])
-        return new_dependencies
-
     def generate_sid(self, sent, file_name, line_no):
         return file_name + "|" + str(line_no)
 

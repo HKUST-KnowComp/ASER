@@ -3,6 +3,7 @@ try:
     import ujson as json
 except:
     import json
+from aser.base import JsonSerializedObject
 
 relation_senses = [
     'Precedence', 'Succession', 'Synchronous',
@@ -11,18 +12,18 @@ relation_senses = [
     'Conjunction', 'Instantiation', 'Restatement', 'ChosenAlternative', 'Alternative', 'Exception',
     'Co_Occurrence']
 
-class Relation(object):
-    def __init__(self, heid=None, teid=None, relations=None):
-        self.heid = heid if heid else ""
-        self.teid = teid if teid else ""
-        self.rid = Relation.generate_rid(self.heid, self.teid)
+class Relation(JsonSerializedObject):
+    def __init__(self, hid=None, tid=None, relations=None):
+        self.hid = hid if hid else ""
+        self.tid = tid if tid else ""
+        self.rid = Relation.generate_rid(self.hid, self.tid)
         
         self.relations = dict()
         self.update_relations(relations)
 
     @classmethod
-    def generate_rid(cls, heid, teid):
-        key = heid + "$" + teid
+    def generate_rid(cls, hid, tid):
+        key = hid + "$" + tid
         return hashlib.sha1(key.encode('utf-8')).hexdigest()
 
     def update_relations(self, x):
@@ -40,36 +41,9 @@ class Relation(object):
                     else:
                         self.relations[r] += 1.0
             elif isinstance(x, Relation):
-                if self.heid == x.heid and self.teid == x.teid:
+                if self.hid == x.hid and self.tid == x.tid:
                     for r, cnt in x.relations.items():
                         if r not in self.relations:
                             self.relations[r] = cnt
                         else:
                             self.relations[r] += cnt
-
-    def encode(self, encoding="utf-8"):
-        if encoding == "utf-8":
-            msg = json.dumps(self.__dict__).encode("utf-8")
-        elif encoding == "ascii":
-            msg = json.dumps(self.__dict__).encode("ascii")
-        else:
-            msg = self.__dict__
-        return msg
-
-    def decode(self, msg, encoding="utf-8"):
-        if encoding == "utf-8":
-            decoded_dict = json.loads(msg.decode("utf-8"))
-        elif encoding == "ascii":
-            decoded_dict = json.loads(msg.decode("ascii"))
-        else:
-            decoded_dict = msg
-        self.from_dict(decoded_dict)
-        return self
-
-    def to_dict(self):
-        return self.__dict__
-
-    def from_dict(self, d):
-        for attr_name in self.__dict__:
-            self.__setattr__(attr_name, d[attr_name])
-        return self

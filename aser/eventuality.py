@@ -136,6 +136,18 @@ class Eventuality(JsonSerializedObject):
 
         self.eid = Eventuality.generate_eid(self)
 
+    def to_dict(self, minimum=False):
+        if minimum:
+            return {
+                "_dependencies": self._dependencies, 
+                "words": self.words, 
+                "pos_tags": self.pos_tags, 
+                "_skeleton_dependencies": self._skeleton_dependencies, 
+                "_skeleton_words": self._skeleton_words, 
+                "_verbs": self._verbs}
+        else:
+            return self.__dict__
+
     def from_dict(self, d):
         for attr_name in d:
             self.__setattr__(attr_name, d[attr_name])
