@@ -8,8 +8,9 @@ class JsonSerializedObject(object):
         return self.__dict__
 
     def from_dict(self, d):
-        for attr_name in self.__dict__:
+        for attr_name in d:
             self.__setattr__(attr_name, d[attr_name])
+        return self
 
     def encode(self, encoding="utf-8"):
         if encoding == "utf-8":
