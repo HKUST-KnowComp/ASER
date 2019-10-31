@@ -44,20 +44,17 @@ seedConcept = SeedConcept()
 
 
 class ASERConcept(JsonSerializedObject):
-    def __init__(self, words=None, instances=None, source=None):
+    def __init__(self, words=None, instances=None):
         """
 
         :type words: list
         :type instance: list
-        :type source: str
         :param words: list of word of concept
         :param instances: list of (eid, pattern) s, ...
-        :param source: where the concept from, "probase" or "wordnet" or "wiki"
         """
         super().__init__()
         self.words = words
         self.instances = instances
-        self.source = source
         self.cid = self.generate_cid(self.__str__())
 
     @staticmethod
