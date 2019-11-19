@@ -1,8 +1,8 @@
-from collections import Counter
 import hashlib
 import re
+import pprint
 from aser.base import JsonSerializedObject
-
+from collections import Counter
 
 class SeedConcept(object):
     def __init__(self):
@@ -48,17 +48,17 @@ class ASERConcept(JsonSerializedObject):
         """
 
         :type words: list
-        :type instance: list
+        :type instances: list
         :param words: list of word of concept
         :param instances: list of (eid, pattern) s, ...
         """
         super().__init__()
         self.words = words
         self.instances = instances
-        self.cid = self.generate_cid(self.__str__())
+        self.cid = ASERConcept.generate_cid(self.__str__())
 
-    @staticmethod
-    def generate_cid(concept_str):
+    @classmethod
+    def generate_cid(cls, concept_str):
         return hashlib.sha1(concept_str.encode('utf-8')).hexdigest()
 
     @property
@@ -82,3 +82,38 @@ class ASERConcept(JsonSerializedObject):
             return eventualities
         else:
             return self.instances
+
+class ASERConceptInstancePair(JsonSerializedObject):
+    def __init__(self, cid=None, eid=None, score=None):
+        """
+
+        :type words: list
+        :type instances: list
+        :param words: list of word of concept
+        :param instances: list of (eid, pattern) s, ...
+        """
+        super().__init__()
+        self.cid = cid
+        self.eid = eid
+        self.score = score
+        self.pid = ASERConceptInstancePair.generate_pid(self.__str__())
+
+    @classmethod
+    def generate_pid(cls, concept_str):
+        key = self.cid + "$" + self.eid
+        return hashlib.sha1(key.encode('utf-8')).hexdigest()
+
+    def __str__(self):
+        repr_dict = {
+            "pid": self.pid,
+            "cid": self.cid,
+            "eid": self.eid,
+            "score": self.score
+        }
+        return pprint.pformat(repr_dict)
+
+    def __repr__(self):
+        return self.__str__()
+
+    def to_str(self):
+        return self.__str__()

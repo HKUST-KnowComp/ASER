@@ -3,11 +3,6 @@ try:
 except:
     import json
 import os
-import pandas as pd
-import numpy as np
-import functools
-import pickle
-import csv
 import random
 import heapq
 import operator
@@ -16,378 +11,45 @@ from functools import partial
 from collections import defaultdict, OrderedDict
 from aser.eventuality import Eventuality
 from aser.relation import Relation, relation_senses
+from .base import SqliteConnection, MongoDBConnection
 from .util import *
 
 CHUNKSIZE = 32768
-EVENT_TABLE_NAME = "Eventualities"
-EVENT_COLUMNS = ["_id", "frequency", "pattern", "verbs", "skeleton_words", "words", "info"]
-EVENT_COLUMN_TYPES = ["PRIMARY KEY", "REAL", "TEXT", "TEXT", "TEXT", "TEXT", "BLOB"]
+EVENTUALITY_TABLE_NAME = "Eventualities"
+EVENTUALITY_COLUMNS = ["_id", "frequency", "pattern", "verbs", "skeleton_words", "words", "info"]
+EVENTUALITY_COLUMN_TYPES = ["PRIMARY KEY", "REAL", "TEXT", "TEXT", "TEXT", "TEXT", "BLOB"]
 RELATION_TABLE_NAME = "Relations"
 RELATION_COLUMNS = ["_id", "hid", "tid"] + relation_senses
 RELATION_COLUMN_TYPES = ["PRIMARY KEY", "TEXT", "TEXT"] + ["REAL"] * len(relation_senses)
 
-class _BaseConnection(object):
-    def __init__(self, db_path, chunksize):
-        self._conn = None
-        self.chunksize = chunksize
-
-    def close(self):
-        if self._conn:
-            self._conn.close()
-
-    def __del__(self):
-        self.close()
-
-    def create_table(self, table_name, columns):
-        raise NotImplementedError
-
-    def get_columns(self, table_name, columns):
-        raise NotImplementedError
-
-    def select_row(self, table_name, _id, columns):
-        raise NotImplementedError
-
-    def select_rows(self, table_name, _ids, columns):
-        raise NotImplementedError
-
-    def insert_row(self, table_name, row):
-        raise NotImplementedError
-
-    def insert_rows(self, table_name, rows):
-        raise NotImplementedError
-
-    def update_row(self, table_name, row, update_op, update_columns):
-        raise NotImplementedError
-
-    def update_rows(self, table_name, rows, update_ops, update_columns):
-        raise NotImplementedError
-
-    def get_update_op(self, update_columns, operator):
-        raise NotImplementedError
-
-    def get_rows_by_keys(self, table_name, bys, keys, columns, order_bys=None, reverse=False, top_n=None):
-        raise NotImplementedError
-
-
-class _SqliteConnection(_BaseConnection):
-    def __init__(self, db_path, chunksize):
-        import sqlite3
-        super(_SqliteConnection, self).__init__(db_path, chunksize)
-        self._conn = sqlite3.connect(db_path)
-
-    def create_table(self, table_name, columns, columns_types):
-        create_table = "CREATE TABLE %s (%s);" % (table_name, ",".join(
-            [' '.join(x) for x in zip(columns, columns_types)]))
-        self._conn.execute(create_table)
-        self._conn.commit()
-
-    def get_columns(self, table_name, columns):
-        select_table = "SELECT %s FROM %s;" % (",".join(columns), table_name)
-        result = list(map(lambda x: OrderedDict(zip(columns, x)), self._conn.execute(select_table)))
-        return result
-
-    def select_row(self, table_name, _id, columns):
-        select_table = "SELECT %s FROM %s WHERE _id=?;" % (",".join(columns), table_name)
-        result = list(self._conn.execute(select_table, [_id]))
-        if len(result) == 0:
-            return None
-        else:
-            return OrderedDict(zip(columns, result[0]))
-
-    def select_rows(self, table_name, _ids, columns):
-        if len(_ids) > 0:
-            row_cache = dict()
-            result = []
-            for idx in range(0, len(_ids), self.chunksize):
-                select_table = "SELECT %s FROM %s WHERE _id IN ('%s');" % (
-                    ",".join(columns), table_name, "','".join(_ids[idx:idx+self.chunksize]))
-                result.extend(list(self._conn.execute(select_table)))
-            for x in result:
-                exact_match_row = OrderedDict(zip(columns, x))
-                row_cache[exact_match_row["_id"]] = exact_match_row
-            exact_match_rows = []
-            for _id in _ids:
-                exact_match_rows.append(row_cache.get(_id, None))
-            return exact_match_rows
-        else:
-            return []
-
-    def insert_row(self, table_name, row):
-        insert_table = "INSERT INTO %s VALUES (%s)" % (table_name, ",".join(['?'] * (len(row))))
-        self._conn.execute(insert_table, list(row.values()))
-        self._conn.commit()
-
-    def insert_rows(self, table_name, rows):
-        if len(rows) > 0:
-            insert_table = "INSERT INTO %s VALUES (%s)" % (table_name, ",".join(['?'] * (len(rows[0]))))
-            self._conn.executemany(insert_table, [list(row.values()) for row in rows])
-            self._conn.commit()
-
-    def _update_update_op(self, row, update_op, update_columns):
-        update_op_sp = update_op.split('?')
-        while len(update_op_sp) >= 0 and update_op_sp[-1] == '':
-            update_op_sp.pop()
-        assert len(update_op_sp) == len(update_columns)
-        new_update_op = []
-        for i in range(len(update_op_sp)):
-            new_update_op.append(update_op_sp[i])
-            if isinstance(row[update_columns[i]], str):
-                new_update_op.append("'" + row[update_columns[i]].replace("'", "''") + "'")
-            else:
-                new_update_op.append(str(row[update_columns[i]]))
-        return ''.join(new_update_op)
-
-    def update_row(self, table_name, row, update_op, update_columns):
-        update_table = "UPDATE %s SET %s WHERE _id=?" % (table_name, update_op)
-        self._conn.execute(update_table, [row[k] for k in update_columns] + [row["_id"]])
-        self._conn.commit()
-
-    def update_rows(self, table_name, rows, update_ops, update_columns):
-        if len(rows) > 0:
-            if isinstance(update_ops, (tuple, list)): # +-*/
-                assert len(rows) == len(update_ops)
-                # group rows by op to speed up
-                update_op_collections = defaultdict(list)  # key: _update_update_op
-                for i, row in enumerate(rows):
-                    # self.update_row(row, table_name, update_ops[i], update_columns)
-                    new_update_op = self._update_update_op(row, update_ops[i], update_columns)
-                    update_op_collections[new_update_op].append(row)
-                for new_update_op, op_rows in update_op_collections.items():
-                    _ids = [row["_id"] for row in op_rows]
-                    for idx in range(0, len(_ids), self.chunksize):
-                        update_table = "UPDATE %s SET %s WHERE _id IN ('%s');" % (
-                            table_name, new_update_op, "','".join(_ids[idx:idx+self.chunksize]))
-                        self._conn.execute(update_table)
-            else: # =
-                update_op = update_ops
-                # group rows by new values to speed up
-                value_collections = defaultdict(list) # key: values of new values
-                for row in rows:
-                    # self.update_row(row, table_name, update_op, update_columns)
-                    value_collections[json.dumps([row[k] for k in update_columns])].append(row)
-                for new_update_op, op_rows in value_collections.items():
-                    new_update_op = self._update_update_op(op_rows[0], update_op, update_columns)
-                    _ids = [row["_id"] for row in op_rows]
-                    for idx in range(0, len(_ids), self.chunksize):
-                        update_table = "UPDATE %s SET %s WHERE _id IN ('%s');" % (
-                            table_name, new_update_op, "','".join(_ids[idx:idx+self.chunksize]))
-                        self._conn.execute(update_table)
-            self._conn.commit()
-            """
-            if isinstance(update_ops, list) or isinstance(update_ops, tuple):
-                assert len(rows) == len(update_ops)
-                for i, row in enumerate(rows):
-                    self.update_row(row, table_name, update_ops[i], update_columns)
-            else:
-                update_op = update_ops
-                update_table = "UPDATE %s SET %s WHERE _id=?" % (
-                    table_name, update_op)
-                self._conn.executemany(
-                    update_table, [[row[k] for k in update_columns] + [row["_id"]] for row in rows])
-            self._conn.commit()
-            """
-
-    def get_update_op(self, update_columns, operator):
-        if operator in "+-*/":
-            update_ops = []
-            for update_column in update_columns:
-                update_ops.append(update_column + "=" + update_column + operator + "?")
-            return ",".join(update_ops)
-        elif operator == "=":
-            update_ops = []
-            for update_column in update_columns:
-                update_ops.append(update_column + "=?")
-            return ",".join(update_ops)
-        else:
-            raise NotImplementedError
-
-    def get_rows_by_keys(self, table_name, bys, keys, columns, order_bys=None, reverse=False, top_n=None):
-        key_match_events = []
-        select_table = "SELECT %s FROM %s WHERE %s" % (
-            ",".join(columns), table_name, " AND ".join(["%s=?" % (by) for by in bys]))
-        if order_bys:
-            select_table += " ORDER BY %s %s" % (",".join(order_bys), "DESC" if reverse else "ASC")
-        if top_n:
-            select_table += " LIMIT %d" % (top_n)
-        select_table += ";"
-        for x in self._conn.execute(select_table, keys):
-            key_match_event = OrderedDict(zip(columns, x))
-            key_match_events.append(key_match_event)
-        return key_match_events
-
-
-class _MongoDBConnection(_BaseConnection):
-    def __init__(self, db_path, chunksize):
-        import pymongo
-        super(_MongoDBConnection, self).__init__(db_path, chunksize)
-        self._client = pymongo.MongoClient("mongodb://localhost:27017/", document_class=OrderedDict)
-        self._conn = self._client[os.path.splitext(os.path.basename(db_path))[0]]
-
-    def close(self):
-        self._client.close()
-
-    def create_table(self, table_name, columns, columns_types):
-        self._conn[table_name]
-
-    def __get_projection(self, columns):
-        projection = {"_id": 0}
-        for k in columns:
-            projection[k] = 1
-        return projection
-
-    def get_columns(self, table_name, columns):
-        projection = self.__get_projection(columns)
-        results = list(self._conn[table_name].find({}, projection))
-        return results
-
-    def select_row(self, table_name, _id, columns):
-        projection = self.__get_projection(columns)
-        return self._conn[table_name].find_one({"_id": _id}, projection)
-
-    def select_rows(self, table_name, _ids, columns):
-        table = self._conn[table_name]
-        exact_match_rows = []
-        projection = self.__get_projection(columns)
-        for idx in range(0, len(_ids), self.chunksize):
-            query = {"_id": {'$in': _ids[idx:idx+self.chunksize]}}
-            exact_match_rows.extend(table.find(query, projection))
-        row_cache = {x["_id"]: x for x in exact_match_rows}
-        exact_match_rows = [row_cache.get(_id, None) for _id in _ids]
-        return exact_match_rows
-
-    def insert_row(self, table_name, row):
-        self._conn[table_name].insert_one(row)
-
-    def insert_rows(self, table_name, rows):
-        self._conn[table_name].insert_many(rows)
-
-    def _update_update_op(self, row, update_op, update_columns):
-        new_update_op = update_op.copy()
-        for k, v in new_update_op.items():
-            if k == "$inc":
-                for update_column in update_columns:
-                    if v[update_column] == 1:
-                        v[update_column] = row[update_column]
-                    else:
-                        v[update_column] = -row[update_column]
-            elif k == "$mul":
-                for update_column in update_columns:
-                    if v[update_column] == 2:
-                        v[update_column] = row[update_column]
-                    else:
-                        v[update_column] = 1.0 / row[update_column]
-            elif k == "$set":
-                for update_column in update_columns:
-                    v[update_column] = row[update_column]
-        return new_update_op
-
-    def update_row(self, table_name, row, update_op, update_columns):
-        self._conn[table_name].update_one(
-            {"_id": row["_id"]}, self._update_update_op(row, update_op, update_columns))
-
-    def update_rows(self, table_name, rows, update_ops, update_columns):
-        if len(rows) > 0:
-            if isinstance(update_ops, (tuple, list)): # +-*/
-                assert len(rows) == len(update_ops)
-                update_op_collections = defaultdict(list)
-                for i, row in enumerate(rows):
-                    # self.update_row(row, table_name, update_ops[i], update_columns)
-                    new_update_op = self._update_update_op(row, update_ops[i], update_columns)
-                    update_op_collections[json.dumps(new_update_op)].append(row)
-                for new_update_op, op_rows in update_op_collections.items():
-                    new_update_op = json.loads(new_update_op)
-                    _ids = [row["_id"] for row in op_rows]
-                    for idx in range(0, len(_ids), self.chunksize):
-                        query = {"_id": {'$in': _ids[idx:idx+self.chunksize]}}
-                        self._conn[table_name].update_many(query, new_update_op)
-            else: # =
-                update_op = update_ops
-                value_collections = defaultdict(list)
-                for row in rows:
-                    # self.update_row(row, table_name, update_op, update_columns)
-                    value_collections[json.dumps([row[k] for k in update_columns])].append(row)
-                for new_update_op, op_rows in value_collections.items():
-                    new_update_op = self._update_update_op(op_rows[0], update_op, update_columns)
-                    _ids = [row["_id"] for row in op_rows]
-                    for idx in range(0, len(_ids), self.chunksize):
-                        query = {"_id": {'$in': _ids[idx:idx+self.chunksize]}}
-                        self._conn[table_name].update_many(query, new_update_op)
-
-    def get_update_op(self, update_columns, operator):
-        if operator == "+":
-            update_ops = {}
-            for update_column in update_columns:
-                update_ops[update_column] = 1  # placeholder
-            return {"$inc": update_ops}
-        elif operator == "-":
-            update_ops = {}
-            for update_column in update_columns:
-                update_ops[update_column] = -1  # placeholder
-            return {"$inc": update_ops}
-        elif operator == "*":
-            update_ops = {}
-            for update_column in update_columns:
-                update_ops[update_column] = 2  # placeholder
-            return {"$mul": update_ops}
-        elif operator == "/":
-            update_ops = {}
-            for update_column in update_columns:
-                update_ops[update_column] = 0.5  # placeholder
-            return {"$mul": update_ops}
-        elif operator == "=":
-            update_ops = {}
-            for update_column in update_columns:
-                update_ops[update_column] = 1  # placeholder
-            return {"$set": update_ops}
-        else:
-            raise NotImplementedError
-
-    def get_rows_by_keys(self, table_name, bys, keys, columns, order_bys=None, reverse=False, top_n=None):
-        query = OrderedDict(zip(bys, keys))
-        projection = self.__get_projection(columns)
-        cursor = self._conn[table_name].find(query, projection)
-        if order_bys:
-            direction = -1 if reverse else 1
-            cursor = cursor.sort([(k, direction) for k in order_bys])
-        if top_n:
-            result = []
-            for x in cursor:
-                result.append(x)
-                if len(result) >= top_n:
-                    break
-            return result
-        else:
-            return list(cursor)
-
-
-class KGConnection(object):
+class ASERKGConnection(object):
     # TODO: use iterator to retrieve eventualities and relations in case of out of memory
-    def __init__(self, db_path, db="sqlite", mode='cache', grain=None, chunksize=-1):
-        if db == 'sqlite':
-            self._conn = _SqliteConnection(db_path, chunksize if chunksize > 0 else CHUNKSIZE)
-        elif db == 'mongoDB':
-            self._conn = _MongoDBConnection(db_path, chunksize if chunksize > 0 else CHUNKSIZE)
+    def __init__(self, db_path, db="sqlite", mode="cache", grain=None, chunksize=-1):
+        if db == "sqlite":
+            self._conn = SqliteConnection(db_path, chunksize if chunksize > 0 else CHUNKSIZE)
+        elif db == "mongoDB":
+            self._conn = MongoDBConnection(db_path, chunksize if chunksize > 0 else CHUNKSIZE)
         else:
-            raise NotImplementedError("%s database is not supported!" % (db))
+            raise NotImplementedError("Error: %s database is not supported!" % (db))
         self.mode = mode
-        if self.mode not in ['insert', 'cache', 'memory']:
+        if self.mode not in ["insert", "cache", "memory"]:
             raise NotImplementedError(
-                "only support event/relation querying only support insert/cache/memory modes.")
+                "only support insert/cache/memory modes.")
 
         if grain not in [None, "verbs", "skeleton_words", "words"]:
-            raise NotImplementedError("only support event/relation querying only support None/verbs/skeleton_words/words grain.")
+            raise NotImplementedError("Error: only support None/verbs/skeleton_words/words grain.")
         self.grain = grain  # None, verbs, skeleton_words, words
 
-        self.event_table_name = EVENT_TABLE_NAME
-        self.event_columns = EVENT_COLUMNS
-        self.event_column_types = EVENT_COLUMN_TYPES
+        self.eventuality_table_name = EVENTUALITY_TABLE_NAME
+        self.eventuality_columns = EVENTUALITY_COLUMNS
+        self.eventuality_column_types = EVENTUALITY_COLUMN_TYPES
         self.relation_table_name = RELATION_TABLE_NAME
         self.relation_columns = RELATION_COLUMNS
         self.relation_column_types = RELATION_COLUMN_TYPES
 
         self.eids = set()
         self.rids = set()
-        self.eid2event_cache = dict()
+        self.eid2eventuality_cache = dict()
         self.rid2relation_cache = dict()        
         if self.grain == "words":
             self.partial2eids_cache = {"verbs": dict(), "skeleton_words": dict(), "words": dict()}
@@ -407,23 +69,21 @@ class KGConnection(object):
         load id sets
         load cache
         """
-        if len(self.event_columns) == 0 or len(self.event_column_types) == 0:
-            raise NotImplementedError(
-                "only support event/relation querying event_columns and event_column_types must be defined")
-        try:
-            self._conn.create_table(
-                self.event_table_name, self.event_columns, self.event_column_types)
-        except:
-            pass
-        try:
-            self._conn.create_table(
-                self.relation_table_name, self.relation_columns, self.relation_column_types)
-        except:
-            pass
-        if self.mode == 'memory':
-            for e in map(self._convert_row_to_event, self._conn.get_columns(self.event_table_name, self.event_columns)):
+        for table_name, columns, column_types in zip(
+            [self.eventuality_table_name, self.relation_table_name], 
+            [self.eventuality_columns, self.relation_columns],
+            [self.eventuality_column_types, self.relation_column_types]):
+            if len(columns) == 0 or len(column_types) == 0:
+                raise NotImplementedError("Error: %s_columns and %s_column_types must be defined" % (table_name, table_name))
+            try:
+                self._conn.create_table(table_name, columns, column_types)
+            except:
+                pass
+
+        if self.mode == "memory":
+            for e in map(self._convert_row_to_eventuality, self._conn.get_columns(self.eventuality_table_name, self.eventuality_columns)):
                 self.eids.add(e.eid)
-                self.eid2event_cache[e.eid] = e
+                self.eid2eventuality_cache[e.eid] = e
                 # handle another cache
                 for k, v in self.partial2eids_cache.items():
                     if getattr(e, k) not in v:
@@ -440,7 +100,7 @@ class KGConnection(object):
                     else:
                         v[getattr(r, k)].append(r.rid)
         else:
-            for e in self._conn.get_columns(self.event_table_name, ["_id"]):
+            for e in self._conn.get_columns(self.eventuality_table_name, ["_id"]):
                 self.eids.add(e["_id"])
             for r in self._conn.get_columns(self.relation_table_name, ["_id"]):
                 self.rids.add(r["_id"])
@@ -449,7 +109,7 @@ class KGConnection(object):
         self._conn.close()
         self.eids.clear()
         self.rids.clear()
-        self.eid2event_cache.clear()
+        self.eid2eventuality_cache.clear()
         self.rid2relation_cache.clear()
         # close another cache
         for k in self.partial2eids_cache:
@@ -460,214 +120,214 @@ class KGConnection(object):
     """
     KG (Eventualities)
     """
-    def _convert_event_to_row(self, event):
-        row = OrderedDict({"_id": event.eid})
-        for c in self.event_columns[1:-1]:
-            d = getattr(event, c)
+    def _convert_eventuality_to_row(self, eventuality):
+        row = OrderedDict({"_id": eventuality.eid})
+        for c in self.eventuality_columns[1:-1]:
+            d = getattr(eventuality, c)
             if isinstance(d, list):
                 row[c] = " ".join(d)
             else:
                 row[c] = d
-        row["info"] = json.dumps(event.to_dict(minimum=True)).encode("utf-8")
+        row["info"] = json.dumps(eventuality.to_dict(minimum=True)).encode("utf-8")
         return row
     
-    def _convert_row_to_event(self, row):
-        event = Eventuality().from_dict(json.loads(row["info"].decode("utf-8")))
-        event.eid = row["_id"]
-        event.frequency = row["frequency"]
-        event.pattern = row["pattern"]
-        return event
+    def _convert_row_to_eventuality(self, row):
+        eventuality = Eventuality().from_dict(json.loads(row["info"].decode("utf-8")))
+        eventuality.eid = row["_id"]
+        eventuality.frequency = row["frequency"]
+        eventuality.pattern = row["pattern"]
+        return eventuality
 
-    def get_event_columns(self, columns):
-        return self._conn.get_columns(self.event_table_name, columns)
+    def get_eventuality_columns(self, columns):
+        return self._conn.get_columns(self.eventuality_table_name, columns)
 
-    def _insert_event(self, event):
-        row = self._convert_event_to_row(event)
-        self._conn.insert_row(self.event_table_name, row)
-        if self.mode == 'insert':
-            self.eids.add(event.eid)
-        elif self.mode == 'cache':
-            self.eids.add(event.eid)
-            self.eid2event_cache[event.eid] = event
+    def _insert_eventuality(self, eventuality):
+        row = self._convert_eventuality_to_row(eventuality)
+        self._conn.insert_row(self.eventuality_table_name, row)
+        if self.mode == "insert":
+            self.eids.add(eventuality.eid)
+        elif self.mode == "cache":
+            self.eids.add(eventuality.eid)
+            self.eid2eventuality_cache[eventuality.eid] = eventuality
             for k, v in self.partial2eids_cache.items():
-                if event.get(k) in v:
-                    v[event.get(k)].append(event.eid)
-        elif self.mode == 'memory':
-            self.eids.add(event.eid)
-            self.eid2event_cache[event.eid] = event
+                if eventuality.get(k) in v:
+                    v[eventuality.get(k)].append(eventuality.eid)
+        elif self.mode == "memory":
+            self.eids.add(eventuality.eid)
+            self.eid2eventuality_cache[eventuality.eid] = eventuality
             for k, v in self.partial2eids_cache.items():
-                if event.get(k) not in v:
-                    v[event.get(k)] = [event.eid]
+                if eventuality.get(k) not in v:
+                    v[eventuality.get(k)] = [eventuality.eid]
                 else:
-                    v[event.get(k)].append(event.eid)
-        return event
+                    v[eventuality.get(k)].append(eventuality.eid)
+        return eventuality
 
-    def _insert_events(self, events):
-        rows = list(map(self._convert_event_to_row, events))
-        self._conn.insert_rows(self.event_table_name, rows)
-        if self.mode == 'insert':
-            for event in events:
-                self.eids.add(event.eid)
-        elif self.mode == 'cache':
-            for event in events:
-                self.eids.add(event.eid)
-                self.eid2event_cache[event.eid] = event
+    def _insert_eventualities(self, eventualities):
+        rows = list(map(self._convert_eventuality_to_row, eventualities))
+        self._conn.insert_rows(self.eventuality_table_name, rows)
+        if self.mode == "insert":
+            for eventuality in eventualities:
+                self.eids.add(eventuality.eid)
+        elif self.mode == "cache":
+            for eventuality in eventualities:
+                self.eids.add(eventuality.eid)
+                self.eid2eventuality_cache[eventuality.eid] = eventuality
                 for k, v in self.partial2eids_cache.items():
-                    if event.get(k) in v:
-                        v[event.get(k)].append(event.eid)
-        elif self.mode == 'memory':
-            for event in events:
-                self.eids.add(event.eid)
-                self.eid2event_cache[event.eid] = event
+                    if eventuality.get(k) in v:
+                        v[eventuality.get(k)].append(eventuality.eid)
+        elif self.mode == "memory":
+            for eventuality in eventualities:
+                self.eids.add(eventuality.eid)
+                self.eid2eventuality_cache[eventuality.eid] = eventuality
                 for k, v in self.partial2eids_cache.items():
-                    if event.get(k) not in v:
-                        v[event.get(k)] = [event.eid]
+                    if eventuality.get(k) not in v:
+                        v[eventuality.get(k)] = [eventuality.eid]
                     else:
-                        v[event.get(k)].append(event.eid)
-        return events
+                        v[eventuality.get(k)].append(eventuality.eid)
+        return eventualities
 
-    def _get_event_and_store_in_cache(self, eid):
-        return self._get_events_and_store_in_cache([eid])[0]
+    def _get_eventuality_and_store_in_cache(self, eid):
+        return self._get_eventualities_and_store_in_cache([eid])[0]
 
-    def _get_events_and_store_in_cache(self, eids):
-        events = list(map(self._convert_row_to_event, self._conn.select_rows(self.event_table_name, eids, self.event_columns)))
-        for event in events:
-            if event:
-                self.eid2event_cache[event.eid] = event
+    def _get_eventualities_and_store_in_cache(self, eids):
+        eventualities = list(map(self._convert_row_to_eventuality, self._conn.select_rows(self.eventuality_table_name, eids, self.eventuality_columns)))
+        for eventuality in eventualities:
+            if eventuality:
+                self.eid2eventuality_cache[eventuality.eid] = eventuality
                 # It seems not to need to append
-                # if self.mode == 'cache':
+                # if self.mode == "cache":
                 #     for k, v in self.partial2eids_cache.items():
-                #         if event.get(k) in v:
-                #             v[event.get(k)].append(event.eid)
-                # elif self.mode == 'memory':
+                #         if eventuality.get(k) in v:
+                #             v[eventuality.get(k)].append(eventuality.eid)
+                # elif self.mode == "memory":
                 #     for k, v in self.partial2eids_cache.items():
-                #         if event.get(k) not in v:
-                #             v[event.get(k)] = [event.eid]
+                #         if eventuality.get(k) not in v:
+                #             v[eventuality.get(k)] = [eventuality.eid]
                 #         else:
-                #             v[event.get(k)].append(event.eid)
-        return events
+                #             v[eventuality.get(k)].append(eventuality.eid)
+        return eventualities
 
-    def _update_event(self, event):
+    def _update_eventuality(self, eventuality):
         # update db
-        update_op = self._conn.get_update_op(['frequency'], "+")
-        row = self._convert_event_to_row(event)
-        self._conn.update_row(self.event_table_name, row, update_op, ['frequency'])
+        update_op = self._conn.get_update_op(["frequency"], "+")
+        row = self._convert_eventuality_to_row(eventuality)
+        self._conn.update_row(self.eventuality_table_name, row, update_op, ["frequency"])
 
         # updata cache
-        if self.mode == 'insert':
-            return None  # don't care
-        updated_event = self.eid2event_cache.get(event.eid, None)
-        if updated_event:  # self.mode == 'memory' or hit in cache
-            updated_event.frequency += event.frequency
-        else:  # self.mode == 'cache' and miss in cache
-            updated_event = self._get_event_and_store_in_cache(event.eid)
-        return updated_event
+        if self.mode == "insert":
+            return None  # don"t care
+        updated_eventuality = self.eid2eventuality_cache.get(eventuality.eid, None)
+        if updated_eventuality:  # self.mode == "memory" or hit in cache
+            updated_eventuality.frequency += eventuality.frequency
+        else:  # self.mode == "cache" and miss in cache
+            updated_eventuality = self._get_eventuality_and_store_in_cache(eventuality.eid)
+        return updated_eventuality
 
-    def _update_events(self, events):
+    def _update_eventualities(self, eventualities):
         # update db
-        update_op = self._conn.get_update_op(['frequency'], "+")
-        rows = list(map(self._convert_event_to_row, events))
-        self._conn.update_rows(self.event_table_name, rows, update_op, ['frequency'])
+        update_op = self._conn.get_update_op(["frequency"], "+")
+        rows = list(map(self._convert_eventuality_to_row, eventualities))
+        self._conn.update_rows(self.eventuality_table_name, rows, update_op, ["frequency"])
 
         # update cache
-        if self.mode == 'insert':
-            return [None] * len(events)  # don't care
-        updated_events = []
+        if self.mode == "insert":
+            return [None] * len(eventualities)  # don"t care
+        updated_eventualities = []
         missed_indices = []
         missed_eids = []
-        for idx, event in enumerate(events):
-            if event.eid not in self.eids:
-                updated_events.append(None)
-            updated_event = self.eid2event_cache.get(event.eid, None)
-            updated_events.append(updated_event)
-            if updated_event:
-                updated_event.frequency += event.frequency
+        for idx, eventuality in enumerate(eventualities):
+            if eventuality.eid not in self.eids:
+                updated_eventualities.append(None)
+            updated_eventuality = self.eid2eventuality_cache.get(eventuality.eid, None)
+            updated_eventualities.append(updated_eventuality)
+            if updated_eventuality:
+                updated_eventuality.frequency += eventuality.frequency
             else:
                 missed_indices.append(idx)
-                missed_eids.append(event.eid)
-        for idx, updated_event in enumerate(self._get_events_and_store_in_cache(missed_eids)):
-            updated_events[missed_indices[idx]] = updated_event
-        return updated_events
+                missed_eids.append(eventuality.eid)
+        for idx, updated_eventuality in enumerate(self._get_eventualities_and_store_in_cache(missed_eids)):
+            updated_eventualities[missed_indices[idx]] = updated_eventuality
+        return updated_eventualities
 
-    def insert_event(self, event):
-        if event.eid not in self.eids:
-            return self._insert_event(event)
+    def insert_eventuality(self, eventuality):
+        if eventuality.eid not in self.eids:
+            return self._insert_eventuality(eventuality)
         else:
-            return self._update_event(event)
+            return self._update_eventuality(eventuality)
 
-    def insert_events(self, events):
+    def insert_eventualities(self, eventualities):
         results = []
-        new_events = []
+        new_eventualities = []
         existing_indices = []
-        existing_events = []
-        for idx, event in enumerate(events):
-            if event.eid not in self.eids:
-                new_events.append(event)
-                results.append(event)
+        existing_eventualities = []
+        for idx, eventuality in enumerate(eventualities):
+            if eventuality.eid not in self.eids:
+                new_eventualities.append(eventuality)
+                results.append(eventuality)
             else:
                 existing_indices.append(idx)
-                existing_events.append(event)
+                existing_eventualities.append(eventuality)
                 results.append(None)
-        if len(new_events):
-            self._insert_events(new_events)
-        if len(existing_events):
-            for idx, updated_event in enumerate(self._update_events(existing_events)):
-                results[existing_indices[idx]] = updated_event
+        if len(new_eventualities):
+            self._insert_eventualities(new_eventualities)
+        if len(existing_eventualities):
+            for idx, updated_eventuality in enumerate(self._update_eventualities(existing_eventualities)):
+                results[existing_indices[idx]] = updated_eventuality
         return results
 
-    def get_exact_match_event(self, event):
+    def get_exact_match_eventuality(self, eventuality):
         """
-        event can be Eventuality, Dictionary, str
+        eventuality can be Eventuality, Dictionary, str
         """
-        if isinstance(event, Eventuality):
-            eid = event.eid
-        elif isinstance(event, dict):
-            eid = event["eid"]
-        elif isinstance(event, str):
-            eid = event
+        if isinstance(eventuality, Eventuality):
+            eid = eventuality.eid
+        elif isinstance(eventuality, dict):
+            eid = eventuality["eid"]
+        elif isinstance(eventuality, str):
+            eid = eventuality
         else:
-            raise ValueError("Error: event should be an instance of Eventuality, a dictionary, or a eid.")
+            raise ValueError("Error: eventuality should be an instance of Eventuality, a dictionary, or a eid.")
 
         if eid not in self.eids:
             return None
-        exact_match_event = self.eid2event_cache.get(eid, None)
-        if not exact_match_event:
-            exact_match_event = self._get_event_and_store_in_cache(eid)
-        return exact_match_event
+        exact_match_eventuality = self.eid2eventuality_cache.get(eid, None)
+        if not exact_match_eventuality:
+            exact_match_eventuality = self._get_eventuality_and_store_in_cache(eid)
+        return exact_match_eventuality
 
-    def get_exact_match_events(self, events):
+    def get_exact_match_eventualities(self, eventualities):
         """
-        events can be Eventualities, Dictionaries, strs
+        eventualities can be Eventualities, Dictionaries, strs
         """
-        exact_match_events = []
-        if len(events):
-            if isinstance(events[0], Eventuality):
-                eids = [event.eid for event in events]
-            elif isinstance(events[0], dict):
-                eids = [event["eid"] for event in events]
-            elif isinstance(events[0], str):
-                eids = events
+        exact_match_eventualities = []
+        if len(eventualities):
+            if isinstance(eventualities[0], Eventuality):
+                eids = [eventuality.eid for eventuality in eventualities]
+            elif isinstance(eventualities[0], dict):
+                eids = [eventuality["eid"] for eventuality in eventualities]
+            elif isinstance(eventualities[0], str):
+                eids = eventualities
             else:
-                raise ValueError("Error: events should instances of Eventuality, dictionaries, or eids.")
+                raise ValueError("Error: eventualities should instances of Eventuality, dictionaries, or eids.")
             
             missed_indices = []
             missed_eids = []
             for idx, eid in enumerate(eids):
                 if eid not in self.eids:
-                    exact_match_events.append(None)
-                exact_match_event = self.eid2event_cache.get(eid, None)
-                exact_match_events.append(exact_match_event)
-                if not exact_match_event:
+                    exact_match_eventualities.append(None)
+                exact_match_eventuality = self.eid2eventuality_cache.get(eid, None)
+                exact_match_eventualities.append(exact_match_eventuality)
+                if not exact_match_eventuality:
                     missed_indices.append(idx)
                     missed_eids.append(eid)
-            for idx, exact_match_event in enumerate(self._get_events_and_store_in_cache(missed_eids)):
-                exact_match_events[missed_indices[idx]] = exact_match_event
-        return exact_match_events
+            for idx, exact_match_eventuality in enumerate(self._get_eventualities_and_store_in_cache(missed_eids)):
+                exact_match_eventualities[missed_indices[idx]] = exact_match_eventuality
+        return exact_match_eventualities
 
-    def get_events_by_keys(self, bys, keys, order_bys=None, reverse=False, top_n=None):
+    def get_eventualities_by_keys(self, bys, keys, order_bys=None, reverse=False, top_n=None):
         assert len(bys) == len(keys)
         for i in range(len(bys)-1, -1, -1):
-            if bys[i] not in self.event_columns:
+            if bys[i] not in self.eventuality_columns:
                 bys.pop(i)
                 keys.pop(i)
         if len(bys) == 0:
@@ -681,31 +341,31 @@ class KGConnection(object):
                 break
         if cache:
             if keys[by_index] in cache:
-                key_match_events = [self.eid2event_cache[eid] for eid in cache[keys[by_index]]]
+                key_match_eventualities = [self.eid2eventuality_cache[eid] for eid in cache[keys[by_index]]]
             else:
-                if self.mode == 'memory':
+                if self.mode == "memory":
                     return []
                 key_cache = []
-                key_match_events = list(map(self._convert_row_to_event, 
-                    self._conn.get_rows_by_keys(self.event_table_name, [bys[by_index]], [keys[by_index]], self.event_columns)))
-                for key_match_event in key_match_events:
-                    if key_match_event.eid not in self.eid2event_cache:
-                        self.eid2event_cache[key_match_event.eid] = key_match_event
-                    key_cache.append(key_match_event.eid)
+                key_match_eventualities = list(map(self._convert_row_to_eventuality, 
+                    self._conn.get_rows_by_keys(self.eventuality_table_name, [bys[by_index]], [keys[by_index]], self.eventuality_columns)))
+                for key_match_eventuality in key_match_eventualities:
+                    if key_match_eventuality.eid not in self.eid2eventuality_cache:
+                        self.eid2eventuality_cache[key_match_eventuality.eid] = key_match_eventuality
+                    key_cache.append(key_match_eventuality.eid)
                 cache[keys[by_index]] = key_cache
             for i in range(len(bys)):
                 if i == by_index:
                     continue
-                key_match_events = list(filter(lambda x: x[bys[i]] == keys[i], key_match_events))
+                key_match_eventualities = list(filter(lambda x: x[bys[i]] == keys[i], key_match_eventualities))
             if order_bys:
-                key_match_events.sort(key=operator.itemgetter(*order_bys), reverse=reverse)
+                key_match_eventualities.sort(key=operator.itemgetter(*order_bys), reverse=reverse)
             if top_n:
-                key_match_events = key_match_events[:top_n]
-            return key_match_events
-        return list(map(self._convert_row_to_event, 
-            self._conn.get_rows_by_keys(self.event_table_name, bys, keys, self.event_columns, order_bys=order_bys, reverse=reverse, top_n=top_n)))
+                key_match_eventualities = key_match_eventualities[:top_n]
+            return key_match_eventualities
+        return list(map(self._convert_row_to_eventuality, 
+            self._conn.get_rows_by_keys(self.eventuality_table_name, bys, keys, self.eventuality_columns, order_bys=order_bys, reverse=reverse, top_n=top_n)))
 
-    def get_partial_match_events(self, event, bys, top_n=None, threshold=0.1, sort=True):
+    def get_partial_match_eventualities(self, eventuality, bys, top_n=None, threshold=0.1, sort=True):
         """
         try to use skeleton_words to match exactly, and compute similarity between words
         if failed, try to use skeleton_words_clean to match exactly, and compute similarity between words
@@ -713,31 +373,32 @@ class KGConnection(object):
         """
         # exact match by skeleton_words, skeleton_words_clean or verbs, and compute similarity according type
         for by in bys:
-            key_match_events = self.get_events_by_keys([by], [event[by]])
-            if len(key_match_events) == 0:
+            key_match_eventualities = self.get_eventualities_by_keys([by], [eventuality[by]])
+            if len(key_match_eventualities) == 0:
                 continue
             if not sort:
-                if top_n and len(key_match_events) > top_n:
-                    return random.sample(key_match_events, top_n)
+                if top_n and len(key_match_eventualities) > top_n:
+                    return random.sample(key_match_eventualities, top_n)
                 else:
-                    return key_match_events
+                    return key_match_eventualities
             # sort by (similarity, frequency, idx)
             queue = []
             queue_len = 0
-            for idx, key_match_event in enumerate(key_match_events):
-                similarity = compute_overlap(event.get(self.grain), key_match_event.get(self.grain))
+            for idx, key_match_eventuality in enumerate(key_match_eventualities):
+                similarity = compute_overlap(eventuality.get(self.grain), key_match_eventuality.get(self.grain))
                 if similarity >= threshold:
                     if not top_n or queue_len < top_n:
-                        heapq.heappush(queue, (similarity, key_match_event.get('frequency'), idx, key_match_event))
+                        heapq.heappush(queue, (similarity, key_match_eventuality.get("frequency"), idx, key_match_eventuality))
                         queue_len += 1
                     else:
-                        heapq.heappushpop(queue, (similarity, key_match_event.get('frequency'), idx, key_match_event))
+                        heapq.heappushpop(queue, (similarity, key_match_eventuality.get("frequency"), idx, key_match_eventuality))
             key_match_results = []
             while len(queue) > 0:
                 x = heapq.heappop(queue)
                 key_match_results.append((x[0], x[-1]))
             return reversed(key_match_results)
         return []
+
 
     """
     KG (Relations)
@@ -759,15 +420,15 @@ class KGConnection(object):
     def _insert_relation(self, relation):
         row = self._convert_relation_to_row(relation)
         self._conn.insert_row(self.relation_table_name, row)
-        if self.mode == 'insert':
+        if self.mode == "insert":
             self.rids.add(relation.rid)
-        elif self.mode == 'cache':
+        elif self.mode == "cache":
             self.rids.add(relation.rid)
             self.rid2relation_cache[relation.rid] = relation
             for k, v in self.partial2rids_cache.items():
                 if relation.get(k) in v:
                     v[relation.get(k)].append(relation.rid)
-        elif self.mode == 'memory':
+        elif self.mode == "memory":
             self.rids.add(relation.rid)
             self.rid2relation_cache[relation.rid] = relation
             for k, v in self.partial2rids_cache.items():
@@ -780,17 +441,17 @@ class KGConnection(object):
     def _insert_relations(self, relations):
         rows = list(map(self._convert_relation_to_row, relations))
         self._conn.insert_rows(self.relation_table_name, rows)
-        if self.mode == 'insert':
+        if self.mode == "insert":
             for relation in relations:
                 self.rids.add(relation.rid)
-        elif self.mode == 'cache':
+        elif self.mode == "cache":
             for relation in relations:
                 self.rids.add(relation.rid)
                 self.rid2relation_cache[relation.rid] = relation
                 for k, v in self.partial2rids_cache.items():
                     if relation.get(k) in v:
                         v[relation.get(k)].append(relation.rid)
-        elif self.mode == 'memory':
+        elif self.mode == "memory":
             for relation in relations:
                 self.rids.add(relation.rid)
                 self.rid2relation_cache[relation.rid] = relation
@@ -966,7 +627,7 @@ class KGConnection(object):
             if keys[by_index] in cache:
                 key_match_relations = [self.rid2relation_cache[rid] for rid in cache[keys[by_index]]]
             else:
-                if self.mode == 'memory':
+                if self.mode == "memory":
                     return []
                 key_cache = []
                 key_match_relations = list(map(self._convert_row_to_relation, 
@@ -987,3 +648,50 @@ class KGConnection(object):
             return key_match_relations
         return list(map(self._convert_row_to_relation, 
             self._conn.get_rows_by_keys(self.relation_table_name, bys, keys, self.relation_columns, order_bys=order_bys, reverse=reverse, top_n=top_n)))
+
+    """
+    Addtional apis
+    """
+    def get_related_eventualities(self, eventuality):
+        """
+        eventuality can be Eventuality, Dictionary, str
+        """
+        if self.mode == "insert":
+            return []
+        if isinstance(eventuality, Eventuality):
+            eid = eventuality.eid
+        if isinstance(eventuality, dict):
+            eid = eventuality["eid"]
+        elif isinstance(eventuality, str):
+            eid = eventuality
+        else:
+            raise ValueError("Error: eventuality should a instance of Eventuality, or eid.")
+        
+        # eid == hid
+        if self.mode == "memory":
+            if "hid" in self.partial2rids_cache:
+                related_rids = self.partial2rids_cache["hid"].get(eid, list())
+                related_relations = self.get_exact_match_relations(related_rids)
+            else:
+                related_relations = self.get_relations_by_keys(bys=["hid"], keys=[eid])
+            tids = [x["tid"] for x in related_relations]
+            t_eventualities = self.get_exact_match_eventualities(tids)
+        elif self.mode == "cache":
+            if "hid" in self.partial2rids_cache:
+                if eid in self.partial2rids_cache["hid"]: # hit
+                    related_rids = self.partial2rids_cache["hid"].get(eid, list())
+                    related_relations = self.get_exact_match_relations(related_rids)
+                    tids = [x["tid"] for x in related_relations]
+                    t_eventualities = self.get_exact_match_eventualities(tids)
+                else: # miss
+                    related_relations = self.get_relations_by_keys(bys=["hid"], keys=[eid])
+                    tids = [x["tid"] for x in related_relations]
+                    t_eventualities = self.get_exact_match_eventualities(tids)
+                    # update cache
+                    self.partial2rids_cache["hid"][eid] = [relation.rid for relation in related_relations]
+            else:
+                related_relations = self.get_relations_by_keys(bys=["hid"], keys=[eid])
+                tids = [x["tid"] for x in related_relations]
+                t_eventualities = self.get_exact_match_eventualities(tids)
+        
+        return sorted(zip(t_eventualities, related_relations), key=lambda x: x[1].relations["Co_Occurrence"])
