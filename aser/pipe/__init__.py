@@ -14,7 +14,7 @@ from aser.extract.parsed_reader import ParsedReader
 from aser.extract.utils import iter_files, parse_sentense_with_stanford
 from aser.utils.logging import init_logger, close_logger
 from aser.relation import Relation
-from aser.database.kg_connection import KGConnection
+from aser.database.kg_connection import ASERKGConnection
 from .utils import extract_eventualities_from_parsed_paragraph, extract_relations_from_parsed_paragraph
 
 class ASERPipe(object):
@@ -154,8 +154,8 @@ class ASERPipe(object):
         with open(os.path.join(self.opt.kg_dir, "rid2sids.pkl"), "wb") as f:
             pickle.dump(rid2sids, f)
 
-        kg_conn = KGConnection(os.path.join(self.opt.kg_dir, "KG.db"), mode='insert')
-        kg_conn.insert_events(eid2eventuality.values())
+        kg_conn = ASERKGConnection(os.path.join(self.opt.kg_dir, "KG.db"), mode='insert')
+        kg_conn.insert_eventualities(eid2eventuality.values())
         kg_conn.insert_relations(rid2relation.values())
         kg_conn.close()
         self.logger.info("Done.")
