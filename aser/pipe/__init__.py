@@ -59,19 +59,21 @@ def run_file(raw_path=None, processed_path=None, sentence_parser=None, parsed_re
         for idx in range(len_para):
             rs_in_sent = rs_para[idx]
             for r in rs_in_sent:
-                rid2sids[r.rid].append((sids_para[idx],))
-                if r.rid not in rid2relation:
-                    rid2relation[r.rid] = deepcopy(r)
-                else:
-                    rid2relation[r.rid].update_relations(r.relations)
+                if sum(r.relations.values()) > 0:
+                    rid2sids[r.rid].append((sids_para[idx],))
+                    if r.rid not in rid2relation:
+                        rid2relation[r.rid] = deepcopy(r)
+                    else:
+                        rid2relation[r.rid].update_relations(r.relations)
         for idx in range(len_para - 1):
             rs_between_sents = rs_para[len_para+idx]
             for r in rs_between_sents:
-                rid2sids[r.rid].append((sids_para[idx], sids_para[idx+1]))
-                if r.rid not in rid2relation:
-                    rid2relation[r.rid] = deepcopy(r)
-                else:
-                    rid2relation[r.rid].update_relations(r.relations)
+                if sum(r.relations.values()) > 0:
+                    rid2sids[r.rid].append((sids_para[idx], sids_para[idx+1]))
+                    if r.rid not in rid2relation:
+                        rid2relation[r.rid] = deepcopy(r)
+                    else:
+                        rid2relation[r.rid].update_relations(r.relations)
     
     return sids, eid2sids, rid2sids, eid2eventuality, rid2relation
 
