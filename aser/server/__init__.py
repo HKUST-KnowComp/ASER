@@ -9,7 +9,7 @@ import zmq
 import zmq.decorators as zmqd
 from aser.database.db_API import KG_Connection
 from aser.server.utils import *
-from aser.extract.event_extractor import EventualityExtractor
+from aser.extract.eventuality_extractor import EventualityExtractor
 from aser.utils.config import ASERCmd
 
 
@@ -193,7 +193,7 @@ class ASERWorker(Process):
         self.worker_id = id
         self.worker_addr_list = worker_addr_list
         self.sink_addr = sink_addr
-        self.event_extractor = EventualityExtractor(
+        self.eventuality_extractor = EventualityExtractor(
             corenlp_path = opt.corenlp_path,
             corenlp_port=opt.base_corenlp_port + id)
         self.is_ready = multiprocessing.Event()
@@ -203,7 +203,7 @@ class ASERWorker(Process):
 
     def close(self):
         self.is_ready.clear()
-        self.event_extractor.close()
+        self.eventuality_extractor.close()
         self.terminate()
         self.join()
 
@@ -241,7 +241,7 @@ class ASERWorker(Process):
 
     def handle_extract_events(self, data):
         sentence = data.decode("ascii")
-        eventualities_list = self.event_extractor.extract_eventualities(sentence)
+        eventualities_list = self.eventuality_extractor.extract_eventualities(sentence)
         rst = [eventualities.encode(encoding=None) for eventualities in eventualities_list]
         ret_data = json.dumps(rst).encode("ascii")
         return ret_data

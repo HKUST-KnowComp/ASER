@@ -1,5 +1,5 @@
 from pprint import pprint
-from aser.extract.event_extractor import EventualityExtractor
+from aser.extract.eventuality_extractor import EventualityExtractor
 from aser.extract.relation_extractor import SeedRuleRelationExtractor
 from aser.extract.utils import parse_sentense_with_stanford
 

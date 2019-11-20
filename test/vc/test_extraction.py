@@ -2,7 +2,7 @@ import json
 import traceback
 from pprint import pprint
 from tqdm import tqdm
-from aser.extract.event_extractor import EventualityExtractor
+from aser.extract.eventuality_extractor import EventualityExtractor
 from aser.extract.relation_extractor import SeedRuleRelationExtractor
 from aser.extract.utils import sort_dependencies_position, parse_sentense_with_stanford
 
