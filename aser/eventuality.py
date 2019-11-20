@@ -23,6 +23,13 @@ class Eventuality(JsonSerializedObject):
         if pattern and dependencies and skeleton_dependencies and sent_parsed_results:
             self._construct(dependencies, skeleton_dependencies, sent_parsed_results)
 
+    def update_frequency(self, x):
+        if x is not None:
+            if isinstance(x, float):
+                self.frequency += x
+            elif isinstance(x, Eventuality):
+                self.frequency += x.frequency
+                
     def __str__(self):
         repr_dict = {
             "eid": self.eid,
@@ -254,15 +261,6 @@ class EventualityList(object):
             e = Eventuality()
             e.decode(decoded_dict, encoding="None")
             self.eventualities.append(e)
-        
-    def filter_by_frequency(self, lower_bound=None, upper_bound=None):
-        if not lower_bound and not upper_bound:
-            return
-        if not lower_bound:
-            lower_bound = 0.0
-        if not upper_bound:
-            upper_bound = float("inf")
-        self.eventualities = list(filter(lambda e: e.frequency >= lower_bound and e.frequency <= upper_bound, self.eventualities))
 
     def __iter__(self):
         return self.eventualities.__iter__()
