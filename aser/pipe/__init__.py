@@ -5,7 +5,7 @@ import time
 import pickle
 import multiprocessing
 from tqdm import tqdm
-from copy import deepcopy
+from copy import copy, deepcopy
 from functools import partial
 from collections import Counter, defaultdict
 from aser.extract.eventuality_extractor import EventualityExtractor
@@ -43,9 +43,9 @@ def run_file(raw_path=None, processed_path=None, sentence_parser=None, parsed_re
             for idx, e in enumerate(es_sent):
                 eid2sids[e.eid].append(sid)
                 if e.eid not in eid2eventuality:
-                    eid2eventuality[e.eid] = e
+                    eid2eventuality[e.eid] = copy(e)
                 else:
-                    eid2eventuality[e.eid].frequency += e.frequency
+                    eid2eventuality[e.eid].update_frequency(e)
                     es_sent[idx] = eid2eventuality[e.eid]
     
     # extract relations from eventuality_lists
@@ -160,13 +160,13 @@ class ASERPipe(object):
                 for eid, eventuality in x_eid2eventuality.items():
                     eventuality_counter[eid] += eventuality.frequency
                     if eid not in eid2eventuality:
-                        eid2eventuality[eid] = eventuality
+                        eid2eventuality[eid] = copy(eventuality)
                     else:
                         eid2eventuality[eid].update_frequency(eventuality)
                 for rid, relation in x_rid2relation.items():
                     relation_counter[rid] += sum(relation.relations.values())
                     if rid not in rid2relation:
-                        rid2relation[rid] = relation
+                        rid2relation[rid] = deepcopy(relation)
                     else:
                         rid2relation[rid].update_relations(relation)
             del x_sids, x_eid2sids, x_rid2sids, x_eid2eventuality, x_rid2relation
