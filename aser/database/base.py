@@ -97,7 +97,7 @@ class SqliteConnection(BaseConnection):
 
     def insert_rows(self, table_name, rows):
         if len(rows) > 0:
-            insert_table = "INSERT INTO %s VALUES (%s)" % (table_name, ",".join(['?'] * (len(rows[0]))))
+            insert_table = "INSERT INTO %s VALUES (%s)" % (table_name, ",".join(['?'] * (len(next(iter(rows))))))
             self._conn.executemany(insert_table, [list(row.values()) for row in rows])
             self._conn.commit()
 

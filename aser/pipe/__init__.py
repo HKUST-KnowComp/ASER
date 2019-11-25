@@ -16,7 +16,8 @@ from aser.utils.logging import init_logger, close_logger
 from aser.relation import Relation
 from aser.database.kg_connection import ASERKGConnection
 
-def run_file(raw_path=None, processed_path=None, sentence_parser=None, parsed_reader=None, eventuality_extractor=None, relation_extractor=None):
+def run_file(raw_path=None, processed_path=None, prefix_to_be_removed="",
+    sentence_parser=None, parsed_reader=None, eventuality_extractor=None, relation_extractor=None):
     # process raw data or load processed data
     if processed_path:
         processed_data = load_processed_data(processed_path, parsed_reader)
@@ -26,10 +27,9 @@ def run_file(raw_path=None, processed_path=None, sentence_parser=None, parsed_re
         raise ValueError("Error: at least one of raw_path and processed_path should not be None.")
 
     # remove prefix of sids
-    prefix = os.path.split(processed_path)[0] + os.sep
     sids = list()
     for processed_para in processed_data:
-        sids_para = [sent["sid"].replace(prefix, "", 1) for sent in processed_para]
+        sids_para = [sent["sid"].replace(prefix_to_be_removed, "", 1) for sent in processed_para]
         sids.append(sids_para)
 
     # extract eventualities from processed data
@@ -134,7 +134,8 @@ class ASERPipe(object):
                 results = list()
                 for idx, processed_path in enumerate(processed_file_names):
                     results.append(pool.apply_async(run_file, args=(
-                        None, processed_path, None, self.parsed_reader, self.eventuality_extractors[idx%self.n_extractors], self.relation_extractors[idx%self.n_extractors])))
+                        None, processed_path, self.opt.processed_dir+os.sep, 
+                        None, self.parsed_reader, self.eventuality_extractors[idx%self.n_extractors], self.relation_extractors[idx%self.n_extractors])))
                     # results.append(run_file(
                     #     None, processed_path, None, self.parsed_reader, self.eventuality_extractors[idx%self.n_extractors], self.relation_extractors[idx%self.n_extractors]))
             elif os.path.exists(self.opt.raw_dir):
@@ -143,7 +144,8 @@ class ASERPipe(object):
                 for idx, raw_path in enumerate(raw_file_names):
                     processed_path = os.path.splitext(raw_path)[0].replace(self.opt.raw_dir, self.opt.processed_dir, 1) + ".jsonl"
                     results.append(pool.apply_async(run_file, args=(
-                        raw_path, processed_path, self.sentence_parser, None, self.eventuality_extractors[idx%self.n_extractors], self.relation_extractors[idx%self.n_extractors])))
+                        raw_path, processed_path, self.opt.processed_dir+os.sep,
+                        self.sentence_parser, None, self.eventuality_extractors[idx%self.n_extractors], self.relation_extractors[idx%self.n_extractors])))
                     # results.append(run_file(
                     #     raw_path, processed_path, self.sentence_parser, None, self.eventuality_extractors[idx%self.n_extractors], self.relation_extractors[idx%self.n_extractors]))
             else:
