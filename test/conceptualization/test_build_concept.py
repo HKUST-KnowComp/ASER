@@ -8,39 +8,42 @@ from copy import copy
 
 
 def build_concept_instance_table_from_aser_kg(aser_concept_conn, aser_concept_extractor, aser_kg_conn):
-    for i, eid in tqdm(enumerate(aser_kg_conn.eids)):
-        event = aser_kg_conn.get_exact_match_event(eid)
+    cid2concept = dict()
+    concept_instance_pairs = []
+    for eid in tqdm(aser_kg_conn.eids):
+        event = aser_kg_conn.get_exact_match_eventuality(eid)
         results = aser_concept_extractor.conceptualize(event)
-        concepts = [x[0] for x in results]
-        scores = [x[1] for x in results]
-        aser_concept_conn.insert_concept(concepts, [event]*len(results), scores)
+        for concept, score in results:
+            if concept.cid not in cid2concept:
+                cid2concept[concept.cid] = copy(concept)
+            concept = cid2concept[concept.cid]
+            if (event.eid, event.pattern, score) not in concept.instances:
+                concept.instances.append(((event.eid, event.pattern, score)))
+            concept_instance_pairs.append((concept, event, score))
+    aser_concept_conn.insert_concepts(list(cid2concept.values()))
+    aser_concept_conn.insert_concept_instance_pairs(concept_instance_pairs)
 
 
 def build_concept_relation_table_from_aser_kg(aser_concept_conn, aser_concept_extractor, aser_kg_conn):
-    relation_mapping = dict()
+    rid2relation = dict()
     for cid in tqdm(aser_concept_conn.cids):
         instances = aser_concept_conn.get_eventualities_given_concept(cid)
-        for eid, _, instance_score in instances:
+        for eid, pattern, instance_score in instances:
+            # eid -> event -> related eids -> related events, relations -> related concepts, relations
             results = aser_kg_conn.get_related_eventualities(eid)
-            t_events = aser_kg_conn.get_exact_match_events([x[0] for x in results])
-            relations = [x[1] for x in results]
-
-            for t_event, relation in zip(t_events, relations):
-                t_concepts = aser_concept_conn.get_concepts_given_eventuality(t_event)
-                if len(t_concepts) == 0:
-                    for idx, (t_concept, prob) in enumerate(aser_concept_extractor.conceptualize(t_event)):
-                        tmp = aser_concept_conn.get_exact_match_concept(t_concept.cid)
-                        if tmp:
-                            rid = Relation.generate_rid(cid, tmp.cid)
-                            r = copy(relation.relations)
-                            for k in r:
-                                r[k] = r[k] * instance_score * prob
-
-                            if rid not in relation_mapping:
-                                relation_mapping[rid] = Relation(cid, tmp.cid, relations=r)
-                            else:
-                                relation_mapping[rid].update_relations(r)
-    aser_concept_conn.insert_relations(relation_mapping.values())
+            for t_eid, relation in results:
+                concept_score_pairs = aser_concept_conn.get_concepts_given_eventuality(t_eid)
+                if False and len(concept_score_pairs) == 0: # extract again
+                    t_event = aser_kg_conn.get_exact_match_eventuality(t_eid)
+                    concept_score_pairs = aser_concept_extractor.conceptualize(t_event)
+                    concept_score_pairs = list(filter(lambda x: x[0].cid in aser_concept_conn.cids, concept_score_pairs))
+                for concept, score in concept_score_pairs:
+                    rid = Relation.generate_rid(cid, concept.cid)
+                    if rid not in rid2relation:
+                        rid2relation[rid] = Relation(cid, concept.cid)
+                    rid2relation[rid].update_relations(
+                        {k: v * instance_score * score for k, v in relation.relations.items()})
+    aser_concept_conn.insert_relations(rid2relation.values())
 
 
 if __name__ == "__main__":
@@ -55,18 +58,17 @@ if __name__ == "__main__":
         probase_path="/data/hjpan/probase/data-concept-instance-relations-yq.txt",
         probase_topk=3)
     aser_concept_conn = ASERConceptConnection(
-        db_path=os.path.join(aser_kg_dir, "concept.db"),
-        overwrite=True)
+        db_path=os.path.join(aser_kg_dir, "concept.db"), mode="memory") # insert cannot retrieve
 
     print("Building Concepts")
     build_concept_instance_table_from_aser_kg(
         aser_concept_conn, aser_concept_extractor, aser_kg_conn)
-    print("[Statistics] Overall unique eventualities: %d" % len(aser_concept_conn.instance_to_concept))
-    print("[Statistics] Overall unique concepts: %d" % len(aser_concept_conn.concept_to_instances))
+    print("[Statistics] Overall unique eventualities: %d" % len(aser_concept_conn.eids))
+    print("[Statistics] Overall unique concepts: %d" % len(aser_concept_conn.cids))
 
     print("Building Concepts relations")
     build_concept_relation_table_from_aser_kg(
         aser_concept_conn, aser_concept_extractor, aser_kg_conn)
-    print("[Statistics] Overall concept-by-concept relations: %d" % len(aser_concept_conn.concept_relations))
+    print("[Statistics] Overall concept-by-concept relations: %d" % len(aser_concept_conn.rids))
     aser_concept_conn.close()
     aser_kg_conn.close()

@@ -128,16 +128,17 @@ class ASERPipe(object):
     def run(self):
         with multiprocessing.Pool(self.n_workers) as pool:
             self.logger.info("Start the pipeline.")
+            results = list()
             if os.path.exists(self.opt.processed_dir):
                 self.logger.info("Loading processed data from %s." % (self.opt.processed_dir))
                 processed_file_names = [file_name for file_name in iter_files(self.opt.processed_dir) if file_name.endswith(".jsonl")]
-                results = list()
                 for idx, processed_path in enumerate(processed_file_names):
                     results.append(pool.apply_async(run_file, args=(
                         None, processed_path, self.opt.processed_dir+os.sep, 
                         None, self.parsed_reader, self.eventuality_extractors[idx%self.n_extractors], self.relation_extractors[idx%self.n_extractors])))
                     # results.append(run_file(
-                    #     None, processed_path, None, self.parsed_reader, self.eventuality_extractors[idx%self.n_extractors], self.relation_extractors[idx%self.n_extractors]))
+                    #     None, processed_path, self.opt.processed_dir+os.sep,
+                    #     None, self.parsed_reader, self.eventuality_extractors[idx%self.n_extractors], self.relation_extractors[idx%self.n_extractors]))
             elif os.path.exists(self.opt.raw_dir):
                 self.logger.info("Processing raw data from %s." % (self.opt.raw_dir))
                 raw_file_names = [file_name for file_name in iter_files(self.opt.raw_dir) if file_name.endswith(".txt")]
@@ -147,7 +148,8 @@ class ASERPipe(object):
                         raw_path, processed_path, self.opt.processed_dir+os.sep,
                         self.sentence_parser, None, self.eventuality_extractors[idx%self.n_extractors], self.relation_extractors[idx%self.n_extractors])))
                     # results.append(run_file(
-                    #     raw_path, processed_path, self.sentence_parser, None, self.eventuality_extractors[idx%self.n_extractors], self.relation_extractors[idx%self.n_extractors]))
+                    #     raw_path, processed_path, self.opt.processed_dir+os.sep,
+                    #     self.sentence_parser, None, self.eventuality_extractors[idx%self.n_extractors], self.relation_extractors[idx%self.n_extractors]))
             else:
                 raise ValueError("Error: at least one of raw_dir and processed_dir should not be None.")
             pool.close()
@@ -217,8 +219,8 @@ class ASERPipe(object):
             del eid2sids, rid2sids
 
             kg_conn = ASERKGConnection(os.path.join(self.opt.kg_dir, "KG.db"), mode='insert')
-            kg_conn.insert_eventualities(eid2eventuality.values())
-            kg_conn.insert_relations(rid2relation.values())
+            kg_conn.insert_eventualities(list(eid2eventuality.values()))
+            kg_conn.insert_relations(list(rid2relation.values()))
             kg_conn.close()
             del eid2eventuality, rid2relation
             self.logger.info("Done.")
