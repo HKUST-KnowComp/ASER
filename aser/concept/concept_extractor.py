@@ -1,7 +1,6 @@
 from itertools import combinations
 import os
-from pbconcept.conceptualize import ProbaseConcept
-from aser.concept import ASERConcept, seedConcept
+from aser.concept import ASERConcept, seedConcept, ProbaseConcept
 
 class ASERConceptExtractor(object):
     def __init__(self, source="probase", probase_path=None, probase_topk=None):
@@ -20,8 +19,11 @@ class ASERConceptExtractor(object):
         :param eventuality: `Eventuality` class object
         :return: concept
         """
-        return self.conceptualize_from_skeleton(
+        concept_score_pairs = self.conceptualize_from_skeleton(
             eventuality.skeleton_words, eventuality.pattern)
+        for concept, score in concept_score_pairs:
+            concept.instances.append((eventuality.eid, eventuality.pattern))
+        return concept_score_pairs
 
     def conceptualize_from_skeleton(self, skeleton_words, pattern):
         """ Conceptualization given a skeleton words and pattern
@@ -40,9 +42,9 @@ class ASERConceptExtractor(object):
         else:
             raise NotImplementedError
 
-        concepts = [(ASERConcept(words=concept_str, instances=list()), score)
+        concept_score_pairs = [(ASERConcept(words=concept_str, instances=list()), score)
                     for concept_str, score in concept_strs]
-        return concepts
+        return concept_score_pairs
 
     def _get_seed_concepts(self, skeleton_words):
         output_words = list()

@@ -11,8 +11,8 @@ from functools import partial
 from collections import defaultdict, OrderedDict
 from aser.eventuality import Eventuality
 from aser.relation import Relation, relation_senses
-from .base import SqliteConnection, MongoDBConnection
-from .util import *
+from aser.database.base import SqliteConnection, MongoDBConnection
+from aser.database.util import *
 
 CHUNKSIZE = 32768
 EVENTUALITY_TABLE_NAME = "Eventualities"
@@ -599,7 +599,7 @@ class ASERKGConnection(object):
             for idx, rid in enumerate(rids):
                 if rid not in self.rids:
                     exact_match_relations.append(None)
-                exact_match_relation = self.rid2relation_cache(rid, None)
+                exact_match_relation = self.rid2relation_cache.get(rid, None)
                 exact_match_relations.append(exact_match_relation)
                 if not exact_match_relation:
                     missed_indices.append(idx)
@@ -674,24 +674,24 @@ class ASERKGConnection(object):
                 related_relations = self.get_exact_match_relations(related_rids)
             else:
                 related_relations = self.get_relations_by_keys(bys=["hid"], keys=[eid])
-            tids = [x["tid"] for x in related_relations]
+            tids = [x.tid for x in related_relations]
             t_eventualities = self.get_exact_match_eventualities(tids)
         elif self.mode == "cache":
             if "hid" in self.partial2rids_cache:
                 if eid in self.partial2rids_cache["hid"]: # hit
                     related_rids = self.partial2rids_cache["hid"].get(eid, list())
                     related_relations = self.get_exact_match_relations(related_rids)
-                    tids = [x["tid"] for x in related_relations]
+                    tids = [x.tid for x in related_relations]
                     t_eventualities = self.get_exact_match_eventualities(tids)
                 else: # miss
                     related_relations = self.get_relations_by_keys(bys=["hid"], keys=[eid])
-                    tids = [x["tid"] for x in related_relations]
+                    tids = [x.tid for x in related_relations]
                     t_eventualities = self.get_exact_match_eventualities(tids)
                     # update cache
                     self.partial2rids_cache["hid"][eid] = [relation.rid for relation in related_relations]
             else:
                 related_relations = self.get_relations_by_keys(bys=["hid"], keys=[eid])
-                tids = [x["tid"] for x in related_relations]
+                tids = [x.tid for x in related_relations]
                 t_eventualities = self.get_exact_match_eventualities(tids)
         
-        return sorted(zip(t_eventualities, related_relations), key=lambda x: x[1].relations["Co_Occurrence"])
+        return sorted(zip(t_eventualities, related_relations), key=lambda x: sum(x[1].relations.values()))
