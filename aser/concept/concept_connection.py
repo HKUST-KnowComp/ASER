@@ -200,13 +200,13 @@ class ASERConceptConnection(object):
         for concept in concepts:
             if concept:
                 self.cid2concept_cache[concept.cid] = concept
-                cached_eid_pattern_scores = self.cid2eid_pattern_scores.get(cid, None)
+                cached_eid_pattern_scores = self.cid2eid_pattern_scores.get(concept.cid, None)
                 if cached_eid_pattern_scores:
                     eids = [eid_pattern_score[0] for eid_pattern_score in cached_eid_pattern_scores]
                     patterns = [eid_pattern_score[1] for eid_pattern_score in cached_eid_pattern_scores]
                     scores = [eid_pattern_score[2] for eid_pattern_score in cached_eid_pattern_scores]
                 else:
-                    eid_pattern_scores = self._conn.get_rows_by_keys(self.concept_instance_pair_table_name, bys=["cid"], keys=[cid], columns=["eid", "pattern", "score"])
+                    eid_pattern_scores = self._conn.get_rows_by_keys(self.concept_instance_pair_table_name, bys=["cid"], keys=[concept.cid], columns=["eid", "pattern", "score"])
                     eids = [eid_pattern_score["eid"] for eid_pattern_score in eid_pattern_scores]
                     patterns = [eid_pattern_score["pattern"] for eid_pattern_score in eid_pattern_scores]
                     scores = [eid_pattern_score["score"] for eid_pattern_score in eid_pattern_scores]
@@ -503,7 +503,7 @@ class ASERConceptConnection(object):
                 rids = [relation["rid"] for relation in relations]
             elif isinstance(relations[0], str):
                 rids = relations
-            elif isinstance(relations[0], (tuple, list)) and len(relation) == 2:
+            elif isinstance(relations[0], (tuple, list)) and len(relations[0]) == 2:
                 if isinstance(relations[0][0], ASERConcept) and isinstance(relations[0][1], ASERConcept):
                     rids = [Relation.generate_rid(relation[0].cid, relation[1].cid) for relation in relations]
                 elif isinstance(relations[0][0], str) and isinstance(relations[0][1], str):
@@ -673,7 +673,7 @@ class ASERConceptConnection(object):
 
         # update cache
         if self.mode == "insert":
-            return [None] * len(concepts)  # don"t care
+            return [None] * len(concept_instance_pairs)  # don"t care
         results = []
         updated_scores = []
         missed_indices = []
@@ -703,7 +703,7 @@ class ASERConceptConnection(object):
         return [ASERConceptInstancePair(c.cid, e.eid, e.pattern, updated_score) for c, e, updated_score in concept_instance_pairs]
 
     def insert_concept_instance_pair(self, concept_instance_pair):
-        concept, Eventuality, score = concept_instance_pair
+        concept, eventuality, score = concept_instance_pair
         if concept.cid in self.cids and eventuality.eid in self.eids:
             return self._update_concept_instance_pair(concept, eventuality, score)
         else:
@@ -788,7 +788,7 @@ class ASERConceptConnection(object):
         elif isinstance(concept, dict):
             cid = concept["cid"]
         elif isinstance(concept, str):
-            cid = concept_id
+            cid = concept
         else:
             raise ValueError("Error: concept should be an instance of ASERConcept, a dictionary, or a cid.")
         
