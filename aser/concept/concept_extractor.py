@@ -1,5 +1,4 @@
 from itertools import combinations
-import os
 from aser.concept import ASERConcept, seedConcept, ProbaseConcept
 
 class ASERConceptExtractor(object):
@@ -21,8 +20,8 @@ class ASERConceptExtractor(object):
         """
         concept_score_pairs = self.conceptualize_from_skeleton(
             eventuality.skeleton_words, eventuality.pattern)
-        for concept, score in concept_score_pairs:
-            concept.instances.append((eventuality.eid, eventuality.pattern))
+        # for concept, score in concept_score_pairs:
+        #     concept.instances.append((eventuality.eid, eventuality.pattern, score))
         return concept_score_pairs
 
     def conceptualize_from_skeleton(self, skeleton_words, pattern):

@@ -83,7 +83,7 @@ class ASERConcept(JsonSerializedObject):
 
     def instantiate(self, kg_conn=None):
         if kg_conn:
-            eventualities = kg_conn.get_exact_match_events(
+            eventualities = kg_conn.get_exact_match_eventualities(
                 [t[0] for t in self.instances])
             return eventualities
         else:
@@ -128,6 +128,9 @@ class ASERConceptInstancePair(JsonSerializedObject):
 
 
 class ProbaseConcept(object):
+    """
+        Copied from https://github.com/ScarletPan/probase-concept
+    """
     def __init__(self, data_concept_path=None):
         self.concept2idx = dict()
         self.idx2concept = dict()
