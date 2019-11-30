@@ -201,17 +201,12 @@ class ASERConceptConnection(object):
             if concept:
                 self.cid2concept_cache[concept.cid] = concept
                 cached_eid_pattern_scores = self.cid2eid_pattern_scores.get(concept.cid, None)
-                if cached_eid_pattern_scores:
-                    eids = [eid_pattern_score[0] for eid_pattern_score in cached_eid_pattern_scores]
-                    patterns = [eid_pattern_score[1] for eid_pattern_score in cached_eid_pattern_scores]
-                    scores = [eid_pattern_score[2] for eid_pattern_score in cached_eid_pattern_scores]
-                else:
+                if not cached_eid_pattern_scores:
                     eid_pattern_scores = self._conn.get_rows_by_keys(self.concept_instance_pair_table_name, bys=["cid"], keys=[concept.cid], columns=["eid", "pattern", "score"])
-                    eids = [eid_pattern_score["eid"] for eid_pattern_score in eid_pattern_scores]
-                    patterns = [eid_pattern_score["pattern"] for eid_pattern_score in eid_pattern_scores]
-                    scores = [eid_pattern_score["score"] for eid_pattern_score in eid_pattern_scores]
-                for eid, pattern, score in zip(eids, patterns, scores):
-                    concept.instances.append((eid, pattern, score))
+                    cached_eid_pattern_scores = [
+                        (x["eid"], x["pattern"], x["score"]) for x in eid_pattern_scores]
+                    self.cid2eid_pattern_scores[concept.cid] = cached_eid_pattern_scores
+                concept.instances = cached_eid_pattern_scores
         return concepts
 
     def _update_concept(self, concept):
@@ -518,7 +513,7 @@ class ASERConceptConnection(object):
             for idx, rid in enumerate(rids):
                 if rid not in self.rids:
                     exact_match_relations.append(None)
-                exact_match_relation = self.rid2relation_cache(rid, None)
+                exact_match_relation = self.rid2relation_cache.get(rid, None)
                 exact_match_relations.append(exact_match_relation)
                 if not exact_match_relation:
                     missed_indices.append(idx)

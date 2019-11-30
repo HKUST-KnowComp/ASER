@@ -1,4 +1,5 @@
 import os
+import time
 from tqdm import tqdm
 from aser.relation import Relation
 from aser.concept.concept_extractor import ASERConceptExtractor
@@ -26,27 +27,27 @@ def build_concept_instance_table_from_aser_kg(aser_concept_conn, aser_concept_ex
 
 def build_concept_relation_table_from_aser_kg(aser_concept_conn, aser_concept_extractor, aser_kg_conn):
     rid2relation = dict()
-    for cid in tqdm(aser_concept_conn.cids):
-        instances = aser_concept_conn.get_eventualities_given_concept(cid)
-        for eid, pattern, instance_score in instances:
+    for h_cid in tqdm(aser_concept_conn.cids):
+        instances = aser_concept_conn.get_eventualities_given_concept(h_cid)
+        for h_eid, pattern, instance_score in instances:
             # eid -> event -> related eids -> related events, relations -> related concepts, relations
-            results = aser_kg_conn.get_related_eventualities(eid)
-            for t_eid, relation in results:
+            related_events = aser_kg_conn.get_related_eventualities(h_eid)
+            for t_eid, relation in related_events:
                 concept_score_pairs = aser_concept_conn.get_concepts_given_eventuality(t_eid)
-                if False and len(concept_score_pairs) == 0: # extract again
-                    t_event = aser_kg_conn.get_exact_match_eventuality(t_eid)
-                    concept_score_pairs = aser_concept_extractor.conceptualize(t_event)
-                    concept_score_pairs = list(filter(lambda x: x[0].cid in aser_concept_conn.cids, concept_score_pairs))
-                for concept, score in concept_score_pairs:
-                    rid = Relation.generate_rid(cid, concept.cid)
+                for t_concept, score in concept_score_pairs:
+                    t_cid = t_concept.cid
+                    if h_cid == t_cid:
+                        continue
+                    rid = Relation.generate_rid(h_cid, t_cid)
                     if rid not in rid2relation:
-                        rid2relation[rid] = Relation(cid, concept.cid)
+                        rid2relation[rid] = Relation(h_cid, t_cid)
                     rid2relation[rid].update_relations(
                         {k: v * instance_score * score for k, v in relation.relations.items()})
     aser_concept_conn.insert_relations(rid2relation.values())
 
 
 if __name__ == "__main__":
+    st = time.time()
     aser_kg_dir = "/data/hjpan/ASER/nyt_test_filtered"
     print(aser_kg_dir)
     print("Loading ASER db...")
@@ -72,3 +73,4 @@ if __name__ == "__main__":
     print("[Statistics] Overall concept-by-concept relations: %d" % len(aser_concept_conn.rids))
     aser_concept_conn.close()
     aser_kg_conn.close()
+    print("Building Concept db finished in {:.2f}".format(time.time() - st))

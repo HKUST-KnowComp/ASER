@@ -9,7 +9,7 @@ class ASERConceptAPI(object):
         self.aser_kg_conn = aser_kg_conn
 
     def conceptualize(self, eventuality):
-        concepts = self.aser_concept_conn.get_concepts_given_event(eventuality)
+        concepts = self.aser_concept_conn.get_concepts_given_eventuality(eventuality)
         if not concepts:
             tmp_concepts = self.aser_concept_extractor.conceptualize(eventuality)
             concepts = list()
