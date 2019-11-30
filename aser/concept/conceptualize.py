@@ -10,7 +10,7 @@ class ASERConceptAPI(object):
 
     def conceptualize(self, eventuality):
         concepts = self.aser_concept_conn.get_concepts_given_event(eventuality)
-        if len(concepts):
+        if not concepts:
             tmp_concepts = self.aser_concept_extractor.conceptualize(eventuality)
             concepts = list()
             for i, (concept, prob) in enumerate(tmp_concepts):
