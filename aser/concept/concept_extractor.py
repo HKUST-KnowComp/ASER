@@ -86,8 +86,17 @@ class ASERConceptExtractor(object):
                 else:
                     concepts = self.probase.conceptualize(word, score_method="likelihood")
                     if concepts:
+                        concept_set = set()
+                        valid_indices = list()
+                        for idx, (tmp_concept, score) in enumerate(concepts):
+                            tmp = tmp_concept.replace(" ", "-")
+                            if tmp not in concept_set:
+                                valid_indices.append(idx)
+                                concept_set.add(tmp)
+                            if len(valid_indices) >= self.probase_topk:
+                                break
                         matched_probase_concepts[i] = \
-                            [(t[0].replace(" ", "-"), t[1]) for t in concepts[:self.probase_topk]]
+                            [(concepts[idx][0].replace(" ", "-"), concepts[idx][1]) for idx in valid_indices]
                     else:
                         continue
 
