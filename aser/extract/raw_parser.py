@@ -4,7 +4,7 @@ from typing import List
 from multiprocessing import Pool
 from nltk import corpus
 from shutil import copyfile
-# from tqdm import tqdm
+from tqdm import tqdm
 
 from aser.extract.utils import get_corenlp_client, parse_sentense_with_stanford_split
 from aser.extract.entity_linker import LinkSharedSource, Mention, Entity, str_contain, acronym, DisjointSet, base_url
@@ -247,18 +247,18 @@ def check_func(task):
             return False
         return True
 
-    def check_file_integrity(fn: str):
-        lens = None
-        line_num, except_line_num = 0, None
-        for line in open(fn):
-            line = line.strip()
-            if lens is None:
-                lens = json.loads(line)['sentence_lens']
-                except_line_num = lens[-1]
-            line_num += 1
-        if except_line_num == line_num:
-            return True
-        return False
+    # def check_file_integrity(fn: str):
+    #     lens = None
+    #     line_num, except_line_num = 0, None
+    #     for line in open(fn):
+    #         line = line.strip()
+    #         if lens is None:
+    #             lens = json.loads(line)['sentence_lens']
+    #             except_line_num = lens[-1]
+    #         line_num += 1
+    #     if except_line_num == line_num:
+    #         return True
+    #     return False
 
     parsed_fn_list = [os.path.join(parsed_root, change_file_extension(f.fn)) for f in file_list]
     for i_f, item in enumerate(file_list):
@@ -273,8 +273,9 @@ def check_func(task):
         # raw file not empty (unparsed or parsed)
         else:
             if os.path.exists(parsed_fn_list[i_f]):
-                parsed_file_flg = not check_file_empty(parsed_fn_list[i_f]) and check_file_integrity(
-                    parsed_fn_list[i_f])
+                parsed_file_flg = not check_file_empty(parsed_fn_list[i_f])
+                    #               and check_file_integrity(
+                    # parsed_fn_list[i_f])
                 # unparsed or corrupted
                 if not parsed_file_flg:
                     unparsed_num += 1
@@ -367,7 +368,7 @@ def main():
     anno = ['tokenize', 'ssplit', 'parse']  # anno = ['tokenize', 'ssplit', 'pos', 'lemma', 'depparse', 'ner']
 
     raw_inx_fn = os.path.join(raw_root, 'path_inx.json')
-    if os.path.exists(raw_inx_fn) and not check_flg:
+    if os.path.exists(raw_inx_fn): # and not check_flg:
         file_name_list = load_paths(raw_inx_fn, raw_root)
     else:
         file_name_list = read_dir(raw_root)
@@ -394,7 +395,7 @@ def main():
             tasks.append(t)
         unparsed_list = []
         with Pool(worker_num) as pool:
-            for res in pool.imap_unordered(check_func, tasks):
+            for res in tqdm(pool.imap_unordered(check_func, tasks),total=len(tasks)):
                 res_parsed_num, res_unparsed_num, res_empty_num, res_total_num, res_unparsed_list = res
                 parsed_num += res_parsed_num
                 unparsed_num += res_unparsed_num
