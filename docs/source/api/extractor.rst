@@ -1,10 +1,10 @@
 Extractor
 ====================
 
-event_extractor API
+eventuality_extractor API
 ------------------------
 
-.. automodule:: aser.extract.event_extractor
+.. automodule:: aser.extract.eventuality_extractor
    :members:
    :undoc-members:
    :show-inheritance:

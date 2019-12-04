@@ -12,7 +12,7 @@ with open('requirements.txt') as f:
 
 setup(
     name='aser',
-    version='0.1.0',
+    version='0.2.0',
     description='A Large-scale Eventuality Knowledge Graph',
     long_description=readme,
     license=license,
@@ -21,5 +21,6 @@ setup(
     install_requires=reqs.strip().split('\n'),
     entry_points={
         'console_scripts': ['aser-server=aser.server.cli:main'],
+        'console_scripts': ['aser-pipe=aser.pipe.cli:main']
     },
 )

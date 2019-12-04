@@ -1,22 +1,35 @@
 import json
 import traceback
-from pprint import pprint as print
+from pprint import pprint
 from tqdm import tqdm
-from aser.extract.event_extractor import EventualityExtractor
+from aser.extract.eventuality_extractor import EventualityExtractor
 from aser.extract.relation_extractor import SeedRuleRelationExtractor
+from aser.extract.utils import sort_dependencies_position, parse_sentense_with_stanford
 
 
-def equal_dependencies(dep1, dep2):
+def equal_dependencies(dep1, dep2, dep_all=None):
+    if dep_all:
+        d_all = set()
+        for t in dep_all:
+            d_all.add((tuple(t[0]), t[1], tuple(t[2])))
+    else:
+        d_all = None
     d1 = set()
     for t in dep1:
-        d1.add((tuple(t[0]), t[1], tuple(t[2])))
+        triple = (tuple(t[0]), t[1], tuple(t[2]))
+        if d_all is None or triple in d_all:
+            d1.add(triple)
+    d1 = list(d1)
     d2 = set()
     for t in dep2:
         d2.add((tuple(t[0]), t[1], tuple(t[2])))
-    dep1 = sorted(d1, key=lambda x: (x[0][0], x[2][0]))
-    dep2 = sorted(d2, key=lambda x: (x[0][0], x[2][0]))
-    dep1_str = json.dumps(dep1)
-    dep2_str = json.dumps(dep2)
+    d2 = list(d2)
+    if len(dep2) != len(d2):
+        return False
+    d1, _, _ = sort_dependencies_position(d1, reset_position=True)
+    d2, _, _ = sort_dependencies_position(d2, reset_position=True)
+    dep1_str = json.dumps(d1)
+    dep2_str = json.dumps(d2)
     return dep1_str == dep2_str
 
 
@@ -34,49 +47,58 @@ def equal_relations(rels1, rels2):
 if __name__ == "__main__":
     e_extractor = EventualityExtractor(
         corenlp_path="/home/software/stanford-corenlp/stanford-corenlp-full-2018-02-27/",
-        corenlp_port=11001)
+        corenlp_port=13000)
     r_extractor = SeedRuleRelationExtractor()
-    with open("test/vc/nyt_2007_06_sActivityNet.json") as f:
+    with open("/data/hjpan/nyt_2007_06_sActivityNet.json") as f:
         test_data = json.load(f)
-
+    print(len(test_data))
     is_passed = True
     for i, document in tqdm(enumerate(test_data)):
         try:
             text = document["doc"]
-
-            pred_sentences = e_extractor.extract_eventualities(
-                text, only_events=False, output_format="json")
+            sent_parsed_results = parse_sentense_with_stanford(text, e_extractor.corenlp_client)
+            pred_eventualities_list = [e_extractor.extract_from_parsed_result(t)
+                                       for t in sent_parsed_results]
             grt_eventualities = document["eventualities"]
-            pred_eventualities = [e for sent in pred_sentences for e in sent["eventuality_list"]]
+            grt_eventualities.sort(key=lambda x: " ".join([t[1] for t in x["tokens"]]))
+            pred_eventualities = [e for elist in pred_eventualities_list
+                                  for e in elist.eventualities]
+            pred_eventualities.sort(key=lambda x: x.__repr__())
             if len(grt_eventualities) != len(pred_eventualities):
+                pred_sentences = e_extractor.extract(text)
                 print("DOCUMENT %d" % i)
-                print(grt_eventualities)
+                pprint(grt_eventualities)
                 print(pred_eventualities)
-                pred_sentences = e_extractor.extract_eventualities(
-                    text, only_events=False, output_format="json")
                 raise RuntimeError("Length is not equal")
             for grt_e, pred_e in zip(grt_eventualities, pred_eventualities):
-                if not equal_dependencies(grt_e["parsed_relations"], pred_e["dependencies"]):
+                if not equal_dependencies(grt_e["parsed_relations"], pred_e.dependencies):
                     print("DOCUMENT %d" % i)
                     print(pred_e)
-                    print(grt_e)
-                    raise RuntimeError("Dependencies is ot equal")
-                if not equal_dependencies(grt_e["skeleton_parsed_relations"], pred_e["skeleton_dependencies"]):
+                    pprint(grt_e)
+                    raise RuntimeError("Dependencies is not equal")
+
+                # if pred_e.eid == '0f6e829070890d0ec2c6f3be7738f63ec9b234ae':
+                #     print()
+                if not equal_dependencies(
+                        grt_e["skeleton_parsed_relations"], pred_e.skeleton_dependencies,
+                        grt_e["parsed_relations"]):
                     print("DOCUMENT %d" % i)
                     print(pred_e)
-                    print(grt_e)
-                    raise RuntimeError("Skeleton Dependencies is ot equal")
+                    pprint(grt_e)
+                    raise RuntimeError("Skeleton Dependencies is not equal")
             grt_relations = list()
             for eid1, eid2, rel in document["seed_single_relations"]:
-                grt_relations.append((eid1, rel, eid2))
+                grt_relations.append(rel)
             for eid1, eid2, rel in document["seed_double_relations"]:
-                grt_relations.append((eid1, rel, eid2))
+                grt_relations.append(rel)
 
-            pred_relations = r_extractor.extract(pred_sentences)
-            pred_relations = [t for t in pred_relations if t[1] != 'Co_Occurrence']
+            pred_relations = r_extractor.extract(list(zip(sent_parsed_results, pred_eventualities_list)))
+            pred_relations = [t[1] for t in pred_relations if t[1] != 'Co_Occurrence']
             if not equal_relations(grt_relations, pred_relations):
+                print("DOCUMENT %d" % i)
                 print(sorted(grt_relations))
                 print(sorted(pred_relations))
+                pred_relations = r_extractor.extract(list(zip(sent_parsed_results, pred_eventualities_list)))
                 raise RuntimeError("Relations not equal")
         except:
             traceback.print_exc()

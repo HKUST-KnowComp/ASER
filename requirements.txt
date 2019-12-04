@@ -1,5 +1,6 @@
-pandas
-tqdm
-stanfordnlp
-zmq
 flask
+pandas
+pprint
+stanfordnlp
+tqdm
+zmq

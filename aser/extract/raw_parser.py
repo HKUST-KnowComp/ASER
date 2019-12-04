@@ -1,10 +1,17 @@
-import os, sys, json, random, math, errno, time
+import os
+import random
+import math
+import errno
 import argparse
 from typing import List
 from multiprocessing import Pool
 from nltk import corpus
 from shutil import copyfile
 from tqdm import tqdm
+try:
+    import ujson as json
+except:
+    import json
 
 from aser.extract.utils import get_corenlp_client, parse_sentense_with_stanford_split
 from aser.extract.entity_linker import LinkSharedSource, Mention, Entity, str_contain, acronym, DisjointSet, base_url

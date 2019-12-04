@@ -1,8 +1,14 @@
-import os, json, time, random
+import os
+import time
+import random
 from typing import List, Set
 from collections import OrderedDict
 from nltk.tokenize import word_tokenize
 from multiprocessing import Manager
+try:
+    import ujson as json
+except:
+    import json
 
 random.seed(22)
 base_url = 'https://en.wikipedia.org/?curid={}'

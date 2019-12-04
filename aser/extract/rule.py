@@ -26,7 +26,6 @@ class EventualityRule(object):
         self.negative_rules = list()
 
 ALL_EVENTUALITY_RULES = dict()
-
 # # subject-verb-dobj
 A_rule = EventualityRule()
 A_rule.positive_rules.append(('V1', 'nsubj', 'S1'))
@@ -40,7 +39,6 @@ A_rule.negative_rules.append(('V1',
 A_rule.negative_rules.append(('S1', """+nmod:of/nmod:for/nmod:at""", 'NA'))
 A_rule.negative_rules.append(('O1', """+nmod:of/nmod:for/nmod:at""", 'NA'))
 ALL_EVENTUALITY_RULES['s-v-o'] = A_rule
-
 
 A_rule = EventualityRule()
 A_rule.positive_rules.append(('V1', 'nsubj', 'S1'))
@@ -56,7 +54,6 @@ A_rule.negative_rules.append(('V1',
 A_rule.negative_rules.append(('O1', """+nmod:of/nmod:for/nmod:at""", 'NA'))
 A_rule.negative_rules.append(('O2', """+nmod:of/nmod:for/nmod:at""", 'NA'))
 ALL_EVENTUALITY_RULES['s-v-o-o'] = A_rule
-
 # # nsubj-verb
 A_rule = EventualityRule()
 A_rule.positive_rules.append(('V1', 'nsubj', 'S1'))

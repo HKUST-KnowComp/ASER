@@ -1,12 +1,6 @@
+from itertools import chain
 from aser.eventuality import Eventuality
-
-RELATION_TYPES = [
-    'Precedence', 'Succession', 'Synchronous',
-    'Reason', 'Result',
-    'Condition', 'Contrast', 'Concession',
-    'Conjunction', 'Instantiation', 'Restatement', 'ChosenAlternative', 'Alternative', 'Exception',
-    'Co_Occurrence']
-
+from aser.relation import Relation, relation_senses
 
 RELATION_SEED_CONNECTIVES = {
     'Precedence': [['before']],
@@ -31,6 +25,12 @@ class BaseRelationExtractor(object):
     def __init__(self):
         pass
 
+    def close(self):
+        pass
+
+    def __del__(self):
+        self.close()
+
     def extract(self, eventuality_pair):
         raise NotImplementedError
 
@@ -38,75 +38,54 @@ class BaseRelationExtractor(object):
 class SeedRuleRelationExtractor(BaseRelationExtractor):
     def __init__(self):
         super().__init__()
-        pass
 
-    def extract(self, sentences):
+    def extract(self, sentences, output_format="triple", in_order=False):
         """ This methods extract relations among extracted eventualities based on seed rule
 
             :type sentences: list
-            :param sentences: list of dict returned by `EventualityExtractor.extract_eventualities`
+            :param sentences: list of (sentence_parsed_result, EventualityList)
             :return: list of triples of format (eid1, relation, eid2)
 
             .. highlight:: python
             .. code-block:: python
 
                 Input Example:
-                    [{'eventuality_list': [{'dependencies': [[[8, 'hungry', 'JJ'], 'nsubj', [6, 'I', 'PRP']],
-                                                             [[8, 'hungry', 'JJ'], 'cop', [7, 'be', 'VBP']]],
-                                           'eid': 'c08b06c1b3a3e9ada88dd7034618d0969ae2b244',
-                                           'frequency': 0.0,
-                                           'pattern': 's-be-a',
-                                           'skeleton_dependencies': [[[8, 'hungry', 'JJ'], 'nsubj', [6, 'I', 'PRP']],
-                                                                     [[8, 'hungry', 'JJ'], 'cop', [7, 'be', 'VBP']]],
-                                           'skeleton_words': [['I', 'PRP'],
-                                                              ['be', 'VBP'],
-                                                              ['hungry', 'JJ']],
-                                           'verbs': 'be',
-                                           'words': [['I', 'PRP'],
-                                                     ['be', 'VBP'],
-                                                     ['hungry', 'JJ']]},
-                                          {'dependencies': [[[2, 'go', 'VBP'],
-                                                             'nsubj',
-                                                             [1, 'I', 'PRP']],
-                                                            [[2, 'go', 'VBP'],
-                                                             'nmod:to',
-                                                             [4, 'lunch', 'NN']],
-                                                            [[4, 'lunch', 'NN'],
-                                                             'case',
-                                                             [3, 'to', 'TO']],
-                                                            [[4, 'lunch', 'NN'],
-                                                             'case',
-                                                             [3, 'to', 'TO']]],
-                                           'eid': 'a53fd728f8a4dd955e7ed2bd72ff07ffabb8e7f5',
-                                           'frequency': 0.0,
-                                           'pattern': 's-v-X-o',
-                                           'skeleton_dependencies': [[[2, 'go', 'VBP'],
-                                                                      'nsubj',
-                                                                      [1, 'I', 'PRP']],
-                                                                     [[2, 'go', 'VBP'],
-                                                                      'nmod:to',
-                                                                      [4, 'lunch', 'NN']],
-                                                                     [[4, 'lunch', 'NN'],
-                                                                      'case',
-                                                                      [3, 'to', 'TO']]],
-                                           'skeleton_words': [['I', 'PRP'],
-                                                              ['go', 'VBP'],
-                                                              ['to', 'TO'],
-                                                              ['lunch', 'NN']],
-                                           'verbs': 'go',
-                                           'words': [['I', 'PRP'],
-                                                     ['go', 'VBP'],
-                                                     ['to', 'TO'],
-                                                     ['lunch', 'NN']]}],
-                    'sentence_dependencies': [[[2, 'go', 'VBP'], 'nsubj', [1, 'I', 'PRP']],
-                                              [[4, 'lunch', 'NN'], 'case', [3, 'to', 'TO']],
-                                              [[2, 'go', 'VBP'], 'nmod:to', [4, 'lunch', 'NN']],
-                                              [[8, 'hungry', 'JJ'], 'mark', [5, 'because', 'IN']],
-                                              [[8, 'hungry', 'JJ'], 'nsubj', [6, 'I', 'PRP']],
-                                              [[8, 'hungry', 'JJ'], 'cop', [7, 'be', 'VBP']],
-                                              [[2, 'go', 'VBP'], 'advcl:because', [8, 'hungry', 'JJ']],
-                                              [[2, 'go', 'VBP'], 'punct', [9, '.', '.']]],
-                    'sentence_tokens': ['I', 'go', 'to', 'lunch', 'because', 'I', 'am', 'hungry', '.']}]
+                    [({'dependencies': [(1, 'nsubj', 0),
+                                    (1, 'nmod:to', 3),
+                                    (1, 'advcl:because', 7),
+                                    (1, 'punct', 8),
+                                    (3, 'case', 2),
+                                    (7, 'mark', 4),
+                                    (7, 'nsubj', 5),
+                                    (7, 'cop', 6)],
+                        'lemmas': ['I', 'go', 'to', 'lunch', 'because', 'I', 'be', 'hungry', '.'],
+                        'pos_tags': ['PRP', 'VBP', 'TO', 'NN', 'IN', 'PRP', 'VBP', 'JJ', '.'],
+                        'tokens': ['I', 'go', 'to', 'lunch', 'because', 'I', 'am', 'hungry', '.']},
+
+                        EventualityList([
+                            Eventuatlity({'dependencies': [((2, 'hungry', 'JJ'), 'nsubj', (0, 'I', 'PRP')),
+                                                          ((2, 'hungry', 'JJ'), 'cop', (1, 'be', 'VBP'))],
+                                          'eid': 'eae8741fad51a57e78092017def1b5cb4f620d7e',
+                                          'pattern': 's-be-a',
+                                          'pos_tags': ['PRP', 'VBP', 'JJ'],
+                                          'skeleton_dependencies': [((2, 'hungry', 'JJ'), 'nsubj', (0, 'I', 'PRP')),
+                                                                    ((2, 'hungry', 'JJ'), 'cop', (1, 'be', 'VBP'))],
+                                          'skeleton_words': ['I', 'be', 'hungry'],
+                                          'verbs': ['be'],
+                                          'words': ['I', 'be', 'hungry']}),
+                            Eventuatlity({'dependencies': [((1, 'go', 'VBP'), 'nsubj', (0, 'I', 'PRP')),
+                                                          ((1, 'go', 'VBP'), 'nmod:to', (3, 'lunch', 'NN')),
+                                                          ((3, 'lunch', 'NN'), 'case', (2, 'to', 'TO'))],
+                                          'eid': '12b4aa577e56f2f5d96f4716bc97c633d6272ec4',
+                                          'pattern': 's-v-X-o',
+                                          'pos_tags': ['PRP', 'VBP', 'TO', 'NN'],
+                                          'skeleton_dependencies': [((1, 'go', 'VBP'), 'nsubj', (0, 'I', 'PRP')),
+                                                                    ((1, 'go', 'VBP'), 'nmod:to', (3, 'lunch', 'NN')),
+                                                                    ((3, 'lunch', 'NN'), 'case', (2, 'to', 'TO'))],
+                                          'skeleton_words': ['I', 'go', 'to', 'lunch'],
+                                          'verbs': ['go'],
+                                          'words': ['I', 'go', 'to', 'lunch']})
+                        ])]
 
                 Output Example:
                     [('a53fd728f8a4dd955e7ed2bd72ff07ffabb8e7f5',
@@ -116,71 +95,72 @@ class SeedRuleRelationExtractor(BaseRelationExtractor):
                       'Reason',
                       'c08b06c1b3a3e9ada88dd7034618d0969ae2b244')
         """
-        rst_extracted_relations = []
-        for sentence in sentences:
-            eventuality_list = sentence["eventuality_list"]
-            sentence_dependencies = sentence["sentence_dependencies"]
-            sentence_tokens = sentence["sentence_tokens"]
+        if output_format not in ["triple", "relation"]:
+            raise NotImplementedError
 
-            for head_eventuality in eventuality_list:
-                for tail_eventuality in eventuality_list:
-                    if not isinstance(head_eventuality, Eventuality):
-                        tmp = head_eventuality
-                        head_eventuality = Eventuality()
-                        head_eventuality = head_eventuality.from_dict(tmp)
-                    if not isinstance(tail_eventuality, Eventuality):
-                        tmp = tail_eventuality
-                        tail_eventuality = Eventuality()
-                        tail_eventuality = tail_eventuality.from_dict(tmp)
+        extracted_relations_in_order = []
+        for sent_parsed_result, eventualities in sentences:
+            relations_in_sent = []
+            for head_eventuality in eventualities:
+                for tail_eventuality in eventualities:
                     if head_eventuality.position < tail_eventuality.position:
-                        extracted_relations = self._extract_from_eventuality_pair_in_one_sentence(
-                            head_eventuality, tail_eventuality, sentence_dependencies, sentence_tokens)
-                        for rel in extracted_relations:
-                            heid = head_eventuality.eid
-                            teid = tail_eventuality.eid
-                            rst_extracted_relations.append((heid, rel, teid))
-
-        for i in range(len(sentences) - 1):
-            s1_eventuality_list = sentences[i]["eventuality_list"]
-            s2_eventuality_list = sentences[i + 1]["eventuality_list"]
-            if len(s1_eventuality_list) > 1 or len(s2_eventuality_list) > 1:
-                continue
-            s1_sentence_tokens = sentences[i]["sentence_tokens"]
-            s2_sentence_tokens = sentences[i + 1]["sentence_tokens"]
-            for head_eventuality in s1_eventuality_list:
-                for tail_eventuality in s2_eventuality_list:
-                    if not isinstance(head_eventuality, Eventuality):
-                        tmp = head_eventuality
-                        head_eventuality = Eventuality()
-                        head_eventuality = head_eventuality.from_dict(tmp)
-                    if not isinstance(tail_eventuality, Eventuality):
-                        tmp = tail_eventuality
-                        tail_eventuality = Eventuality()
-                        tail_eventuality = tail_eventuality.from_dict(tmp)
-                    extracted_relations = self._extract_from_eventuality_pair_in_two_sentence(
-                        head_eventuality, tail_eventuality,
-                        s1_sentence_tokens,
-                        s2_sentence_tokens)
-                    for rel in extracted_relations:
                         heid = head_eventuality.eid
                         teid = tail_eventuality.eid
-                        rst_extracted_relations.append((heid, rel, teid))
+                        extracted_relations = self._extract_from_eventuality_pair_in_one_sentence(
+                            head_eventuality, tail_eventuality, sent_parsed_result)
+                        if output_format == "triple":
+                            for rel in extracted_relations:
+                                relations_in_sent.append((heid, rel, teid))
+                        elif output_format == "relation":
+                            relations_in_sent.append(Relation(heid, teid, extracted_relations))
+            extracted_relations_in_order.append(relations_in_sent)
 
-        return rst_extracted_relations
-
+        for i in range(len(sentences) - 1):
+            s1_eventuality_list = sentences[i][1]
+            s2_eventuality_list = sentences[i + 1][1]
+            relations_between_sents = []
+            if len(s1_eventuality_list) == 1 and len(s2_eventuality_list) == 1:
+                s1_sentence_tokens = sentences[i][0]["tokens"]
+                s2_sentence_tokens = sentences[i + 1][0]["tokens"]
+                head_eventuality = s1_eventuality_list[0]
+                tail_eventuality = s2_eventuality_list[0]
+                heid = head_eventuality.eid
+                teid = tail_eventuality.eid
+                extracted_relations = self._extract_from_eventuality_pair_in_two_sentence(
+                    head_eventuality, tail_eventuality,
+                    s1_sentence_tokens,
+                    s2_sentence_tokens)
+                if output_format == "triple":
+                    for rel in extracted_relations:
+                        relations_between_sents.append((heid, rel, teid))
+                elif output_format == "relation":
+                    relations_between_sents.append(Relation(heid, teid, extracted_relations))
+            extracted_relations_in_order.append(relations_between_sents)
+        if in_order:
+            return extracted_relations_in_order
+        else:
+            if output_format == "triple":
+                return sorted(chain(*extracted_relations_in_order))
+            elif output_format == "relation":
+                rid2relation = dict()
+                for relation in chain(*extracted_relations_in_order):
+                    if relation.rid not in rid2relation:
+                        rid2relation[relation.rid] = relation
+                    else:
+                        rid2relation[relation.rid].update_relations(relation)
+                return sorted(rid2relation.values(), key=lambda x: x.rid)
 
     def _extract_from_eventuality_pair_in_one_sentence(self,
-                                                      head_eventuality,
-                                                      tail_eventuality,
-                                                      sentence_dependencies,
-                                                      sentence_tokens):
+                                                       head_eventuality,
+                                                       tail_eventuality,
+                                                       sent_parsed_result):
         extracted_relations = ['Co_Occurrence']
-        for relation_type in RELATION_TYPES:
+        for relation_type in relation_senses:
             for connective_words in RELATION_SEED_CONNECTIVES[relation_type]:
                 if self._verify_connective_in_one_sentence(
                     connective_words, head_eventuality, tail_eventuality,
-                    sentence_dependencies,
-                    sentence_tokens):
+                    sent_parsed_result["dependencies"],
+                    sent_parsed_result["tokens"]):
                     extracted_relations.append(relation_type)
                     break
         return extracted_relations
@@ -191,7 +171,7 @@ class SeedRuleRelationExtractor(BaseRelationExtractor):
                                                       s1_sentence_tokens,
                                                       s2_sentence_tokens):
         extracted_relations = list()
-        for relation_type in RELATION_TYPES:
+        for relation_type in relation_senses:
             for connective_words in RELATION_SEED_CONNECTIVES[relation_type]:
                 if self._verify_connective_in_two_sentence(
                         connective_words,
@@ -203,8 +183,8 @@ class SeedRuleRelationExtractor(BaseRelationExtractor):
         return extracted_relations
 
     def _verify_connective_in_one_sentence(self, connective_words,
-                                       head_eventuality, tail_eventuality,
-                                       sentence_dependencies, sentence_tokens):
+                                           head_eventuality, tail_eventuality,
+                                           sentence_dependencies, sentence_tokens):
         def get_connective_position(connective_words):
             tmp_positions = list()
             for w in connective_words:
@@ -219,8 +199,8 @@ class SeedRuleRelationExtractor(BaseRelationExtractor):
         if connective_string not in sentence_string:
             return False
         shrinked_dependencies = self._shrink_sentence_dependencies(
-            head_eventuality.dependencies,
-            tail_eventuality.dependencies,
+            head_eventuality._raw_dependencies,
+            tail_eventuality._raw_dependencies,
             sentence_dependencies)
         if not shrinked_dependencies:
             return False
@@ -286,31 +266,29 @@ class SeedRuleRelationExtractor(BaseRelationExtractor):
                                       sentence_dependencies):
         head_nodes = set()
         for governor, _, dependent in head_dependencies:
-            head_nodes.add(tuple(governor))
-            head_nodes.add(tuple(dependent))
+            head_nodes.add(governor)
+            head_nodes.add(dependent)
         tail_nodes = set()
         for governor, _, dependent in tail_dependencies:
-            tail_nodes.add(tuple(governor))
-            tail_nodes.add(tuple(dependent))
+            tail_nodes.add(governor)
+            tail_nodes.add(dependent)
         if head_nodes & tail_nodes:
             return None
 
         new_dependencies = list()
         for governor, dep, dependent in sentence_dependencies:
-            governor = tuple(governor)
-            dependent = tuple(dependent)
             if governor in head_nodes:
                 new_governor = '_H_'
             elif governor in tail_nodes:
                 new_governor = '_T_'
             else:
-                new_governor = governor[1]
+                new_governor = governor
             if dependent in head_nodes:
                 new_dependent = '_H_'
             elif dependent in tail_nodes:
                 new_dependent = '_T_'
             else:
-                new_dependent = dependent[1]
+                new_dependent = dependent
             if new_governor != new_dependent:
                 new_dependencies.append((new_governor, dep, new_dependent))
         return new_dependencies

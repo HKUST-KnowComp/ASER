@@ -1,74 +1,82 @@
-import os,sys,json,re
+import os
+import sys
+try:
+    import ujson as json
+except:
+    import json
 from pprint import pprint
-
-id = '/home/data/corpora/nytimes/nyt_preprocess/parsed/2001/03/13/5.txt@1'
 
 class ParsedReader:
     def __init__(self):
         pass
 
-    def get_parsed_sent(self,id:str,ctx_window=0):
-        file_name,sent_id = id.split('@')
-        sent_id = int(sent_id)
-        sent,lctx,rctx=None,None,None
-        with open(file_name) as f:
+    def generate_sid(self, sent, file_name, line_no):
+        return file_name + "|" + str(line_no)
 
+    def get_parsed_paragraphs_from_file(self, file_name):
+        with open(file_name, "r") as f:
+            sent_len = json.loads(f.readline())['sentence_lens']
+            paragraphs = list()
+            line_no = 1
+            para_idx = 0
+            while para_idx < len(sent_len):
+                paragraph = list()
+                end_no = sent_len[para_idx]
+                while line_no < end_no:
+                    sent = json.loads(f.readline())
+                    sent["sid"] = self.generate_sid(sent, file_name, line_no)
+                    paragraph.append(sent)
+                    line_no += 1
+                para_idx += 1
+                paragraphs.append(paragraph)
+        return paragraphs
+
+    def get_parsed_sent(self, sent_id, ctx_window=0):
+        file_name, line_no = sent_id.rsplit("|", 1)
+        line_no = int(line_no)
+        sent, lctx, rctx = None, list(), list()
+        with open(file_name, "r") as f:
             sent_len = json.loads(f.readline())['sentence_lens']
             # print('sent_len:{}'.format(sent_len))
-            if sent_len!=[] and sent_id < sent_len[-1]-1:
+            if len(sent_len) == 0:
+                print('id:{} exceeds file limit.. file:{} is empty'.format(sent_id, file_name))
+            elif line_no >= sent_len[-1]:
+                print('id:{} exceeds file limit.. file:{} only have {} lines'.format(sent_id, file_name, sent_len[-1]-1))
+            else:
+                [f.readline() for _ in range(line_no-ctx_window)]
 
-                [f.readline() for _ in range(sent_id-ctx_window)]
                 # left ctx
-                lctx_num = sent_id if sent_id-ctx_window<0 else ctx_window
-                lctx = [json.loads(f.readline()) for _ in range(lctx_num)]
+                lctx_num = line_no if line_no-ctx_window < 0 else ctx_window
+                for l_line_no in range(line_no-lctx_num, line_no):
+                    l_sent = json.loads(f.readline())
+                    l_sent["sid"] = self.generate_sid(l_sent, file_name, l_line_no)
+                    lctx.append(l_sent)
 
-                sent = json.loads(f.readline().strip())
+                # sent
+                sent = json.loads(f.readline())
+                sent["sid"] = self.generate_sid(sent, file_name, line_no)
+
                 # right ctx
-                for i in range(ctx_window):
-                    line = f.readline().strip()
-                    if line != '':
-                        if rctx is None:
-                            rctx = []
-                        rctx.append(json.loads(line))
-            else:
-                if sent_len == []:
-                    print('id:{} exceeds file limit.. file:{} is empty'.format(sent_id,file_name))
-                else:
-                    print('id:{} exceeds file limit.. file:{} only have {} lines'.format(sent_id,file_name,sent_len[-1]-1))
-        return {'sent':sent,'lctx':lctx,'rctx':rctx}
+                rctx_num = sent_len[-1]-line_no-1 if line_no+1+ctx_window > sent_len[-1] else ctx_window
+                for r_line_no in range(line_no+1, line_no+1+rctx_num):
+                    r_sent = json.loads(f.readline())
+                    r_sent["sid"] = self.generate_sid(r_sent, file_name, r_line_no)
+                    rctx.append(r_sent)
+        return {'sent':sent,'lctx':lctx, 'rctx':rctx}
 
-    def get_file(self,file_name):
-        sents = []
-        for i_l,line in enumerate(open(file_name)):
-            line = line.strip()
-            if i_l != 0:
-                sent = json.loads(line)
-                sents.append(sent)
-            else:
-                meta = json.loads(line)
-                if meta['sentence_lens'] == []:
-                    break
-        return sents
 
-# find mention locations in a eventuality
-def find_mention_from_event(ment:str,event:str):
-    comp = re.compile(ment)
-    res = comp.finditer(event)
-    return [m.span() for m in res]
 if __name__=='__main__':
+    sent_id = '/home/data/corpora/nytimes/nyt_preprocess/parsed/2001/03/13/5.txt|1'
     parse_reader = ParsedReader()
-    # res = parse_reader.get_parsed_sent(id,2)
-    # for k,v in res.items():
-    #     if k == 'sent':
-    #         if v is None:
-    #             pprint({k:v})
-    #         else:
-    #             pprint({k:v['raw']})
-    #     else:
-    #         if v is None:
-    #             pprint({k:v})
-    #         else:
-    #             pprint({k:[i['raw'] for i in v]})
-
-    res = parse_reader.get_file(id[:-2])
-    print(res)
+    res = parse_reader.get_parsed_sent(sent_id, 2)
+    for k,v in res.items():
+        if k == 'sent':
+            if v is None:
+                pprint({k:v})
+            else:
+                pprint({k:v['text']})
+        else:
+            if v is None:
+                pprint({k:v})
+            else:
+                pprint({k:[i['text'] for i in v]})
