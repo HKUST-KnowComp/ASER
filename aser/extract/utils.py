@@ -4,7 +4,6 @@ import socket
 from stanfordnlp.server import CoreNLPClient
 
 
-_VALID_CHARS = """qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890`~!@#$%^&*/?., ;:"'"""
 _ANNOTATORS = ('tokenize', 'ssplit', 'pos', 'lemma', 'depparse')
 
 def is_port_occupied(ip='127.0.0.1', port=80):
@@ -42,55 +41,14 @@ def get_corenlp_client(corenlp_path, port, annotators=_ANNOTATORS):
         return corenlp_client, False
 
 
-def parse_sentense_with_stanford(input_sentence, corenlp_client, annotators=_ANNOTATORS):
-    def clean_sentence_for_parsing(input_sentence):
-        new_sentence = ''
-        for char in input_sentence:
-            if char in _VALID_CHARS:
-                new_sentence += char
-            else:
-                new_sentence += '\n'
-        return new_sentence
-    cleaned_sentence = clean_sentence_for_parsing(input_sentence)
-    tmp_output = corenlp_client.annotate(cleaned_sentence,
-                                         annotators=list(annotators),
-                                         output_format="json")
-    parsed_rst_list = list()
-    for s in tmp_output['sentences']:
-        enhanced_dependency_list = s['enhancedPlusPlusDependencies']
-        dependencies = set()
-        for relation in enhanced_dependency_list:
-            if relation['dep'] == 'ROOT':
-                continue
-            governor_pos = relation['governor']
-            dependent_pos = relation['dependent']
-            dependencies.add(
-                (governor_pos - 1,
-                 relation['dep'],
-                 dependent_pos - 1))
-        dependencies = list(dependencies)
-        dependencies.sort(key=lambda x: (x[0], x[2]))
 
-        if s['tokens']:
-            char_st = s['tokens'][0]['characterOffsetBegin']
-            char_end = s['tokens'][-1]['characterOffsetEnd']
-        else:
-            char_st, char_end = 0, 0
-        parsed_rst_list.append({
-            "text": cleaned_sentence[char_st:char_end],
-            "dependencies": dependencies,
-            "tokens": [t['word'] for t in s['tokens']],
-            "lemmas": [t['lemma'] for t in s['tokens']],
-            "pos_tags": [t['pos'] for t in s['tokens']]
-        })
-    return parsed_rst_list
-
-def parse_sentense_with_stanford_split(input_sentence, corenlp_client,
+def parse_sentense_with_stanford(input_sentence, corenlp_client:CoreNLPClient,
                                        annotators=_ANNOTATORS):
     type_set = {'CITY', 'ORGANIZATION', 'COUNTRY', 'STATE_OR_PROVINCE', 'LOCATION', 'NATIONALITY', 'PERSON'}
     pronoun_set = {'I', 'me', 'my', 'mine', 'myself', 'we', 'us', 'our', 'ours', 'ourselves', 'you', 'your', 'yours',
                    'yourself', 'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers', 'herself', 'it',
                    'its', 'itself', 'they', 'them', 'their', 'theirs', 'themself', 'themselves', }
+
     EMPTY_SENTENCE_PARSED_RESULT = {'text': '.', 'dependencies': [], 'tokens': ['.']}
     if 'lemma' in annotators:
         EMPTY_SENTENCE_PARSED_RESULT['lemmas'] = ['.']
@@ -104,23 +62,15 @@ def parse_sentense_with_stanford_split(input_sentence, corenlp_client,
 
     threshold = 230
 
-    # release version
-    # def clean_sentence_for_parsing(text):
-    #     re.sub(r'[^\x00-\x7F]+', ' ', text)
 
-    def clean_sentence_for_parsing(input_sentence):
-        input_sentence = re.sub(r'[ \t]{2,}', ' ', input_sentence)
-        new_sentence = ''
-        for char in input_sentence:
-            if char in _VALID_CHARS:
-                new_sentence += char
-            else:
-                new_sentence += '\n'
-        return new_sentence
+    def clean_sentence_for_parsing(text):
+        return re.sub(r'[^\x00-\x7F]+', ' ', text)
+
 
     cleaned_para = clean_sentence_for_parsing(input_sentence)
     raw_sentences = corenlp_client.annotate(cleaned_para, annotators=['tokenize', 'ssplit', ],
                                             output_format='json')
+
     parsed_rst_list = list()
     # annotators_wo_tokenize = [a for a in annotators if a not in {'tokenize','ssplit'}]
 
@@ -146,7 +96,8 @@ def parse_sentense_with_stanford_split(input_sentence, corenlp_client,
                                                  #     'outputFormat': 'json'
                                                  # }
                                                  )
-        except:
+        except Exception as e:
+            print(e)
             parsed_rst_list.append(EMPTY_SENTENCE_PARSED_RESULT)
             continue
 
@@ -186,8 +137,11 @@ def parse_sentense_with_stanford_split(input_sentence, corenlp_client,
             parsed_rst_list[-1]['mentions'] = mentions
         if 'parse' in annotators:
             parsed_rst_list[-1]['parse'] = s['parse']
-            
+
     return parsed_rst_list
+
+
+
 
 def sort_dependencies_position(dependencies, reset_position=True):
     """ Fix absolute position into relevant position and sort.
@@ -246,3 +200,4 @@ def iter_files(path):
                 yield os.path.join(dirpath, f)
     else:
         raise RuntimeError('Path %s is invalid' % path)
+

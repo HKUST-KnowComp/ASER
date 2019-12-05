@@ -43,15 +43,17 @@ def is_alive(port):
         raise ShouldRetryException(e)
 
 
-def start_server(server_num, annotators, server_port=9101):
+def start_server(server_num, annotators, server_port=9101, corenlp_path=None):
     servers = []
     for port in range(server_num):
         port += server_port
         anno = ','.join(annotators)
         props_path = write_corenlp_props(annotators=anno)
-        start_cmd = f"java -Djava.io.tmpdir=/home/hkeaa/.tmp -Xmx5G -cp /home/hkeaa/tools/stanford-corenlp/* " \
+
+        start_cmd = f"java -Djava.io.tmpdir={os.path.dirname(corenlp_path)}/.tmp -Xmx5G -cp {corenlp_path}/* " \
                     f"edu.stanford.nlp.pipeline.StanfordCoreNLPServer -port {port} -timeout 60000 -threads 5 -maxCharLength 100000" \
                     f" -quiet True -serverProperties {props_path} -preload {anno}"
+
         start_cmd = start_cmd and shlex.split(start_cmd)
         servers.append(start_service(start_cmd))
         while True:
@@ -69,5 +71,7 @@ def start_server(server_num, annotators, server_port=9101):
 
 
 if __name__ == '__main__':
-    # start_server(server_num=10,annotators=['tokenize', 'ssplit', 'pos', 'lemma', 'depparse', 'ner'])
-    start_server(server_num=10, annotators=['tokenize', 'ssplit', 'parse'])
+    corenlp_path = '/home/software/stanford-corenlp/stanford-corenlp-full-2018-02-27'
+    start_server(server_num=10, annotators=['tokenize', 'ssplit', 'pos', 'lemma', 'parse', 'ner'],
+                 corenlp_path=corenlp_path)
+    # start_server(server_num=10, annotators=['tokenize', 'ssplit', 'parse'])

@@ -8,24 +8,17 @@ from multiprocessing import Pool
 from nltk import corpus
 from shutil import copyfile
 from tqdm import tqdm
+
 try:
     import ujson as json
 except:
     import json
 
-from aser.extract.utils import get_corenlp_client, parse_sentense_with_stanford_split
+from aser.extract.utils import get_corenlp_client, parse_sentense_with_stanford
 from aser.extract.entity_linker import LinkSharedSource, Mention, Entity, str_contain, acronym, DisjointSet, base_url
+from aser.utils.config import get_raw_process_parser
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--data', type=str, default="yelp", help='which dataset to parse and link')
-parser.add_argument('--link', action='store_true', help='whether to use entity linking')
-parser.add_argument('--link_per_doc', action='store_true', help='link entities of entire doc or individual paragraph')
-parser.add_argument('--check', action='store_true', help='check file to be parsed without parsing')
-parser.add_argument('--worker_num', type=int, default=1, help='specify workers number')
-parser.add_argument('--parse', action='store_true', help='flag to set parsing function')
-
-parser.add_argument('--chunk_size', type=int, default=1, help='chunk size of whole dataset')
-parser.add_argument('--chunk_inx', type=int, default=0, help='index of chunks')
+parser = get_raw_process_parser()
 args = parser.parse_args()
 
 check_flg = args.check
@@ -141,10 +134,11 @@ def link(sents):
     stop_words = set(corpus.stopwords.words('english'))
     mentions = []
     for i_s, s in enumerate(sents):
-        for i_m, m in enumerate(s['mentions']):
-            mentions.append(Mention(m['start'], m['end'], s['text'], m['ner'], m['text'], i_s, i_m))
-            abbr = acronym(m['text'], stop_words, ner=m['ner'])
-            mentions[-1].alias = abbr
+        if s['text'] != '.':
+            for i_m, m in enumerate(s['mentions']):
+                mentions.append(Mention(m['start'], m['end'], s['text'], m['ner'], m['text'], i_s, i_m))
+                abbr = acronym(m['text'], stop_words, ner=m['ner'])
+                mentions[-1].alias = abbr
 
     def get_entities(mention: Mention):
         mset = mention.alias
@@ -206,8 +200,6 @@ def link(sents):
                     person_cand[label][eid] = ent
         for i_m, m in enumerate(mention_person):
             label = dset.parent[i_m]
-            # cands = mention.candidates.items()
-            # cands = sorted(cands, key=lambda x: x[1].freq, reverse=True)
             tmp = person_cand[label].items()
             tmp = sorted(tmp, key=lambda x: x[1].freq, reverse=True)
             m.candidates = [t[1] for t in tmp]
@@ -281,8 +273,8 @@ def check_func(task):
         else:
             if os.path.exists(parsed_fn_list[i_f]):
                 parsed_file_flg = not check_file_empty(parsed_fn_list[i_f])
-                    #               and check_file_integrity(
-                    # parsed_fn_list[i_f])
+                #               and check_file_integrity(
+                # parsed_fn_list[i_f])
                 # unparsed or corrupted
                 if not parsed_file_flg:
                     unparsed_num += 1
@@ -309,7 +301,7 @@ def parse_func(task):
     parsed_root = task.parsed_root
     parsed_fn_list = [os.path.join(parsed_root, change_file_extension(f.fn)) for f in file_list]
 
-    client = get_corenlp_client(corenlp_path, port, annotators=anno)
+    client = get_corenlp_client(corenlp_path, port, annotators=anno)[0]
 
     for i_f, item in enumerate(file_list):
         if os.path.exists(parsed_fn_list[i_f]):
@@ -333,7 +325,7 @@ def parse_func(task):
             for i_p in range(0, len(para), threshold):
                 content = para[i_p:i_p + threshold].strip()
                 if content is not None and len(content) > 0:
-                    tmp = parse_sentense_with_stanford_split(content, client, annotators=anno)
+                    tmp = parse_sentense_with_stanford(content, client, annotators=anno)
                     sentences_unlinked.extend(tmp)
 
             if task.link_flg and not link_per_doc:
@@ -369,13 +361,13 @@ def main():
     aser_root = '/home/data/corpora/aser/data'
     dataset_name = args.data
     raw_root = os.path.join(aser_root, dataset_name + '/raw')
-    parsed_root = os.path.join(aser_root, dataset_name + '/parsed_const')
+    parsed_root = os.path.join(aser_root, dataset_name + '/parsed_new')
     worker_num = args.worker_num
-    corenlp_path = '/home/hkeaa/tools/stanford-corenlp'
-    anno = ['tokenize', 'ssplit', 'parse']  # anno = ['tokenize', 'ssplit', 'pos', 'lemma', 'depparse', 'ner']
+    corenlp_path = '/home/software/stanford-corenlp/stanford-corenlp-full-2018-02-27'
+    anno = ['tokenize', 'ssplit', 'pos', 'lemma', 'parse', 'ner']
 
     raw_inx_fn = os.path.join(raw_root, 'path_inx.json')
-    if os.path.exists(raw_inx_fn): # and not check_flg:
+    if os.path.exists(raw_inx_fn) and not check_flg:
         file_name_list = load_paths(raw_inx_fn, raw_root)
     else:
         file_name_list = read_dir(raw_root)
@@ -385,7 +377,7 @@ def main():
     print('all raw file number: {}'.format(len(file_name_list)))
 
     def chunk_list(l):
-        chunk_size = int(math.ceil(len(l) / (worker_num + 20.0)))
+        chunk_size = min(20000, int(math.ceil(len(l) / (worker_num + 20.0))))
         for i in range(0, len(l), chunk_size):
             yield l[i:i + chunk_size]
 
@@ -402,7 +394,7 @@ def main():
             tasks.append(t)
         unparsed_list = []
         with Pool(worker_num) as pool:
-            for res in tqdm(pool.imap_unordered(check_func, tasks),total=len(tasks)):
+            for res in tqdm(pool.imap_unordered(check_func, tasks), total=len(tasks)):
                 res_parsed_num, res_unparsed_num, res_empty_num, res_total_num, res_unparsed_list = res
                 parsed_num += res_parsed_num
                 unparsed_num += res_unparsed_num
@@ -436,11 +428,13 @@ def main():
 
         # print('task num:{} file num:{} for {} workers'.format(len(tasks), file_num, worker_num))
         print(f'file {len(tasks[-1].file_list)} per task')
-
+        import time
+        t = time.time()
         with Pool(worker_num) as pool:
             res = pool.map_async(parse_func, tasks)
             res.get()
             res.wait()
+        print(f'cost {time.time()-t}f')
 
 
 if __name__ == '__main__':

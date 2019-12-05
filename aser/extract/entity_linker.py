@@ -210,22 +210,6 @@ class Entity:
         self.freq = (self.freq + other.freq) / 2
 
 
-class BigSharedDict:
-    def __init__(self, path, manager: Manager):
-        self.dict_list = manager.list()
-        for fn in os.listdir(path):
-            if fn.endswith('.dict'):
-                tmp = read_big_dict(os.path.join(path, fn))
-                self.dict_list.append(manager.dict(tmp))
-                print('\tread {} done'.format(fn))
-                break
-
-    def get(self, k):
-        for dic in self.dict_list:
-            v = dic.get(k, None)
-            if v is not None:
-                return v
-        return None
 
 
 def read_dict_from_dir(path):

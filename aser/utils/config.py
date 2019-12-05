@@ -1,5 +1,6 @@
 import argparse
 
+
 class ASERCmd:
     extract_events = b"__EXTRACT_EVENTS__"
     exact_match_event = b"__EXACT_MATCH_EVENT__"
@@ -59,7 +60,7 @@ def get_pipe_args_parser():
                         help="ASER raw data directory")
     # Processed Data
     parser.add_argument("-processed_dir", type=str, default="./",
-                        help="ASER processed_dir data directory")              
+                        help="ASER processed_dir data directory")
     # KG
     parser.add_argument("-kg_dir", type=str, default="./",
                         help="ASER KG directory")
@@ -74,5 +75,37 @@ def get_pipe_args_parser():
     # Log
     parser.add_argument("-log_path", type=str, default="./.tmp.log",
                         help="Logging path of pipe output")
+
+    return parser
+
+
+def get_raw_process_parser():
+    parser = argparse.ArgumentParser()
+
+    # Dataset
+    parser.add_argument('--data', type=str, default="nyt",
+                        help='which dataset to parse or link')
+
+    # Parsing
+    parser.add_argument('--parse', action='store_true',
+                        help='set up parsing function')
+
+    # Linking
+    parser.add_argument('--link', action='store_true',
+                        help='set up entity linking function')
+    parser.add_argument('--link_per_doc', action='store_true',
+                        help='link entities of entire doc or individual paragraph')
+
+    # Misc
+    parser.add_argument('--check', action='store_true',
+                        help='check the integrity of parsed files')
+    parser.add_argument('--worker_num', type=int, default=1,
+                        help='specify workers number')
+
+    # Dataset Split
+    parser.add_argument('--chunk_size', type=int, default=1,
+                        help='chunk size of whole dataset')
+    parser.add_argument('--chunk_inx', type=int, default=0,
+                        help='index of chunks')
 
     return parser
