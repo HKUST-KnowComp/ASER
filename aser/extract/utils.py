@@ -100,7 +100,9 @@ def parse_sentense_with_stanford(input_sentence, corenlp_client:CoreNLPClient,
             print(e)
             parsed_rst_list.append(EMPTY_SENTENCE_PARSED_RESULT)
             continue
-
+        if len(tmp_output['sentences']) == 0:
+            parsed_rst_list.append(EMPTY_SENTENCE_PARSED_RESULT)
+            continue
         s = tmp_output['sentences'][0]
 
         enhanced_dependency_list = s['enhancedPlusPlusDependencies']

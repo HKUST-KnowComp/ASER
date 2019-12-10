@@ -242,22 +242,26 @@ def check_func(task):
     check_unparsed_rawlist = []
 
     def check_file_empty(fn: str):
-        for _ in open(fn):
+        try:
+            for _ in open(fn):
+                return False
+        except Exception as e:
+            print(f'{fn} error: {e}')
             return False
         return True
 
-    # def check_file_integrity(fn: str):
-    #     lens = None
-    #     line_num, except_line_num = 0, None
-    #     for line in open(fn):
-    #         line = line.strip()
-    #         if lens is None:
-    #             lens = json.loads(line)['sentence_lens']
-    #             except_line_num = lens[-1]
-    #         line_num += 1
-    #     if except_line_num == line_num:
-    #         return True
-    #     return False
+    def check_file_integrity(fn: str):
+        lens = None
+        line_num, except_line_num = 0, None
+        for line in open(fn):
+            line = line.strip()
+            if lens is None:
+                lens = json.loads(line)['sentence_lens']
+                except_line_num = lens[-1]
+            line_num += 1
+        if except_line_num == line_num:
+            return True
+        return False
 
     parsed_fn_list = [os.path.join(parsed_root, change_file_extension(f.fn)) for f in file_list]
     for i_f, item in enumerate(file_list):
@@ -272,9 +276,7 @@ def check_func(task):
         # raw file not empty (unparsed or parsed)
         else:
             if os.path.exists(parsed_fn_list[i_f]):
-                parsed_file_flg = not check_file_empty(parsed_fn_list[i_f])
-                #               and check_file_integrity(
-                # parsed_fn_list[i_f])
+                parsed_file_flg = not check_file_empty(parsed_fn_list[i_f]) and check_file_integrity(parsed_fn_list[i_f])
                 # unparsed or corrupted
                 if not parsed_file_flg:
                     unparsed_num += 1
