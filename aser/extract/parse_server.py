@@ -50,7 +50,7 @@ def start_server(server_num, annotators, server_port=9101, corenlp_path=None):
         anno = ','.join(annotators)
         props_path = write_corenlp_props(annotators=anno)
 
-        start_cmd = f"java -Djava.io.tmpdir={os.path.dirname(corenlp_path)}/.tmp -Xmx5G -cp {corenlp_path}/* " \
+        start_cmd = f"java -Djava.io.tmpdir={os.path.dirname(corenlp_path)}/.tmp -Xmx11G -cp {corenlp_path}/* " \
                     f"edu.stanford.nlp.pipeline.StanfordCoreNLPServer -port {port} -timeout 60000 -threads 5 -maxCharLength 100000" \
                     f" -quiet True -serverProperties {props_path} -preload {anno}"
 
