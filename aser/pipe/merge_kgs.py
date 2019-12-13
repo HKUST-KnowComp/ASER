@@ -11,7 +11,7 @@ from aser.relation import Relation, relation_senses
 from aser.utils.logging import init_logger, close_logger
 
 db = "sqlite"
-log_path = "./.tmp.log"
+log_path = "./.merge_kg.log"
 
 if __name__ == "__main__":
     logger = init_logger(log_file=log_path)

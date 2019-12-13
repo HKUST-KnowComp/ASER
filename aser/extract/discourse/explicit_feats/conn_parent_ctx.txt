@@ -1,0 +1,1707 @@
+as if|S-NULL-ADVP-*COMMA*-SBAR-*COMMA*-NP-VP-.
+instead|ADVP-VP-RB
+So|S-NULL-RB-SBAR-*COMMA*-NP-VP-.
+but|S-NULL-S-CC-ADVP-*COMMA*-NP-VP-.
+And|S-NULL-``-CC-NP-VP-.-''
+as a result|S-NULL-NP-*COMMA*-PP-*COMMA*-VP-.
+But|S-NULL-CC-PP-*COMMA*-ADVP-NP-VP-.
+yet|VP-S-VP-*COMMA*-CC-VP
+before|PP-VP-NP-IN-NP
+but|S-NULL-S-CC-S-.
+if|ADJP-VP-ADJP-IN-ADJP
+then|VP-S-VP-CC-RB-VP-*COMMA*-VP-*COMMA*-CC-VP
+as soon as|VP-NP-VP-*COMMA*-CONJP-VP
+For instance|S-NULL-PP-*COMMA*-NP-ADVP-VP-.-''
+Insofar as|None
+or|S-S-S-*COMMA*-CC-S
+but|S-S-S-*COMMA*-''-CC-S
+in fact|S-S-PP-NP-VP
+and|NONE_TREE
+So|S-NULL-RB-NP-VP-.
+once|SBAR-VP-IN-S
+As long as|S-S-ADVP-*COMMA*-NP-VP
+but|VP-S-VP-*COLON*-CC-PRN-VP
+But|S-NULL-``-CC-VP-.-''
+In addition|NONE_TREE
+after|PP-S-IN-S
+later|ADVP-VP-RBR
+but|S-VP-S-*COMMA*-CC-S
+and|S-NP-S-CC-S
+Still|ADVP-S-RB
+while|SBAR-VP-IN-S
+but|S-NULL-NP-S-*COMMA*-CC-S-.
+so that|VP-VP-VBG-S-SBAR
+then|S-NULL-S-*COMMA*-S-*COMMA*-CC-RB-*COMMA*-PP-*COMMA*-VP-.-''
+So|S-S-IN-NP-VP
+and|NP-VP-NP-*COMMA*-CC-RB-NP
+but|S-S-S-*COMMA*-CC-``-S
+for example|S-S-NP-ADVP-*COMMA*-PP-*COMMA*-VP
+In contrast|S-NULL-PP-*COMMA*-NP-VP-.
+if|SBAR-VP-ADVP-IN-S
+except|SBAR-VP-IN-S
+for example|S-SBAR-NP-*COMMA*-PP-*COMMA*-SBAR
+on the other hand|S-NULL-NP-*COMMA*-PP-*COMMA*-VP-.-''
+but|S-SBAR-``-S-*COMMA*-''-CC-S
+and|S-NULL-S-*COLON*-S-*COLON*-CC-S-.
+Likewise|ADVP-S-RB
+for example|S-NULL-ADVP-*COMMA*-PP-*COMMA*-NP-VP-.
+but|S-NULL-S-PRN-``-CC-S-.-''
+and|NP-NP-NP-*COLON*-CC-NP
+so|S-SINV-S-*COMMA*-IN-S
+For instance|S-NULL-PP-*COMMA*-NP-NP-VP-.
+after|SBAR-S-ADVP-IN-S
+And|S-NULL-``-CC-ADVP-NP-VP-.-''
+as a result|VP-VP-VBN-PP
+But|FRAG-NULL-CC-WP-IN-NP-.
+in fact|NP-S-NP-PP
+But|S-NULL-CC-ADVP-ADVP-*COMMA*-S-VP-.
+so|S-NULL-S-PRN-``-RB-S-.-''
+But|S-S-CC-PRN-NP-VP
+In addition|S-NULL-PP-*COMMA*-NP-*COMMA*-PP-*COMMA*-VP-.
+Then|SINV-NULL-RB-VP-NP-.
+As a result|S-NULL-PP-PRN-NP-VP-.
+for example|VP-VP-VB-NP-*COMMA*-PP
+and|S-NULL-ADVP-*COMMA*-S-*COMMA*-CC-S-.
+But|S-NULL-CC-*COMMA*-PP-*COMMA*-NP-VP-.
+and|S-NULL-S-*COLON*-S-*COLON*-S-*COLON*-S-*COLON*-CC-S-.
+then|S-NULL-S-CC-RB-S-.
+and|S-NULL-S-CC-PRN-S-*COLON*-S-.-''
+So|S-NULL-CC-PP-*COMMA*-''-NP-VP-.
+if|SBAR-S-RB-IN-S
+Earlier|ADVP-S-RBR
+While|SBAR-S-IN-S
+or|SQ-NULL-MD-NP-PRN-CC-MD-NP-VP-.
+and|S-SBAR-S-*COMMA*-S-*COMMA*-S-*COMMA*-CC-S
+for example|S-NULL-NP-*COMMA*-PP-*COMMA*-NP-VP-.
+However|ADVP-S-RB
+But|FRAG-NULL-CC-RB-NP-.
+Next|S-NULL-IN-NP-VP-.
+though|SBAR-S-ADVP-IN-S
+if|SBAR-VP-IN-FRAG
+Consequently|ADVP-S-RB
+besides|PP-S-IN-S
+So|SBAR-S-IN-S
+Hence|ADVP-S-RB
+But|S-NULL-CC-NP-NP-VP-.
+or|S-NULL-S-*COMMA*-CC-S-.-''
+because|SBAR-VP-RB-S
+and|S-NULL-``-S-*COLON*-CC-S-.-''
+and|S-NULL-PP-*COMMA*-S-CC-*COMMA*-S-.
+while|PP-VP-IN-ADVP-NP
+because|SBAR-ADVP-IN-S
+In other words|S-PRN-PP-*COMMA*-PP-*COMMA*-NP-VP-.
+But|S-NULL-CC-ADVP-*COMMA*-NP-VP-.
+also|CONJP-VP-CC-RB
+And|S-S-CC-*COMMA*-PP-*COMMA*-NP-VP
+But|S-NULL-CC-NP-ADVP-VP
+Or|FRAG-NULL-CC-*COMMA*-SBAR-*COLON*-``-S-.
+as|SBAR-S-RB-S
+nor|S-NULL-S-*COMMA*-CC-S-.
+But|S-NULL-CC-PP-NP-*COMMA*-NP-VP-.
+But|S-NULL-CC-*COMMA*-NP-VP-.
+since|SBAR-SBAR-IN-S
+if|SBAR-PP-IN-S
+but|S-NULL-PP-*COMMA*-CC-S-.
+and|SBAR-PP-SBAR-*COMMA*-CC-SBAR
+for example|S-S--LRB--PP-*COMMA*-PP-*COMMA*-NP-VP
+So|S-S-CC-NP-VP
+And|SQ-NULL-CC-FRAG-RB-.
+if|SBAR-S-IN-PRN-S
+thereby|VP-S-VP-CC-RB-VP
+because|SBAR-SINV-IN-S
+instead|S-VP-RB-VP
+though|SBAR-S-IN-FRAG
+But|S-NULL-CC-PRN-SBAR-*COMMA*-NP-VP-.
+after|SBAR-S-IN-S
+rather|CONJP-NP-CC-RB
+Until|SBAR-S-IN-S
+But|S-NULL-``-CC-ADVP-NP-VP-.-''
+if|ADVP-VP-IN
+afterwards|ADVP-NP-RB
+But|S-S-CC-SBAR-*COMMA*-``-NP-VP
+and|S-NULL-PP-*COLON*-S-CC-S-.
+and|NP-PP-NP-VP-*COLON*-CC-PRN
+by contrast|S-NULL-PP-*COMMA*-PP-*COMMA*-NP-VP-.
+and|S-S-SBAR-*COMMA*-S-*COMMA*-''-CC-S
+And|S-NULL-CC-NP-NP-VP-.-''
+before|SBAR-VP-RB-IN-S
+and|S-NULL-S-CC-RB-S-.-''
+But|S-NULL-CC-PP-*COMMA*-PP-ADVP-*COMMA*-NP-VP-.
+and|S-SBAR-S-CC-*COMMA*-S
+And|S-NULL-``-CC-SBAR-*COMMA*-NP-VP-.
+and|S-S-CC-S-*COMMA*-CC-S
+and|VP-VP-VP-*COMMA*-CC-VP
+unless|ADVP-VP-RBR-IN
+also|ADVP-S-RB
+while|NP-PRN-NN
+after|SBAR-VP-ADVP-IN-S
+or|S-SINV-S-CC-S
+if then|S-SINV-S-*COMMA*-CC-S
+but|VP-S-VP-*COMMA*-CC-ADVP-VP
+But|S-NULL-CC-PRN-``-PP-*COMMA*-NP-VP-.
+while|SBAR-ADJP-IN-S
+Overall|ADVP-S-RB
+and|UCP-VP-NP-*COMMA*-CC-RB-NP
+but|S-NULL-S-*COMMA*-CC-S-CC-S-.
+as|SBAR-S-RB-IN-S
+until|SBAR-VP-ADVP-IN-S
+when|NONE_TREE
+so|VP-S-VP-CC-RB-VP
+when|WHADVP-SBAR-WRB
+nor|S-NULL-S-*COMMA*-CC-SINV-.
+Regardless|ADVP-S-RB
+and|S-S-ADVP-*COMMA*-S-CC-S
+but|S-NULL-S-*COMMA*-CC-S-''
+and|S-NULL-PP-*COMMA*-S-*COMMA*-S-*COMMA*-S-CC-S-.
+because|SBAR-VP-IN-PRN-S
+But|S-NULL-CC-SBAR-*COMMA*-VP-.
+Besides|ADVP-S-IN
+as soon as|VP-VP-VBN-PP-ADVP
+but|S-SBAR-S-*COMMA*-''-CC-``-S
+as|SBAR-VP-RB-IN-S
+and|VP-S-VP-*COMMA*-CC-ADVP-VP
+In fact|S-NULL-PP-*COMMA*-NP-VP-.
+But|S-NULL-``-CC-PP-*COMMA*-NP-VP-.-''
+or|S-SBAR-S-CC-S
+as|PP-ADVP-IN-NP
+Thus|ADVP-S-RB
+But|S-S-CC-NP-VP
+but|UCP-NP-PP-*COMMA*-CC-SBAR
+So|S-NULL-IN-NP-VP-.
+although|S-NULL-''-S-*COMMA*-''-IN-S-.
+Afterwards|ADVP-S-RB
+And|S-NULL-CC-NP-*COMMA*-ADVP-*COMMA*-VP-.
+and|S-NULL-ADVP-SBAR-*COMMA*-S-*COMMA*-CC-S-.
+but|S-NULL-S-*COMMA*-CC-SINV-.
+and|S-NULL-S-*COMMA*-CC-S-*COMMA*-S-*COMMA*-CC-S-.
+So|S-NULL-CC-ADVP-*COMMA*-NP-VP-.
+or|SBAR-VP-SBAR-*COLON*-CC-SBAR
+so that|ADVP-VP-RB-RB-SBAR
+but|S-NULL-S-PRN-CC-S-.
+Then|NP-S-RB
+After|PP-S-IN-NP
+But|S-SINV-CC-PP-*COMMA*-``-NP-VP
+until|SBAR-VP-IN-S
+and|S-NULL-PP-*COMMA*-ADVP-*COMMA*-S-CC-S-.
+while|PP-VP-IN-PP
+Specifically|ADVP-S-RB
+while|SBAR-SQ-IN-S
+Thus|S-NULL-RB-PP-*COMMA*-NP-VP-.-''
+But|SQ-NULL-CC-MD-RB-NP-VP-.
+if|ADJP-VP-ADJP-*COMMA*-IN-ADJP-NP
+Before|SBAR-S-IN-S
+then|VP-VP-VP-CC-RB-VP
+For example|S-NULL-PP-*COMMA*-NP-NP-VP-.
+By contrast|S-NULL-PP-*COMMA*-NP-PP-VP-.
+But|FRAG-NULL-CC-VP-.
+and|S-NULL-S-CC-``-S-.-''
+then|VP-VP-VP-*COMMA*-RB-VP
+Then|ADVP-S-RB
+As a result|S-NULL-PP-*COMMA*-NP-ADVP-VP-.
+accordingly|ADVP-VP-RB
+in fact|PRN-ADJP-*COLON*-ADVP-*COMMA*-PP-*COMMA*
+since|SBAR-VP-IN-S
+And|S-NULL-``-CC-SBAR-VP-.-''
+and|S-S-``-SBAR-*COLON*-S-*COMMA*-CC-S
+and|S-NULL-``-SBAR-*COMMA*-S-*COMMA*-CC-S-.-''
+but|UCP-VP-NP-CC-RB-PP
+but|VP-S-VBZ-S-*COMMA*-CC-SBAR
+before|PP-VP-NP-IN-S
+after|SBAR-S-NP-IN-S
+When|NONE_TREE
+When|WHADVP-SBAR-WRB
+Unless|SBAR-S-IN-S
+after|SBAR-SINV-NP-IN-S
+as long as|NP-PP-NP-CONJP-NP
+But|S-NULL-CC-NP-*COMMA*-PP-*COMMA*-VP-.
+but|S-NULL-S-*COMMA*-CC-SQ
+and|S-NULL-PP-*COMMA*-S-*COLON*-CC-*COMMA*-S-.
+On the contrary|S-NULL-PP-*COMMA*-NP-ADVP-VP-.
+then|ADVP-ADVP-RB-CC-RB
+But|S-S-CC-NP-ADVP-VP
+And|S-S-CC-NP-NP-VP
+If|PP-S-IN-NP
+Once|SBAR-S-RB-S
+however|ADVP-S-RB
+But|S-SINV-CC-SBAR-*COMMA*-NP-``-VP
+in turn|S-NULL-NP-*COMMA*-PP-*COMMA*-VP-.
+In other words|S-NULL-PP-*COLON*-VP-.
+for instance|NP-PP-NP-PP
+alternatively|ADVP-PRN-RB
+and|S-SINV-S-*COMMA*-CC-S-*COMMA*-''
+and|S-NULL-``-ADVP-*COMMA*-S-CC-S-.-''
+therefore|ADVP-PP-RB
+But|S-NULL-CC-SBAR-PRN-NP-VP-.-''
+yet|ADVP-S-RB
+before and after|VP-S-VBZ-PP-PP
+On the contrary|S-NULL-``-PP-*COMMA*-NP-VP-.-''
+but|S-SINV-PP-*COMMA*-S-*COMMA*-CC-S
+and|VP-VP-VBD-CC-SBAR
+and|S-PRN-S-*COMMA*-CC-S
+Before|PP-S-IN-S
+If|SBAR-S-IN-PRN-S
+yet|SBAR-SBAR-CC-S
+But|S-NULL-CC-PP-*COMMA*-PP-*COMMA*-NP-ADVP-VP-.
+but|S-S-S-*COLON*-CC-S
+for instance|S-NULL-SBAR-*COMMA*-PP-*COMMA*-NP-VP-.
+because|SBAR-VP-IN-*COMMA*-S
+Because|SBAR-FRAG-IN-S
+before|SBAR-SBAR-IN-S
+By contrast|S-NULL-PP-*COMMA*-NP-VP-.-''
+then|VP-VP-VP-*COMMA*-VP-CC-RB-VP
+but|S-SBAR-S-CC-S
+But|SQ-NULL-CC-VBZ-NP-ADJP-SBAR-.
+and|SBAR-VP-SBAR-*COMMA*-CC-ADVP-SBAR
+And|S-NULL-``-CC-NP-VP-.-''-''
+Accordingly|ADVP-S-RB
+and|S-NULL-S-CC-*COMMA*-S-.
+though|ADVP-S-RB
+but|SBAR-VP-SBAR-*COMMA*-CC-SBAR
+But|FRAG-S-CC-RB-SBAR
+and|S-NULL-S-*COMMA*-CC-SQ
+because|SBAR-S-IN-S
+And|S-SINV-CC-SBAR-*COMMA*-``-NP-VP
+because|SBAR-S-ADVP-IN-S
+in other words|S-NULL-NP-*COMMA*-PP-*COMMA*-VP-.
+And|S-NULL-CC-*COMMA*-NP-ADVP-VP-.
+Yet|S-NULL-RB-NP-ADVP-VP-.
+In other words|S-NULL-PP-*COMMA*-NP-VP-.
+and|S-NULL-ADVP-*COMMA*-S-CC-S-.
+later|ADVP-VP-NP-RB
+yet|SBAR-VP-SBAR-*COMMA*-CC-SBAR
+So|S-S-CC-NP-NP-VP
+rather|ADVP-S-RB
+and|S-NULL-PP-*COMMA*-S-*COMMA*-CC-S-.
+yet|S-SINV-S-*COMMA*-CC-S
+And|S-NULL-CC-PP-*COMMA*-NP-VP
+but|S-NULL-``-S-*COMMA*-CC-S-CC-S-.-''
+so|S-NULL-ADVP-*COMMA*-S-*COLON*-IN-*COMMA*-S-.
+and|VP-S-VP-CC-VP
+But|S-S-CC-SBAR-VP
+As if|S-NULL-SBAR-*COMMA*-NP-VP-.
+and|S-SINV-S-CC-RB-S
+in the end|S-S-PP-*COMMA*-NP-VP
+In fact|S-NULL-PP-*COMMA*-PP-NP-VP-.
+Overall|NP-S-JJ-NNP-NN-NNS
+but|S-NULL-CC-PP-*COLON*-S-*COMMA*-CC-S-.
+for instance|S-NULL-PP-*COMMA*-PP-*COMMA*-NP-VP-.-''
+and|S-S-``-S-*COMMA*-CC-S
+now that|VP-S-VBZ-ADJP-SBAR
+In fact|S-S-PP-*COMMA*-NP-VP
+nor|VP-S-VP-*COMMA*-CC-VP
+then|VP-S-VP-CC-RB-VP
+And|S-S-CC-*COMMA*-SBAR-*COMMA*-NP-VP
+similarly|ADVP-VP-RB
+for example|VP-S-VBP-ADJP-*COMMA*-PP-*COMMA*-SBAR
+and|S-NULL-PP-*COMMA*-S-*COMMA*-S-*COMMA*-S-*COMMA*-S-*COMMA*-S-CC-S-.
+And|S-NULL-CC-NP-PRN-VP-.
+then|VP-S-VP-*COMMA*-CC-RB-VP
+then|ADVP-VP-ADVP-CC-RB
+In short|S-S-PP-*COMMA*-NP-VP
+but|S-NULL--LRB--S-*COLON*-S-*COMMA*-CC-S-.--RRB-
+But|S-NULL-CC-PP-*COMMA*-NP-ADVP-ADVP-VP-.
+but|S-NULL-S-*COMMA*-S-*COMMA*-CC-S-.
+For example|S-NULL-PP-*COMMA*-NP-VP-.
+and|S-NULL-PP-*COMMA*-SBAR-*COMMA*-S-CC-RB-S-.
+because|SBAR-ADJP-IN-``-S
+As long as|S-NULL-ADVP-*COMMA*-NP-VP-.
+rather|SBAR-VP-SBAR-*COLON*-CC-RB
+Nor|SINV-NULL-CC-VBZ-NP-NP-.
+and|ADJP-VP-ADJP-CC-ADJP
+or|UCP-VP-JJ-*COMMA*-CC-ADVP
+But|S-SINV-CC-NP-VP
+although|PP-PP-IN-ADJP
+as though|VP-S-ADVP-VBD-CC-VBN-*COMMA*-SBAR
+But|S-S-``-CC-NP-VP
+In fact|S-NULL-PP-*COMMA*-PP-*COMMA*-NP-ADVP-VP-.
+until|SBAR-ADJP-IN-S
+but|S-NULL-S-*COLON*-CC-SQ-.
+So|S-NULL-RB-NP-ADVP-VP-.
+as if|VP-VP-VB-SBAR
+and|S-NULL-S-CC-S-*COLON*-S-.
+except|SBAR-VP-IN-IN-S
+And|S-NULL-CC-VP-.
+yet|ADVP-VP-RB-*COMMA*-RB
+while|SBAR-VP-IN-*COMMA*-S
+and|S-SINV-S-CC-S-*COMMA*-''
+so|S-NULL-S-PRN-IN-S-.
+as long as|VP-VP-VB-ADVP-S
+and|S-NULL-ADVP-*COMMA*-S-*COLON*-S-*COLON*-S-*COMMA*-CC-S-.
+before|SBAR-S-NP-IN-S
+once|SBAR-S-IN-S
+and|SBARQ-VP-SBARQ-CC-SBARQ-''
+while|PP-NP-IN-NP
+So|S-NULL-CC-PP-*COMMA*-NP-VP-.
+after|PP-S-RB-IN-S
+and|S-FRAG-S-*COMMA*-CC-S
+until|PP-VP-IN-SBAR
+so that|VP-S-VBD-NP-SBAR
+but|NP-VP-NP-*COMMA*-CC-NP
+If then|None
+But|S-NULL-CC-PP-*COMMA*-ADVP-*COMMA*-NP-VP-.
+and|SBAR-S-SBAR-*COMMA*-CC-SBAR
+Since|PP-S-IN-S
+or|SBAR-VP-SBAR-CC-SBAR
+by then|S-NULL-CC-PP-*COMMA*-NP-VP-.
+and|NP-SINV-NP-*COMMA*-CC-RRC
+But|S-NULL-``-CC-PRN-``-NP-VP-.-''
+otherwise|VP-S-VP-CC-RB-VP
+And|S-NULL-CC-*COMMA*-SBAR-*COMMA*-PP-*COMMA*-NP-VP-.
+if|SBAR-ADVP-IN-S
+moreover|ADVP-S-RB
+So|NP-S-RB
+and|S-NULL-NP-PRN-VP-''-CC-S-.
+So|SBARQ-NULL-RB-WHADVP-SQ-.
+but|S-PRN-``-S-*COMMA*-CC-S-''
+So|S-NULL-RB-NP-VP-.-''
+if|CONJP-PP-IN-RB
+since|SBAR-S-RB-IN-S
+as|SBAR-VP-NP-IN-S
+But|S-NULL-CC-PP-*COMMA*-S-*COMMA*-CC-S-.
+for example|S-SBAR-*COMMA*-PP-*COMMA*-PP-PRN-*COMMA*-NP-*COMMA*-S-*COMMA*-VP
+But|S-NULL-CC-SBAR-VP-.
+then|S-NULL-S-CC-RB-S-.-''
+as|PP-NP-JJ-IN-NP
+before|SBAR-VP-NP-IN-S
+for example|S-NULL-PP-*COMMA*-PP-PRN-NP-VP-.
+because|SBAR-VP-RB-PRN-S
+In particular|S-NULL-PP-PRN-NP-VP-.
+for instance|S-SINV-NP-*COMMA*-PP-*COMMA*-ADVP-VP
+in fact|PRN-VP-*COMMA*-PP-*COMMA*
+But|S-NULL-CC-SBAR-*COMMA*-SBAR-*COMMA*-NP-VP-.
+Yet|S-NULL-CC-PP-*COMMA*-NP-VP-.
+ultimately|ADVP-S-RB
+before|SBAR-SINV-NP-IN-S
+then|VP-S-VP-*COMMA*-RB-ADVP-VP
+after|SBAR-NP-IN-S
+Plus|ADVP-S-NNP
+for instance|S-NULL-NP-*COMMA*-PP-*COMMA*-NP-VP-.
+And|SBARQ-NULL-CC-WHADVP-SQ-SQ-.
+and|S-NULL-S-*COMMA*-``-CC-S-.-''
+By comparison|S-NULL--LRB--PP-*COMMA*-NP-ADVP-VP-.--RRB-
+and|NP-VP-NN-CC-PRN-NNS
+and|S-NULL-PP-*COMMA*-``-S-CC-S-.-''
+So|SBARQ-NULL-RB-WHNP-SQ-.
+In addition|S-NULL-PP-*COMMA*-NP-VP-.-''-''
+As a result|S-NULL-PP-*COMMA*-SBAR-*COMMA*-NP-VP-.
+by contrast|S-S-PP-*COMMA*-NP-VP
+and|S-NULL-S-*COLON*-S-*COLON*-S-*COLON*-CC-S-.
+but|SBAR-VP-SBAR-CC-SBAR
+But|S-NULL-CC-PP-*COMMA*-SBAR-PRN-NP-VP-.
+But|S-NULL-CC-PP-*COMMA*-S-VP-.
+But|S-SINV-CC-PP-*COMMA*-NP-VP
+In other words|S-NULL-PP-*COMMA*-NP-ADVP-VP-.
+But|S-NULL-CC-SBAR-*COMMA*-IN-SINV-.
+but|UCP-VP-ADJP-CC-SBAR
+though|SBAR-PRN-RB-IN-S
+after|SBAR-SBAR-IN-S
+if then|VP-VP-VB-ADVP-*COMMA*-SBAR
+But|S-NULL-CC-ADVP-PRN-NP-VP-.
+as soon as|VP-VP-VBN-ADVP
+but|S-SINV-S-*COMMA*-CC-``-S
+Nor|SINV-NULL-CC-VBZ-S-.
+but|PRN-NP-CC-ADVP-PP-SQ-*COLON*
+Also|ADJP-SINV-RB-VBN
+so that|VP-VP-VB-PRT-INTJ-''-*COLON*-SBAR
+But|S-NULL-CC-SBAR-*COMMA*-NP-PP-VP-.
+but|NP-PP-DT-NN-CC-NNS
+then|ADVP-VP-RB
+and|S-SINV-ADVP-S-CC-S
+while|SBAR-S-RB-IN-S
+So|S-NULL-CC-NP-VP-.
+as|SBAR-SINV-IN-S
+so|ADVP-VP-RB
+Therefore|ADVP-S-RB
+IF|PP-S-IN-PP
+though|ADVP-S-RB-RB-RB
+And|S-SINV-CC-PP-*COMMA*-NP-VP
+And|SBARQ-NULL-CC-WHADVP-SQ-.-''
+and|S-NULL-NP-*COMMA*-S-CC-ADVP-S-.
+and|S-NULL-S-*COMMA*-CC-S-*COLON*-.
+In particular|S-S-PP-*COMMA*-NP-VP
+and|S-NULL-SBAR-*COMMA*-S-*COMMA*-CC-S-.
+and|S-SBAR-PP-*COMMA*-S-CC-S
+but|VP-S-VP-CC-VP
+before|PP-S-RB-IN-NP
+But|S-NULL-CC-ADVP-PRN-``-NP-VP-.-''
+then|VP-S-VP-*COMMA*-RB-VP
+if|SBAR-PRN-IN-FRAG
+consequently|ADVP-PRN-RB
+But|S-NULL-CC-SBAR-PRN-``-S-CC-S-.-''
+and|NP-VP-NP-*COMMA*-NP-*COMMA*-CC-S
+but|SBAR-VP-SBAR-*COMMA*-''-CC-SBAR
+after|ADVP-VP-RB-IN
+But|S-NULL-CC-PP-PRN-``-NP-VP-.
+and|S-VP-S-*COMMA*-''-CC-S
+For instance|S-NULL-PP-PRN-NP-VP-.
+and|S-NULL-S-*COMMA*-S-*COMMA*-CC-S-*COLON*-.
+and|NP-S-NP-*COMMA*-PP-*COMMA*-NP-*COLON*-CC-NP
+as soon as|S-SBAR-ADVP-NP-VP
+therefore|ADJP-PRN-RB-JJ
+although|SBAR-NP-IN-S
+and|S-NULL-CC-PP-*COMMA*-S-*COMMA*-CC-S-.
+while|PP-S-IN-NP
+because|SBAR-NP-IN-S
+but|S-NULL-S-*COMMA*-''-CC-S-.
+specifically|ADVP-S-RB
+And|S-NULL-CC-SBAR-*COMMA*-NP-ADVP-VP-.
+still|ADVP-S-RB
+And|S-NULL-CC-SBAR-*COMMA*-ADVP-NP-VP-.
+later|ADJP-ADJP-RB-JJ
+also|CONJP-UCP-CC-RB
+Or|S-NULL-CC-ADVP-NP-VP-.
+otherwise|ADVP-VP-RB
+Or|S-NULL-CC-VP-.
+thus|VP-S-VP-CC-RB-VP
+nor|S-SBAR-S-*COMMA*-CC-SQ
+but|S-NULL-``-S-PRN-``-CC-S-.-''
+but|S-NULL-S-*COLON*-CC-S-.
+and|S-SINV-S-*COMMA*-CC-``-S
+Yet|S-S-CC-NP-VP
+so|S-NULL-S-*COMMA*-``-RB-S-.-''
+though|NP-PP-NP-IN
+In fact|S-NULL-PP-PRN-NP-VP-.
+after|PP-S-IN-NP
+But|S-NULL-CC-NP-PRN-NP-VP-.
+If|S-NULL-IN-NP-VP-*COLON*
+And|S-S-CC-NP-ADVP-VP
+and|SBAR-PP-SBAR-*COLON*-CC-SBAR
+While|PP-VP-IN-S
+So|S-NULL-IN-NP-VP-.-''
+And|S-NULL-CC-*COMMA*-PP-*COMMA*-NP-ADVP-VP-.
+And|FRAG-NULL-CC-WP-IN-NP-.
+as long as|VP-S-VBZ-ADJP-PP-ADVP
+Nevertheless|ADVP-S-RB
+yet|ADVP-VP-RB
+and|S-NULL-S-*COMMA*-S-*COMMA*-CC-S-*COMMA*-CC-S-.
+after|PP-PP-IN-S
+But|S-NULL-CC-RB-NP-VP-.
+By then|S-NULL-PP-NP-ADVP-VP-.
+after|PP-VP-IN-NP
+in turn|NP-S-NP-PP
+as|SBAR-SBAR-IN-S
+and|S-SBAR-S-*COMMA*-''-CC-S
+In addition|S-NULL-PP-*COMMA*-SBAR-*COMMA*-NP-ADVP-VP-.
+before|SBAR-NP-RB-S
+in turn|S-NULL-NP-*COMMA*-PP-*COMMA*-VP-.-''
+Also|ADVP-S-RB-PP
+until|SBAR-UCP-IN-S
+and|S-NULL-S-*COLON*-S-*COMMA*-S-*COMMA*-S-CC-S-.
+but|S-SINV-S-*COLON*-CC-S
+In particular|S-NULL-PP-*COMMA*-NP-VP-.
+nor|S-SINV-S-*COMMA*-CC-S
+And|S-NULL-CC-S-*COMMA*-NP-VP-.
+as though|ADJP-VP-ADJP-PRN-SBAR
+Or|ADVP-S-CC
+later|ADJP-ADJP-RB-VBN
+while|PP-PRN-IN-UCP
+and|S-NULL-S-*COMMA*-CC-ADVP-S-.
+and|S-NULL-``-S-*COMMA*-CC-S-.-''
+in turn|S-S-NP-*COMMA*-PP-*COMMA*-VP
+But|S-NULL-S-*COMMA*-CC-S-.
+as|PP-VP-ADVP-IN-NP
+But|S-NULL-CC-SBAR-PRN-NP-VP-.
+And|S-NULL-S-*COMMA*-CC-S-.
+Indeed|ADVP-S-RB
+and|S-NULL-PP-PRN-``-S-*COMMA*-CC-S-.-''
+else|S-NULL-S-*COMMA*-RB-S-.
+thus|ADVP-NP-RB
+And|S-S-CC-NP-VP
+until|SBAR-S-IN-S
+But|S-NULL-CC-PRN-``-NP-VP-.-''
+or|SBAR-ADJP-SBAR-*COMMA*-CC-SBAR
+And|S-S-CC-SBAR-*COMMA*-NP-VP
+and|SBAR-S-SBAR-CC-SBAR
+until|SBAR-NP-IN-S
+for instance|VP-VP-VBG-NP-*COMMA*-PP
+and|S-NULL-SINV-*COMMA*-CC-IN-S-.
+additionally|ADVP-VP-RB
+afterwards|ADVP-VP-RB
+But|S-NULL-CC-SBAR-*COMMA*-ADVP-NP-VP-.
+and|S-NULL--LRB--S-*COMMA*-CC-S-.--RRB-
+so that|VP-S-VBP-NP-*COLON*-PP-SBAR
+But|S-NULL-CC-NP-VP-.-''
+In addition|S-NULL-PP-*COMMA*-NP-VP-.
+But|S-NULL-CC-ADVP-NP-VP-.
+now that|VP-S-VB-ADVP-SBAR
+But|S-NULL-CC-SBAR-*COMMA*-S-*COMMA*-NP-VP-.
+now that|SQ-SBARQ-ADVP-*COMMA*-MD-NP-ADVP-VP
+When and if|S-NULL-SBAR-PRN-NP-VP-.
+after|PP-S-ADVP-IN-S
+then|ADVP-PRN-RB
+and|S-NULL-SINV-*COMMA*-CC-S-.
+On the other hand|S-NULL-PP-*COMMA*-NP-VP-.
+when|WHADVP-SBAR-ADVP-WRB
+in fact|S-NULL-PP-*COMMA*-PP-*COMMA*-NP-VP-.
+and|S-SBAR-S-*COMMA*-S-*COMMA*-S-CC-S
+in particular|S-NULL-NP-*COMMA*-PP-*COMMA*-ADVP-VP-.
+And|S-NULL-CC-SBAR-VP-.
+before|SBAR-S-RB-IN-S
+if|SBAR-NP-IN-S
+if|WHNP-SBARQ-IN
+But|S-NULL-CC-``-NP-VP-.-''
+but|S-SBAR-S-*COLON*-S-*COMMA*-CC-S
+though|SBAR-PRN-IN-S
+And|S-NULL-S-*COMMA*-CC-S-*COLON*-CC-S-.-''-''
+since|ADVP-S-RB-RB
+Although|SBAR-S-IN-*COMMA*-S
+and|S-NULL-S-PRN-CC-S-.-''
+Hence|ADJP-NP-RB-JJ
+But|S-S-CC-PP-*COMMA*-NP-VP
+as if|VP-VP-VBD-NP-SBAR
+As|SBAR-SINV-IN-S
+Later|ADVP-S-RB
+and|S-S-S-CC-*COMMA*-S
+And|S-NULL-CC-SBAR-*COMMA*-ADVP-VP-.
+and|S-NULL-``-S-PRN-CC-S-.-''
+So|S-NULL-CC-NP-VP-.-''
+In addition|FRAG-NULL-PP-*COLON*-S-.
+as|SBAR-SBAR-RB-IN-S
+though|VP-S-VBZ-RB-ADJP-*COMMA*-IN-*COMMA*-SBAR
+But|S-NULL-CC-VP-.
+But|S-NULL-CC-PRN-NP-VP-.-''
+In addition|S-NULL-PP-*COMMA*-NP-VP-.-''
+on the other hand|PRN-S-*COMMA*-PP-*COMMA*
+For instance|S-S-PP-*COMMA*-NP-VP
+for example|S-NULL-PP-*COMMA*-PP-*COMMA*-NP-VP-.-''
+for instance|PRN-VP-*COLON*-S-*COMMA*-PP-*COMMA*
+if|SBAR-X-NP-IN-S
+next|ADVP-S-RB
+and|NP-PP-NP-CC-NP
+And|S-NULL-CC-PP-*COMMA*-PP-*COMMA*-NP-VP-.
+WHEN|WHADVP-SBAR-WRB
+because|SBAR-SQ-IN-S
+and|S-NULL-S-*COMMA*-CC-SINV-.
+for|SBAR-VP-IN-S
+And|S-NULL-CC-ADVP-*COMMA*-PP-*COMMA*-NP-VP-.-''
+And|S-NULL-CC-NP-VP-.-''-''
+For example|S-NULL-PP-*COMMA*-NP-PP-VP-.
+and|NP-VP-NNP-CD-*COMMA*-CC-NP
+while|PP-NP-IN-ADJP
+And|S-NULL-CC-NP-ADVP-VP-.-''
+meanwhile|ADVP-S-RB
+now that|S-NULL-CC-SBAR-*COMMA*-NP-VP-.
+then|ADVP-S-RB
+but|SBAR-NP-SBAR-CC-SBAR
+So|S-NULL-IN-NP-ADVP-VP-.
+If|SBAR-S-IN-FRAG
+on the other hand|S-NULL-NP-*COMMA*-PP-*COMMA*-VP-.
+finally|ADVP-S-RB
+But|S-NULL-CC-SBAR-PRN-``-NP-VP-.-''
+And|S-NULL-CC-NP-*COMMA*-PP-*COMMA*-VP-.
+But|SQ-NULL-CC-VBZ-NP-ADJP-.
+Later|NP-FRAG-RB
+yet|VP-S-VP-CC-VP
+instead|VP-S-MD-RB-VP
+But|S-NULL-CC-NP-VP-.-''--RRB-
+Because|S-NULL-IN-NP-VP-.-''
+while|SBAR-SBAR-IN-S
+Or|FRAG-NULL-CC-SBAR-''-.
+Yet|S-S-CC-NP-ADVP-VP
+and|S-NULL-PP-*COMMA*-S-*COMMA*-S-*COMMA*-CC-S-.
+and|S-SINV-ADVP-S-*COMMA*-CC-S
+and|S-NULL-``-S-PRN-CC-S-.
+but|VP-S-VP-*COMMA*-CC-VP
+But|S-NULL-CC-NP-PRN-VP-.
+By contrast|S-NULL-PP-*COMMA*-NP-VP-.
+And|S-NULL-CC-NP-VP-*COMMA*-''-NP-VP-.
+for instance|VP-S-VB-*COMMA*-PP-*COMMA*-NP
+but|UCP-VP-NP-*COMMA*-CC-SBAR
+As a result|S-NULL-PP-*COMMA*-NP-VP-.-''
+furthermore|ADVP-S-RB
+But|S-NULL-``-CC-SBAR-*COMMA*-RB-NP-VP-.-''
+but|S-NULL-ADVP-*COMMA*-S-*COMMA*-CC-S-.
+Nor|SQ-NULL-CC-MD-NP-VP-.
+But|S-NP-CC-NP-VP
+and|S-NULL-S-*COMMA*-CC-*COMMA*-S-.
+for instance|S-S-NP-*COMMA*-PP-*COMMA*-PP-*COMMA*-VP
+In fact|S-NULL-PP-*COMMA*-SBAR-*COMMA*-NP-VP-.
+as|SBAR-VP-ADVP-IN-S
+while|PP-VP-IN-NP
+but|VP-S-VP-*COMMA*-CC-RB-VP
+In addition|S-NULL-PP-*COMMA*-NP-ADVP-VP-.
+but|SBAR-NP-SBAR-*COMMA*-CC-SBAR
+But|S-S-CC-S-*COMMA*-CC-S
+And|S-NULL-CC-NP-NP-*COMMA*-NP-VP-.
+But|S-SINV-CC-``-PP-*COMMA*-NP-VP
+Or|SQ-NULL-CC-MD-NP-VP-.-''
+so|S-NULL-``-S-*COMMA*-IN-S-.
+and|S-NULL-S-*COMMA*-S-*COMMA*-S-*COMMA*-S-CC-S-.
+If then|SINV-NULL-``-S-*COMMA*-''-VP-NP-.
+if|SBAR-FRAG-IN-S
+because|SBAR-UCP-IN-S
+After|PP-S-IN-S
+But|S-NULL-CC-ADVP-NP-ADVP-VP-.
+IF|SBAR-S-IN-S
+And|S-NULL-CC-S-*COLON*-S-.
+But|S-NULL-CC-SBAR-*COMMA*-NP-ADVP-VP-.
+Further|ADVP-S-RB
+and|SBAR-ADJP-SBAR-*COMMA*-CC-SBAR
+And|S-NULL-CC-S-*COLON*-``-S-.
+Besides|PP-S-IN-S
+and|S-NULL-S-CC-S-.-''
+or|S-S-S-*COMMA*-S-*COMMA*-CC-RB-S
+though|SBAR-S-IN-``-S
+And|S-NULL-CC-PP-*COMMA*-NP-ADVP-VP-.
+As if|S-NULL-SBAR-*COMMA*-NP-VP-.-''
+also|ADJP-NP-RB-JJ
+but|S-NULL-S-*COMMA*-ADVP-*COMMA*-CC-S-.-''
+but|S-NULL-S-*COMMA*-CC-S-.-''
+because|SBAR-VP-ADVP-IN-S
+But|S-NULL-CC-PRN-``-NP-VP-.
+But|S-NULL-CC-PRN-S-*COMMA*-CC-S-.-''
+but|S-SINV-``-S-*COMMA*-''-CC-S
+but|S-NULL-``-S-PRN-CC-S-CC-S-.-''
+Later|ADVP-S-RB-RB
+so|PP-VP-IN-NP
+before|PP-VP-ADVP-IN-NP
+so|ADVP-S-RB
+likewise|ADVP-VP-RB
+so|S-NULL-S-IN-S-.
+because|SBAR-VP-IN-``-S
+Otherwise|ADVP-S-RB
+now that|S-S-NP-VP
+earlier|ADVP-S-RBR
+Except|SBAR-S-IN-S
+and|S-NULL-``-S-*COMMA*-''-''-NP-VP-*COMMA*-``-CC-S-.
+in turn|VP-VP-VBN-PP-PP
+In fact|S-NULL-PP-*COMMA*-PP-*COMMA*-NP-VP-.
+as a result|S-NULL-CC-PP-PRN-NP-VP-.-''
+and|S-NULL-ADVP-*COMMA*-S-*COLON*-S-*COMMA*-CC-S-.
+and|S-NULL-CC-NP-ADVP-VP-*COLON*-CC-S-.
+But|S-NULL-CC-NP-ADVP-VP-.
+but|S-S-S-*COMMA*-CC-PRN-S
+as soon as|S-NULL-CC-ADVP-*COMMA*-NP-VP-.
+Nor|SINV-NULL-CC-VBZ-NP-VP-.
+but|S-NULL--LRB--S-*COMMA*-CC-S-.--RRB-
+for example|S-NULL-NP-*COMMA*-PP-*COMMA*-VP-.-''
+as|SBAR-S-IN-S
+now that|S-S-SBAR-NP-VP
+But|S-NULL-CC-*COMMA*-S-*COMMA*-''-PRN-*COMMA*-``-NP-VP-.
+after|PP-NP-NP-IN-NP
+after|PP-NP-IN-S
+and|S-NULL-SBAR-*COMMA*-S-CC-S-''-VP-.
+Nor|SQ-NULL-CC-VBD-NP-VP-.
+in fact|PRN-S-*COMMA*-PP-*COMMA*
+and|SBAR-NP-SBAR-CC-SBAR
+Now that|S-NULL-ADVP-*COMMA*-S-.
+Or|SQ-NULL-CC-VBZ-NP-SBAR-.
+lest|SBAR-VP-IN-S
+So|ADVP-S-RB
+But|S-NULL-``-CC-NP-VP-*COMMA*-S-.-''
+in fact|VP-NP-VBD-PP
+And|S-SINV-CC-PP-*COMMA*-``-NP-VP
+By comparison|S-NULL-PP-*COMMA*-NP-VP-.
+As an alternative|S-NULL-PP-PRN-NP-VP-.
+And|S-NULL-CC-*COMMA*-NP-*COMMA*-NP-VP-.
+after|PP-VP-ADVP-IN-S
+or|SBAR-S-SBAR-CC-SBAR
+whereas|SBAR-VP-IN-S
+on the other hand|S-S-NP-*COMMA*-PP-*COMMA*-VP
+But|S-NULL-CC-NP-*COMMA*-S-VP-.
+earlier|ADVP-NP-RB
+and|NP-VP-NP-*COMMA*-CC-NP
+so|S-NULL-SINV-*COMMA*-CC-IN-S-.
+simultaneously|CONJP-VP-CC-RB
+and|S-NULL-S-*COMMA*-S-*COMMA*-S-*COMMA*-S-*COMMA*-S-CC-S-.
+and|S-NULL-S-*COMMA*-CC-S-.
+But|S-NULL-CC-*COMMA*-ADVP-*COMMA*-NP-VP-.
+Or|S-S-CC-NP-VP
+or|PRN-S-*COMMA*-CC-SBAR-*COMMA*
+indeed|S-SBAR-RB-NP-VP
+As a result|S-NULL-PP-*COMMA*-NP-PP-VP-.
+But|SBARQ-NULL-CC-SQ-.
+while|SBAR-S-IN-S
+Whereas|NP-NP-NNS
+In addition|S-S-PP-PRN-NP-VP
+but|S-NULL-SINV-*COMMA*-CC-S-.-''
+But|S-NULL-CC-ADVP-ADVP-NP-VP-.
+for example|PRN-VP-*COMMA*-PP-*COMMA*
+and|S-SBAR-S-CC-S
+then|ADVP-SQ-RB
+If|SBAR-S-IN-S
+then|VP-S-VP-*COMMA*-VP-*COLON*-VP-CC-RB-VP
+As|SBAR-S-IN-S
+also|ADVP-NP-RB
+though|SBAR-NP-IN-S
+either or|NP-VP-NP-VP
+since|PP-VP-IN-S
+And|S-NULL-CC-SBAR-*COMMA*-NP-VP-.
+But|S-NULL-``-CC-X-NP-VP-.-''
+after|PP-NP-IN-NP
+regardless|ADVP-VP-RB
+Unless|S-NULL-IN-*COMMA*-PP-*COMMA*-NP-VP-.
+instead|VP-S-VP-*COMMA*-CC-RB-VP
+and|S-NULL-ADVP-*COMMA*-SBAR-*COMMA*-S-CC-S-.
+but|VP-S-VP-*COMMA*-''-CC-VP
+And|S-NULL-CC-NP-VP-.
+For example|S-S-PP-*COMMA*-NP-VP
+so|S-S-S-*COMMA*-IN-S
+and|NX-NP-NX-CC-NX
+for example|PRN-SBAR-*COMMA*-PP-*COMMA*
+and|S-NULL-S-*COLON*-S-*COMMA*-CC-S-.
+And|S-NULL-CC-NP-VP-.-''
+And|S-NULL-CC-S-VP-.
+until|SBAR-VP-IN-``-S
+after|SBAR-VP-IN-S
+because|SBAR-ADJP-IN-S
+but|S-NULL-S-*COMMA*-CC-S-.
+before|SBAR-S-IN-S
+nor|VP-VP-VP-*COMMA*-CC-VP
+and|NP-PP-NP-CC-PRN-NP
+Until|PP-S-IN-NP
+But|S-NULL-CC-NP-*COMMA*-ADJP-*COMMA*-VP-.
+Or|SQ-NULL-CC-VBD-NP-SBAR-.
+By contrast|S-NULL-PP-*COMMA*-PP-NP-VP-.
+and|S-NULL-PP-*COMMA*-S-*COMMA*-S-*COMMA*-S-*COMMA*-CC-S-.
+Then|S-NULL-RB-PP-*COMMA*-NP-VP-.
+But|S-NULL-CC-NP-*COMMA*-NP-ADVP-VP-.
+although|SBAR-PRN-IN-S
+But|S-NULL-CC-NP-PRN-NP-VP-.-''
+and|S-NULL-S-*COMMA*-``-CC-S-.
+thereafter|ADVP-VP-RB
+as well|VP-VP-VBG-NP-PP-ADVP
+In fact|S-NULL-PP-*COMMA*-ADVP-*COMMA*-NP-VP-.
+until|PP-VP-IN-NP
+But|S-NULL-CC-NP-``-VP-.-''
+or|SBAR-PP-SBAR-CC-SBAR
+If|SBAR-SBARQ-IN-S
+In other words|S-NULL-PP-*COLON*-NP-VP-.
+finally|ADVP-VP-RB
+after|PP-S-ADVP-IN-NP
+and|S-NULL-S-*COMMA*-S-*COMMA*-CC-S-.
+For instance|S-NULL-PP-*COMMA*-NP-VP-.
+But|S-NULL-CC-S-*COMMA*-CC-S-.
+Nor|SQ-NULL-CC-VBD-NP-NP-.
+Or|S-S-CC-ADVP-NP-VP
+so that|VP-VP-VBN-ADVP-SBAR
+if|PP-VP-IN-NP
+but|S-NULL-ADVP-VP-*COMMA*-CC-S-.
+and|S-S-S-CC-RB-S
+then|QP-NP-RB-TO-$-CD
+then|NP-VP-NP-CC-RB-NP
+now that|S-SBAR-SBAR-*COMMA*-NP-VP
+as though|VP-S-VBZ-ADJP-*COMMA*-SBAR
+as|SBAR-NP-IN-S
+Or|FRAG-NULL-CC-ADVP-S-*COLON*-NP-*COLON*-NP-.
+And|S-NULL-CC-SBAR-*COMMA*-''-NP-VP-.-''
+as if|VP-S-VBZ-NP-PP-ADVP-*COMMA*-SBAR
+now that|VP-VP-VB-NP-ADVP
+but|S-NULL-PP-PRN-S-*COMMA*-CC-S-.-''
+But|S-NULL-CC-PP-*COMMA*-''-NP-VP-.
+and|S-NULL-CC-S-PRN-CC-S-.
+But|SINV-NULL-CC-S-*COMMA*-''-VP-NP-.
+but|S-SINV-S-*COMMA*-CC-S
+since|PP-PRN-IN-NP
+But|S-S-CC-NP-*COMMA*-NP-VP
+but|S-SBAR-S-*COMMA*-CC-S
+so that|VP-S-VBP-ADJP-SBAR
+but|S-NULL-S-*COMMA*-CC-ADVP-*COMMA*-''-NP-VP-.
+before|SBAR-PP-IN-S
+much as|VP-VP-VBG-PP-ADVP
+and|S-NULL-S-*COMMA*-CC-NP-VP-.-''
+as|PP-NP-IN-NP
+but|S-NULL-CC-S-*COLON*-S-*COMMA*-CC-S-.
+Because|SBAR-S-IN-FRAG
+thereby|ADVP-S-RB
+So|S-NULL-RB-PP-NP-VP-.
+after|SBAR-PP-IN-S
+as|SBAR-ADJP-IN-S
+thus|ADVP-S-RB
+But|S-NULL-``-CC-SBAR-*COMMA*-NP-VP-.-''
+and|SBAR-VP-SBAR-*COMMA*-CC-PRN-SBAR
+And|S-NULL-CC-*COMMA*-ADVP-*COMMA*-NP-VP-.
+by contrast|S-NULL-NP-*COMMA*-PP-*COMMA*-VP-.
+and|S-NULL-S-PRN-''-CC-S-.
+though|SBAR-VP-RB-IN-S
+or|NP-VP-NP-PP-*COLON*-CC-SBAR
+until|SBAR-SBAR-IN-S
+Yet|S-NULL-CC-NP-VP-*COLON*-.
+or|S-NULL-CC-S-CC-S-.
+after|SBAR-S-RB-IN-S
+simultaneously|ADVP-VP-RB
+But|S-NULL-CC-ADVP-*COMMA*-NP-ADVP-VP-.
+however|ADVP-NP-RB
+And|S-S-CC-SBAR-*COMMA*-``-NP-VP
+so|S-NULL-S-*COMMA*-RB-VP-.-''
+and|NX-NP-NX-*COMMA*-CC-NX
+thus|VP-S-VP-*COMMA*-CC-RB-VP
+for example|S-NULL-NP-*COMMA*-PP-*COMMA*-VP-.
+so that|VP-S-VBZ-NP-*COMMA*-SBAR
+besides|PP-VP-IN-NP
+once|SBAR-NP-IN-S
+till|SBAR-VP-IN-S
+so|S-NULL-``-ADVP-*COMMA*-S-*COMMA*-IN-S-.-''
+As if|S-NULL-SBAR-PRN-NP-VP-.
+If|SBAR-SBAR-IN-S
+In other words|S-S-PP-*COMMA*-NP-VP
+then|VP-S-VP-*COLON*-RB-VP
+before|PP-VP-IN-NP
+when|WHADVP-SBAR-RB-WRB
+in fact|VP-VP-VBG-NP-NP-*COMMA*-PP
+so|ADVP-SBAR-RB
+and|S-NULL-PP-NP-*COMMA*-S-*COMMA*-CC-S-.
+so|S-S-S-*COLON*-IN-S
+if|SBAR-VP-RB-IN-S
+so that|VP-VP-VB-``-ADVP-''-SBAR
+consequently|ADVP-S-RB
+But|S-NULL-CC-SBAR-*COMMA*-NP-VP-.-''
+as long as|VP-VP-VB-NP-SBAR-*COMMA*-ADVP
+and|S-SBAR-SBAR-*COMMA*-S-CC-S
+As an alternative|S-NULL-PP-*COMMA*-NP-VP-.
+since|PP-S-IN-NP
+As soon as|S-NULL-ADVP-*COMMA*-NP-VP-.
+In addition|S-NULL-PP-*COMMA*-PP-*COMMA*-NP-ADVP-VP-.
+as|PP-VP-IN-NP
+and|NP-VP-NP-CC-SBAR
+however|ADVP-VP-RB
+now that|VP-VP-VB-ADVP-SBAR
+Nor|SINV-NULL-CC-VBZ-NP-.
+and|S-NULL-``-S-CC-S-.-''-''
+and|NP-PP-NP-*COLON*-S-*COLON*-CC-PRN-NP
+for example|S-NULL-PP-NP-*COMMA*-PP-*COMMA*-NP-VP-.
+then|VP-VP-VBP-NP-*COMMA*-CC-RB-VP
+But|S-NULL-CC-PP-NP-VP-*COLON*-PP-.
+And|S-NULL-CC-PP-NP-*COMMA*-NP-VP-.
+later|SBAR-VP-RB-S
+And|S-SINV-CC-NP-VP
+in contrast|S-NULL-PP-*COMMA*-PP-*COMMA*-NP-VP-.
+instead|VP-S-VP-CC-RB-VP
+so|S-NULL-S-*COMMA*-''-IN-S-.-''
+and|S-NULL-S-CC-RB-S-.
+and|S-SBAR-S-*COMMA*-''-CC-ADVP-S
+once|SBAR-S-RB-S
+after|PP-SINV-IN-S
+In short|S-NULL-PP-*COMMA*-VP-.
+before|PP-NP-IN-S
+instead|ADVP-S-RB
+since|SBAR-ADJP-IN-S
+as|SBAR-ADVP-IN-S
+And|S-S-CC-PP-*COMMA*-NP-VP
+but|S-NULL-S-*COLON*-CC-FRAG-.
+Nor|SINV-NULL-CC-VBP-NP-VP-.
+so|S-VP-S-*COMMA*-IN-S
+and|NP-PP-NP-*COMMA*-CC-NP
+Nor|S-NULL-CC-VBP-NP-VP-.
+On the other hand|S-S-PP-*COMMA*-NP-VP
+unless|SBAR-S-IN-S
+as a result|ADVP-S-RB-PP
+and|PRN-NP-*COLON*-CC-S-*COLON*
+because|SBAR-S-RB-IN-S
+Or|SQ-NULL-CC-MD-NP-VP-SBAR-.
+For instance|S-S-PP-PRN-NP-VP
+in fact|S-S-PP-*COMMA*-SBAR-*COMMA*-NP-VP
+after|SBAR-ADVP-IN-S
+Once|SBAR-S-IN-S
+and|S-SINV-SBAR-*COMMA*-S-*COMMA*-CC-S
+In addition|S-NULL-PP-*COMMA*-PP-*COMMA*-NP-VP-.
+Moreover|ADVP-S-RB
+and|S-S-S-CC-S
+or|VP-S-VP-*COLON*-CC-RB-VP
+nonetheless|ADVP-S-RB
+then|ADVP-S-RB-RB
+and|S-NULL-S-*COMMA*-CC-PRN-NP-VP-.
+neither nor|S-SBAR-VP
+as soon as|VP-VP-VBN-PP-*COMMA*-SBAR
+but|S-NULL-S-*COMMA*-CC-ADVP-S-.
+Yet|S-NULL-RB-ADVP-NP-*COMMA*-NP-VP-.
+and|S-NULL-S-*COMMA*-S-CC-S
+if|SBAR-S-IN-FRAG
+then|NP-NP-NP-*COMMA*-RB-NP-PP
+and|S-NULL-NP-*COMMA*-S-CC-S-.
+Once|ADVP-S-RB-RB
+and|S-NULL-S-*COMMA*-CC-X-NP-VP-.
+and|S-NULL-``-S-*COMMA*-CC-S-CC-S-.-''
+But|S-NULL-CC-*COMMA*-SBAR-*COMMA*-NP-ADVP-VP-.
+Or|SBARQ-NULL-CC-SQ-.
+if|ADVP-PRN-IN
+And|S-NULL-CC-NP-ADVP-ADVP-VP-.
+then|S-NULL-PP-*COMMA*-SBAR-*COMMA*-S-CC-RB-S-.
+in fact|S-NULL-NP-*COMMA*-PP-*COMMA*-VP-.
+But|S-NULL-CC-PP-PRN-NP-VP-.
+In fact|S-NULL-PP-NP-VP-.
+since|SBAR-ADVP-IN-S
+after|PP-VP-NP-IN-NP
+as well|VP-S-VBP-PP-ADVP
+but|S-NULL-S-*COMMA*-CC-``-S-.-''
+for instance|S-NULL--LRB--ADVP-*COMMA*-PP-*COMMA*-NP-VP-.--RRB-
+For example|SQ-NULL-PP-*COMMA*-WHNP-VBD-NP-VP-.
+and|S-S-S-*COMMA*-CC-S
+and|S-NULL-S-CC-S-*COMMA*-''-NP-VP-.
+Or|S-NULL-CC-PP-*COMMA*-NP-VP-.
+indeed|ADVP-RRC-RB
+and|SBAR-ADJP-SBAR-CC-SBAR
+since|PRN-VP-*COMMA*-IN-S--RRB-
+and|S-NULL-CC-S-*COLON*-S-*COMMA*-CC-S-.
+and|SBAR-VP-SBAR-*COLON*-CC-SBAR
+indeed|ADVP-PRN-RB
+and|S-NULL-SBAR-*COMMA*-S-*COMMA*-S-*COMMA*-CC-S-.
+still|ADVP-S-RB-RB
+then|VP-VP-VP-*COMMA*-CC-RB-VP-PRT-S
+if|SBAR-ADJP-IN-S
+And|S-NULL-CC-PRN-NP-VP-.
+Before|PP-S-IN-NP
+much as|VP-S-VB-*COMMA*-SBAR
+instead|CONJP-NP-CC-RB
+For example|S-NULL-PP-*COMMA*-NP-ADVP-VP-.
+as if|VP-VP-VBG-NP-SBAR
+But|S-NULL-CC-ADVP-*COMMA*-S-*COMMA*-CC-S-.
+Indeed|ADVP-PP-RB
+and|NP-VP-NP-*COMMA*-CC-NP-NP-*COMMA*-PP
+But|S-NULL-CC-PP-*COMMA*-SBAR-*COMMA*-VP-.
+so|S-S-S-*COMMA*-RB-S
+And|S-SINV-CC-ADVP-NP-VP
+because|PP-VP-ADVP-IN-NP
+thus|ADVP-VP-RB
+Separately|ADVP-S-RB
+because|SBAR-VP-IN-S
+so|S-NULL-S-*COMMA*-''-IN-S-.
+Yet|S-NULL-CC-NP-*COMMA*-SBAR-*COMMA*-VP-*COLON*-CC-SQ
+while|SBAR-PRN-IN-S
+and|S-SBAR-S-*COMMA*-S-*COMMA*-CC-S
+Instead|ADVP-S-RB
+and|S-NULL-SBAR-*COMMA*-S-CC-S-.
+specifically|ADVP-VP-RB
+so|S-NULL-ADVP-*COMMA*-S-*COMMA*-IN-S-.
+if|FRAG-VP-IN-RB
+and|S-SINV-S-CC-S
+In addition|S-NULL-PP-PRN-NP-VP-.-''
+Now that|S-VP-SBAR-*COMMA*-S-*COMMA*-S
+And|S-NULL-CC-ADVP-*COMMA*-NP-VP-.-''
+while|PP-NP-IN-S
+though|SBAR-SINV-RB-IN-S
+and|S-SINV-S-*COMMA*-''-CC-S
+then|VP-S-VP-*COMMA*-VP-*COMMA*-RB-VP
+But|S-NULL-``-CC-PP-*COMMA*-NP-VP-.
+but|S-NULL-S-PRN-CC-S-.-''
+and|S-NULL-S-*COLON*-S-CC-S-.
+by then|S-SBAR-PP-VP
+And|SQ-NULL-CC-VBZ-NP-ADVP-VP-*COMMA*-VP-.
+though|SBAR-S-RB-IN-S
+once|SBAR-VP-RB-S
+Then|S-NULL-RB-NP-VP-.
+Ultimately|ADVP-S-RB
+Before|ADVP-S-IN
+before|PP-S-NP-IN-S
+neither nor|S-NULL-NP-VP-.
+and|S-NULL-S-*COMMA*-CC-S-*COLON*-CC-S-.-''-''
+But|S-S-CC-S-*COMMA*-S
+and|NP-VP-DT-JJ-NN-CC-*COMMA*-NN
+so that|VP-VP-VBG-NP-PP-SBAR
+Then|S-S-RB-NP-VP
+or|S-NULL-S-*COMMA*-CC-S-.
+but|S-S-S-*COMMA*-CC-ADVP-S
+instead|ADVP-NP-RB
+so that|VP-S-VB-NP-PP-SBAR
+And|S-S-CC-SBAR-*COMMA*-NP-ADVP-VP
+and|NP-S-NP-*COMMA*-CC-NP
+But|S-NULL-CC-PRN-NP-``-VP-.-''
+But|S-NULL-CC-SBAR-*COMMA*-NP-VP-.
+though|ADVP-VP-IN-RB-RB
+Also|ADVP-PP-RB
+as a result|VP-VP-VB-PP
+But|S-NULL-CC-PRN-SBAR-*COMMA*-NP-ADVP-VP-.
+though|SBAR-PRN-IN-FRAG
+in particular|NP-S-NP-PP
+Then|S-NULL-RB-PRN-``-NP-VP-.-''
+But|S-NULL-CC-SBAR-*COMMA*-NP-*COMMA*-VP-.
+and|S-NULL-NP-S-CC-S-.
+thus|NP-VP-NP-CC-RB-NP
+while|PP-VP-IN-IN-NP
+Meanwhile|ADVP-S-RB
+But|SBARQ-NULL-CC-WHADVP-SQ-.
+although|SBAR-VP-IN-S
+while|SBAR-S-IN-FRAG
+Rather|ADVP-S-RB
+thus|S-S-RB-VP
+As a result|S-NULL-PP-PRN-S-CC-S-.-''
+or|S-PRN-S-CC-S
+after|SBAR-UCP-ADVP-IN-S
+and|NP-NP-NP-CC-NP
+and|S-NULL-CC-S-CC-S-.
+By contrast|S-NULL-PP-*COMMA*-NP-*COMMA*-PP-*COMMA*-VP-.
+And|S-NULL-CC-*COMMA*-PP-*COMMA*-NP-VP-.
+nonetheless|ADVP-VP-RB
+and|VP-VP-VP-CC-VP
+for example|S-S-PP-*COMMA*-PP-*COMMA*-NP-VP
+thereafter|ADVP-NP-RB
+and|SBAR-VP-SBAR-*COMMA*-SBAR-*COMMA*-CC-SBAR
+rather|VP-VP-VBZ-RB-NP
+Though|SBAR-S-IN-S
+and|NP-S-NP-CC-NP
+and|SINV-NULL-S-*COMMA*-CC-SBARQ
+but|S-NULL-``-S-*COMMA*-CC-S-.
+thereby|ADVP-VP-RB
+before|SBAR-PRN-IN-S
+But|S-NULL-CC-PP-PP-*COMMA*-NP-VP-.-''
+As well|S-NULL-ADVP-*COMMA*-NP-VP-.
+but|S-NULL-S-CC-PRN-S-.
+But|S-SINV-CC-``-NP-VP
+On the contrary|S-NULL-PP-*COMMA*-NP-VP-.
+and|S-NULL-ADVP-PRN-S-*COMMA*-CC-S-.
+for example|S-S-NP-*COMMA*-PP-*COMMA*-``-S-CC-S
+thus|S-NULL-S-*COMMA*-RB-S-.
+for example|S-S-NP-*COMMA*-PP-*COMMA*-VP
+except|PP-VP-IN-S
+as|PP-ADJP-IN-NP
+and|S-NULL-``-S-PRN-CC-S-CC-S-.-''
+in other words|VP-VP-VB-NP-PP-*COLON*-PP-*COMMA*-SBAR
+but|S-S-S-*COMMA*-CC-S
+or|SBAR-S-SBAR-*COMMA*-CC-SBAR
+or|VP-VP-VP-''-CC-``-VP
+and|S-S-NP-*COMMA*-PP-*COMMA*-``-S-CC-S
+and|SBAR-VP-SBAR-CC-SBAR
+But|S-NULL-``-CC-NP-ADVP-VP-.
+yet|VP-S-VP-CC-VP-*COLON*-S
+by then|S-SBAR-ADVP-VP
+and|S-S-CC-S-CC-S
+also|NONE_TREE
+Also|ADVP-SINV-RB
+afterward|ADVP-VP-RB
+Either or|SINV-NULL-``-S-*COMMA*-''-VP-NP-.
+In short|S-NULL-PP-*COLON*-NP-VP-.-''
+although|SBAR-SINV-IN-S
+further|ADVP-VP-RB
+as long as|VP-VP-VB-ADVP
+but|S-NULL-S-*COMMA*-``-CC-S-.
+And|S-SINV-CC-NP-``-VP
+and|S-NULL-ADVP-S-CC-S-.
+and|S-NULL-``-S-CC-S-.-''
+though|ADVP-VP-RB
+so that|VP-S-VBD-*COMMA*-SBAR
+and|S-S-S-*COMMA*-CC-S-*COMMA*-''-''
+In particular|S-S-PP-*COMMA*-S-VP
+in fact|S-NULL-SBAR-*COMMA*-PP-*COMMA*-NP-VP-.
+But|S-SINV-CC-PP-*COMMA*-NP-``-VP
+And|S-S-CC-SBAR-*COMMA*-NP-VP-*COMMA*-''
+But|S-NULL-CC-S-*COMMA*-IN-S-.
+by comparison|S-NULL-NP-*COMMA*-PP-*COMMA*-VP-.
+Nor|SINV-NULL-CC-VBP-NP-.
+because|SBAR-VP-RB-IN-S
+but|S-SINV-``-S-*COMMA*-CC-S
+but|S-NULL-S-*COMMA*-CC-RB-S-.
+or|S-NULL-CC-S-*COMMA*-CC-S-.
+nevertheless|ADJP-VP-RB-JJ-PP
+and|UCP-NP-NP-CC-S-''-ADVP
+while|SBAR-VP-RB-IN-S
+still|ADVP-VP-RB
+because|SBAR-UCP--LRB--IN--RRB--S
+so|S-PRN-S-*COMMA*-RB-S
+and|S-NULL-PP-*COMMA*-S-*COMMA*-S-*COMMA*-S-*COMMA*-S-*COMMA*-CC-S-.
+and|S-NULL-CC-PRN-S-*COMMA*-CC-S-.-''
+Yet|S-NULL-CC-PP-*COMMA*-NP-*COMMA*-NP-VP-.
+and|S-NULL-S-*COMMA*-CC-RB-S-.
+And|S-NULL-``-CC-NP-VP-.
+later|ADVP-NP-RB
+for example|VP-S-VBD-NP-*COMMA*-PP-*COMMA*-SBAR
+if|SBAR-VP-IN-S
+if|SBAR-S-IN-S
+also|ADVP-VP-RB
+And|S-SINV-CC-VP
+as|SBAR-VP-IN-S
+Or|S-NULL-CC-*COMMA*-NP-VP-.
+so that|VP-S-VBP-ADVP-PP-SBAR
+in the end|FRAG-SBAR-PP
+as long as|VP-S-VBZ-ADVP
+if|SBAR-VP-IN-RB-S
+or|SBAR-ADJP-SBAR-CC-SBAR
+But|S-SINV-CC-``-SBAR-*COMMA*-NP-VP
+although|SBAR-S-IN-S
+and|S-VP-``-S-*COMMA*-''-CC-S-*COLON*-''
+simultaneously|ADVP-S-RB-RB
+But|S-NULL-CC-S-VP-.
+yet|S-NULL-S-*COMMA*-CC-S-.
+As a result|S-NULL-PP-*COMMA*-NP-VP-.
+separately|ADVP-VP-RB
+earlier|ADVP-VP-NP-RBR
+then|PP-VP-PP-*COMMA*-CC-RB-PP
+in the end|PRN-ADJP-*COMMA*-PP-*COMMA*
+But|S-NULL-CC-PP-*COMMA*-NP-NP-VP-.
+for example|S-NULL-NP-*COMMA*-PP-*COMMA*-NP-*COMMA*-S-*COMMA*-VP-.
+Still|ADVP-SINV-RB
+overall|ADVP-S-RB
+in turn|PRN-S-*COMMA*-PP-*COMMA*
+But|S-NULL-CC-S-PRN-CC-S-.
+if|CONJP-NP-IN-RB
+Yet|S-NULL-CC-S-*COMMA*-NP-VP-.
+ultimately|ADVP-VP-RB
+because|SBAR-SBAR-IN-S
+and|S-PP-S-CC-S
+nor|S-NULL-CC-NP-*COMMA*-SBAR-*COMMA*-VP-*COLON*-CC-SQ
+But|S-S-CC-SBAR-PRN-NP-ADVP-VP
+But|S-NULL-CC-S-*COLON*-S-.
+neither nor|S-NULL-PP-*COMMA*-NP-VP-.
+But|S-NULL-CC-PP-*COMMA*-VP-.
+if|WHNP-SBAR-IN
+But|S-NULL-``-CC-NP-*COMMA*-SBAR-*COMMA*-NP-VP-.
+And|S-NULL-CC-PP-PRN-NP-VP-.-''
+much as|VP-S-VBD-*COMMA*-SBAR
+also|ADVP-UCP-RB
+thereafter|ADVP-S-RB-RB
+since|PP-NP-IN-S
+And|FRAG-NULL-CC-NP-.
+and|SBAR-PRN-SBAR-CC-SBAR
+as long as|VP-S-VBZ-RB-PP-ADVP
+And|S-SINV-CC-ADVP-*COMMA*-``-NP-VP
+as though|VP-S-VBG-ADVP-SBAR
+Nonetheless|ADVP-S-RB
+afterwards|VP-S-VBD
+In addition|S-S-PP-*COMMA*-NP-VP
+for instance|S-NULL-PP-*COMMA*-PP-*COMMA*-NP-VP-.
+and|S-NULL-S-*COLON*-CC-S-.-''
+though|PP-VP-IN-IN-NP
+But|SBARQ-NULL-CC-WHNP-SQ-.
+and|S-NULL--LRB--S-CC-S-.--RRB-
+On the other hand|S-NULL-``-PP-*COMMA*-NP-VP-.
+Nor|SINV-NULL-CC-MD-NP-VP-.
+And|S-NULL-CC-PP-*COMMA*-INTJ-*COMMA*-PP-*COMMA*-NP-VP-.
+So|S-NULL-CC-NP-*COMMA*-NP-VP-.
+in particular|PP-PP-PP-CC-PP
+so|SBAR-ADJP-IN-S
+nevertheless|ADVP-VP-RB
+if|SBAR-VP-RB-IN-FRAG
+In sum|S-NULL-PP-*COMMA*-NP-VP-.
+in fact|VP-S-VBP-PP-VP
+as if|VP-S-VP-CC-VP-*COMMA*-SBAR
+as long as|S-NULL-S-*COMMA*-CC-ADVP-*COMMA*-''-NP-VP-.
+While|SBAR-S-IN-FRAG
+and|VP-S-VP-*COMMA*-VP-CC-VP
+and|S-PRN-S-CC-S
+But|S-NULL-CC-NP-VP-*COMMA*-PP-.
+and|SBAR-VP-SBAR-*COMMA*-''-CC-SBAR
+and|S-NULL-S-*COMMA*-CC-``-S-.-''
+as well|VP-VP-VB-ADVP-ADVP
+and|S-NULL-CC-ADVP-*COMMA*-S-*COMMA*-CC-S-.
+So|S-NULL-RB-PP-*COMMA*-NP-VP-.
+although|SBAR-VP-IN-``-S
+Because|SBAR-VP-IN-S
+and|S-NULL-ADVP-S-*COMMA*-CC-S-.
+for example|VP-S-VBZ-RB-ADJP-*COMMA*-PP-*COMMA*-SBAR
+or|S-NULL-S-*COMMA*-CC-IN-S-.
+but|S-S-S-*COMMA*-CC-S-CC-S
+And|S-NULL-CC-SBAR-PRN-``-NP-VP-.-''
+as soon as|VP-VP-VB-PRT-NP-ADVP
+but|S-SBAR-S-*COMMA*-CC-``-S
+then|VP-S-VP-*COMMA*-VP-*COMMA*-VP-*COMMA*-CC-RB-VP
+and|S-NULL-S-*COLON*-SINV-*COMMA*-CC-SQ-.
+so that|VP-VP-NN-NP-SBAR
+if|SBAR-NP-IN-FRAG
+But|S-NULL-CC-PP-*COMMA*-NP-ADVP-VP-.
+or|S-SBAR-``-S-''-CC-``-S
+and|S-NULL-NP-*COMMA*-S-CC-PP-VP-.
+On the other hand|S-NULL-PP-*COMMA*-SBAR-*COMMA*-RB-NP-VP-.
+Afterward|ADVP-S-RB
+and|S-S-PP-*COMMA*-S-*COMMA*-CC-S
+then|ADVP-PP-RB
+then|S-SINV-S-CC-RB-S
+but|S-SINV-S-*COMMA*-CC-RB-S
+and|PRN-S-*COLON*-CC-S-*COLON*
+But|S-S-CC-VP
+by contrast|S-NULL-NP-*COMMA*-PP-*COMMA*-VP-.-''
+and|NP-PP-NP-CC-NP-QP
+as long as|VP-VP-VB-PP-``-ADVP
+So|S-NULL-CC-SBAR-*COMMA*-NP-VP-.
+Now that|S-NULL-ADVP-PRN-NP-VP-.
+For instance|S-NULL-PP-*COMMA*-S-*COMMA*-``-SBARQ-.-''
+earlier|ADVP-S-RB
+But|S-S-CC-ADVP-NP-VP
+once|ADJP-NP-RB-NN
+indeed|ADVP-S-RB
+Because|ADVP-S-IN
+because|NONE_TREE
+Alternatively|ADVP-S-RB
+If|SBAR-FRAG-IN-S
+if|SBAR-SBAR-IN-S
+if|PP-VP-IN-UCP
+also|ADVP-PP-RB
+in fact|S-NULL-ADVP-*COMMA*-PP-*COMMA*-NP-VP-.
+and|S-NULL-S-PRN-CC-S-.
+And|S-S-CC-S-VP
+Also|S-NULL-RB-S-VP-.
+for example|VP-S-VBD-NP-*COMMA*-PP
+thereafter|ADVP-VP-RB-RB
+if then|S-NULL-``-S-*COMMA*-''-NP-VP-.
+But|S-NULL-``-CC-SBAR-*COMMA*-ADVP-NP-VP-.-''
+otherwise|ADVP-S-RB
+or|SBAR-VP-SBAR-*COMMA*-CC-S
+But|S-NULL-CC-PP-*COMMA*-PP-*COMMA*-NP-VP-.
+But|S-S-CC-NP-``-VP
+as if|VP-S-VBZ-NP-SBAR-*COMMA*-S-*COMMA*-S-*COMMA*-S
+however|ADVP-PRN-RB
+and|S-NULL-CC-S-*COMMA*-CC-S-.
+For example|S-S-PP-PRN-NP-VP
+But|S-S-CC-PP-NP-VP
+and|S-VP-S-CC-S
+Nor|SINV-NULL-CC-VBD-NP-VP-.
+and|NP-PRN-CC
+In fact|S-NULL-PP-*COMMA*-PP-S-*COMMA*-CC-S-.
+And|S-NULL-CC-*COMMA*-SBAR-*COMMA*-NP-VP-.
+previously|ADVP-VP-RB
+because|SBAR-FRAG-IN-S
+But|S-NULL-``-CC-NP-VP-.-''
+so that|VP-VP-VB-NP-PP-SBAR
+And|S-NULL-CC-SBAR-NP-VP-.
+yet|VP-VP-VP-CC-RB-VP
+in the end|S-NULL-``-CC-PP-*COMMA*-NP-VP-.-''
+For example|S-NULL-PP-*COMMA*-PP-*COMMA*-NP-VP-.
+and|S-NULL-S-*COLON*-CC-S-.
+Although|SBAR-S-IN-S
+As a result|S-S-PP-*COMMA*-NP-VP
+after|PP-S-NP-IN-S
+On the other hand|S-NULL-PP-*COMMA*-S-*COMMA*-CC-S-.
+as well|ADVP-VP-ADVP-SBAR
+But|S-NULL-CC-*COMMA*-S-*COMMA*-NP-VP-.
+and|S-VP-SBAR-*COMMA*-S-CC-S
+Yet|S-NULL-RB-NP-VP-.
+By then|S-NULL-PP-*COMMA*-NP-VP-.
+and|S-NULL-SBAR-PRN-S-CC-S-.
+After|SBAR-S-IN-S
+But|S-SINV-CC-*COMMA*-PP-*COMMA*-``-NP-VP
+But|S-NULL-CC-NP-PP-VP-.
+In other words|S-NULL-PP-*COMMA*-SBAR-*COMMA*-VP-.
+If then|VP-S-VBZ-*COLON*-``-S
+In fact|S-NULL-PP-*COMMA*-NP-VP-.-''
+and|S-NULL-S-*COMMA*-S-CC-ADVP-S-.
+but|NP-PP-NNS-CC-NN
+Yet|S-NULL-CC-NP-PRN-VP-.
+and|S-PP-S-*COMMA*-CC-S
+because|SBAR-S-IN-``-S
+And|S-NULL-CC-SBAR-*COMMA*-''-NP-VP-.
+but|SBAR-S-SBAR-*COMMA*-CC-FRAG
+and|S-NULL-ADVP-*COMMA*-S-*COMMA*-S-CC-S-.
+And|S-NULL-CC-PRN-``-NP-VP-.-''
+as if|VP-VP-VBG-ADVP-SBAR
+and|S-S-S-*COMMA*-S-CC-S
+if then|None
+And|S-NULL-CC-ADVP-NP-VP-.
+But|S-NULL-CC-NP-*COMMA*-SBAR-*COMMA*-NP-VP-.
+but|S-NULL-PP-*COMMA*-S-*COMMA*-CC-S-.
+but|UCP-NP-ADJP-*COMMA*-CC-ADVP-SBAR
+And|S-NULL-CC-PP-NP-VP-.
+But|S-NULL-CC-NP-VP-.
+for example|NP-PP-NP-*COMMA*-PP
+In sum|S-NULL-PP-*COMMA*-PP-NP-VP-.
+Since|SBAR-S-IN-S
+later|ADVP-VP-RB
+in fact|PRN-NP-*COMMA*-PP-*COMMA*
+and|S-NULL-SBAR-*COLON*-S-CC-S-.
+In other words|S-NULL-PP-*COMMA*-PP-*COMMA*-NP-VP-.
+Earlier|ADVP-S-RB
+for example|PRN-NP-*COMMA*-PP-*COMMA*
+in turn|S-SBAR-PP-*COMMA*-NP-VP
+and|S-NULL-S-*COLON*-S-*COMMA*-S-CC-S-.
+and|S-SINV-S-*COMMA*-CC-S
+But|S-NULL-``-CC-SBAR-VP-.-''
+But|S-NULL-CC-NP-*COMMA*-PP-*COMMA*-ADVP-VP-.
+and|SBAR-VP-SBAR-CC-S
+and|S-SBAR-S-*COMMA*-CC-PRN-S
+In the end|S-NULL-PP-*COMMA*-NP-VP-.
+indeed|NP-NP-RB
+And|S-NULL-CC-NP-NP-VP-.
+But|S-NULL-CC-PP-NP-*COMMA*-S-*COMMA*-NP-VP-.
+but|S-NULL-S-CC-S-.-''
+But|S-NULL-CC-NP-*COMMA*-SBAR-*COMMA*-VP-.
+and|S-NULL-SBAR-*COLON*-CC-S-.
+But|S-S-CC-SBAR-*COMMA*-NP-VP
+then|VP-VP-VP-CC-RB-VP-NP
+then|S-NULL-S-*COMMA*-CC-RB-S-.
+Furthermore|ADVP-S-RB
+next|ADVP-FRAG-RB
+but|S-NULL-PP-*COMMA*-NP-VP-*COMMA*-''-CC-S-.
+then|SBAR-VP-RB-IN-S
+As a result|S-NULL-``-PP-*COMMA*-NP-VP-.-''
+thus|ADVP-UCP-RB
+and|S-NULL-S-*COMMA*-CC-S-.-''
+Finally|ADVP-S-RB
+Similarly|ADVP-S-RB
+indeed|ADVP-VP-RB
+Yet|S-NULL-CC-NP-ADVP-VP-.
+But|S-NULL-CC-SBAR-*COMMA*-PP-NP-ADVP-VP-.
+but|S-S-INTJ-*COMMA*-CC-S
+as if|VP-S-VBZ-PP-SBAR
+But|S-SINV-CC-S-CC-S
+so|S-VP-S-*COMMA*-S-*COMMA*-IN-S
+before|SBAR-ADVP-IN-S
+and|S-NULL-PP-*COMMA*-S-*COMMA*-S-*COMMA*-S-*COMMA*-S-CC-S-.
+Yet|S-NULL-RB-RB-NP-VP-.-''
+now that|S-NULL-CC-ADVP-*COMMA*-NP-VP-.
+and|VP-S-VBZ-NP-*COLON*-CC-``-VP
+since|SBAR-NP-IN-S
+after|SBAR-SINV-ADVP-IN-S
+But|S-NULL-CC-S-*COMMA*-S-.-''
+and|SBAR-VP-SBAR-''-CC-SBAR
+and|NP-PP-NP-CC-SBAR
+in turn|S-SBAR-PP-VP
+But|S-SINV-CC-NP-ADVP-VP-*COMMA*-''
+But|S-NULL-CC-NP-PRN-VP-.-''
+But|S-NULL-CC-NP-*COMMA*-S-*COMMA*-VP-.
+But|S-NULL-CC-NP-*COMMA*-ADVP-VP-.
+and|SBAR-VP-SBAR-*COMMA*-SBAR-*COMMA*-''-CC-SBAR
+consequently|S-NULL-PP-S-*COMMA*-RB-S-.
+Yet|S-NULL-CC-SBAR-PRN-NP-ADVP-VP-.
+and|NP-S-``-NP-''-CC-RB-NP-*COMMA*
+while|PP-VP-IN-S
+But|S-NULL-CC-SBAR-*COLON*-``-SBAR-VP-.-''
+in fact|S-S-PP-*COMMA*-NP-VP
+But|S-S-CC-*COMMA*-PP-*COMMA*-NP-VP
+so|ADVP-VP-RB-RB
+and|S-NULL-S-*COMMA*-CC-S-.--RRB-
+later|ADVP-S-RB
+Or|S-NULL-CC-NP-VP-.
+And|FRAG-NULL-CC-WHADVP-VP-.-''
+But|SBARQ-NULL-CC-WHNP-.
+so that|VP-VP-VBN-PP-*COMMA*-SBAR
+And|S-NULL-``-CC-ADVP-*COMMA*-NP-VP-.-''
+So|SBAR-VP-IN-S
+and|S-NULL-S-CC-S-.
+if|SBAR-FRAG-RB-IN-S
+as a result|NP-VP-NP-PP
+after|PP-VP-ADVP-IN-NP
+So|S-NULL-RB-NP-*COMMA*-SBAR-*COMMA*-VP-.
+then|ADVP-NP-RB
+Until|PP-WHADJP-IN-NP
+after|SBAR-VP-RB-IN-S
+therefore|ADVP-VP-RB
+But|S-S-CC-SBAR-*COMMA*-NP-VP-*COMMA*-''
+But|S-NULL-CC-PP-NP-VP-.
+though|SBAR-NP-RB-IN-S
+for example|VP-S-VBD-NP-PP-*COMMA*-PP
+therefore|ADVP-PRN-RB
+and|S-NULL-S-*COMMA*-S-*COMMA*-S-*COMMA*-CC-S-.
+before|SBAR-ADJP-IN-S
+therefore|ADVP-S-RB
+But|S-NULL-CC-PP-VP-.
+And|S-NULL-CC-ADVP-PRN-NP-VP-.
+as soon as|VP-VP-VB-NP-PP-ADVP
+for instance|S-NULL-ADVP-*COMMA*-PP-*COMMA*-NP-VP-.
+But|S-NULL-``-CC-NP-VP-*COMMA*-SBAR-.-''
+as a result|PRN-S-*COMMA*-PP-*COMMA*
+Yet|S-NULL-CC-SBAR-*COMMA*-NP-VP-.
+then|S-SINV-S-*COMMA*-CC-RB-S
+so|S-NULL-S-*COMMA*-IN-S-.-''
+after|SBAR-VP-NP-IN-S
+previously|ADVP-S-RB
+And|S-NULL-CC-*COMMA*-PP-*COMMA*-NP-VP-.-''
+and|VP-VP-VP-*COLON*-CC-VP
+but|S-SINV-S-*COMMA*-CC-S-*COMMA*-''
+since|PP-VP-IN-NP
+Also|ADVP-VP-RB
+for instance|VP-VP-VB-ADJP-*COMMA*-PP-*COMMA*-PP
+Next|ADVP-S-JJ
+But|S-NULL-CC-SBAR-NP-VP-.
+But|S-NULL-CC-PP-*COMMA*-SBAR-*COMMA*-NP-VP-.
+As a result|S-S-PP-*COMMA*-SBAR-PRN-*COMMA*-NP-VP
+in contrast|S-NULL-NP-*COMMA*-PP-*COMMA*-VP-.
+but|NP-FRAG-NP-*COMMA*-CC-SBAR
+as long as|VP-VP-VB-NP-ADVP
+but|S-NULL-``-S-PRN-CC-S-.-''
+and|S-NULL-PP-*COMMA*-S-CC-S-.
+since|SBAR-VP-ADVP-IN-S
+but|SBAR-FRAG-SBAR-CC-SBAR
+By comparison|S-NULL-PP-*COMMA*-NP-DT-VP-.
+since|SBAR-VP-RB-IN-S
+so that|VP-VP-VBN-NP-PP-SBAR
+but|S-NULL-``-S-*COMMA*-CC-SQ
+and|S-NULL-S-*COLON*-CC-ADVP-S-.
+and|S-NULL-S-*COMMA*-NP-S-CC-S-.
+then|NP-S-``-NP-''-CC-RB-NP-*COMMA*
+then|VP-VP-ADVP-VP-CC-RB-VP
+and|S-NULL-``-ADVP-*COMMA*-S-CC-S-.
+so|VP-S-VP-*COMMA*-CC-RB-VP
+as|SBAR-PRN-IN-S
+as soon as|VP-VP-VB-PRT-NP-ADVP-PP
+and|S-NULL-S-*COLON*-S-*COLON*-S-CC-S-.
+As a result|S-NULL-PP-*COMMA*-NP-NP-VP-.
+and|S-NULL-NP-NP-CC-S-.
+or|S-NULL-S-*COLON*-CC-ADVP-S-.
+and|S-NULL-S-*COMMA*-CC-PP-*COMMA*-NP-VP-.
+and|S-SBAR-S-*COMMA*-CC-``-S
+Yet|S-NULL-``-CC-NP-VP-.-''
+And|S-NULL-CC-RB-NP-VP-.
+And|S-NULL-CC-NP-VP
+and|S-NULL-S-*COMMA*-''-CC-S-.
+and|S-S-S-*COLON*-CC-S
+and|S-S-S-PRN-CC-S
+Now that|S-NULL-``-ADVP-*COMMA*-NP-VP-.-''
+and|SBAR-VP-SBAR-*COMMA*-SBAR-CC-SBAR
+still|CONJP-VP-CC-RB
+and|VP-S-VP-CC-VP-CC-VP
+later|S-NULL-ADVP-*COMMA*-PP-*COMMA*-``-S-PRN-''-CC-RB-S-.-''
+as if|VP-S-VP-*COMMA*-VP-CC-VP-*COMMA*-SBAR
+as long as|VP-VP-VB-PP-ADVP
+Before|PP-NP-IN-NP
+and|UCP-VP-VP-*COMMA*-CC-SBAR
+and|S-NULL-S-*COMMA*-CC-S-*COLON*-.-''
+but|S-S-CONJP-SINV-CC-S
+while|SBAR-NP-IN-S
+afterward|ADVP-S-RB-RB
+meantime|NP-PP-DT-NN
+But|S-NULL-CC-ADVP-*COMMA*-PP-*COMMA*-NP-VP-.
+before|SBAR-VP-IN-S
+But|S-NULL-CC-SBAR-*COMMA*-NP-VP-''
+For instance|None
+and|S-NP-S-*COMMA*-CC-S
+But|S-NULL-CC-NP-*COMMA*-NP-VP-.
+in fact|VP-S-VBD-*COMMA*-PP-*COMMA*-S
+as a result|VP-VP-VBG-NP-PP
+or|SBAR-VP-SBAR-*COMMA*-CC-SBAR
+until|SBAR-VP-RB-IN-S
+but|S-NULL-``-S-CC-S-.
+and|NP-PP-NP-*COMMA*-``-NP-*COMMA*-''-CC-NP
+much as|VP-VP-VBD-NP-ADVP
+But|S-NULL-``-CC-NP-VP-.
+and|S-NULL-ADVP-PRN-``-S-CC-S-.-''
+also|CONJP-PP-CC-RB
+and|VP-S-VP-*COMMA*-CC-RB-VP
+meanwhile|NP-PP-DT-NN
+for instance|S-NULL-NP-*COMMA*-PP-*COMMA*-VP-.
+by comparison|S-NULL-CC-PP-*COMMA*-NP-VP-.
+But|S-NULL-CC-PP-*COMMA*-NP-VP-.
+But|S-NULL-CC-NP-VP-.--RRB-
+and|S-NULL-CC-SBAR-*COMMA*-S-CC-S-.
+Previously|ADVP-S-RB
+so|S-NULL-S-*COMMA*-CC-RB-S-.
+for instance|S-VP-NP-PP
+for instance|VP-S-VBD-ADJP-*COMMA*-PP-*COMMA*-SBAR
+but|S-NULL-S-CC-S-*COLON*-.
+And|S-NULL-CC-PP-*COMMA*-NP-VP-.-''
+for example|S-PRN-NP-*COMMA*-PP-*COMMA*-NP-VP-.
+later|VP-S-VBD-RB-VP
+thus|VP-VP-VP-CC-RB-VP
+in the end|S-NULL-CC-PP-NP-VP-*COLON*-PP-.
+Yet|S-NULL-CC-ADVP-*COMMA*-NP-VP-.-''
+Besides|ADVP-S-RB
+Because|SBAR-S-IN-S
+But|S-NULL-CC-SBAR-*COMMA*-``-SBAR-*COMMA*-NP-VP-.
+much as|S-NULL-ADVP-*COMMA*-PP-*COMMA*-NP-VP-.
+so|SBAR-VP-IN-S
+But|S-S-CC-NP-ADVP-PP-VP
+if|SBAR-ADVP-IN-FRAG
+but|S-NULL-S-*COMMA*-CC-S-.--RRB-
+and|S-NULL-ADVP-*COMMA*-S-*COMMA*-S-*COMMA*-S-CC-S-.
+if|PRN-S-*COLON*-IN-S
+so that|VP-VP-VBN-PRT-PP-*COMMA*-PP-*COMMA*-SBAR
+And|S-NULL-CC-NP-*COMMA*-NP-VP-.
+but|S-NULL-PP-*COMMA*-S-*COLON*-CC-S-.-''
+and|S-S-S-*COMMA*-''-CC-S
+But|S-NULL-``-CC-NP-ADVP-VP-.-''
+And|S-NULL-CC-PP-*COMMA*-NP-VP-.
+Although|SBAR-S-IN-``-S
+But|S-NULL-CC-S-CC-*COMMA*-S-.
+And|S-NULL-CC-NP-SBAR-*COMMA*-VP-.-''
+But|S-NULL-``-CC-SBAR-*COMMA*-NP-VP-*COLON*-.
+And|S-NULL-CC-ADVP-*COMMA*-NP-VP-.
+But|S-NULL-CC-S-*COMMA*-NP-VP-.
+Although|SBAR-SBARQ-IN-S
+if|SBAR-PRN-IN-S
+and|S-VP-S-*COLON*-CC-S
+So|S-NULL-CC-VP-.
+and|VP-S-VP-*COMMA*-CC-VP
+In fact|S-NULL-PP-*COMMA*-S-*COLON*-S-.
+and|S-NULL-``-S-CC-S-.
+But|S-NULL-CC-S-CC-S-.
+but|S-NULL-SINV-*COMMA*-CC-S-.
+for example|S-NULL-PP-*COMMA*-PP-*COMMA*-NP-VP-.
+so|S-SBAR-S-*COMMA*-RB-S
+as long as|VP-VP-VBN-ADVP
+but|S-S-NP-*COMMA*-CC-S
+In the end|S-NULL-PP-NP-VP-.
+But|S-SINV-CC-S-*COMMA*-''-CC-S
+In the end|S-S-PP-*COMMA*-NP-VP
+for instance|PRN-VP-*COMMA*-PP-*COMMA*
+and|UCP-VP-ADJP-CC-S
+But|S-S-CC-S-*COMMA*-''-CC-S
+Now that|S-NULL-ADVP-*COMMA*-NP-VP-.
+In addition|S-NULL-PP-PRN-NP-VP-.
+as if|VP-S-VBG-SBAR
+Yet|S-S-CC-SBAR-*COMMA*-NP-VP
+and|S-SINV-S-*COMMA*-S-*COMMA*-CC-S
+In contrast|S-NULL-PP-*COMMA*-NP-VP-.-''
+and|S-NULL-S-*COLON*-CC-S-*COLON*
+but|S-NULL-S-*COMMA*-S-*COMMA*-CC-S-*COMMA*-CC-S-.
+and|NP-NP-NNS-CC-NNS
+But|S-NULL-CC-PP-*COMMA*-S-CC-S-.
+and|S-NULL-``-S-*COMMA*-CC-S-.
+while|SBAR-S-IN-``-S
+For example|S-NULL-PP-PRN-NP-VP-.
+though|SBAR-SINV-IN-S
+So|S-NULL-RB-PRN-VP-.
+later|ADVP-VP-RB-RB
+Also|ADVP-S-RB
+But|S-NULL-``-CC-PRN-ADVP-RB-NP-VP-.-''
+Yet|S-NULL-CC-PP-NP-VP-.
+and|S-NULL-PP-PRN-S-CC-``-S-.-''
+And|S-NULL-CC-S-PRN-NP-VP-.
+and|S-NULL-S-*COMMA*-S-CC-S-.
+because|ADVP-S-RB-RB
+or|S-SINV-CC-S-CC-S
+as soon as|VP-S-VBP-NP-*COLON*-SBAR
+and|S-SBAR-S-*COMMA*-CC-S
+and|SBAR-NP-SBAR-*COMMA*-CC-SBAR
+And|S-S-CC-PP-*COMMA*-NP-ADVP-VP
+but|S-NULL-CONJP-SINV-*COMMA*-CC-S-.
+But|S-NULL-CC-PP-*COMMA*-NP-VP-.-''
+And|S-NULL-CC-S-*COMMA*-''-NP-VP-.
+But|S-SINV-CC-NP-ADVP-VP
+and|NP-S-NP-*COMMA*-NP-CC-NP
+as long as|VP-S-VBG-PP-ADVP
+So|S-NULL-``-RB-NP-VP-.-''
+or|SBAR-NP-SBAR-CC-SBAR
+as soon as|S-NULL-ADVP-*COMMA*-ADVP-*COMMA*-NP-VP-.
+So|S-NULL-RB-PRN-SBAR-*COMMA*-NP-VP-.
+so|S-NULL-``-S-PRN-RB-S-.
+though|SBAR-VP-IN-PRN-S
+or|S-NULL-``-S-PRN-CC-S-.-''
+For example|S-NULL-PP-*COMMA*-SBAR-*COMMA*-NP-VP-.
+and|S-NULL-S-*COMMA*-CC-S-CC-S-.
+And|S-NULL-CC-NP-PRN-``-VP-.-''
+for example|PRN-S-*COMMA*-PP-*COMMA*
+thus|ADVP-PRN-RB
+Nor|SINV-NULL-CC-VBZ-NP-ADVP-VBP-PRN-NP-.
+and|SBAR-PP-SBAR-CC-SBAR
+But|SBARQ-FRAG-CC-WHNP-SQ-.
+but|S-SINV-S-*COMMA*-``-CC-S-*COMMA*-''
+since|SBAR-S-ADVP-IN-S
+for example|VP-S-VBZ-ADJP-*COMMA*-PP
+or|S-NULL-CC-S-CC-*COMMA*-S-.
+then|PP-VP-PP-CC-RB-PP
+and|CONJP-NP-CC-RB
+But|S-NULL-``-CC-SBAR-*COMMA*-NP-VP-.
+for example|S-NULL-PP-*COMMA*-PP-*COMMA*-SBAR-*COMMA*-NP-VP-.
+for instance|S-NULL-PP-*COMMA*-PP-*COMMA*-NP-ADVP-VP-.
+But|S-NULL-CC-PRN-NP-VP-.
+afterward|ADVP-S-RB
+but|S-S-S-CC-S
+though|SBAR-S-IN-S
+On the other hand|S-NULL-PP-*COMMA*-ADVP-*COMMA*-NP-VP-.
+But|S-NULL-CC-S-*COMMA*-''-NP-VP-.
+and|NP-S-DT-NN-CC-NNS
+And|FRAG-NULL-CC-WP-IN-NP-*COMMA*-PP-.-''
+for example|S-NULL-NP-*COMMA*-PP-*COMMA*-ADVP-VP-.
+for example|S-VP-NP-*COMMA*-PP-*COMMA*-VP
+and|S-SINV-S-*COMMA*-S-CC-S
+Thus|S-NULL-RB-NP-VP-.
+Additionally|ADVP-S-RB
+and|S-NULL-``-S-PRN-``-CC-S-.-''
+and|S-SINV-CC-S-*COMMA*-''-CC-S
+or|VP-S-VP-''-CC-``-VP
+Yet|S-NULL-CC-NP-VP-.
+But|S-NULL-CC-S-*COMMA*-RB-S-.
+as well|VP-VP-VB-ADVP
+But|S-S-CC-ADVP-*COMMA*-NP-VP
+as soon as|VP-VP-VB-S-ADVP
+for instance|VP-S-VBD-NP-*COMMA*-PP-*COMMA*-PP
+In fact|S-NULL-PP-*COMMA*-NP-NP-VP-.
+On the other hand|S-NULL-PP-*COMMA*-NP-VP-.-''
+if and when|VP-VP-VBP-UCP
+for instance|S-S-NP-*COMMA*-PP-*COMMA*-VP
+But|S-NULL-CC-S-*COLON*-S-*COMMA*-CC-S-.
+In addition|S-NULL-PP-PRN-S-VP-.
+then|VP-VP-VP-*COMMA*-CC-RB-VP
+because|SBAR-SBAR-ADVP-IN-S
+so|SBAR-NP-IN-S
+As soon as|S-NULL-ADVP-NP-VP-.
+And|S-NULL-CC-PP-*COMMA*-S-VP-.
+and|S-SBAR-S-CC-PRN-S
+but|S-NULL-S-*COMMA*-S-PRN-CC-S-.
+for example|VP-VP-VBN-*COMMA*-PP-*COMMA*-NP
+Thus|ADVP-FRAG-RB
+in turn|VP-S-VBZ-PP-VP
+so|S-NULL-CC-S-*COMMA*-RB-S-.
+ONCE|VP-S-VBG-NP-NP-NP-PP
+so|SBAR-SINV-IN-S
+nevertheless|ADVP-S-RB
+unless|SBAR-VP-IN-S
+And|S-NULL-CC-SBAR-*COMMA*-NP-VP-.-''
+In short|S-NULL-PP-*COMMA*-NP-VP-.
+and|S-NULL-S-*COLON*-S-*COLON*-S-*COLON*-S-*COLON*-S-*COMMA*-CC-S-.
+after|PP-ADVP-IN-S
+Yet|ADVP-S-RB
+But|S-NULL-CC-SBAR-.
+But|S-NULL-CC-ADVP-*COMMA*-PRN-NP-VP-.
+if|SBAR-VP-IN-PRN-S
+Thus|ADVP-SINV-RB
+But|S-NULL-CC-S-.
+but|S-S-S-*COLON*-CC-PRN-S
+for example|S-S-PP-*COMMA*-NP-VP
+but|S-NULL-``-ADVP-S-*COMMA*-CC-S-.
+And|S-NULL-CC-PP-ADVP-*COMMA*-NP-VP-.
+ultimately|ADVP-PRN-RB
+before|SBAR-NP-IN-S
+and|S-SBAR-S-*COMMA*-S-CC-S
+but|S-NULL-``-S-*COMMA*-CC-S-.-''
+so|S-NULL-CC-S-*COMMA*-IN-S-.
+But|S-SINV-CC-NP-*COMMA*-NP-VP
+once|SBAR-ADJP-IN-S
+for example|NP-S-NP-*COMMA*-PP-*COMMA*
+But|FRAG-NULL-CC-SBAR-.
+if|SBAR-SINV-RB-IN-S
+if|SBAR-PRN-IN-ADJP
+and|S-S-S-*COMMA*-S-*COMMA*-CC-S
+since|SBAR-S-IN-S
+and|SBAR-NP-SBAR-*COLON*-CC-SBAR
+before|SBAR-VP-ADVP-IN-S
+and|S-VP-S-*COMMA*-CC-S
+as if|VP-S-VBZ-SBAR
+and|PRN-VP-*COLON*-CC-S-*COLON*
+And|S-NULL-CC-PP-PRN-NP-VP-.
+as soon as|VP-VP-VB-NP-ADVP
+Yet|S-SINV-RB-*COMMA*-PP-*COMMA*-NP-ADVP-VP
+as long as|VP-S-VBD-NP-ADVP
+and|S-NULL-S-*COMMA*-S-*COMMA*-S-*COMMA*-S-*COMMA*-CC-S-.
+while|SBAR-VP-IN-PRN-S
+since|SBAR-PP-IN-S
+and|NP-VP-NP-*COLON*-CC-NP
+before|PP-NP-IN-NP
+while|SBAR-PRN-IN-FRAG
+And|S-NULL-CC-NP-*COMMA*-``-NP-ADVP-VP-.-''
+as|PP-S-IN-NP
+Conversely|ADVP-S-RB
+Then|ADVP-S-RB-RB
+For example|S-NULL-``-PP-*COMMA*-NP-VP-.
+and|S-NULL-S-*COMMA*-ADVP-*COMMA*-CC-S-.
+before|PP-VP-IN-S
+By contrast|S-NULL-PP-*COMMA*-NP-ADVP-VP-.
+later|ADVP-ADVP-RBR
+But|S-S-CC-S-CC-S
+But|S-SINV-CC-SBAR-*COMMA*-NP-VP
+And|S-NULL-CC-NP-ADVP-VP-.
+Moreover|ADVP-ADVP-RB
+But|S-NULL-CC-SBAR-*COMMA*-S-CC-S-.
+as long as|NP-PP-NP-ADJP
+next|ADVP-VP-RB
+But|S-NULL-CC-NP-ADVP-VP-*COLON*-CC-S-.
+If then|S-NULL-``-S-*COMMA*-''-NP-VP-.
+In the end|S-NULL-``-PP-*COMMA*-NP-VP-.
+Thereafter|ADVP-S-RB
+as long as|VP-VP-VBN-NP-ADVP
+In fact|S-NULL-PP-*COMMA*-NP-ADVP-VP-.
+but|S-SINV-S-CC-S
+or|SBAR-NP-SBAR-*COMMA*-CC-SBAR
+Then|ADVP-SINV-RB
+so that|VP-S-VBG-NP-SBAR
+but|S-NULL-S-*COMMA*-CC-*COMMA*-S-.
+For|PP-S-IN-NP
+though|SBAR-VP-IN-S
+so|S-NULL-S-*COMMA*-IN-S-.
+if|SBAR-SBARQ-RB-IN-S
+and|S-NULL-S-*COMMA*-S-*COMMA*-S-CC-S-.
+if then|S-SBAR-SBAR-NP-VP
+and|NP-VP-NP-CC-NP
+after|SBAR-PRN-IN-S
+and|NP-NP-DT-NN-NN-CC-NN-NN
+and|S-NULL-CC-SBAR-PRN-``-S-CC-S-.-''
+and|VP-S-VP-*COMMA*-CC-RB-VP-NP
+and|SBAR-VP-SBAR-*COMMA*-CC-SBAR
+And|S-NULL-CC-NP-VP-*COLON*
+And|S-NULL-CC-ADVP-NP-VP-.-''
+thus|S-VP-RB-VP
+and|S-S-CC-S-*COMMA*-''-CC-S
+also|ADVP-SQ-RB
+separately|ADVP-S-RB
+as soon as|VP-VP-VBG-ADVP
+so|S-NULL-S-*COMMA*-RB-S-.
+in turn|S-NULL-CC-NP-*COMMA*-PP-*COMMA*-VP-.
+In addition|S-NULL-PP-*COMMA*-S-CC-S-.
+and|S-NULL-S-CC-SQ
+after|PP-VP-IN-S

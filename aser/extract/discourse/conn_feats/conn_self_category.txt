@@ -1,0 +1,278 @@
+hence|VBG
+now that|ADVP
+nevertheless|RB
+or|CC
+since|IN
+Plus|NNP
+while|NN
+as a result|PP
+Nevertheless|RB
+Neither nor|S
+either or|VP
+So|IN
+Alternatively|RB
+plus|NN
+specifically|RB
+later|RB
+much as|NP
+Insofar as|S
+neither nor|NP
+as if|SBAR
+and|NNP
+yet|RB
+in other words|PP
+as though|SBAR
+in the end|PP
+still|RB
+by contrast|PP
+overall|RB
+as soon as|SBAR
+Because|IN
+now that|VP
+so|IN
+Hence|RB
+in turn|PP
+further|JJ
+Overall|JJ
+afterward|RB
+next|JJ
+so that|NP
+NONE_TREE
+Nonetheless|RB
+By contrast|PP
+Besides|IN
+because|RB
+because|IN
+further|RBR
+In short|PP
+meantime|NN
+When and if|SBAR
+else|JJ
+Previously|RB
+Meanwhile|RB
+nonetheless|RB
+Before|IN
+Earlier|RB
+Since|IN
+indeed|RB
+till|IN
+next|RB
+Overall|RB
+As|IN
+either or|ADVP
+besides|IN
+in short|PP
+but|CC
+now that|S
+either or|ADJP
+Specifically|RB
+later|JJ
+Though|IN
+so that|ADVP
+Furthermore|RB
+plus|NNS
+If then|S
+earlier|RB
+so that|SBAR
+as long as|ADVP
+before and after|PP
+as|IN
+much as|CONJP
+and|CC
+Unless|IN
+if|IN
+as soon as|CONJP
+yet|CC
+much as|VP
+for|IN
+Next|JJ
+though|IN
+nor|CC
+Regardless|RB
+While|IN
+When|WRB
+further|VB
+much as|QP
+Instead|RB
+However|WRB
+as soon as|ADVP
+Thereafter|RB
+Therefore|RB
+instead|RB
+much as|ADVP
+Till|IN
+Rather|RB
+ONCE|VBG
+thereafter|RB
+regardless|RB
+lest|IN
+Then|RB
+As|RB
+earlier|JJ
+furthermore|RB
+Indeed|RB
+By comparison|PP
+Else|NNP
+afterwards|VBD
+therefore|RB
+as well|ADVP
+But|CC
+Also|RB
+otherwise|RB
+Conversely|RB
+Finally|RB
+rather|RB
+as well|SBAR
+Now that|S
+In contrast|PP
+neither nor|ADJP
+As a result|PP
+later|RBR
+before|RB
+if and when|UCP
+If|IN
+Next|RB
+Until|IN
+as well|CONJP
+earlier|RBR
+meanwhile|RB
+in contrast|PP
+by then|PP
+once|IN
+Yet|RB
+plus|IN
+After|IN
+In the end|PP
+Still|RB
+As soon as|ADVP
+now that|SBAR
+before|IN
+Moreover|RB
+Plus|CC
+Earlier|JJR
+in fact|PP
+but|RB
+Earlier|RBR
+Additionally|RB
+Meantime|RB
+accordingly|RB
+As well|ADVP
+In addition|PP
+by then|ADVP
+Consequently|RB
+as an alternative|PP
+unless|IN
+For example|PP
+However|RB
+if then|SBAR
+Once|RB
+either or|NP
+earlier|JJR
+So|RB
+insofar as|VP
+meantime|RB
+thereby|RB
+as long as|CONJP
+FOR|IN
+for example|PP
+Although|IN
+Besides|RB
+for|RP
+overall|JJ
+if then|S
+once|RB
+Except|IN
+similarly|RB
+neither nor|VP
+Now that|ADVP
+separately|RB
+Likewise|RB
+as|RB
+Or|CC
+As long as|ADVP
+by comparison|PP
+On the contrary|PP
+alternatively|RB
+Now that|SBAR
+as long as|QP
+And|CC
+also|RB
+Accordingly|RB
+In fact|PP
+Later|RB
+thus|RB
+Either or|S
+As if|SBAR
+but|IN
+likewise|RB
+when|WRB
+For instance|SBAR
+AS|NNP
+Further|RB
+else|RB
+Next|NNP
+WHEN|WRB
+As an alternative|PP
+much as|SBAR
+hence|RB
+until|IN
+Afterward|RB
+For instance|PP
+either or|PP
+ONCE|RB
+in particular|PP
+Thus|RB
+Whereas|NNS
+Nor|CC
+In other words|PP
+after|IN
+further|RB
+So|CC
+Further|JJ
+either or|UCP
+next|IN
+moreover|RB
+Ultimately|RB
+Otherwise|RB
+for instance|PP
+Similarly|RB
+while|IN
+additionally|RB
+Separately|RB
+as well|ADJP
+though|RB
+On the other hand|PP
+either or|S
+in addition|PP
+Afterwards|RB
+simultaneously|RB
+plus|CC
+IF|IN
+however|RB
+consequently|RB
+finally|RB
+since|RB
+as long as|ADJP
+after|RB
+so|RB
+By then|PP
+Once|IN
+then|RB
+In sum|PP
+meanwhile|NN
+Neither nor|NP
+on the other hand|PP
+whereas|IN
+either or|FRAG
+hence|VB
+AND|CC
+Next|IN
+although|IN
+as well|PP
+Yet|CC
+For|IN
+afterwards|RB
+previously|RB
+except|IN
+In particular|PP
+ultimately|RB

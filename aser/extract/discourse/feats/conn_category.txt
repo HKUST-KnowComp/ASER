@@ -1,0 +1,100 @@
+accordingly # adverbial
+additionally # adverbial
+afterward # adverbial
+also # adverbial
+alternatively # adverbial
+as a result # adverbial
+as an alternative # adverbial
+as well # adverbial
+besides # adverbial
+by comparison # adverbial
+by contrast # adverbial
+consequently # adverbial
+conversely # adverbial
+earlier # adverbial
+either or # adverbial
+except # adverbial
+finally # adverbial
+for example # adverbial
+for instance # adverbial
+further # adverbial
+furthermore # adverbial
+hence # adverbial
+in addition # adverbial
+in contrast # adverbial
+in fact # adverbial
+in other words # adverbial
+in particular # adverbial
+in short # adverbial
+in sum # adverbial
+in the end # adverbial
+in turn # adverbial
+indeed # adverbial
+instead # adverbial
+later # adverbial
+likewise # adverbial
+meantime # adverbial
+meanwhile # adverbial
+moreover # adverbial
+nevertheless # adverbial
+next # adverbial
+nonetheless # adverbial
+on the contrary # adverbial
+on the other hand # adverbial
+otherwise # adverbial
+overall # adverbial
+previously # adverbial
+rather # adverbial
+regardless # adverbial
+separately # adverbial
+similarly # adverbial
+simultaneously # adverbial
+specifically # adverbial
+still # adverbial
+thereafter # adverbial
+thereby # adverbial
+therefore # adverbial
+thus # adverbial
+ultimately # adverbial
+whereas # adverbial
+by then # adverbial
+and # coordinator
+but # coordinator
+else # coordinator
+if then # coordinator
+neither nor # coordinator
+nor # coordinator
+on the one hand on the other hand # coordinator
+or # coordinator
+plus # coordinator
+then # coordinator
+yet # coordinator
+after # subordinator
+although # subordinator
+as # subordinator
+as if # subordinator
+as long as # subordinator
+as soon as # subordinator
+as though # subordinator
+because # subordinator
+before  # subordinator
+before and after # subordinator
+for # subordinator
+however # subordinator
+if # subordinator
+if and when # subordinator
+insofar as # subordinator
+lest # subordinator
+much as # subordinator
+now that # subordinator
+once # subordinator
+since # subordinator
+so # subordinator
+so that # subordinator
+though  # subordinator
+till # subordinator
+unless # subordinator
+until # subordinator
+when # subordinator
+when and if # subordinator
+while # subordinator

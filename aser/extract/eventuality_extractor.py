@@ -5,20 +5,23 @@ from aser.extract.utils import get_corenlp_client, parse_sentense_with_stanford
 
 class EventualityExtractor(object):
     def __init__(self, corenlp_path=None, corenlp_port=None):
+        self.corenlp_path = corenlp_path
+        self.corenlp_port = corenlp_port
+
         if corenlp_path and corenlp_port:
-            self.corenlp_client, self.is_externel_corenlp = get_corenlp_client(
-                corenlp_path=corenlp_path, port=corenlp_port)
+            _, self.is_externel_corenlp = get_corenlp_client(corenlp_path=corenlp_path, corenlp_port=corenlp_port)
         else:
-            self.corenlp_client, self.is_externel_corenlp = None, False
+            self.is_externel_corenlp = False
 
     def close(self):
-        if not self.is_externel_corenlp and self.corenlp_client:
-            self.corenlp_client.stop()
+        if self.is_externel_corenlp:
+            corenlp_client, _ = get_corenlp_client(corenlp_path=self.corenlp_path, corenlp_port=self.corenlp_port)
+            corenlp_client.stop()
 
     def __del__(self):
         self.close()
 
-    def extract(self, text):
+    def extract(self, text, annotators=None):
         """ This method would firstly split text into sentences and extract
             all eventualities for each sentence.
 
@@ -58,8 +61,10 @@ class EventualityExtractor(object):
                                   'words': ['he', 'be', 'hungry']})])
                 ]
         """
+        return []
+        corenlp_client, _ = get_corenlp_client(corenlp_path=self.corenlp_path, corenlp_port=self.corenlp_port, annotators=annotators)
         eventualities_list = []
-        parsed_results = parse_sentense_with_stanford(text, self.corenlp_client)
+        parsed_results = parse_sentense_with_stanford(text, corenlp_client, annotators)
         for parsed_result in parsed_results:
             eventualities = self.extract_from_parsed_result(parsed_result)
             eventualities_list.append(eventualities)

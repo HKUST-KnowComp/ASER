@@ -1,0 +1,262 @@
+and|UCP
+as though|ADJP
+thus|ADVP
+also|NONE_TREE
+but|SBARQ
+though|ADVP
+so|SBAR
+insofar as|ROOT
+though|SBAR
+so that|VP
+whereas|SBAR
+for example|SQ
+as long as|VP
+or|SQ
+and|CONJP
+if|PRN
+for instance|VP
+if then|SINV
+after|ADVP
+thus|VP
+finally|ADVP
+lest|SBAR
+yet|SBAR
+later|ADJP
+in other words|VP
+for instance|PRN
+and|SBAR
+as well|VP
+once|ADVP
+before|PP
+while|PP
+thereafter|ADVP
+so|PP
+then|S
+meantime|NP
+since|PP
+but|SQ
+if then|ROOT
+also|ADJP
+in the end|FRAG
+if|S
+thereby|VP
+until|SBAR
+afterwards|ADVP
+further|ADVP
+for example|S
+in contrast|S
+hence|ADJP
+similarly|ADVP
+therefore|ADVP
+thus|NP
+when|NONE_TREE
+now that|S
+nevertheless|ADVP
+but|UCP
+in other words|S
+now that|SQ
+as a result|ADVP
+instead|ADVP
+separately|ADVP
+by comparison|S
+because|ADVP
+as well|S
+but|S
+on the contrary|S
+and|S
+because|S
+while|NP
+so|S
+in fact|VP
+then|NP
+once|SBAR
+otherwise|VP
+thus|S
+once|ADJP
+otherwise|ADVP
+as though|VP
+indeed|S
+as an alternative|S
+therefore|ADJP
+for|PP
+in turn|VP
+instead|CONJP
+but|PRN
+moreover|ADVP
+so|NP
+also|ADVP
+though|NP
+nonetheless|ADVP
+conversely|ADVP
+as soon as|VP
+specifically|ADVP
+nor|SINV
+either or|NP
+as|PP
+simultaneously|ADVP
+also|CONJP
+since|SBAR
+then|ADVP
+except|SBAR
+however|ADVP
+or|S
+though|VP
+still|ADVP
+yet|ADVP
+or|SBARQ
+likewise|ADVP
+for example|VP
+neither nor|S
+much as|VP
+consequently|ADVP
+as well|ADVP
+in the end|S
+since|ADVP
+although|S
+besides|PP
+so|SBARQ
+as soon as|S
+so|VP
+if and when|VP
+and|SQ
+afterwards|VP
+in turn|NP
+then|VP
+plus|ADVP
+accordingly|ADVP
+then|SINV
+in sum|S
+or|FRAG
+but|VP
+later|VP
+while|SBAR
+now that|VP
+as|SBAR
+in fact|S
+else|S
+later|SBAR
+overall|ADVP
+before|ADVP
+as a result|S
+when|WHADVP
+because|NONE_TREE
+nor|S
+later|NP
+for|SBAR
+ultimately|ADVP
+then|SBAR
+as if|S
+whereas|NP
+later|ADVP
+in short|S
+as long as|NP
+indeed|NP
+for instance|S
+much as|S
+and|PRN
+besides|ADVP
+in fact|PRN
+but|SINV
+previously|ADVP
+hence|ADVP
+yet|VP
+unless|SBAR
+simultaneously|CONJP
+and|SINV
+overall|NP
+in fact|NP
+in addition|S
+regardless|ADVP
+meanwhile|ADVP
+consequently|S
+nor|VP
+till|SBAR
+or|UCP
+afterward|ADVP
+if|ADVP
+then|QP
+though|PP
+on the other hand|S
+as a result|VP
+rather|CONJP
+if|PP
+in particular|NP
+so that|ADVP
+nevertheless|ADJP
+as if|VP
+after|SBAR
+in the end|PRN
+and|ADJP
+furthermore|ADVP
+later|S
+by contrast|S
+also|S
+although|PP
+if|SBAR
+for instance|NP
+if|ADJP
+if|CONJP
+instead|S
+since|PRN
+and|VP
+thereby|ADVP
+or|SBAR
+but|FRAG
+once|VP
+for example|PRN
+in particular|PP
+next|S
+and|NP
+so|ADVP
+and|NX
+in addition|FRAG
+when and if|S
+still|CONJP
+next|ADVP
+or|PRN
+before and after|VP
+indeed|ADVP
+if|FRAG
+but|SBAR
+because|SBAR
+as long as|S
+by then|S
+for instance|ROOT
+rather|VP
+in particular|S
+and|NONE_TREE
+then|PP
+but|NP
+for example|NP
+rather|SBAR
+and|FRAG
+as a result|PRN
+instead|VP
+and|SBARQ
+as a result|NP
+because|PP
+in addition|NONE_TREE
+until|PP
+before|SBAR
+nor|SQ
+if then|VP
+either or|SINV
+if then|S
+on the other hand|PRN
+if|WHNP
+rather|ADVP
+unless|ADVP
+or|VP
+or|ADVP
+except|PP
+after|PP
+yet|S
+in turn|S
+in turn|PRN
+or|NP
+unless|S
+meanwhile|NP
+although|SBAR
+alternatively|ADVP
+earlier|ADVP
+additionally|ADVP

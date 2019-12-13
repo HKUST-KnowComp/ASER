@@ -5,4 +5,5 @@ def main():
     args = parser.parse_args()
     ASERPipe(args).run()
 
-
+if __name__ == "__main__":
+    main()

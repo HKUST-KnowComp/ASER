@@ -34,7 +34,7 @@ def get_server_args_parser():
                         help="ASER KG directory")
 
     # I/O
-    parser.add_argument("-log_path", type=str, default="./.tmp.log",
+    parser.add_argument("-log_path", type=str, default="./.server.log",
                         help="Logging path of server output")
 
     return parser
@@ -43,9 +43,9 @@ def get_server_args_parser():
 def get_pipe_args_parser():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("-n_extractors", type=int, default=5,
+    parser.add_argument("-n_extractors", type=int, default=1,
                         help="Number of ASER extractors")
-    parser.add_argument("-n_workers", type=int, default=5,
+    parser.add_argument("-n_workers", type=int, default=1,
                         help="Number of ASER workers, "
                              "same as num of corenlp workers")
     # Stanford Corenlp
@@ -56,11 +56,11 @@ def get_pipe_args_parser():
                              "[base_corenlp_port, base_corenlp_port + n_workers - 1]"
                              "should be reserved")
     # Raw Data
-    parser.add_argument("-raw_dir", type=str, default="./",
+    parser.add_argument("-raw_dir", type=str, default=None,
                         help="ASER raw data directory")
     # Processed Data
-    parser.add_argument("-processed_dir", type=str, default="./",
-                        help="ASER processed_dir data directory")
+    parser.add_argument("-processed_dir", type=str, default=None,
+                        help="ASER processed_dir data directory")              
     # KG
     parser.add_argument("-kg_dir", type=str, default="./",
                         help="ASER KG directory")
@@ -73,7 +73,7 @@ def get_pipe_args_parser():
     parser.add_argument("-relation_frequency_upper_percent_threshold", type=float, default=1.0,
                         help="relations whose frequency percents are higher than this will be filtered")
     # Log
-    parser.add_argument("-log_path", type=str, default="./.tmp.log",
+    parser.add_argument("-log_path", type=str, default="./.pipe.log",
                         help="Logging path of pipe output")
 
     return parser

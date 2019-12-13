@@ -1,0 +1,661 @@
+or|CD
+either or|VB
+then|DT
+meantime|NONE
+Plus|NNP
+as a result|PP
+or|PRP$
+if and when|VBP
+as well|PRN
+and|TO
+in addition|VBP
+for|ADVP
+in fact|*COMMA*
+yet|RBR
+as well|``
+either or|``
+moreover|NONE
+as well|PRT
+so that|NP
+yet|ADJP
+or|DT
+thereafter|RBR
+overall|NP
+By contrast|NONE
+as well|VB
+as well|VBG
+as soon as|*COLON*
+Separately|NONE
+Now that|NONE
+after|NN
+meanwhile|NONE
+So|NONE
+still|RBS
+Next|DT
+As an alternative|NONE
+but|NNS
+but|NNP
+in addition|NONE
+and|MD
+finally|CC
+before|CC
+as well|CONJP
+ONCE|NONE
+separately|NONE
+after|NP
+still|DT
+in addition|NP
+by comparison|ADJP
+later|NONE
+Consequently|NONE
+because|ADVP
+as well|S
+as|QP
+so|S
+thus|NONE
+in other words|*COMMA*
+yet|CC
+later|VBD
+insofar as|NP
+AND|NN
+before|NONE
+next|NONE
+as soon as|ADVP
+Overall|NONE
+while|DT
+so that|''
+plus|DT
+though|``
+or|VBG
+for example|*COMMA*
+Finally|NONE
+or|''
+then|ADVP
+If then|NONE
+as well|ADVP
+else|NONE
+as|NONE
+and|RBR
+then|*COLON*
+Until|NONE
+so that|PP
+after|NONE
+if|*COMMA*
+for instance|*COMMA*
+nevertheless|NONE
+indeed|NONE
+as a result|NONE
+for instance|NP
+as soon as|S
+as well|VBD
+by contrast|NONE
+before and after|NONE
+and|ADVP
+in other words|*COLON*
+while|JJ
+While|NONE
+Regardless|NONE
+and|IN
+else|WP
+before|ADVP
+before|IN
+Nor|NONE
+as long as|``
+in contrast|VBD
+Similarly|NONE
+neither nor|VBP
+as long as|NP
+In the end|``
+and|PRN
+neither nor|VBN
+and|PP
+next|NP
+else|RB
+neither nor|VBD
+Alternatively|NONE
+as|JJ
+For instance|NONE
+Likewise|NONE
+as an alternative|NP
+overall|NONE
+while|CC
+either or|NONE
+in particular|SBAR
+or|VBP
+now that|ADJP
+or|VBZ
+if then|NONE
+or|VBD
+in turn|*COMMA*
+after|RB
+in turn|NONE
+or|VBN
+as soon as|``
+next|PRP$
+Except|NONE
+in the end|NONE
+Next|NONE
+because|PP
+as|*COMMA*
+By then|NONE
+or|NNPS
+as well|VP
+Plus|NONE
+else|NN
+ultimately|NONE
+consequently|NONE
+since|*COMMA*
+though|NONE
+So|``
+In particular|NONE
+or|ADJP
+later|PRP$
+plus|NONE
+so that|*COLON*
+but|NX
+as well|ADJP
+though|RB
+in fact|VBD
+but|NP
+AND|NNPS
+and|NAC
+Further|NONE
+but|NN
+accordingly|NONE
+in fact|VBP
+nor|*COMMA*
+Insofar as|NONE
+and|ADJP
+as a result|VBG
+as well|*COMMA*
+Thus|NONE
+As soon as|NONE
+as if|PP
+now that|NONE
+rather|MD
+plus|-LRB-
+as well|JJ
+or|NNP
+furthermore|NONE
+once|IN
+as soon as|NONE
+In short|NONE
+and|NNP
+Rather|NONE
+yet|RB
+while|NONE
+regardless|NONE
+by then|NONE
+but|``
+next|JJ
+Next|CD
+NONE_TREE
+earlier|NONE
+unless|NONE
+so|CC
+by contrast|*COMMA*
+Afterwards|NONE
+indeed|CC
+either or|VBN
+For example|NONE
+alternatively|NONE
+and|-LRB-
+when|CC
+as if|VBG
+as well|NP
+but|SBAR
+so that|ADJP
+afterwards|NONE
+if|NONE
+either or|*COMMA*
+overall|RB
+and|S
+thereafter|NONE
+as well|-LRB-
+Next|PRP$
+Once|NONE
+in contrast|NP
+as a result|CC
+yet|DT
+Earlier|NONE
+as well|NONE
+or|ADVP
+afterward|NONE
+as though|PRN
+but|DT
+in addition|*COMMA*
+thereby|CC
+further|NNP
+FOR|NNP
+IF|NONE
+then|CC
+though|NP
+In fact|NONE
+for example|*COLON*
+Till|NONE
+also|CONJP
+Therefore|NONE
+although|''
+or|S
+if|WP
+neither nor|NONE
+Later|NONE
+so|*COMMA*
+but|PP
+rather|CC
+Otherwise|NONE
+neither nor|CC
+still|NONE
+if|NP
+in fact|VBZ
+in short|NONE
+as a result|*COMMA*
+Before|NONE
+but|VP
+so|NONE
+and|JJR
+and|JJS
+as|ADVP
+When|NONE
+if then|*COMMA*
+AND|NP
+as a result|''
+On the other hand|``
+on the other hand|*COMMA*
+By comparison|NONE
+yet|VP
+AND|NNP
+whereas|NONE
+and|VBN
+AND|NNS
+otherwise|CC
+much as|NONE
+in fact|NP
+and|VBD
+or|PRN
+and|VBG
+because|RB
+Still|NONE
+and|VBZ
+if|ADVP
+once|RB
+and|VBP
+but|*COLON*
+ultimately|CC
+as soon as|VB
+as|RB
+finally|NONE
+so that|ADVP
+or|PP
+earlier|PRP$
+in the end|NP
+in the end|ADJP
+as though|VB
+as a result|VB
+Afterward|NONE
+or|NN
+next|DT
+and|VP
+But|NNP
+overall|``
+or|SBAR
+neither nor|*COLON*
+in contrast|*COMMA*
+and|WRB
+and|VB
+by comparison|*COMMA*
+Whereas|NONE
+and|NONE
+now that|CC
+as|VBP
+or|RBR
+so|PRN
+WHEN|NONE
+but|*COMMA*
+Accordingly|NONE
+by then|VBN
+as|VBD
+And|NNP
+But|NONE
+similarly|NONE
+by comparison|VB
+in addition|PP
+If then|``
+separately|CC
+as if|RB
+by comparison|CC
+as though|ADVP
+so|RB
+because|-LRB-
+so|*COLON*
+Thereafter|NONE
+simultaneously|CC
+before and after|NP
+except|NNP
+and|NNS
+much as|PP
+and|SBARQ
+yet|*COMMA*
+if|RB
+now that|ADVP
+or|*COLON*
+since|IN
+otherwise|NONE
+Conversely|NONE
+either or|IN
+so|''
+neither nor|MD
+specifically|RB
+further|CC
+consequently|*COMMA*
+Nonetheless|NONE
+so that|S
+or|SQ
+Unless|NONE
+later|CC
+Else|NONE
+before and after|PP
+much as|VBN
+Yet|``
+plus|NP
+Neither nor|NONE
+in particular|NP
+specifically|NONE
+although|NONE
+once|*COMMA*
+additionally|NONE
+but|ADVP
+As a result|``
+plus|*COMMA*
+once|JJS
+in the end|*COMMA*
+but|RB
+else|JJ
+when|RB
+either or|-LRB-
+so|VBP
+for|DT
+further|JJ
+next|RB
+hence|CC
+so|VBZ
+so|VBD
+as long as|PRT
+but|CD
+In other words|NONE
+Because|NONE
+and|*COMMA*
+previously|NONE
+earlier|RB
+Although|NONE
+as a result|RB
+still|CC
+earlier|ADJP
+Either or|``
+if then|``
+and|RB
+nor|NN
+Next|NNPS
+in short|NP
+and|RP
+As|NONE
+Either or|NONE
+as long as|PP
+till|RB
+instead|CC
+as soon as|NP
+and|DT
+so|``
+Also|NONE
+before|JJ
+neither nor|*COMMA*
+instead|MD
+or|JJ
+In contrast|NONE
+in fact|NONE
+next|``
+or|JJR
+since|ADVP
+overall|DT
+neither nor|ADVP
+rather|*COMMA*
+In sum|NONE
+much as|NP
+as well|PP
+as though|*COMMA*
+until|NONE
+later|NN
+however|NONE
+so that|RB
+nor|*COLON*
+And|*COLON*
+either or|MD
+Then|NONE
+Specifically|NONE
+lest|NONE
+or|NONE
+as if|NP
+else|DT
+thereby|NONE
+but|JJ
+as an alternative|PP
+once|VBD
+once|NONE
+in particular|*COMMA*
+as soon as|PP
+After|NONE
+as though|VBP
+or|INTJ
+in addition|VBD
+rather|VBZ
+until|ADVP
+but|VBN
+as though|VBZ
+Yet|NONE
+much as|*COLON*
+in addition|VBZ
+for example|NONE
+Indeed|NONE
+plus|*COLON*
+separately|RB
+or|*COMMA*
+overall|PRP$
+likewise|NONE
+further|NP
+and|*COLON*
+earlier|DT
+if then|CC
+thus|*COMMA*
+specifically|RBR
+And|NONE
+if|ADJP
+as soon as|CC
+since|NONE
+either or|WHNP
+but|''
+But|``
+so that|*COMMA*
+and|``
+else|*COMMA*
+and|NP
+after|IN
+further|RB
+When and if|NONE
+and|NX
+or|NNS
+further|VBD
+and|NN
+nonetheless|NONE
+so|MD
+as a result|PRT
+so that|IN
+as a result|NP
+or|-LRB-
+as a result|VBN
+also|NONE
+also|*COLON*
+as a result|VBD
+or|NP
+As long as|NONE
+or|NX
+And|``
+besides|NONE
+in fact|CC
+by then|*COMMA*
+though|ADVP
+or|TO
+as long as|NONE
+plus|NN
+by then|CC
+later|RB
+for|NONE
+Now that|``
+when|ADVP
+much as|*COMMA*
+as a result|IN
+still|RB
+neither nor|NP
+as soon as|VBG
+when|NONE
+after|ADVP
+afterward|RB
+then|*COMMA*
+as soon as|VBN
+FOR|NONE
+until|RB
+and|SBAR
+once|ADVP
+meanwhile|DT
+as if|*COMMA*
+next|CC
+so|RBR
+Besides|NONE
+Previously|NONE
+and|NNPS
+further|NONE
+but|S
+as long as|ADVP
+simultaneously|NONE
+as|IN
+earlier|VBN
+and|CC
+or|IN
+and|CD
+as long as|CC
+because|NONE
+for|RB
+much as|IN
+however|*COMMA*
+as if|ADVP
+previously|DT
+later|NP
+and|JJ
+Hence|NONE
+either or|''
+but|PRN
+And|*COMMA*
+then|NONE
+thereafter|RB
+as if|VBZ
+Meanwhile|NONE
+either or|NP
+and|''
+in addition|CC
+By comparison|-LRB-
+as a result|JJ
+hence|NONE
+since|NP
+still|``
+much as|VP
+On the contrary|``
+before|RB
+yet|NONE
+much as|VB
+for|NP
+or|RB
+in turn|NP
+also|CC
+though|*COMMA*
+For|NONE
+or|FRAG
+plus|CD
+As well|NONE
+after|CC
+now that|VBN
+before|NP
+instead|NONE
+Ultimately|NONE
+as long as|VB
+but|ADJP
+Moreover|NONE
+If|NONE
+Additionally|NONE
+plus|JJ
+but|SINV
+yet|IN
+rather|NONE
+Nevertheless|NONE
+In the end|NONE
+if|*COLON*
+nor|VP
+as soon as|*COMMA*
+since|JJ
+now that|NP
+accordingly|NN
+but|NONE
+Meantime|NONE
+in turn|VBN
+therefore|NONE
+Furthermore|NONE
+Instead|NONE
+or|NAC
+in contrast|NONE
+as if|VB
+Or|NONE
+AS|NNP
+Though|NONE
+as long as|VBN
+in the end|CC
+For example|``
+in particular|CC
+as long as|VBZ
+as well|''
+except|NONE
+as|NP
+so|ADVP
+In addition|NONE
+As if|NONE
+nor|ADJP
+while|RB
+as well|VBN
+earlier|NP
+thus|CC
+As a result|NONE
+either or|VBP
+Since|NONE
+simultaneously|RB
+either or|*COLON*
+But|*COMMA*
+earlier|NN
+much as|PRT
+On the contrary|NONE
+since|RB
+On the other hand|NONE
+either or|VBG
+as though|VBD
+either or|VBD
+then|RB
+either or|PRT
+as long as|*COMMA*
+However|NONE
+still|*COMMA*
+or|VP
+till|NONE
+later|DT
+earlier|CC
+in turn|VBZ
+meantime|DT
+or|VB
+unless|RBR
+further|DT
+either or|VBZ
