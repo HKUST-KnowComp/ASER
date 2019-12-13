@@ -61,7 +61,6 @@ class EventualityExtractor(object):
                                   'words': ['he', 'be', 'hungry']})])
                 ]
         """
-        return []
         corenlp_client, _ = get_corenlp_client(corenlp_path=self.corenlp_path, corenlp_port=self.corenlp_port, annotators=annotators)
         eventualities_list = []
         parsed_results = parse_sentense_with_stanford(text, corenlp_client, annotators)
