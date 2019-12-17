@@ -18,8 +18,8 @@ from scipy import sparse
 from copy import deepcopy, copy
 from ete3 import Tree
 from itertools import chain
-from aser.extract.utils import _PUNCTUATION, _CLAUSE_SEPS
-from aser.extract.utils import index_from, strip_punctuation, get_prev_token_index, get_next_token_index
+from aser.extract.utils import PUNCTUATION_SET, CLAUSE_SEPARATOR_SET
+from aser.extract.utils import index_from, get_clauses, strip_punctuation, get_prev_token_index, get_next_token_index
 
 
 ######################################################
@@ -52,28 +52,28 @@ class Feature:
         x = {"name": self.name, "dimension": self.dimension, "feat_dict": self.feat_dict}
         return x
 
-    @classmethod
-    def from_dict(cls, x):
+    @staticmethod
+    def from_dict(x):
         f = Feature(x["dimension"], x["feat_dict"], x["name"])
         return f
 
-    @classmethod
-    def get_feature_by_list(cls, feat_list, name=""):
+    @staticmethod
+    def get_feature_by_list(feat_list, name=""):
         feat_dict = {}
         for idx, item in enumerate(feat_list):
             feat_dict[idx] = item
         return Feature(len(feat_list), feat_dict, name)
 
-    @classmethod
-    def get_feature_by_feat(cls, feat2idx, feat, name=""):
+    @staticmethod
+    def get_feature_by_feat(feat2idx, feat, name=""):
         feat_dict = {}
         idx = feat2idx.get(feat, -1)
         if idx != -1:
             feat_dict[idx] = 1
         return Feature(len(feat2idx), feat_dict, name)
 
-    @classmethod
-    def get_feature_by_feat_list(cls, feat2idx, feat_list, name=""):
+    @staticmethod
+    def get_feature_by_feat_list(feat2idx, feat_list, name=""):
         feat_dict = {}
         for feat in feat_list:
             idx = feat2idx.get(feat, -1)
@@ -81,8 +81,8 @@ class Feature:
                 feat_dict[idx] = 1
         return Feature(len(feat2idx), feat_dict, name)
 
-    @classmethod
-    def merge_features(cls, feature_list, name=""):
+    @staticmethod
+    def merge_features(feature_list, name=""):
         dimension = 0
         feat_dict = {}
         for feature in feature_list:
@@ -98,17 +98,24 @@ class Feature:
 ##################     Syntax    #####################
 ######################################################
 class SyntaxTree:
-    def __init__(self, parse_tree):
+    def __init__(self, parse_tree="()"):
         newick_text = self.to_newick_format(parse_tree)
         
         if newick_text == None:
             self.tree = None
+            self.leaves = list()
         else:
             try:
                 self.tree = Tree(newick_text, format=1)
+                if self.tree:
+                    self.leaves = self.tree.get_leaves()
+                    for idx, leaf in enumerate(self.leaves):
+                        leaf.add_feature("index", idx)
+                else:
+                    self.leaves = list()
             except:
                 self.tree = None
-        pass
+                self.leaves = list()
 
     def print_tree(self):
         print(self.tree.get_ascii(show_internal=True))
@@ -122,10 +129,10 @@ class SyntaxTree:
         return path
 
     def get_leaf_node_by_token_index(self, token_index):
-        leaves = self.tree.get_leaves()
-        if token_index >= len(leaves) :
+        if token_index < len(self.leaves):
+            return self.leaves[token_index]
+        else:
             return None
-        return leaves[token_index]
 
     def get_self_category_node_by_token_indices(self, token_indices):
         # retrieve common_ancestor according token indices
@@ -135,97 +142,76 @@ class SyntaxTree:
             return self.get_common_ancestor_by_token_indices(token_indices)
 
     def get_common_ancestor_by_token_indices(self, token_indices):
-        nodes = list()
-        for token_index in token_indices:
-            node = self.get_leaf_node_by_token_index(token_index)
-            nodes.append(node)
-        return self.tree.get_common_ancestor(nodes)
-
+        len_leaves = len(self.leaves)
+        leaves = [self.leaves[token_index] for token_index in token_indices if token_index < len_leaves]
+        return self.tree.get_common_ancestor(leaves)
 
     def get_left_sibling_category_node_by_token_indices(self, token_indices):
         self_category_node = self.get_self_category_node_by_token_indices(token_indices)
-        node_id = id(self_category_node)
 
         if self_category_node.up == None:
             return None
 
         children = self_category_node.up.get_children()
-        for i, child in enumerate(children):
-            if node_id == id(child):
-                if i == 0:
-                    return None
-                else:
-                    return children[i - 1]
+        index = children.index(self_category_node)
+        if index == 0:
+            return None
+        else:
+            return children[index-1]
 
     def get_right_sibling_category_node_by_token_indices(self, token_indices):
         self_category_node = self.get_self_category_node_by_token_indices(token_indices)
-        node_id = id(self_category_node)
 
         if self_category_node.up == None:
             return None
 
         children = self_category_node.up.get_children()
-        for i, child in enumerate(children):
-            if node_id == id(child):
-                if i == len(children) - 1:
-                    return None
-                else:
-                    return children[i + 1]
+        index = children.index(self_category_node)
+        if index == len(children) - 1:
+            return None
+        else:
+            return children[index+1]
 
     def get_parent_category_node_by_token_indices(self, token_indices):
         self_category_node = self.get_self_category_node_by_token_indices(token_indices)
         return self_category_node.up
 
     def get_subtree_by_token_indices(self, token_indices):
+        if isinstance(token_indices, (list, tuple)):
+            token_indices = set(token_indices)
         if len(token_indices) == 0:
-            subtree = SyntaxTree("()")
+            subtree = SyntaxTree()
+        elif len(token_indices) == len(self.leaves):
+            return self
         else:
-            subtree = deepcopy(self)
-            leaves = subtree.tree.get_leaves()
-            for idx, leaf in enumerate(leaves):
-                leaf.add_feature("index", idx)
+            kept_nodes = set()
+            kept_leaves = set()
+            for idx, leaf in enumerate(self.leaves):
+                if idx in token_indices:
+                    kept_nodes.add(leaf)
+                    kept_leaves.add(leaf)
+                    node = leaf.up
+                    while node and node not in kept_nodes:
+                        kept_nodes.add(node)
+                        node = node.up
             
-            token_nodes = set()
-            for idx in token_indices:
-                token_nodes.add(leaves[idx])
-            
-            detached_node = set()
-            for node in subtree.tree.traverse():
-                if node in detached_node:
-                    continue
-                covered = False
-                for leaf in node.get_leaves():
-                    if leaf in token_nodes:
-                        covered = True
-                        break
-                if not covered:
-                    detached_node.add(node)
-                    detached_node.update(node.get_descendants())
-                    node.detach()
+            # prune
+            subtree = SyntaxTree()
+            subtree.tree = copy(self.tree)
+
+            queue1, queue2 = deque([self.tree]), deque([subtree.tree])
+            while len(queue1) > 0 and len(queue2) > 0:
+                old_node, new_node = queue1.popleft(), queue2.popleft()
+                new_node._children = list()
+                for old_child in old_node.get_children():
+                    if old_child in kept_nodes:
+                        new_child = copy(old_child)
+                        new_node.add_child(new_child)
+                        new_child.up = new_node
+                        if old_child not in kept_leaves:
+                            queue1.append(old_child)
+                            queue2.append(new_child)
         return subtree
-
-    def get_arg1_arg2_None_nodes_list(self, Arg1_token_indices, Arg2_token_indices):
-        for node in self.tree.traverse():
-            node.add_feature("label","NONE")
-        for node in self.tree.get_leaves():
-            node.label = "X"
-            node.up.label ="X"
-        nodes = list()
-        for token_index in Arg1_token_indices:
-            node = self.get_leaf_node_by_token_index(token_index)
-            nodes.append(node)
-        self.tree.get_common_ancestor(nodes).label = "Arg1_node"
-        nodes = list()
-        for token_index in Arg2_token_indices:
-            node = self.get_leaf_node_by_token_index(token_index)
-            nodes.append(node)
-        self.tree.get_common_ancestor(nodes).label = "Arg2_node"
-
-        arg1_arg2_None_nodes_list = list()
-        for node in self.tree.traverse():
-           if node.label != "X":
-               arg1_arg2_None_nodes_list.append(node)
-        return arg1_arg2_None_nodes_list
 
     def to_newick_format(self, parse_tree):
         # replace `,`
@@ -282,7 +268,6 @@ class SyntaxTree:
 
     def get_internal_node_location(self, node):
         # retrieve internal node location without the pos tag
-        leaves = self.tree.get_leaves()
         if len(node.get_children()) > 1:
             child1 = node.get_children()[0]
             child2 = node.get_children()[1]
@@ -291,15 +276,15 @@ class SyntaxTree:
                 child1 = child1.get_children()[0]
             while not child2.is_leaf():
                 child2 = child2.get_children()[0]
-            index1 = leaves.index(child1)
-            index2 = leaves.index(child2)
+            index1 = self.leaves.index(child1)
+            index2 = self.leaves.index(child2)
             return [index1, index2]
         if len(node.get_children()) == 1:
             child1 = node.get_children()[0]
             # move to leaf
             while not child1.is_leaf():
                 child1 = child1.get_children()[0]
-            index1 = leaves.index(child1)
+            index1 = self.leaves.index(child1)
             return [index1]
             
     def get_node_by_internal_node_location(self, location):
@@ -316,50 +301,44 @@ class SyntaxTree:
         if node.is_root():
             return list()
         children = node.up.get_children()
-        for i, child in enumerate(children):
-            if child == node:
-                if i == len(children) - 1:
-                    return list()
-                return children[i+1:]
+        index = children.index(node)
+        return children[index+1:]
 
     def get_left_siblings(self, node):
         if node.is_root():
             return list()
         children = node.up.get_children()
-        for i, child in enumerate(children):
-            if child == node:
-                if i == 0:
-                    return list()
-                return children[:i]
+        index = children.index(node)
+        return children[0:index]
 
     def get_siblings(self, node):
         if node.is_root():
             return list()
         siblings = list()
         children = node.up.get_children()
-        for i, child in enumerate(children):
-            if child != node:
-                siblings.append(child)
-        return siblings
+        children.remove(node)
+        return children
 
     def get_relative_position(self, node1, node2):
-        if node1 == node2 or node2.is_root():
+        if node1 == node2 or node1.is_root or node2.is_root:
             return "middle"
-        curr = node1
-        rsibs = list()
-        lsibs = list()
-        while not curr.is_root():
-            rsibs.extend(self.get_right_siblings(curr))
-            lsibs.extend(self.get_left_siblings(curr))
-            curr = curr.up
-            if curr == node2:
-                return "middle"
-        for node in rsibs:
-             if node2 in node.get_descendants():
-                 return "right"
-        for node in lsibs:
-             if node2 in node.get_descendants():
-                 return "left"
+
+        common_ancestor = self.tree.get_common_ancestor([node1, node2])
+        if common_ancestor == node1 or common_ancestor == node2:
+            return "middle"
+        find_node1, find_node2 = False, False
+        for node in common_ancestor.traverse(strategy="preorder"):
+            if node == node1:
+                find_node1 = True
+                break
+            if node == node2:
+                find_node2 = True
+                break
+        if find_node1:
+            return "right"
+        if find_node2:
+            return "left"
+        return "middle"
 
     def get_node_to_node_path(self, node1, node2):
         common_ancestor = self.tree.get_common_ancestor([node1, node2])
@@ -383,9 +362,7 @@ class SyntaxTree:
 
     def get_leaves_indices(self, node):
         # retrieve the indices of leaves of the node
-        leaves = self.tree.get_leaves()
-        node_leaves = node.get_leaves()
-        indices = sorted([leaves.index(leaf) for leaf in node_leaves])
+        indices = [self.leaves.index(leaf) for leaf in node.get_leaves()]
         return indices
 
 def get_compressed_path(path):
@@ -412,8 +389,6 @@ class ConnectiveExtractor:
             discourse_path = os.path.join(os.path.dirname(__file__), "discourse")
         except:
             discourse_path = os.path.join("aser", "extract", "discourse")
-        self.mallet_path = kw.get("mallet_path", r"D:\Workspace\DiscourseParser\mallet-2.0.8")
-        os.environ["MALLET_HOME"] = self.mallet_path
 
         with open(kw.get("exp_conn_file", os.path.join(discourse_path, "conn_feats", "exp_conn.txt")), "r") as f:
             self.sorted_conn = list()
@@ -446,17 +421,17 @@ class ConnectiveExtractor:
         with open(conn_model_file, "rb") as f:
             self.conn_model = pickle.load(f)
 
-    def help_func(self, doc_parsed_result, syntax_tree_cache=None):
-        doc_connectives = list() # [[sent_idx, connective, indices], ...]
-        for sent_idx, sent_parsed_result in enumerate(doc_parsed_result):
-            sent_connectives = self._extract_connectives(sent_parsed_result)
-            for conn_idx, connective in enumerate(sent_connectives):
-                connective["sent_idx"] = sent_idx
-                doc_connectives.append(connective)
+    # def help_func(self, doc_parsed_result, syntax_tree_cache=None):
+    #     doc_connectives = list() # [[sent_idx, connective, indices], ...]
+    #     for sent_idx, sent_parsed_result in enumerate(doc_parsed_result):
+    #         sent_connectives = self._extract_connectives(sent_parsed_result)
+    #         for conn_idx, connective in enumerate(sent_connectives):
+    #             connective["sent_idx"] = sent_idx
+    #             doc_connectives.append(connective)
 
-        doc_conn_feats = self._generate_connective_features(doc_parsed_result, doc_connectives, syntax_tree_cache)
+    #     doc_conn_feats = self._generate_connective_features(doc_parsed_result, doc_connectives, syntax_tree_cache)
 
-        return doc_connectives, doc_conn_feats
+    #     return doc_connectives, doc_conn_feats
 
     def extract(self, doc_parsed_result, syntax_tree_cache=None):
         if len(doc_parsed_result) == 0:
@@ -740,8 +715,6 @@ class ArgumentPositionClassifier:
             discourse_path = os.path.join(os.path.dirname(__file__), "discourse")
         except:
             discourse_path = os.path.join("aser", "extract", "discourse")
-        self.mallet_path = kw.get("mallet_path", r"D:\Workspace\DiscourseParser\mallet-2.0.8")
-        os.environ["MALLET_HOME"] = self.mallet_path
 
         self.conn_part_dict = {"start": 0, "middle": 1, "end": 2}
 
@@ -763,10 +736,10 @@ class ArgumentPositionClassifier:
         with open(argpos_model_file, "rb") as f:
             self.argpos_model = pickle.load(f)
 
-    def help_func(self, doc_parsed_result, doc_connectives, syntax_tree_cache=None):
-        doc_argpos_feats = self._generate_argument_position_features(doc_parsed_result, doc_connectives, syntax_tree_cache)
+    # def help_func(self, doc_parsed_result, doc_connectives, syntax_tree_cache=None):
+    #     doc_argpos_feats = self._generate_argument_position_features(doc_parsed_result, doc_connectives, syntax_tree_cache)
 
-        return doc_connectives, doc_argpos_feats
+    #     return doc_connectives, doc_argpos_feats
     
     def classify(self, doc_parsed_result, doc_connectives, syntax_tree_cache=None):
         SS_connectives, PS_connectives = list(), list()
@@ -892,8 +865,6 @@ class SSArgumentExtractor:
             discourse_path = os.path.join(os.path.dirname(__file__), "discourse")
         except:
             discourse_path = os.path.join("aser", "extract", "discourse")
-        self.mallet_path = kw.get("mallet_path", r"D:\Workspace\DiscourseParser\mallet-2.0.8")
-        os.environ["MALLET_HOME"] = self.mallet_path
 
         conn_category_feat_file = kw.get("conn_category_feat_file", "")
         if conn_category_feat_file:
@@ -943,93 +914,93 @@ class SSArgumentExtractor:
         with open(ss_arg_model_file, "rb") as f:
             self.ss_arg_model = pickle.load(f)
 
-    def help_func(self, doc_parsed_result, doc_connectives, syntax_tree_cache=None):
-        if syntax_tree_cache is None:
-            syntax_tree_cache = dict()
+    # def help_func(self, doc_parsed_result, doc_connectives, syntax_tree_cache=None):
+    #     if syntax_tree_cache is None:
+    #         syntax_tree_cache = dict()
         
-        parallel_connectives, non_parallel_connectives = self._divide_connectives_parallel(doc_connectives)
+    #     parallel_connectives, non_parallel_connectives = self._divide_connectives_parallel(doc_connectives)
 
-        doc_ss_arg_conns, doc_ss_arg_feats = list(), list()
-        for conn_idx, connective in enumerate(non_parallel_connectives):
-            sent_idx, conn_indices = connective["sent_idx"], connective["indices"]
-            sent_parsed_result = doc_parsed_result[sent_idx]
+    #     doc_ss_arg_conns, doc_ss_arg_feats = list(), list()
+    #     for conn_idx, connective in enumerate(non_parallel_connectives):
+    #         sent_idx, conn_indices = connective["sent_idx"], connective["indices"]
+    #         sent_parsed_result = doc_parsed_result[sent_idx]
 
-            if sent_idx in syntax_tree_cache:
-                syntax_tree = syntax_tree_cache[sent_idx]
-            else:
-                syntax_tree = syntax_tree_cache[sent_idx] = SyntaxTree(sent_parsed_result["parse"])
+    #         if sent_idx in syntax_tree_cache:
+    #             syntax_tree = syntax_tree_cache[sent_idx]
+    #         else:
+    #             syntax_tree = syntax_tree_cache[sent_idx] = SyntaxTree(sent_parsed_result["parse"])
             
-            conn = " ".join([sent_parsed_result["tokens"][idx] for idx in conn_indices])
-            conn_lower = conn.lower()
-            conn_category = self.conn_category_mapping[conn_lower]
-            cpos = "_".join([sent_parsed_result["pos_tags"][idx] for idx in conn_indices])
-            try:
-                conn_node = syntax_tree.get_self_category_node_by_token_indices(conn_indices)
-            except BaseException as e:
-                print(sent_parsed_result)
-                raise e
+    #         conn = " ".join([sent_parsed_result["tokens"][idx] for idx in conn_indices])
+    #         conn_lower = conn.lower()
+    #         conn_category = self.conn_category_mapping[conn_lower]
+    #         cpos = "_".join([sent_parsed_result["pos_tags"][idx] for idx in conn_indices])
+    #         try:
+    #             conn_node = syntax_tree.get_self_category_node_by_token_indices(conn_indices)
+    #         except BaseException as e:
+    #             print(sent_parsed_result)
+    #             raise e
             
-            left_number, right_number = 0, 0
-            if conn_node.up:
-                children = conn_node.up.get_children()
-                for child_idx, child in enumerate(children):
-                    if conn_node == child:
-                        left_number, right_number = child_idx, len(children)-1-child_idx
-                        break
+    #         left_number, right_number = 0, 0
+    #         if conn_node.up:
+    #             children = conn_node.up.get_children()
+    #             for child_idx, child in enumerate(children):
+    #                 if conn_node == child:
+    #                     left_number, right_number = child_idx, len(children)-1-child_idx
+    #                     break
             
-            constituents = self._get_constituents(connective, syntax_tree)
-            constituents.sort(key=lambda x: x["indices"][0])
+    #         constituents = self._get_constituents(connective, syntax_tree)
+    #         constituents.sort(key=lambda x: x["indices"][0])
 
-            for nt_idx, constituent in enumerate(constituents):
-                constituent_node = constituent["node"]
-                parent_constituent_node, left_constituent_node, right_constituent_node = constituent_node.up, None, None
-                if parent_constituent_node:
-                    children = parent_constituent_node.get_children()
-                    for child_idx, child in enumerate(children):
-                        if constituent_node == child:
-                            if child_idx > 0:
-                                left_constituent_node = children[child_idx-1]
-                            if child_idx < len(children) - 1:
-                                right_constituent_node = children[child_idx+1]
-                            break
+    #         for nt_idx, constituent in enumerate(constituents):
+    #             constituent_node = constituent["node"]
+    #             parent_constituent_node, left_constituent_node, right_constituent_node = constituent_node.up, None, None
+    #             if parent_constituent_node:
+    #                 children = parent_constituent_node.get_children()
+    #                 for child_idx, child in enumerate(children):
+    #                     if constituent_node == child:
+    #                         if child_idx > 0:
+    #                             left_constituent_node = children[child_idx-1]
+    #                         if child_idx < len(children) - 1:
+    #                             right_constituent_node = children[child_idx+1]
+    #                         break
                 
-                # nt_ctx
-                nt_ctx = list() # self, parent, left, right
-                nt_ctx.append(constituent_node.name)
-                nt_ctx.append(parent_constituent_node.name if parent_constituent_node else "NULL")
-                nt_ctx.append(left_constituent_node.name if left_constituent_node else "NULL")
-                nt_ctx.append(right_constituent_node.name if right_constituent_node else "NULL")
-                nt_ctx = "-".join(nt_ctx)
+    #             # nt_ctx
+    #             nt_ctx = list() # self, parent, left, right
+    #             nt_ctx.append(constituent_node.name)
+    #             nt_ctx.append(parent_constituent_node.name if parent_constituent_node else "NULL")
+    #             nt_ctx.append(left_constituent_node.name if left_constituent_node else "NULL")
+    #             nt_ctx.append(right_constituent_node.name if right_constituent_node else "NULL")
+    #             nt_ctx = "-".join(nt_ctx)
 
-                # conn_nt_path
-                conn_nt_path = syntax_tree.get_node_to_node_path(conn_node, constituent_node)
-                # conn_nt_path_left_number
-                conn_nt_path_left_number = conn_nt_path + (":>1" if left_number > 1 else ":<=1")
+    #             # conn_nt_path
+    #             conn_nt_path = syntax_tree.get_node_to_node_path(conn_node, constituent_node)
+    #             # conn_nt_path_left_number
+    #             conn_nt_path_left_number = conn_nt_path + (":>1" if left_number > 1 else ":<=1")
 
-                # conn_nt_position
-                conn_nt_position = syntax_tree.get_relative_position(conn_node, constituent_node)
+    #             # conn_nt_position
+    #             conn_nt_position = syntax_tree.get_relative_position(conn_node, constituent_node)
 
-                ss_arg_feats = list()
-                ss_arg_feats.append(Feature.get_feature_by_feat(self.conn_dict, conn))
-                ss_arg_feats.append(Feature.get_feature_by_feat(self.conn_lower_dict, conn_lower))
-                ss_arg_feats.append(Feature.get_feature_by_feat(self.nt_ctx_dict, nt_ctx))
-                ss_arg_feats.append(Feature.get_feature_by_feat(self.conn_nt_path_dict, conn_nt_path))
-                ss_arg_feats.append(Feature.get_feature_by_feat(self.conn_nt_path_left_number_dict, conn_nt_path_left_number))
-                ss_arg_feats.append(Feature.get_feature_by_feat(self.conn_category_dict, conn_category))
-                ss_arg_feats.append(Feature.get_feature_by_list([left_number]))
-                ss_arg_feats.append(Feature.get_feature_by_list([right_number]))
-                ss_arg_feats.append(Feature.get_feature_by_feat(self.conn_nt_position_dict, conn_nt_position))
+    #             ss_arg_feats = list()
+    #             ss_arg_feats.append(Feature.get_feature_by_feat(self.conn_dict, conn))
+    #             ss_arg_feats.append(Feature.get_feature_by_feat(self.conn_lower_dict, conn_lower))
+    #             ss_arg_feats.append(Feature.get_feature_by_feat(self.nt_ctx_dict, nt_ctx))
+    #             ss_arg_feats.append(Feature.get_feature_by_feat(self.conn_nt_path_dict, conn_nt_path))
+    #             ss_arg_feats.append(Feature.get_feature_by_feat(self.conn_nt_path_left_number_dict, conn_nt_path_left_number))
+    #             ss_arg_feats.append(Feature.get_feature_by_feat(self.conn_category_dict, conn_category))
+    #             ss_arg_feats.append(Feature.get_feature_by_list([left_number]))
+    #             ss_arg_feats.append(Feature.get_feature_by_list([right_number]))
+    #             ss_arg_feats.append(Feature.get_feature_by_feat(self.conn_nt_position_dict, conn_nt_position))
 
-                # merge
-                ss_arg_feats = Feature.merge_features(ss_arg_feats, 
-                    "%d|%d|%s" % (sent_idx, conn_idx, ",".join([str(idx) for idx in constituent["indices"]])))
+    #             # merge
+    #             ss_arg_feats = Feature.merge_features(ss_arg_feats, 
+    #                 "%d|%d|%s" % (sent_idx, conn_idx, ",".join([str(idx) for idx in constituent["indices"]])))
 
-                ss_arg_conn = copy(connective)
-                ss_arg_conn["nt_indices"] = constituent["indices"]
+    #             ss_arg_conn = copy(connective)
+    #             ss_arg_conn["nt_indices"] = constituent["indices"]
 
-                doc_ss_arg_conns.append(ss_arg_conn)
-                doc_ss_arg_feats.append(ss_arg_feats)
-        return doc_ss_arg_conns, doc_ss_arg_feats
+    #             doc_ss_arg_conns.append(ss_arg_conn)
+    #             doc_ss_arg_feats.append(ss_arg_feats)
+    #     return doc_ss_arg_conns, doc_ss_arg_feats
             
     def extract(self, doc_parsed_result, doc_connectives, syntax_tree_cache=None):
         if len(doc_connectives) == 0:
@@ -1044,8 +1015,44 @@ class SSArgumentExtractor:
         # non_parallel_connectives
         if len(non_parallel_connectives) > 0:
             non_parallel_connectives = self._extract_constituent_arguments(doc_parsed_result, non_parallel_connectives, syntax_tree_cache)
+
+        len_parallel = len(parallel_connectives)
+        len_non_parallel = len(non_parallel_connectives)
+        p_idx, np_idx = 0, 0
+        connectives = list()
+        while p_idx < len_parallel and np_idx < len_non_parallel:
+            p_sent_idx, p_indices = parallel_connectives[p_idx]["sent_idx"], parallel_connectives[p_idx]["indices"]
+            np_sent_idx, np_indices = non_parallel_connectives[np_idx]["sent_idx"], non_parallel_connectives[np_idx]["indices"]
+            if p_sent_idx < np_sent_idx:
+                connectives.append(parallel_connectives[p_idx])
+                p_idx += 1
+                continue
+            elif p_sent_idx > np_sent_idx:
+                connectives.append(non_parallel_connectives[np_idx])
+                np_idx += 1
+                continue
+            else:
+                if p_indices[0] < np_indices[0]:
+                    connectives.append(parallel_connectives[p_idx])
+                    p_idx += 1
+                    continue
+                elif p_indices[0] > np_indices[0]:
+                    connectives.append(non_parallel_connectives[np_idx])
+                    np_idx += 1
+                    continue
+                else:
+                    if p_indices[-1] <= np_indices[-1]:
+                        connectives.append(parallel_connectives[p_idx])
+                        p_idx += 1
+                        continue
+                    else:
+                        connectives.append(non_parallel_connectives[np_idx])
+                        np_idx += 1
+                        continue
+        connectives.extend(parallel_connectives[p_idx:])
+        connectives.extend(non_parallel_connectives[np_idx:])
         
-        return doc_connectives
+        return connectives
 
     def _divide_connectives_parallel(self, SS_connectives):
         parallel_connectives, non_parallel_connectives = list(), list()
@@ -1103,7 +1110,7 @@ class SSArgumentExtractor:
                     arg1.append(conn_args[0][arg_idx])
                     all_punc = True
                     for t_idx in range(conn_args[0][arg_idx]+1, conn_args[0][arg_idx+1]):
-                        if sent_parsed_result["tokens"][t_idx] not in _PUNCTUATION:
+                        if sent_parsed_result["tokens"][t_idx] not in PUNCTUATION_SET:
                             all_punc = False
                             break
                     if all_punc:
@@ -1126,7 +1133,7 @@ class SSArgumentExtractor:
                     arg2.append(conn_args[1][arg_idx])
                     all_punc = True
                     for t_idx in range(conn_args[1][arg_idx]+1, conn_args[1][arg_idx+1]):
-                        if sent_parsed_result["tokens"][t_idx] not in _PUNCTUATION:
+                        if sent_parsed_result["tokens"][t_idx] not in PUNCTUATION_SET:
                             all_punc = False
                             break
                     if all_punc:
@@ -1140,25 +1147,37 @@ class SSArgumentExtractor:
     
     def _extract_parallel_arguments(self, doc_parsed_result, doc_connectives):
         for connective in doc_connectives:
-            sent_idx, indices = connective["sent_idx"], connective["indices"]
+            sent_idx = connective["sent_idx"]
             sent_parsed_result = doc_parsed_result[sent_idx]
-            sent_len = len(sent_parsed_result["tokens"])
-            
-            conn_idx1, conn_idx2 = indices[-1], indices[-1]
-            for conn_idx in range(0, len(indices)-1):
-                if indices[conn_idx]+1 < indices[conn_idx+1]:
-                    conn_idx1 = conn_idx
-                    break
-            arg1 = list(range(conn_idx1+1, conn_idx2))
-            connective["arg1"] = {
-                "sent_idx": sent_idx, 
-                "indices": strip_punctuation(sent_parsed_result, arg1)}
-            
-            arg2 = list(range(conn_idx2+1, sent_len))
-            connective["arg2"] = {
-                "sent_idx": sent_idx, 
-                "indices": strip_punctuation(sent_parsed_result, arg2)}
+
+            clauses = self._get_parallel_clauses(sent_parsed_result, connective)
+            if len(clauses) == 2:
+                connective["arg1"] = {
+                    "sent_idx": sent_idx, 
+                    "indices": clauses[0]}
+                connective["arg2"] = {
+                    "sent_idx": sent_idx, 
+                    "indices": clauses[1]}
         return doc_connectives
+
+    def _get_parallel_clauses(self, sent_parsed_result, connective):
+        indices = connective["indices"]
+        sent_len = len(sent_parsed_result["tokens"])
+
+        conn_idx1, conn_idx2 = indices[-1], indices[-1]
+        for conn_idx in range(0, len(indices)-1):
+            if indices[conn_idx]+1 < indices[conn_idx+1]:
+                conn_idx1 = conn_idx
+                break
+        arg1 = strip_punctuation(sent_parsed_result, list(range(conn_idx1+1, conn_idx2)))
+        arg2 = strip_punctuation(sent_parsed_result, list(range(conn_idx2+1, sent_len)))
+
+        clauses = list()
+        if len(arg1):
+            clauses.append(arg1)
+        if len(arg2):
+            clauses.append(arg2)
+        return clauses
     
     def _get_constituents(self, connective, syntax_tree):
         constituents = list()
@@ -1291,8 +1310,6 @@ class PSArgumentExtractor:
             discourse_path = os.path.join(os.path.dirname(__file__), "discourse")
         except:
             discourse_path = os.path.join("aser", "extract", "discourse")
-        self.mallet_path = kw.get("mallet_path", r"D:\Workspace\DiscourseParser\mallet-2.0.8")
-        os.environ["MALLET_HOME"] = self.mallet_path
 
         conn_category_feat_file = kw.get("conn_category_feat_file", "")
         if conn_category_feat_file:
@@ -1361,225 +1378,225 @@ class PSArgumentExtractor:
             
         self.verb_pos = set(["VB", "VBD", "VBG", "VBN", "VBP", "VBZ"])
 
-    def help_func(self, doc_parsed_result, doc_connectives, syntax_tree_cache=None):
-        if syntax_tree_cache is None:
-            syntax_tree_cache = dict()
-        doc_connectives = [connective for connective in doc_connectives if connective["sent_idx"] > 0]
+    # def help_func(self, doc_parsed_result, doc_connectives, syntax_tree_cache=None):
+    #     if syntax_tree_cache is None:
+    #         syntax_tree_cache = dict()
+    #     doc_connectives = [connective for connective in doc_connectives if connective["sent_idx"] > 0]
 
-        # argument 1
-        doc_arg1_conns, doc_arg1_feats = list(), list()
-        for conn_idx, connective in enumerate(doc_connectives):
-            sent_idx, conn_indices = connective["sent_idx"], connective["indices"]
-            sent_parsed_result = doc_parsed_result[sent_idx-1]
-            sent_len = len(sent_parsed_result["tokens"])
+    #     # argument 1
+    #     doc_arg1_conns, doc_arg1_feats = list(), list()
+    #     for conn_idx, connective in enumerate(doc_connectives):
+    #         sent_idx, conn_indices = connective["sent_idx"], connective["indices"]
+    #         sent_parsed_result = doc_parsed_result[sent_idx-1]
+    #         sent_len = len(sent_parsed_result["tokens"])
             
-            if sent_idx-1 in syntax_tree_cache:
-                syntax_tree = syntax_tree_cache[sent_idx-1]
-            else:
-                syntax_tree = syntax_tree_cache[sent_idx-1] = SyntaxTree(sent_parsed_result["parse"])
+    #         if sent_idx-1 in syntax_tree_cache:
+    #             syntax_tree = syntax_tree_cache[sent_idx-1]
+    #         else:
+    #             syntax_tree = syntax_tree_cache[sent_idx-1] = SyntaxTree(sent_parsed_result["parse"])
                 
-            arg1_clauses = self._get_argument1_clauses(sent_parsed_result, connective, syntax_tree)
+    #         arg1_clauses = self._get_argument1_clauses(sent_parsed_result, connective, syntax_tree)
             
-            if len(arg1_clauses) == 0:
-                continue
+    #         if len(arg1_clauses) == 0:
+    #             continue
             
-            conn = " ".join([doc_parsed_result[sent_idx]["tokens"][idx] for idx in conn_indices])
-            conn_lower = conn.lower()
-            conn_category = self.conn_category_mapping[conn_lower]
+    #         conn = " ".join([doc_parsed_result[sent_idx]["tokens"][idx] for idx in conn_indices])
+    #         conn_lower = conn.lower()
+    #         conn_category = self.conn_category_mapping[conn_lower]
             
-            for clause_idx, clause in enumerate(arg1_clauses):
-                # clause
-                clause_first = sent_parsed_result["tokens"][clause[0]]
-                clause_last = sent_parsed_result["tokens"][clause[-1]]
+    #         for clause_idx, clause in enumerate(arg1_clauses):
+    #             # clause
+    #             clause_first = sent_parsed_result["tokens"][clause[0]]
+    #             clause_last = sent_parsed_result["tokens"][clause[-1]]
 
-                # prev
-                # prev
-                if clause[0] == 0:
-                    prev = "NONE"
-                else:
-                    prev_sent_idx, prev_idx = get_prev_token_index(doc_parsed_result, sent_idx-1, clause[0], skip_tokens=_CLAUSE_SEPS)
-                    if prev_sent_idx == sent_idx-1:
-                        if prev_idx+1 == clause[0]:
-                            prev = sent_parsed_result["tokens"][prev_idx] # previous token not in clause seps
-                        else:
-                            prev = " ".join([sent_parsed_result["tokens"][idx] for idx in range(prev_idx+1, clause[0])]) # previous tokens in clause seps
-                    elif prev_sent_idx+1 == sent_idx-1:
-                        prev = " ".join([sent_parsed_result["tokens"][idx] for idx in range(0, clause[0])])
-                    else:
-                        prev = "NONE"
+    #             # prev
+    #             # prev
+    #             if clause[0] == 0:
+    #                 prev = "NONE"
+    #             else:
+    #                 prev_sent_idx, prev_idx = get_prev_token_index(doc_parsed_result, sent_idx-1, clause[0], skip_tokens=CLAUSE_SEPARATOR_SET)
+    #                 if prev_sent_idx == sent_idx-1:
+    #                     if prev_idx+1 == clause[0]:
+    #                         prev = sent_parsed_result["tokens"][prev_idx] # previous token not in clause seps
+    #                     else:
+    #                         prev = " ".join([sent_parsed_result["tokens"][idx] for idx in range(prev_idx+1, clause[0])]) # previous tokens in clause seps
+    #                 elif prev_sent_idx+1 == sent_idx-1:
+    #                     prev = " ".join([sent_parsed_result["tokens"][idx] for idx in range(0, clause[0])])
+    #                 else:
+    #                     prev = "NONE"
                 
-                # verb_lemma
-                verb_lemmas = [sent_parsed_result["lemmas"][idx] for idx in clause if sent_parsed_result["pos_tags"][idx] in self.verb_pos]
+    #             # verb_lemma
+    #             verb_lemmas = [sent_parsed_result["lemmas"][idx] for idx in clause if sent_parsed_result["pos_tags"][idx] in self.verb_pos]
                 
-                arg1_feats = list()
-                arg1_feats.append(Feature.get_feature_by_feat_list(self.verb_lemma_dict1, verb_lemmas))
-                arg1_feats.append(Feature.get_feature_by_feat(self.clause_first_dict1, clause_first))
-                arg1_feats.append(Feature.get_feature_by_feat(self.clause_last_dict1, clause_last))
-                arg1_feats.append(Feature.get_feature_by_feat(self.prev_clause_first_dict1, prev+"|"+clause_first))
-                arg1_feats.append(Feature.get_feature_by_feat(self.conn_lower_dict1, conn_lower))
-                arg1_feats.append(Feature.get_feature_by_feat(self.conn_category_dict, conn_category))
+    #             arg1_feats = list()
+    #             arg1_feats.append(Feature.get_feature_by_feat_list(self.verb_lemma_dict1, verb_lemmas))
+    #             arg1_feats.append(Feature.get_feature_by_feat(self.clause_first_dict1, clause_first))
+    #             arg1_feats.append(Feature.get_feature_by_feat(self.clause_last_dict1, clause_last))
+    #             arg1_feats.append(Feature.get_feature_by_feat(self.prev_clause_first_dict1, prev+"|"+clause_first))
+    #             arg1_feats.append(Feature.get_feature_by_feat(self.conn_lower_dict1, conn_lower))
+    #             arg1_feats.append(Feature.get_feature_by_feat(self.conn_category_dict, conn_category))
 
 
-                arg1_conn = copy(connective)
-                arg1_conn["arg1_indices"] = clause
-                doc_arg1_conns.append(arg1_conn)
-                arg1_feats = Feature.merge_features(arg1_feats, 
-                    "%d|%d|%s" % (sent_idx, conn_idx, ",".join([str(idx) for idx in clause])))
-                doc_arg1_feats.append(arg1_feats)
+    #             arg1_conn = copy(connective)
+    #             arg1_conn["arg1_indices"] = clause
+    #             doc_arg1_conns.append(arg1_conn)
+    #             arg1_feats = Feature.merge_features(arg1_feats, 
+    #                 "%d|%d|%s" % (sent_idx, conn_idx, ",".join([str(idx) for idx in clause])))
+    #             doc_arg1_feats.append(arg1_feats)
 
-        # argument 2
-        doc_arg2_conns, doc_arg2_feats = list(), list()
-        for conn_idx, connective in enumerate(doc_connectives):
-            sent_idx, conn_indices = connective["sent_idx"], connective["indices"]
-            sent_parsed_result = doc_parsed_result[sent_idx]
-            sent_len = len(sent_parsed_result["tokens"])
+    #     # argument 2
+    #     doc_arg2_conns, doc_arg2_feats = list(), list()
+    #     for conn_idx, connective in enumerate(doc_connectives):
+    #         sent_idx, conn_indices = connective["sent_idx"], connective["indices"]
+    #         sent_parsed_result = doc_parsed_result[sent_idx]
+    #         sent_len = len(sent_parsed_result["tokens"])
             
-            if sent_idx in syntax_tree_cache:
-                syntax_tree = syntax_tree_cache[sent_idx]
-            else:
-                syntax_tree = syntax_tree_cache[sent_idx] = SyntaxTree(sent_parsed_result["parse"])
+    #         if sent_idx in syntax_tree_cache:
+    #             syntax_tree = syntax_tree_cache[sent_idx]
+    #         else:
+    #             syntax_tree = syntax_tree_cache[sent_idx] = SyntaxTree(sent_parsed_result["parse"])
                 
-            arg2_clauses = self._get_argument2_clauses(sent_parsed_result, connective, syntax_tree)
+    #         arg2_clauses = self._get_argument2_clauses(sent_parsed_result, connective, syntax_tree)
             
-            if len(arg2_clauses) == 0:
-                continue
+    #         if len(arg2_clauses) == 0:
+    #             continue
             
-            conn = " ".join([sent_parsed_result["tokens"][idx] for idx in conn_indices])
-            conn_lower = conn.lower()
-            conn_category = self.conn_category_mapping[conn_lower]
-            cpos = "_".join([sent_parsed_result["pos_tags"][idx] for idx in conn_indices])
-            conn_node = syntax_tree.get_self_category_node_by_token_indices(conn_indices)
-            parent_node = conn_node.up
-            if parent_node:
-                parent_category = parent_node.name
-                children = parent_node.get_children()
-                left_node, right_node = None, None
-                for child_idx, child in enumerate(children):
-                    if conn_node == child:
-                        if child_idx > 0:
-                            left_node = children[child_idx-1]
-                        if child_idx < len(children) - 1:
-                            right_node = children[child_idx+1]
-            else:
-                left_node = None
-                right_node = None
+    #         conn = " ".join([sent_parsed_result["tokens"][idx] for idx in conn_indices])
+    #         conn_lower = conn.lower()
+    #         conn_category = self.conn_category_mapping[conn_lower]
+    #         cpos = "_".join([sent_parsed_result["pos_tags"][idx] for idx in conn_indices])
+    #         conn_node = syntax_tree.get_self_category_node_by_token_indices(conn_indices)
+    #         parent_node = conn_node.up
+    #         if parent_node:
+    #             parent_category = parent_node.name
+    #             children = parent_node.get_children()
+    #             left_node, right_node = None, None
+    #             for child_idx, child in enumerate(children):
+    #                 if conn_node == child:
+    #                     if child_idx > 0:
+    #                         left_node = children[child_idx-1]
+    #                     if child_idx < len(children) - 1:
+    #                         right_node = children[child_idx+1]
+    #         else:
+    #             left_node = None
+    #             right_node = None
 
-            # conn_ctx
-            conn_ctx = list() # self, parent, left, right
-            conn_ctx.append(conn_node.name)
-            conn_ctx.append(parent_node.name if parent_node else "NULL")
-            conn_ctx.append(left_node.name if left_node else "NULL")
-            conn_ctx.append(right_node.name if right_node else "NULL")
-            conn_ctx = "-".join(conn_ctx)
+    #         # conn_ctx
+    #         conn_ctx = list() # self, parent, left, right
+    #         conn_ctx.append(conn_node.name)
+    #         conn_ctx.append(parent_node.name if parent_node else "NULL")
+    #         conn_ctx.append(left_node.name if left_node else "NULL")
+    #         conn_ctx.append(right_node.name if right_node else "NULL")
+    #         conn_ctx = "-".join(conn_ctx)
 
-            for clause_idx, clause in enumerate(arg2_clauses):
-                # clause
-                clause_first = sent_parsed_result["tokens"][clause[0]]
-                clause_last = sent_parsed_result["tokens"][clause[-1]]
+    #         for clause_idx, clause in enumerate(arg2_clauses):
+    #             # clause
+    #             clause_first = sent_parsed_result["tokens"][clause[0]]
+    #             clause_last = sent_parsed_result["tokens"][clause[-1]]
 
-                # prev
-                if clause[0] == 0:
-                    prev = "NONE"
-                else:
-                    prev_sent_idx, prev_idx = get_prev_token_index(doc_parsed_result, sent_idx, clause[0], skip_tokens=_CLAUSE_SEPS)
-                    if prev_sent_idx == sent_idx:
-                        if prev_idx+1 == clause[0]:
-                            prev = sent_parsed_result["tokens"][prev_idx] # previous token not in clause seps
-                        else:
-                            prev = " ".join([sent_parsed_result["tokens"][idx] for idx in range(prev_idx+1, clause[0])]) # previous tokens in clause seps
-                    elif clause[0]-1 >= 0:
-                        prev = " ".join([sent_parsed_result["tokens"][idx] for idx in range(0, clause[0])])
-                    else:
-                        prev = "NONE"
+    #             # prev
+    #             if clause[0] == 0:
+    #                 prev = "NONE"
+    #             else:
+    #                 prev_sent_idx, prev_idx = get_prev_token_index(doc_parsed_result, sent_idx, clause[0], skip_tokens=CLAUSE_SEPARATOR_SET)
+    #                 if prev_sent_idx == sent_idx:
+    #                     if prev_idx+1 == clause[0]:
+    #                         prev = sent_parsed_result["tokens"][prev_idx] # previous token not in clause seps
+    #                     else:
+    #                         prev = " ".join([sent_parsed_result["tokens"][idx] for idx in range(prev_idx+1, clause[0])]) # previous tokens in clause seps
+    #                 elif clause[0]-1 >= 0:
+    #                     prev = " ".join([sent_parsed_result["tokens"][idx] for idx in range(0, clause[0])])
+    #                 else:
+    #                     prev = "NONE"
 
-                # next
-                if clause[-1] == len(sent_parsed_result["tokens"])-1:
-                    next = "NONE"
-                else:
-                    next_sent_idx, next_idx = get_next_token_index(doc_parsed_result, sent_idx, clause[-1], skip_tokens=_CLAUSE_SEPS)
-                    if next_sent_idx == sent_idx:
-                        if next_idx-1 == clause[-1]:
-                            next = sent_parsed_result["tokens"][next_idx] # next token not in clause seps
-                        else:
-                            next = " ".join([sent_parsed_result["tokens"][idx] for idx in range(clause[-1]+1, next_idx)]) # next tokens in clause seps
-                    elif clause[-1]+1 < len(sent_parsed_result["tokens"]):
-                        next = " ".join([sent_parsed_result["tokens"][idx] for idx in range(clause[-1]+1, len(sent_parsed_result["tokens"]))])
-                    else:
-                        next = "NONE"
+    #             # next
+    #             if clause[-1] == len(sent_parsed_result["tokens"])-1:
+    #                 next = "NONE"
+    #             else:
+    #                 next_sent_idx, next_idx = get_next_token_index(doc_parsed_result, sent_idx, clause[-1], skip_tokens=CLAUSE_SEPARATOR_SET)
+    #                 if next_sent_idx == sent_idx:
+    #                     if next_idx-1 == clause[-1]:
+    #                         next = sent_parsed_result["tokens"][next_idx] # next token not in clause seps
+    #                     else:
+    #                         next = " ".join([sent_parsed_result["tokens"][idx] for idx in range(clause[-1]+1, next_idx)]) # next tokens in clause seps
+    #                 elif clause[-1]+1 < len(sent_parsed_result["tokens"]):
+    #                     next = " ".join([sent_parsed_result["tokens"][idx] for idx in range(clause[-1]+1, len(sent_parsed_result["tokens"]))])
+    #                 else:
+    #                     next = "NONE"
 
-                # clause_first_node
-                # prev_node
-                if syntax_tree.tree:
-                    clause_first_node = syntax_tree.get_leaf_node_by_token_index(clause[0]).up
-                    if clause_idx > 0:
-                        prev_last_node = syntax_tree.get_leaf_node_by_token_index(arg2_clauses[clause_idx-1][-1]).up
-                    else:
-                        prev_last_node = None
-                else:
-                    clause_first_node = None
-                    prev_last_node = None
+    #             # clause_first_node
+    #             # prev_node
+    #             if syntax_tree.tree:
+    #                 clause_first_node = syntax_tree.get_leaf_node_by_token_index(clause[0]).up
+    #                 if clause_idx > 0:
+    #                     prev_last_node = syntax_tree.get_leaf_node_by_token_index(arg2_clauses[clause_idx-1][-1]).up
+    #                 else:
+    #                     prev_last_node = None
+    #             else:
+    #                 clause_first_node = None
+    #                 prev_last_node = None
 
-                # clause_production_rules
-                clause_production_rules = list()
-                if syntax_tree.tree:
-                    for node in syntax_tree.get_subtree_by_token_indices(clause).tree.traverse():
-                        if not node.is_leaf():
-                            clause_production_rules.append(
-                                node.name + "-->" + " ".join([child.name for child in node.get_children()]))
+    #             # clause_production_rules
+    #             clause_production_rules = list()
+    #             if syntax_tree.tree:
+    #                 for node in syntax_tree.get_subtree_by_token_indices(clause).tree.traverse():
+    #                     if not node.is_leaf():
+    #                         clause_production_rules.append(
+    #                             node.name + "-->" + " ".join([child.name for child in node.get_children()]))
 
-                # conn_to_root_path
-                # cparent_to_root_path
-                if syntax_tree.tree:
-                    conn_to_root_paths = list()
-                    cparent_to_root_paths = list()
-                    for idx in conn_indices:
-                        node = syntax_tree.get_leaf_node_by_token_index(idx)
-                        path = syntax_tree.get_node_path_to_root(node)
-                        conn_to_root_paths.append(path)
-                        parent_node = node.up
-                        path = syntax_tree.get_node_path_to_root(parent_node)
-                        cparent_to_root_paths.append(path)
-                    cparent_to_root_path_node_names = chain.from_iterable([path.split("-->") for path in cparent_to_root_paths])
-                    conn_to_root_path = "&".join(conn_to_root_paths)
-                    compressed_cparent_to_root_path = "&".join([get_compressed_path(path) for path in cparent_to_root_paths])
-                else:
-                    cparent_to_root_path_node_names = ["NONE_TREE"]
-                    conn_to_root_path = "NONE_TREE"
-                    compressed_cparent_to_root_path = "NONE_TREE"
+    #             # conn_to_root_path
+    #             # cparent_to_root_path
+    #             if syntax_tree.tree:
+    #                 conn_to_root_paths = list()
+    #                 cparent_to_root_paths = list()
+    #                 for idx in conn_indices:
+    #                     node = syntax_tree.get_leaf_node_by_token_index(idx)
+    #                     path = syntax_tree.get_node_path_to_root(node)
+    #                     conn_to_root_paths.append(path)
+    #                     parent_node = node.up
+    #                     path = syntax_tree.get_node_path_to_root(parent_node)
+    #                     cparent_to_root_paths.append(path)
+    #                 cparent_to_root_path_node_names = chain.from_iterable([path.split("-->") for path in cparent_to_root_paths])
+    #                 conn_to_root_path = "&".join(conn_to_root_paths)
+    #                 compressed_cparent_to_root_path = "&".join([get_compressed_path(path) for path in cparent_to_root_paths])
+    #             else:
+    #                 cparent_to_root_path_node_names = ["NONE_TREE"]
+    #                 conn_to_root_path = "NONE_TREE"
+    #                 compressed_cparent_to_root_path = "NONE_TREE"
 
-                # clause_first_prev_last_parse_path
-                if syntax_tree.tree:
-                    if prev_last_node:
-                        clause_first_prev_last_parse_path = syntax_tree.get_node_to_node_path(clause_first_node, prev_last_node)
-                    else:
-                        clause_first_prev_last_parse_path = "NONE"
-                else:
-                    clause_first_prev_last_parse_path = "NONE_TREE"
+    #             # clause_first_prev_last_parse_path
+    #             if syntax_tree.tree:
+    #                 if prev_last_node:
+    #                     clause_first_prev_last_parse_path = syntax_tree.get_node_to_node_path(clause_first_node, prev_last_node)
+    #                 else:
+    #                     clause_first_prev_last_parse_path = "NONE"
+    #             else:
+    #                 clause_first_prev_last_parse_path = "NONE_TREE"
 
-                arg2_feats = list()
-                arg2_feats.append(Feature.get_feature_by_feat_list(self.clause_production_rule_dict2, clause_production_rules))
-                arg2_feats.append(Feature.get_feature_by_feat(self.clause_first_dict2, clause_first))
-                arg2_feats.append(Feature.get_feature_by_feat(self.clause_first_prev_last_parse_path_dict2, clause_first_prev_last_parse_path))
-                arg2_feats.append(Feature.get_feature_by_feat(self.next_dict2, next))
-                arg2_feats.append(Feature.get_feature_by_feat(self.conn_to_root_path_dict2, conn_to_root_path))
-                arg2_feats.append(Feature.get_feature_by_feat(self.conn_dict2, conn))
-                arg2_feats.append(Feature.get_feature_by_feat(self.prev_dict2, prev))
-                arg2_feats.append(Feature.get_feature_by_feat(self.clause_last_next_dict2, clause_last+"|"+next))
-                arg2_feats.append(Feature.get_feature_by_feat(self.conn_lower_dict2, conn_lower))
-                arg2_feats.append(Feature.get_feature_by_feat(self.conn_conn_ctx_dict2, conn+"|"+conn_ctx))
-                arg2_feats.append(Feature.get_feature_by_feat(self.compressed_cparent_to_root_path_dict2, compressed_cparent_to_root_path))
-                arg2_feats.append(Feature.get_feature_by_feat(self.cpos_dict2, cpos))
-                arg2_feats.append(Feature.get_feature_by_feat_list(self.cparent_to_root_path_node_name_dict2, cparent_to_root_path_node_names))
-                arg2_feats.append(Feature.get_feature_by_feat(self.conn_category_dict, conn_category))
+    #             arg2_feats = list()
+    #             arg2_feats.append(Feature.get_feature_by_feat_list(self.clause_production_rule_dict2, clause_production_rules))
+    #             arg2_feats.append(Feature.get_feature_by_feat(self.clause_first_dict2, clause_first))
+    #             arg2_feats.append(Feature.get_feature_by_feat(self.clause_first_prev_last_parse_path_dict2, clause_first_prev_last_parse_path))
+    #             arg2_feats.append(Feature.get_feature_by_feat(self.next_dict2, next))
+    #             arg2_feats.append(Feature.get_feature_by_feat(self.conn_to_root_path_dict2, conn_to_root_path))
+    #             arg2_feats.append(Feature.get_feature_by_feat(self.conn_dict2, conn))
+    #             arg2_feats.append(Feature.get_feature_by_feat(self.prev_dict2, prev))
+    #             arg2_feats.append(Feature.get_feature_by_feat(self.clause_last_next_dict2, clause_last+"|"+next))
+    #             arg2_feats.append(Feature.get_feature_by_feat(self.conn_lower_dict2, conn_lower))
+    #             arg2_feats.append(Feature.get_feature_by_feat(self.conn_conn_ctx_dict2, conn+"|"+conn_ctx))
+    #             arg2_feats.append(Feature.get_feature_by_feat(self.compressed_cparent_to_root_path_dict2, compressed_cparent_to_root_path))
+    #             arg2_feats.append(Feature.get_feature_by_feat(self.cpos_dict2, cpos))
+    #             arg2_feats.append(Feature.get_feature_by_feat_list(self.cparent_to_root_path_node_name_dict2, cparent_to_root_path_node_names))
+    #             arg2_feats.append(Feature.get_feature_by_feat(self.conn_category_dict, conn_category))
 
-                arg2_conn = copy(connective)
-                arg2_conn["arg2_indices"] = clause
-                doc_arg2_conns.append(arg2_conn)
-                arg2_feats = Feature.merge_features(arg2_feats, 
-                    "%d|%d|%s" % (sent_idx, conn_idx, ",".join([str(idx) for idx in clause])))
-                doc_arg2_feats.append(arg2_feats)
+    #             arg2_conn = copy(connective)
+    #             arg2_conn["arg2_indices"] = clause
+    #             doc_arg2_conns.append(arg2_conn)
+    #             arg2_feats = Feature.merge_features(arg2_feats, 
+    #                 "%d|%d|%s" % (sent_idx, conn_idx, ",".join([str(idx) for idx in clause])))
+    #             doc_arg2_feats.append(arg2_feats)
         
-        return doc_arg1_conns, doc_arg2_conns, doc_arg1_feats, doc_arg2_feats
+    #     return doc_arg1_conns, doc_arg2_conns, doc_arg1_feats, doc_arg2_feats
             
     def extract(self, doc_parsed_result, doc_connectives, syntax_tree_cache=None):
         if syntax_tree_cache is None:
@@ -1589,7 +1606,7 @@ class PSArgumentExtractor:
         self._extract_argument1s(doc_parsed_result, PS_connectives, syntax_tree_cache)
         self._extract_argument2s(doc_parsed_result, PS_connectives, syntax_tree_cache)
         
-        return doc_connectives
+        return [connective for connective in PS_connectives if "arg1" in connective and "arg2" in connective]
     
     def _extract_argument1s(self, doc_parsed_result, doc_connectives, syntax_tree_cache=None):
         doc_arg1_feats = self._generate_argument1_features(doc_parsed_result, doc_connectives, syntax_tree_cache)
@@ -1720,7 +1737,7 @@ class PSArgumentExtractor:
                 if clause[0] == 0:
                     prev = "NONE"
                 else:
-                    prev_sent_idx, prev_idx = get_prev_token_index(doc_parsed_result, sent_idx-1, clause[0], skip_tokens=_CLAUSE_SEPS)
+                    prev_sent_idx, prev_idx = get_prev_token_index(doc_parsed_result, sent_idx-1, clause[0], skip_tokens=CLAUSE_SEPARATOR_SET)
                     if prev_sent_idx == sent_idx-1:
                         if prev_idx+1 == clause[0]:
                             prev = sent_parsed_result["tokens"][prev_idx] # previous token not in clause seps
@@ -1805,7 +1822,7 @@ class PSArgumentExtractor:
                 if clause[0] == 0:
                     prev = "NONE"
                 else:
-                    prev_sent_idx, prev_idx = get_prev_token_index(doc_parsed_result, sent_idx, clause[0], skip_tokens=_CLAUSE_SEPS)
+                    prev_sent_idx, prev_idx = get_prev_token_index(doc_parsed_result, sent_idx, clause[0], skip_tokens=CLAUSE_SEPARATOR_SET)
                     if prev_sent_idx == sent_idx:
                         if prev_idx+1 == clause[0]:
                             prev = sent_parsed_result["tokens"][prev_idx] # previous token not in clause seps
@@ -1820,7 +1837,7 @@ class PSArgumentExtractor:
                 if clause[-1] == len(sent_parsed_result["tokens"])-1:
                     next = "NONE"
                 else:
-                    next_sent_idx, next_idx = get_next_token_index(doc_parsed_result, sent_idx, clause[-1], skip_tokens=_CLAUSE_SEPS)
+                    next_sent_idx, next_idx = get_next_token_index(doc_parsed_result, sent_idx, clause[-1], skip_tokens=CLAUSE_SEPARATOR_SET)
                     if next_sent_idx == sent_idx:
                         if next_idx-1 == clause[-1]:
                             next = sent_parsed_result["tokens"][next_idx] # next token not in clause seps
@@ -1920,57 +1937,10 @@ class PSArgumentExtractor:
         return list(zip(names, pred))
         
     def _get_argument1_clauses(self, sent_parsed_result, connective, syntax_tree):
-        return self._get_clauses(sent_parsed_result, syntax_tree)
+        return get_clauses(sent_parsed_result, syntax_tree)
         
     def _get_argument2_clauses(self, sent_parsed_result, connective, syntax_tree):
-        return self._get_clauses(sent_parsed_result, syntax_tree, index_seps=set(connective["indices"]))
-    
-    def _get_clauses(self, sent_parsed_result, syntax_tree, index_seps=None):
-        if index_seps is None:
-            index_seps = set()
-        elif isinstance(index_seps, (list, tuple)):
-            index_seps = set(index_seps)
-        sent_len = len(sent_parsed_result["tokens"])
-        
-        clauses = list()
-        clause = list()
-        for t_idx, token in enumerate(sent_parsed_result["tokens"]):
-            # split the sentence by seps
-            valid = token not in _CLAUSE_SEPS and t_idx not in index_seps
-            if valid:
-                clause.append(t_idx)
-            if t_idx == sent_len-1 or not valid:
-                # strip_punctuation
-                clause = strip_punctuation(sent_parsed_result, clause)
-                if len(clause) > 0:
-                    # split by the SBAR tag
-                    clause_tree = syntax_tree.get_subtree_by_token_indices(clause)
-                    find_SBAR = False
-                    if clause_tree.tree:
-                        for node in clause_tree.tree.traverse():
-                              if node.name == "SBAR":
-                                    leaves = set([node.index for node in node.get_leaves()])
-                                    if len(leaves) == len(clause):
-                                        continue
-                                    clause1, clause2 = list(), list()
-                                    for idx in clause:
-                                        if idx in leaves:
-                                            clause1.append(idx)
-                                        else:
-                                            clause2.append(idx)
-                                    if clause1[0] < clause2[0]:
-                                        clauses.append(clause1)
-                                        clauses.append(clause2)
-                                    else:
-                                        clauses.append(clause2)
-                                        clauses.append(clause1)
-                                    find_SBAR = True
-                                    break
-                    if not find_SBAR:
-                        clauses.append(clause)
-                clause = list()
-        return clauses
-
+        return get_clauses(sent_parsed_result, syntax_tree, index_seps=set(connective["indices"]))
 
 ######################################################
 ###########    Explicit Sense Classifier    ##########
@@ -1981,8 +1951,6 @@ class ExplicitSenseClassifier:
             discourse_path = os.path.join(os.path.dirname(__file__), "discourse")
         except:
             discourse_path = os.path.join("aser", "extract", "discourse")
-        self.mallet_path = kw.get("mallet_path", r"D:\Workspace\DiscourseParser\mallet-2.0.8")
-        os.environ["MALLET_HOME"] = self.mallet_path
 
         conn_category_feat_file = kw.get("conn_category_feat_file", "")
         if conn_category_feat_file:
@@ -2040,6 +2008,7 @@ class ExplicitSenseClassifier:
         with open(explicit_model_file, "rb") as f:
             self.explicit_model = pickle.load(f)
         self.predict_label_dict = {
+            0: "None",
             1: "Precedence",         # "Temporal.Asynchronous.Precedence"
             2: "Succession",         # "Temporal.Asynchronous.Succession"
             3: "Synchrony",          # "Temporal.Synchrony"
@@ -2056,10 +2025,10 @@ class ExplicitSenseClassifier:
             14: "Exception"          # "Expansion.Exception"
         }
 
-    def help_func(self, doc_parsed_result, doc_connectives, syntax_tree_cache=None):
-        doc_explicit_feats = self._generate_explicit_features(doc_parsed_result, doc_connectives, syntax_tree_cache)
+    # def help_func(self, doc_parsed_result, doc_connectives, syntax_tree_cache=None):
+    #     doc_explicit_feats = self._generate_explicit_features(doc_parsed_result, doc_connectives, syntax_tree_cache)
 
-        return doc_connectives, doc_explicit_feats
+    #     return doc_connectives, doc_explicit_feats
         
     def classify(self, doc_parsed_result, doc_connectives, syntax_tree_cache=None):
         if len(doc_connectives) == 0:
@@ -2258,7 +2227,7 @@ class ExplicitSenseClassifier:
                             all_connectives.append({"connective": conn, "indices": list(range(t_idx, t_idx+len(conn_list)))})
         
         # filter shorter and duplicative conn
-        all_connectives.sort(key=lambda x: (-len(x["indices"]), -x["indices"][0]))
+        all_connectives.sort(key=lambda x: (-len(x["indices"]), x["indices"][0]))
         filtered_connectives = list()
         used_indices = set()
         for conn_indices in all_connectives:

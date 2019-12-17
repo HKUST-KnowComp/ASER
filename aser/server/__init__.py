@@ -9,7 +9,7 @@ import zmq
 import zmq.decorators as zmqd
 from aser.database.db_API import KG_Connection
 from aser.server.utils import *
-from aser.extract.eventuality_extractor import EventualityExtractor
+from aser.extract.eventuality_extractor import SeedRuleEventualityExtractor
 from aser.utils.config import ASERCmd
 
 
@@ -193,7 +193,7 @@ class ASERWorker(Process):
         self.worker_id = id
         self.worker_addr_list = worker_addr_list
         self.sink_addr = sink_addr
-        self.eventuality_extractor = EventualityExtractor(
+        self.eventuality_extractor = SeedRuleEventualityExtractor(
             corenlp_path = opt.corenlp_path,
             corenlp_port=opt.base_corenlp_port + id)
         self.is_ready = multiprocessing.Event()

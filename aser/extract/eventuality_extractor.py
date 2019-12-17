@@ -1,33 +1,44 @@
-from aser.eventuality import Eventuality, EventualityList
-from aser.extract.rule import ALL_EVENTUALITY_RULES, CONNECTIVE_LIST, CLAUSE_WORDS
-from aser.extract.utils import get_corenlp_client, parse_sentense_with_stanford
+from itertools import chain, permutations
+from aser.eventuality import Eventuality
+from aser.extract.rule import ALL_EVENTUALITY_RULES
+# from aser.extract.rule import CONNECTIVE_LIST, CLAUSE_WORDS
+from aser.extract.utils import parse_sentense_with_stanford, get_corenlp_client, get_clauses, powerset
+from aser.extract.utils import ANNOTATORS
+from aser.extract.discourse_parser import ConnectiveExtractor, ArgumentPositionClassifier, \
+    SSArgumentExtractor, PSArgumentExtractor, ExplicitSenseClassifier
+from aser.extract.discourse_parser import SyntaxTree
 
+class BaseEventualityExtractor(object):
+    def __init__(self, **kw):
+        self.corenlp_path = kw.get("corenlp_path", "")
+        self.corenlp_port = kw.get("corenlp_port", 0)
+        self.annotators = kw.get("annotators", list(ANNOTATORS))
 
-class EventualityExtractor(object):
-    def __init__(self, corenlp_path=None, corenlp_port=None):
-        self.corenlp_path = corenlp_path
-        self.corenlp_port = corenlp_port
-
-        if corenlp_path and corenlp_port:
-            _, self.is_externel_corenlp = get_corenlp_client(corenlp_path=corenlp_path, corenlp_port=corenlp_port)
-        else:
-            self.is_externel_corenlp = False
+        _, self.is_externel_corenlp = get_corenlp_client(corenlp_path=self.corenlp_path, corenlp_port=self.corenlp_port)
 
     def close(self):
-        if self.is_externel_corenlp:
+        if not self.is_externel_corenlp:
             corenlp_client, _ = get_corenlp_client(corenlp_path=self.corenlp_path, corenlp_port=self.corenlp_port)
             corenlp_client.stop()
 
     def __del__(self):
         self.close()
 
-    def extract(self, text, annotators=None):
+    def parse_text(self, text, annotators=None):
+        if annotators is None:
+            annotators = self.annotators
+
+        corenlp_client, _ = get_corenlp_client(corenlp_path=self.corenlp_path, corenlp_port=self.corenlp_port, annotators=annotators)
+        parsed_result = parse_sentense_with_stanford(text, corenlp_client, self.annotators)
+        return parsed_result
+
+    def extract_from_text(self, text, output_format="Eventuality", in_order=True, annotators=None, **kw):
         """ This method would firstly split text into sentences and extract
             all eventualities for each sentence.
 
             :type text: str
             :param text: input text
-            :return: a list of `EventualityList` object
+            :return: a list of lists of `Eventuality` object
 
             .. highlight:: python
             .. code-block:: python
@@ -36,8 +47,7 @@ class EventualityExtractor(object):
 
                 Output:
                 [
-                EventualityList([
-                    Eventuality({'dependencies': [((1, 'dog', 'NN'), 'det', (0, 'the', 'DT')),
+                    [Eventuality({'dependencies': [((1, 'dog', 'NN'), 'det', (0, 'the', 'DT')),
                                                  ((2, 'bark', 'VBZ'), 'nsubj', (1, 'dog', 'NN')),
                                                  ((2, 'bark', 'VBZ'), 'advmod', (3, 'loudly', 'RB'))],
                                  'eid': 'c605e3d855d7d27cf25ed7e4d4e33962d9b10713',
@@ -46,9 +56,7 @@ class EventualityExtractor(object):
                                  'skeleton_dependencies': [((2, 'bark', 'VBZ'), 'nsubj', (1, 'dog', 'NN'))],
                                  'skeleton_words': ['dog', 'bark'],
                                  'verbs': ['bark'],
-                                 'words': ['the', 'dog', 'bark', 'loudly']})]),
-
-                 EventualityList(
+                                 'words': ['the', 'dog', 'bark', 'loudly']})],
                     [Eventuality({'dependencies': [((2, 'hungry', 'JJ'), 'nsubj', (0, 'he', 'PRP')),
                                                   ((2, 'hungry', 'JJ'), 'cop', (1, 'be', 'VBZ'))],
                                   'eid': 'dae842ef792d3ae786db5f71e36b50305dda14a4',
@@ -58,23 +66,20 @@ class EventualityExtractor(object):
                                                             ((2, 'hungry', 'JJ'), 'cop', (1, 'be', 'VBZ'))],
                                   'skeleton_words': ['he', 'be', 'hungry'],
                                   'verbs': ['be'],
-                                  'words': ['he', 'be', 'hungry']})])
+                                  'words': ['he', 'be', 'hungry']})]
                 ]
         """
-        corenlp_client, _ = get_corenlp_client(corenlp_path=self.corenlp_path, corenlp_port=self.corenlp_port, annotators=annotators)
-        eventualities_list = []
-        parsed_results = parse_sentense_with_stanford(text, corenlp_client, annotators)
-        for parsed_result in parsed_results:
-            eventualities = self.extract_from_parsed_result(parsed_result)
-            eventualities_list.append(eventualities)
-        return eventualities_list
+        if output_format not in ["Eventuality", "json"]:
+            raise NotImplementedError("Error: extract_from_text only supports Eventuality or json.")
+        parsed_result = self.parse_text(text, annotators)
+        return self.extract_from_parsed_result(parsed_result, output_format, in_order, **kw)
 
-    def extract_from_parsed_result(self, parsed_result):
+    def extract_from_parsed_result(self, parsed_result, output_format="Eventuality", in_order=True, **kw):
         """ This method would extract eventualities from parsed_result of one sentence
 
-        :type parsed_result: dict
-        :param parsed_result: a dict generated by `aser.extract.utils.parse_sentense_with_stanford`
-        :return: An `EventualityList` Object
+        :type parsed_result: dict, or a list of dict
+        :param parsed_result: a dict generated by `aser.extract.utils.parse_sentense_with_stanford` or a list of dict
+        :return: a list of `Eventuality` objects
 
         .. highlight:: python
         .. code-block:: python
@@ -93,67 +98,115 @@ class EventualityExtractor(object):
                  'tokens': ['I', 'go', 'to', 'lunch', 'because', 'I', 'am', 'hungry', '.']}
 
             Output:
-                EventualityList(
-                    [Eventuality({'dependencies': [((2, 'hungry', 'JJ'), 'nsubj', (0, 'I', 'PRP')),
-                                      ((2, 'hungry', 'JJ'), 'cop', (1, 'be', 'VBP'))],
-                                 'eid': 'eae8741fad51a57e78092017def1b5cb4f620d7e',
-                                 'pattern': 's-be-a',
-                                 'pos_tags': ['PRP', 'VBP', 'JJ'],
-                                 'skeleton_dependencies': [((2, 'hungry', 'JJ'), 'nsubj', (0, 'I', 'PRP')),
-                                                           ((2, 'hungry', 'JJ'), 'cop', (1, 'be', 'VBP'))],
-                                 'skeleton_words': ['I', 'be', 'hungry'],
-                                 'verbs': ['be'],
-                                 'words': ['I', 'be', 'hungry']}),
+                [Eventuality({'dependencies': [((2, 'hungry', 'JJ'), 'nsubj', (0, 'I', 'PRP')),
+                                    ((2, 'hungry', 'JJ'), 'cop', (1, 'be', 'VBP'))],
+                                'eid': 'eae8741fad51a57e78092017def1b5cb4f620d7e',
+                                'pattern': 's-be-a',
+                                'pos_tags': ['PRP', 'VBP', 'JJ'],
+                                'skeleton_dependencies': [((2, 'hungry', 'JJ'), 'nsubj', (0, 'I', 'PRP')),
+                                                        ((2, 'hungry', 'JJ'), 'cop', (1, 'be', 'VBP'))],
+                                'skeleton_words': ['I', 'be', 'hungry'],
+                                'verbs': ['be'],
+                                'words': ['I', 'be', 'hungry']}),
 
-                     Eventuality({'dependencies': [((1, 'go', 'VBP'), 'nsubj', (0, 'I', 'PRP')),
-                                                  ((1, 'go', 'VBP'), 'nmod:to', (3, 'lunch', 'NN')),
-                                                  ((3, 'lunch', 'NN'), 'case', (2, 'to', 'TO'))],
-                                 'eid': '12b4aa577e56f2f5d96f4716bc97c633d6272ec4',
-                                 'pattern': 's-v-X-o',
-                                 'pos_tags': ['PRP', 'VBP', 'TO', 'NN'],
-                                 'skeleton_dependencies': [((1, 'go', 'VBP'), 'nsubj', (0, 'I', 'PRP')),
-                                                           ((1, 'go', 'VBP'), 'nmod:to', (3, 'lunch', 'NN')),
-                                                           ((3, 'lunch', 'NN'), 'case', (2, 'to', 'TO'))],
-                                 'skeleton_words': ['I', 'go', 'to', 'lunch'],
-                                 'verbs': ['go'],
-                                 'words': ['I', 'go', 'to', 'lunch']})]
-                )
+                    Eventuality({'dependencies': [((1, 'go', 'VBP'), 'nsubj', (0, 'I', 'PRP')),
+                                                ((1, 'go', 'VBP'), 'nmod:to', (3, 'lunch', 'NN')),
+                                                ((3, 'lunch', 'NN'), 'case', (2, 'to', 'TO'))],
+                                'eid': '12b4aa577e56f2f5d96f4716bc97c633d6272ec4',
+                                'pattern': 's-v-X-o',
+                                'pos_tags': ['PRP', 'VBP', 'TO', 'NN'],
+                                'skeleton_dependencies': [((1, 'go', 'VBP'), 'nsubj', (0, 'I', 'PRP')),
+                                                        ((1, 'go', 'VBP'), 'nmod:to', (3, 'lunch', 'NN')),
+                                                        ((3, 'lunch', 'NN'), 'case', (2, 'to', 'TO'))],
+                                'skeleton_words': ['I', 'go', 'to', 'lunch'],
+                                'verbs': ['go'],
+                                'words': ['I', 'go', 'to', 'lunch']})]
         """
-        # If it is a sentence that has clause word, just skip it
-        if set(parsed_result["tokens"]) & CLAUSE_WORDS:
-            return EventualityList()
-        all_eventualities = dict()
-        for rule_name in ALL_EVENTUALITY_RULES:
-            tmp_eventualities = self._extract_eventualities_from_dependencies_with_single_rule(
-                parsed_result, ALL_EVENTUALITY_RULES[rule_name], rule_name)
-            all_eventualities[rule_name] = tmp_eventualities
-        all_eventualities = self._filter_special_case(all_eventualities)
-        eventualities = EventualityList()
-        for elist in all_eventualities.values():
-            eventualities.extend(elist)
-        return eventualities
+        if output_format not in ["Eventuality", "json"]:
+            raise NotImplementedError("Error: extract_from_parsed_result only supports Eventuality or json.")
+        raise NotImplementedError
 
 
-    def _extract_eventualities_from_dependencies_with_single_rule(self, parsed_result, eventuality_rule,
-                                                               rule_name):
-        local_eventualities = EventualityList()
-        verb_positions = [i for i, tag in enumerate(parsed_result["pos_tags"])
+class SeedRuleEventualityExtractor(BaseEventualityExtractor):
+    def __init__(self, **kw):
+        super().__init__(**kw)
+
+    def extract_from_parsed_result(self, parsed_result, output_format="Eventuality", in_order=True, **kw):
+        if output_format not in ["Eventuality", "json"]:
+            raise NotImplementedError("Error: extract_from_parsed_result only supports Eventuality or json.")
+
+        if not isinstance(parsed_result, (list, tuple, dict)):
+            raise NotImplementedError
+        if isinstance(parsed_result, dict):
+            is_single_sent = True
+            parsed_result = [parsed_result]
+        else:
+            is_single_sent = False
+        
+        eventuality_rules = kw.get("eventuality_rules", None)
+        if eventuality_rules is None:
+            eventuality_rules = ALL_EVENTUALITY_RULES
+        
+        para_eventualities = [list() for _ in range(len(parsed_result))]
+        for sent_parsed_result, sent_eventualities in zip(parsed_result, para_eventualities):
+            # If it is a sentence that has clause word, just skip it
+            # has_clause_word = False
+            # for t in sent_parsed_result["tokens"]:
+            #     if t in CLAUSE_WORDS:
+            #         has_clause_word = True
+            #         break
+            # if has_clause_word:
+            #     continue
+
+            seed_rule_eventualities = dict()
+            for rule_name in eventuality_rules:
+                tmp_eventualities = self._extract_eventualities_from_dependencies_with_single_rule(
+                    sent_parsed_result, eventuality_rules[rule_name], rule_name)
+                seed_rule_eventualities[rule_name] = tmp_eventualities
+            seed_rule_eventualities = self._filter_special_case(seed_rule_eventualities)
+            for eventualities in seed_rule_eventualities.values():
+                sent_eventualities.extend(eventualities)
+        
+        if in_order:
+            if output_format == "json":
+                para_eventualities = [[eventuality.encode(encoding=None) for Eventuality in sent_eventualities] \
+                    for sent_eventualities in para_eventualities]
+            if is_single_sent:
+                return para_eventualities[0]
+            else:
+                return para_eventualities
+        else:
+            eid2eventuality = dict()
+            for eventuality in chain.from_iterable(para_eventualities):
+                eid = eventuality.eid
+                if eid not in eid2eventuality:
+                    eid2eventuality[eid] = copy(eventuality)
+                else:
+                    eid2eventuality[eid].update_frequency(eventuality)
+            if output_format == "Eventuality":
+                eventualities = sorted(eid2eventuality.values(), key=lambda e: e.eid)
+            elif output_format == "json":
+                eventualities = sorted([eventuality.encode(eventuality=None) for eventuality in eid2eventuality.values()], key=lambda e: e["eid"])
+            return eventualities
+
+    def _extract_eventualities_from_dependencies_with_single_rule(self, sent_parsed_result, eventuality_rule, rule_name):
+        local_eventualities = list()
+        verb_positions = [i for i, tag in enumerate(sent_parsed_result["pos_tags"])
                           if tag.startswith("VB")]
         for verb_position in verb_positions:
             tmp_e = self._extract_eventuality_with_fixed_target(
-                parsed_result, eventuality_rule, verb_position, rule_name)
+                sent_parsed_result, eventuality_rule, verb_position, rule_name)
             if tmp_e is not None:
                 local_eventualities.append(tmp_e)
         return local_eventualities
 
-
-    def _extract_eventuality_with_fixed_target(self, parsed_result, eventuality_rule, verb_position, rule_name):
+    def _extract_eventuality_with_fixed_target(self, sent_parsed_result, eventuality_rule, verb_position, rule_name):
         selected_edges = list()
         selected_skeleton_edges = list()
         local_dict = {'V1': verb_position}
         for tmp_rule_r in eventuality_rule.positive_rules:
             foundmatch = False
-            for dep_r in parsed_result["dependencies"]:
+            for dep_r in sent_parsed_result["dependencies"]:
                 decision, local_dict = self._match_rule_r_and_dep_r(tmp_rule_r, dep_r, local_dict)
                 if decision:
                     selected_edges.append(dep_r)
@@ -165,13 +218,13 @@ class EventualityExtractor(object):
                 return None
 
         for tmp_rule_r in eventuality_rule.possible_rules:
-            for dep_r in parsed_result["dependencies"]:
+            for dep_r in sent_parsed_result["dependencies"]:
                 decision, local_dict = self._match_rule_r_and_dep_r(tmp_rule_r, dep_r, local_dict)
                 if decision:
                     selected_edges.append(dep_r)
 
         for tmp_rule_r in eventuality_rule.negative_rules:
-            for dep_r in parsed_result["dependencies"]:
+            for dep_r in sent_parsed_result["dependencies"]:
                 if dep_r in selected_edges:
                     # print('This edge is selected by the positive example, so we will skip it')
                     continue
@@ -184,7 +237,7 @@ class EventualityExtractor(object):
             event = Eventuality(pattern=rule_name,
                                 dependencies=selected_edges,
                                 skeleton_dependencies=selected_skeleton_edges,
-                                sent_parsed_results=parsed_result)
+                                sent_parsed_results=sent_parsed_result)
             return event
         else:
             return None
@@ -237,6 +290,7 @@ class EventualityExtractor(object):
     def _filter_special_case(extracted_eventualities):
         extracted_eventualities['s-v-a'] = []
         extracted_eventualities['s-v-be-o'] = []
+
         if len(extracted_eventualities['s-v-v']) > 0:
             tmp_s_v_v = list()
             tmp_s_v_a = list()
@@ -250,6 +304,7 @@ class EventualityExtractor(object):
                         break
             extracted_eventualities['s-v-v'] = tmp_s_v_v
             extracted_eventualities['s-v-a'] = tmp_s_v_a
+
         if len(extracted_eventualities['s-v-be-a']) > 0:
             tmp_s_v_be_a = list()
             tmp_s_v_be_o = list()
@@ -263,6 +318,7 @@ class EventualityExtractor(object):
                         break
             extracted_eventualities['s-v-be-a'] = tmp_s_v_be_a
             extracted_eventualities['s-v-be-o'] = tmp_s_v_be_o
+
         if len(extracted_eventualities['s-v']) > 0:
             tmp_s_v = list()
             for e in extracted_eventualities['s-v']:
@@ -271,13 +327,112 @@ class EventualityExtractor(object):
                         if edge[0][0] > edge[2][0] or edge[0][1] == 'be':
                             tmp_s_v.append(e)
             extracted_eventualities['s-v'] = tmp_s_v
-        for relation in extracted_eventualities:
-            new_eventualities = list()
-            for tmp_e in extracted_eventualities[relation]:
-                tmp_e._filter_dependency_by_word_list(CONNECTIVE_LIST, target="dependent")
 
-                if len(tmp_e.dependencies) > 0:
-                    new_eventualities.append(tmp_e)
-            extracted_eventualities[relation] = new_eventualities
+        # Xin: has been replaced by removing "IN" when calling _construct
+        # for relation in extracted_eventualities:
+        #     new_eventualities = list()
+        #     for tmp_e in extracted_eventualities[relation]:
+        #         tmp_e._filter_dependency_by_word_list(CONNECTIVE_LIST, target="dependent")
+
+        #         if len(tmp_e.dependencies) > 0:
+        #             new_eventualities.append(tmp_e)
+        #     extracted_eventualities[relation] = new_eventualities
 
         return extracted_eventualities
+
+class DiscourseEventualityExtractor(BaseEventualityExtractor):
+    def __init__(self, **kw):
+        super().__init__(**kw)
+        self.seed_rule_eventuality_extractor = SeedRuleEventualityExtractor(**kw)
+        self.conn_extractor = ConnectiveExtractor(**kw)
+        # self.argpos_classifier = ArgumentPositionClassifier(**kw)
+        # self.ss_extractor = SSArgumentExtractor(**kw)
+        # self.ps_extractor = PSArgumentExtractor(**kw)
+
+    def extract_from_parsed_result(self, parsed_result, output_format="Eventuality", in_order=True, **kw):
+        if output_format not in ["Eventuality", "json"]:
+            raise NotImplementedError("Error: extract_from_parsed_result only supports Eventuality or json.")
+        
+        if not isinstance(parsed_result, (list, tuple, dict)):
+            raise NotImplementedError
+        if isinstance(parsed_result, dict):
+            is_single_sent = True
+            parsed_result = [parsed_result]
+        else:
+            is_single_sent = False
+
+        syntax_tree_cache = kw.get("syntax_tree_cache", dict())
+        
+        para_eventualities = [list() for _ in range(len(parsed_result))]
+        para_clauses = self._extract_clauses(parsed_result, syntax_tree_cache)
+        for sent_parsed_result, sent_clauses, sent_eventualities in zip(parsed_result, para_clauses, para_eventualities):
+            for clause in sent_clauses:
+                idx_mapping = {j: i for i, j in enumerate(clause)}
+                indices_set = set(clause)
+                clause_parsed_result = {
+                    "text": "",
+                    "dependencies": [(idx_mapping[dep[0]], dep[1], idx_mapping[dep[2]]) for dep in sent_parsed_result["dependencies"] \
+                        if dep[0] in indices_set and dep[2] in indices_set],
+                    "tokens": [sent_parsed_result["tokens"][idx] for idx in clause],
+                    "pos_tags": [sent_parsed_result["pos_tags"][idx] for idx in clause],
+                    "lemmas": [sent_parsed_result["lemmas"][idx] for idx in clause]}
+                eventualities = self.seed_rule_eventuality_extractor.extract_from_parsed_result(
+                    clause_parsed_result, output_format="Eventuality", in_order=True)
+                len_existed_eventualities = len(sent_eventualities)
+                for e in eventualities:
+                    for k, v in e.raw_sent_mapping.items():
+                        e.raw_sent_mapping[k] = clause[v]
+                    e.eid = Eventuality.generate_eid(e)
+                    existed_eventuality = False
+                    for e_idx in range(len_existed_eventualities):
+                        if sent_eventualities[e_idx].eid == e.eid and \
+                            sent_eventualities[e_idx].raw_sent_mapping == e.raw_sent_mapping:
+                            existed_eventuality = True
+                            break
+                    if not existed_eventuality:
+                        sent_eventualities.append(e)
+        
+        if in_order:
+            if output_format == "json":
+                para_eventualities = [[eventuality.encode(encoding=None) for Eventuality in sent_eventualities] \
+                    for sent_eventualities in para_eventualities]
+            if is_single_sent:
+                return para_eventualities[0]
+            else:
+                return para_eventualities
+        else:
+            eid2eventuality = dict()
+            for eventuality in chain.from_iterable(para_eventualities):
+                eid = eventuality.eid
+                if eid not in eid2eventuality:
+                    eid2eventuality[eid] = copy(eventuality)
+                else:
+                    eid2eventuality[eid].update_frequency(eventuality)
+            if output_format == "Eventuality":
+                eventualities = sorted(eid2eventuality.values(), key=lambda e: e.eid)
+            elif output_format == "json":
+                eventualities = sorted([eventuality.encode(eventuality=None) for eventuality in eid2eventuality.values()], key=lambda e: e["eid"])
+            return eventualities
+
+    def _extract_clauses(self, parsed_result, syntax_tree_cache):
+        para_arguments = [set() for _ in range(len(parsed_result))]
+        connectives = self.conn_extractor.extract(parsed_result, syntax_tree_cache)
+        para_connectives = [set() for _ in range(len(parsed_result))]
+        for connective in connectives:
+            sent_idx, indices = connective["sent_idx"], tuple(connective["indices"])
+            para_connectives[sent_idx].add(indices)
+        for sent_idx, sent_parsed_result in enumerate(parsed_result):
+            sent_connectives = para_connectives[sent_idx]
+            sent_arguments = para_arguments[sent_idx]
+
+            if sent_idx in syntax_tree_cache:
+                syntax_tree = syntax_tree_cache[sent_idx]
+            else:
+                syntax_tree = syntax_tree_cache[sent_idx] = SyntaxTree(sent_parsed_result["parse"])
+            
+            # the best but too slow
+            for indices in powerset(sent_connectives):
+                indices = set(chain.from_iterable(indices))
+                sent_arguments.update(get_clauses(sent_parsed_result, syntax_tree, index_seps=indices))
+            # sent_arguments.update(get_clauses(sent_parsed_result, syntax_tree, index_seps=set(chain.from_iterable(sent_connectives))))
+        return para_arguments

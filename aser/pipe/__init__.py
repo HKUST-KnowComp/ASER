@@ -8,26 +8,21 @@ from tqdm import tqdm
 from copy import copy, deepcopy
 from functools import partial
 from collections import Counter, defaultdict
-from aser.extract.utils import get_corenlp_client
 from aser.extract.sentence_parser import SentenceParser
-from aser.extract.eventuality_extractor import EventualityExtractor
+from aser.extract.aser_extractor import SeedRuleASERExtractor, DiscourseASERExtractor1, DiscourseASERExtractor2, DiscourseASERExtractor3
+from aser.extract.eventuality_extractor import SeedRuleEventualityExtractor, DiscourseEventualityExtractor
 from aser.extract.relation_extractor import SeedRuleRelationExtractor, DiscourseRelationExtractor
 from aser.extract.parsed_reader import ParsedReader
+from aser.extract.utils import EMPTY_SENT_PARSED_RESULT
 from aser.extract.utils import iter_files, parse_sentense_with_stanford
 from aser.utils.logging import init_logger, close_logger
 from aser.relation import Relation
 from aser.database.kg_connection import ASERKGConnection
 
 def run_file(raw_path=None, processed_path=None, prefix_to_be_removed="",
-    sentence_parser=None, parsed_reader=None, eventuality_extractor=None, relation_extractor=None):
-
-    empty_sent_parsed_result = {
-        'text': '.',
-        'dependencies': [],
-        'parse': '(ROOT\r\n  (NP (. .)))',
-        'tokens': ['.'],
-        'lemmas': ['.'],
-        'pos_tags': ['.']}
+    sentence_parser=None, parsed_reader=None, 
+    eventuality_extractor=None, relation_extractor=None,
+    aser_extractor=None):
 
     # process raw data or load processed data
     if os.path.exists(processed_path):
@@ -44,10 +39,12 @@ def run_file(raw_path=None, processed_path=None, prefix_to_be_removed="",
             sentence["doc"] = os.path.splitext(os.path.basename(processed_path))[0]
             sentence["sid"] = sentence["sid"].replace(prefix_to_be_removed, "", 1)
             document.append(sentence)
-        # document.append(empty_sent_parsed_result)
+        # document.append(EMPTY_SENT_PARSED_RESULT)
+
+    eventuality_lists, relation_lists = aser_extractor.extract_from_parsed_result(document)
 
     # extract eventualities from processed data
-    eventuality_lists = extract_eventualities(document, eventuality_extractor)
+    # eventuality_lists = extract_eventualities(document, eventuality_extractor)
     eid2sids = defaultdict(list)
     eid2eventuality = dict()
     for sentence, eventuality_list in zip(document, eventuality_lists):
@@ -59,7 +56,7 @@ def run_file(raw_path=None, processed_path=None, prefix_to_be_removed="",
                 eid2eventuality[eventuality.eid].update_frequency(eventuality)
 
     # extract relations from eventualities
-    relation_lists = extract_relations(document, eventuality_lists, relation_extractor)
+    # relation_lists = extract_relations(document, eventuality_lists, relation_extractor)
     rid2sids = defaultdict(list)
     rid2relation = dict()
     len_doc = len(document)
@@ -97,7 +94,7 @@ def extract_eventualities(processed_data, eventuality_extractor):
     return list(map(eventuality_extractor.extract_from_parsed_result, processed_data))
 
 def extract_relations(processed_data, eventuality_lists, relation_extractor):
-    return relation_extractor.extract(list(zip(processed_data, eventuality_lists)), output_format="relation", in_order=True)
+    return relation_extractor.extract(list(zip(processed_data, eventuality_lists)), output_format="Relation", in_order=True)
 
 class ASERPipe(object):
     def __init__(self, opt):
@@ -105,16 +102,19 @@ class ASERPipe(object):
         self.n_workers = opt.n_workers
         self.n_extractors = opt.n_extractors
         if opt.corenlp_path:
-            self.sentence_parsers = [SentenceParser(opt.corenlp_path, opt.base_corenlp_port+_id) for _id in range(self.n_extractors)]
+            self.sentence_parsers = [SentenceParser(
+                corenlp_path=opt.corenlp_path, corenlp_port=opt.base_corenlp_port+_id) for _id in range(self.n_extractors)]
         else:
             self.sentence_parsers = [SentenceParser() for _id in range(self.n_extractors)]
         self.parsed_readers = [ParsedReader() for _id in range(self.n_extractors)]
         if opt.corenlp_path:
-            self.eventuality_extractors = [EventualityExtractor(opt.corenlp_path, opt.base_corenlp_port+_id) for _id in range(self.n_extractors)]
+            self.eventuality_extractors = [SeedRuleEventualityExtractor(
+                corenlp_path=opt.corenlp_path, corenlp_port=opt.base_corenlp_port+_id) for _id in range(self.n_extractors)]
         else:
-            self.eventuality_extractors = [EventualityExtractor() for _id in range(self.n_extractors)]
-        # self.relation_extractors = [SeedRuleRelationExtractor() for _id in range(self.n_extractors)]
-        self.relation_extractors = [DiscourseRelationExtractor() for _id in range(self.n_extractors)]
+            self.eventuality_extractors = [SeedRuleEventualityExtractor() for _id in range(self.n_extractors)]
+        self.relation_extractors = [SeedRuleRelationExtractor() for _id in range(self.n_extractors)]
+        self.aser_extractors = [DiscourseASERExtractor2(corenlp_path=opt.corenlp_path, corenlp_port=opt.base_corenlp_port+_id) \
+            for _id in range(self.n_extractors)]
         self.logger = init_logger(log_file=opt.log_path)
 
     def __del__(self):
@@ -123,7 +123,7 @@ class ASERPipe(object):
     def close(self):
         for eventuality_extractor in self.eventuality_extractors:
             eventuality_extractor.close()
-        self.logger.info("%d EventualityExtractors are closed." % (len(self.eventuality_extractors)))
+        self.logger.info("%d SeedRuleEventualityExtractors are closed." % (len(self.eventuality_extractors)))
         for relation_extractor in self.relation_extractors:
             relation_extractor.close()
         self.logger.info("%d RelationExtractors are closed." % (len(self.relation_extractors)))
@@ -137,25 +137,35 @@ class ASERPipe(object):
                 self.logger.info("Loading processed data from %s." % (self.opt.processed_dir))
                 processed_file_names = [file_name for file_name in iter_files(self.opt.processed_dir) if file_name.endswith(".jsonl")]
                 for idx, processed_path in enumerate(processed_file_names):
+                    extractor_idx = idx%self.n_extractors
                     results.append(pool.apply_async(run_file, args=(
                         None, processed_path, self.opt.processed_dir+os.sep, 
-                        None, self.parsed_readers[idx%self.n_extractors], self.eventuality_extractors[idx%self.n_extractors], self.relation_extractors[idx%self.n_extractors])))
+                        None, self.parsed_readers[extractor_idx], 
+                        self.eventuality_extractors[extractor_idx], self.relation_extractors[extractor_idx],
+                        self.aser_extractors[extractor_idx])))
                     # results.append(run_file(
                     #     None, processed_path, self.opt.processed_dir+os.sep,
-                    #     None, self.parsed_readers[idx%self.n_extractors], self.eventuality_extractors[idx%self.n_extractors], self.relation_extractors[idx%self.n_extractors]))
+                    #     None, self.parsed_readers[extractor_idx], 
+                    #     self.eventuality_extractors[extractor_idx], self.relation_extractors[extractor_idx],
+                    #     self.aser_extractors[extractor_idx]))
             elif os.path.exists(self.opt.raw_dir):
                 self.logger.info("Processing raw data from %s." % (self.opt.raw_dir))
                 raw_file_names = [file_name for file_name in iter_files(self.opt.raw_dir)]
                 for idx, raw_path in enumerate(raw_file_names):
+                    extractor_idx = idx%self.n_extractors
                     processed_path = os.path.splitext(raw_path)[0].replace(self.opt.raw_dir, self.opt.processed_dir, 1) + ".jsonl"
                     if not os.path.exists(os.path.dirname(processed_path)):
                         os.makedirs(os.path.dirname(processed_path))
                     results.append(pool.apply_async(run_file, args=(
                         raw_path, processed_path, self.opt.processed_dir+os.sep,
-                        self.sentence_parsers[idx%self.n_extractors], None, self.eventuality_extractors[idx%self.n_extractors], self.relation_extractors[idx%self.n_extractors])))
+                        self.sentence_parsers[extractor_idx], None, 
+                        self.eventuality_extractors[extractor_idx], self.relation_extractors[extractor_idx],
+                        self.aser_extractors[extractor_idx])))
                     # results.append(run_file(
                     #     raw_path, processed_path, self.opt.processed_dir+os.sep,
-                    #     self.sentence_parsers[idx%self.n_extractors], None, self.eventuality_extractors[idx%self.n_extractors], self.relation_extractors[idx%self.n_extractors]))
+                    #     self.sentence_parsers[extractor_idx], None, 
+                    #     self.eventuality_extractors[extractor_idx], self.relation_extractors[extractor_idx],
+                    #     self.aser_extractors[extractor_idx]))
             else:
                 raise ValueError("Error: at least one of raw_dir and processed_dir should not be None.")
             pool.close()

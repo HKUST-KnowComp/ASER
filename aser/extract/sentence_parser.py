@@ -5,19 +5,18 @@ except:
     import json
 from itertools import chain
 from aser.extract.utils import get_corenlp_client, parse_sentense_with_stanford
+from aser.extract.utils import ANNOTATORS
 
 CORENLP_PATH = '/home/software/stanford-corenlp/stanford-corenlp-full-2018-02-27'
 
 
 class SentenceParser:
-    def __init__(self, corenlp_path=None, corenlp_port=None):
-        self.corenlp_path = corenlp_path
-        self.corenlp_port = corenlp_port
+    def __init__(self, **kw):
+        self.corenlp_path = kw.get("corenlp_path", "")
+        self.corenlp_port = kw.get("corenlp_port", 0)
+        self.annotators = kw.get("annotators", list(ANNOTATORS))
         
-        if corenlp_path and corenlp_port:
-            _, self.is_externel_corenlp = get_corenlp_client(corenlp_path=corenlp_path, corenlp_port=corenlp_port)
-        else:
-            self.is_externel_corenlp = False
+        _, self.is_externel_corenlp = get_corenlp_client(corenlp_path=self.corenlp_path, corenlp_port=self.corenlp_port)
 
     def close(self):
         if not self.is_externel_corenlp:
@@ -31,8 +30,8 @@ class SentenceParser:
         return file_name + "|" + str(sid)
 
     def parse_raw_file(self, raw_path, processed_path=None, annotators=None, max_len=230):
-        # if processed_path:
-        #     os.makedirs(os.path.dirname(processed_path), exist_ok=True)
+        if annotators is None:
+            annotators = self.annotators
 
         para_lens, paragraphs = [], []
 
@@ -74,6 +73,9 @@ class SentenceParser:
         return paragraphs
 
     def parse(self, paragraph, annotators=None, max_len=230):
+        if annotators is None:
+            annotators = self.annotators
+
         corenlp_client, _ = get_corenlp_client(corenlp_path=self.corenlp_path, corenlp_port=self.corenlp_port, annotators=annotators)
         parsed_para = parse_sentense_with_stanford(paragraph, corenlp_client, annotators, max_len)
 

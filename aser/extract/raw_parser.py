@@ -297,13 +297,13 @@ def parse_func(task):
     threshold = 2000
     # file_writen_counter = 0
     corenlp_path = task.corenlp_path
-    anno = task.annotators
+    annotators = task.annotators
     port = task.port
     file_list = task.file_list
     parsed_root = task.parsed_root
     parsed_fn_list = [os.path.join(parsed_root, change_file_extension(f.fn)) for f in file_list]
 
-    client = get_corenlp_client(corenlp_path, port, annotators=anno)[0]
+    client, _ = get_corenlp_client(corenlp_path=corenlp_path, corenlp_port=port, annotators=annotators)
 
     for i_f, item in enumerate(file_list):
         if os.path.exists(parsed_fn_list[i_f]):

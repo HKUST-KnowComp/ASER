@@ -60,8 +60,8 @@ class ASERConcept(JsonSerializedObject):
         self.instances = instances if instances else []
         self.cid = ASERConcept.generate_cid(self.__str__())
 
-    @classmethod
-    def generate_cid(cls, concept_str):
+    @staticmethod
+    def generate_cid(concept_str):
         return hashlib.sha1(concept_str.encode('utf-8')).hexdigest()
 
     @property
@@ -105,8 +105,8 @@ class ASERConceptInstancePair(JsonSerializedObject):
         self.score = score if score else 0
         self.pid = ASERConceptInstancePair.generate_pid(cid, eid)
 
-    @classmethod
-    def generate_pid(cls, cid, eid):
+    @staticmethod
+    def generate_pid(cid, eid):
         key = cid + "$" + eid
         return hashlib.sha1(key.encode('utf-8')).hexdigest()
 

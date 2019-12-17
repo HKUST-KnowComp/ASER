@@ -22,10 +22,16 @@ class Relation(JsonSerializedObject):
         self.relations = dict()
         self.update_relations(relations)
 
-    @classmethod
-    def generate_rid(cls, hid, tid):
+    @staticmethod
+    def generate_rid(hid, tid):
         key = hid + "$" + tid
         return hashlib.sha1(key.encode('utf-8')).hexdigest()
+
+    def to_triples(self):
+        triples = []
+        for r in sorted(self.relations.keys()):
+            triples.extend([(self.hid, r, self.tid)] * int(self.relations[r]))
+        return triples
 
     def update_relations(self, x):
         if x is not None:

@@ -113,6 +113,17 @@ class Eventuality(JsonSerializedObject):
 
     def _construct(self, dependencies, skeleton_dependencies, sent_parsed_results):
         word_indices = extract_indices_from_dependencies(dependencies)
+        if len(word_indices) == 0:
+            return
+        if sent_parsed_results["pos_tags"][word_indices[0]] == "IN":
+            poped_idx = word_indices[0]
+            for i in range(len(dependencies)-1, -1, -1):
+                if dependencies[i][0] == poped_idx or dependencies[i][2] == poped_idx:
+                    dependencies.pop(i)
+            for i in range(len(skeleton_dependencies)-1, -1, -1):
+                if skeleton_dependencies[i][0] == poped_idx or skeleton_dependencies[i][2] == poped_idx:
+                    skeleton_dependencies.pop(i)
+            word_indices.pop(0)
         self.words = [sent_parsed_results["lemmas"][i].lower() for i in word_indices]
         self.pos_tags = [sent_parsed_results["pos_tags"][i] for i in word_indices]
         dependencies, raw2reset_idx, reset2raw_idx = sort_dependencies_position(
@@ -174,8 +185,8 @@ class Eventuality(JsonSerializedObject):
             edges.append(edge)
         return edges
 
-    @classmethod
-    def generate_eid(cls, eventuality):
+    @staticmethod
+    def generate_eid(eventuality):
         msg = json.dumps([eventuality.dependencies, eventuality.words, eventuality.pos_tags])
         return hashlib.sha1(msg.encode('utf-8')).hexdigest()
 
@@ -226,59 +237,59 @@ class Eventuality(JsonSerializedObject):
 
 
 
-class EventualityList(object):
-    def __init__(self, eventualities=None):
-        if eventualities:
-            self.eventualities = eventualities
-        else:
-            self.eventualities = list()
+# class EventualityList(object):
+#     def __init__(self, eventualities=None):
+#         if eventualities:
+#             self.eventualities = eventualities
+#         else:
+#             self.eventualities = list()
 
-    def append(self, eventuality):
-        self.eventualities.append(eventuality)
+#     def append(self, eventuality):
+#         self.eventualities.append(eventuality)
 
-    def extend(self, eventualities):
-        self.eventualities.extend(eventualities)
+#     def extend(self, eventualities):
+#         self.eventualities.extend(eventualities)
 
-    def encode(self, encoding="utf-8"):
-        encoded_dict_list = list()
-        for e in self.eventualities:
-            encoded_dict_list.append(e.encode(encoding=None))
-        if encoding == "utf-8":
-            msg = json.dumps(encoded_dict_list).encode("utf-8")
-        else:
-            msg = encoded_dict_list
-        return msg
+#     def encode(self, encoding="utf-8"):
+#         encoded_dict_list = list()
+#         for e in self.eventualities:
+#             encoded_dict_list.append(e.encode(encoding=None))
+#         if encoding == "utf-8":
+#             msg = json.dumps(encoded_dict_list).encode("utf-8")
+#         else:
+#             msg = encoded_dict_list
+#         return msg
 
-    def decode(self, msg, encoding="utf-8"):
-        if encoding == "utf-8":
-            decoded_dict_list = json.loads(msg.decode("utf-8"))
-        elif encoding == "ascii":
-            decoded_dict_list = json.loads(msg.decode("ascii"))
-        else:
-            decoded_dict_list = msg
-        self.eventualities = []
-        for decoded_dict in decoded_dict_list:
-            e = Eventuality()
-            e.decode(decoded_dict, encoding="None")
-            self.eventualities.append(e)
+#     def decode(self, msg, encoding="utf-8"):
+#         if encoding == "utf-8":
+#             decoded_dict_list = json.loads(msg.decode("utf-8"))
+#         elif encoding == "ascii":
+#             decoded_dict_list = json.loads(msg.decode("ascii"))
+#         else:
+#             decoded_dict_list = msg
+#         self.eventualities = []
+#         for decoded_dict in decoded_dict_list:
+#             e = Eventuality()
+#             e.decode(decoded_dict, encoding="None")
+#             self.eventualities.append(e)
 
-    def __iter__(self):
-        return self.eventualities.__iter__()
+#     def __iter__(self):
+#         return self.eventualities.__iter__()
 
-    def __str__(self):
-        s = "[\n"
-        s += "\n".join(e.__str__() for e in self.eventualities)
-        s += '\n]'
-        return s
+#     def __str__(self):
+#         s = "[\n"
+#         s += "\n".join(e.__str__() for e in self.eventualities)
+#         s += '\n]'
+#         return s
 
-    def __repr__(self):
-        return self.__str__()
+#     def __repr__(self):
+#         return self.__str__()
 
-    def __setitem__(self, idx, item):
-        self.eventualities[idx] = item
+#     def __setitem__(self, idx, item):
+#         self.eventualities[idx] = item
 
-    def __getitem__(self, item):
-        return self.eventualities[item]
+#     def __getitem__(self, item):
+#         return self.eventualities[item]
 
-    def __len__(self):
-        return len(self.eventualities)
+#     def __len__(self):
+#         return len(self.eventualities)

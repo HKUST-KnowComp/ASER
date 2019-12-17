@@ -2,7 +2,7 @@ import json
 import traceback
 from pprint import pprint
 from tqdm import tqdm
-from aser.extract.eventuality_extractor import EventualityExtractor
+from aser.extract.eventuality_extractor import SeedRuleEventualityExtractor
 from aser.extract.relation_extractor import SeedRuleRelationExtractor
 from aser.extract.utils import sort_dependencies_position, parse_sentense_with_stanford
 
@@ -45,7 +45,7 @@ def equal_relations(rels1, rels2):
 
 
 if __name__ == "__main__":
-    e_extractor = EventualityExtractor(
+    e_extractor = SeedRuleEventualityExtractor(
         corenlp_path="/home/software/stanford-corenlp/stanford-corenlp-full-2018-02-27/",
         corenlp_port=13000)
     r_extractor = SeedRuleRelationExtractor()
