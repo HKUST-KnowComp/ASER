@@ -79,8 +79,8 @@ def parse_sentense_with_stanford(input_sentence, corenlp_client: CoreNLPClient,
     if not need_to_split:
         try:
             raw_sentences = corenlp_client.annotate(cleaned_para, annotators=annotators, output_format='json')['sentences']
-    except Exception:
-        need_to_split = True
+        except Exception:
+            need_to_split = True
 
     if need_to_split:
         raw_sentences = list()
