@@ -4,7 +4,7 @@ import socket
 from itertools import chain, combinations
 from stanfordnlp.server import CoreNLPClient
 
-ANNOTATORS = ("tokenize", "ssplit", "pos", "lemma", "parse")
+ANNOTATORS = ("tokenize", "ssplit", "pos", "lemma", "parse", "ner")
 TYPE_SET = frozenset(["CITY", "ORGANIZATION", "COUNTRY",
             "STATE_OR_PROVINCE", "LOCATION", "NATIONALITY", "PERSON"])
 PRONOUN_SET = frozenset(["I", "me", "my", "mine", "myself", "we", "us", "our", "ours", "ourselves", "you", "your", "yours",
@@ -44,7 +44,7 @@ def get_corenlp_client(corenlp_path="", corenlp_port=0, annotators=None):
         try:
             os.environ["CORENLP_HOME"] = corenlp_path
             corenlp_client = CoreNLPClient(
-                annotators=annotators, timeout=60000,
+                annotators=annotators, timeout=99999,
                 memory='4G', endpoint="http://localhost:%d" % corenlp_port,
                 start_server=False, be_quiet=False)
             # corenlp_client.annotate("hello world",
@@ -56,7 +56,7 @@ def get_corenlp_client(corenlp_path="", corenlp_port=0, annotators=None):
     else:
         print("Starting corenlp client at port {}".format(corenlp_port))
         corenlp_client = CoreNLPClient(
-            annotators=annotators, timeout=60000,
+            annotators=annotators, timeout=99999,
             memory='4G', endpoint="http://localhost:%d" % corenlp_port,
             start_server=True, be_quiet=False)
         # corenlp_client.annotate("hello world",
@@ -69,17 +69,36 @@ def clean_sentence_for_parsing(text):
     return re.sub(r'[^\x00-\x7F]+', ' ', text)
 
 def parse_sentense_with_stanford(input_sentence, corenlp_client: CoreNLPClient,
-                                 annotators=None, max_len=230):
+                                 annotators=None, max_len=1000):
     if not annotators:
         annotators = list(ANNOTATORS)
 
     cleaned_para = clean_sentence_for_parsing(input_sentence)
-    raw_sentences = corenlp_client.annotate(cleaned_para, annotators=annotators,
-                                            output_format='json')
+
+    need_to_split = len(cleaned_para) <= max_len
+    if not need_to_split:
+        try:
+            raw_sentences = corenlp_client.annotate(cleaned_para, annotators=annotators, output_format='json')['sentences']
+    except Exception:
+        need_to_split = True
+
+    if need_to_split:
+        raw_sentences = list()
+        temp = corenlp_client.annotate(cleaned_para, annotators=["ssplit"], output_format='json')['sentences']
+        for sent in temp:
+            if sent['tokens']:
+                char_st = sent['tokens'][0]['characterOffsetBegin']
+                char_end = sent['tokens'][-1]['characterOffsetEnd']
+            else:
+                char_st, char_end = 0, 0
+            if char_st == char_end:
+                continue
+            sent = cleaned_para[char_st:char_end]
+            raw_sentences.extend(corenlp_client.annotate(sent, annotators=annotators, output_format='json')['sentences'])
+
     parsed_rst_list = list()
 
-    for sent in raw_sentences['sentences']:
-
+    for sent in raw_sentences:
         if sent['tokens']:
             char_st = sent['tokens'][0]['characterOffsetBegin']
             char_end = sent['tokens'][-1]['characterOffsetEnd']
@@ -105,7 +124,6 @@ def parse_sentense_with_stanford(input_sentence, corenlp_client: CoreNLPClient,
         x = {
             "text": raw_text,
             "dependencies": dependencies,
-            "parse": sent["parse"],
             "tokens": [t['word'] for t in sent['tokens']],
         }
         if 'pos' in annotators:
@@ -122,7 +140,7 @@ def parse_sentense_with_stanford(input_sentence, corenlp_client: CoreNLPClient,
             x['ners'] = [t['ner'] for t in sent['tokens']]
             x['mentions'] = mentions
         if 'parse' in annotators:
-            x['parse'] = sent['parse']
+            x['parse'] = re.sub(r"\s+", " ", sent['parse'])
 
         parsed_rst_list.append(x)
     return parsed_rst_list

@@ -133,7 +133,37 @@ class ASERPipe(object):
         with multiprocessing.Pool(self.n_workers) as pool:
             self.logger.info("Start the pipeline.")
             results = list()
-            if os.path.exists(self.opt.processed_dir):
+            if os.path.exists(self.opt.raw_dir):
+                self.logger.info("Processing raw data from %s." % (self.opt.raw_dir))
+                raw_file_names = [file_name for file_name in iter_files(self.opt.raw_dir)]
+                for idx, raw_path in enumerate(raw_file_names):
+                    extractor_idx = idx%self.n_extractors
+                    processed_path = os.path.splitext(raw_path)[0].replace(self.opt.raw_dir, self.opt.processed_dir, 1) + ".jsonl"
+                    if os.path.exists(processed_path):
+                        results.append(pool.apply_async(run_file, args=(
+                            None, processed_path, self.opt.processed_dir+os.sep, 
+                            None, self.parsed_readers[extractor_idx], 
+                            self.eventuality_extractors[extractor_idx], self.relation_extractors[extractor_idx],
+                            self.aser_extractors[extractor_idx])))
+                        # results.append(run_file(
+                        #     None, processed_path, self.opt.processed_dir+os.sep,
+                        #     None, self.parsed_readers[extractor_idx], 
+                        #     self.eventuality_extractors[extractor_idx], self.relation_extractors[extractor_idx],
+                        #     self.aser_extractors[extractor_idx]))
+                    else:
+                        if not os.path.exists(os.path.dirname(processed_path)):
+                            os.makedirs(os.path.dirname(processed_path))
+                        results.append(pool.apply_async(run_file, args=(
+                            raw_path, processed_path, self.opt.processed_dir+os.sep,
+                            self.sentence_parsers[extractor_idx], None, 
+                            self.eventuality_extractors[extractor_idx], self.relation_extractors[extractor_idx],
+                            self.aser_extractors[extractor_idx])))
+                        # results.append(run_file(
+                        #     raw_path, processed_path, self.opt.processed_dir+os.sep,
+                        #     self.sentence_parsers[extractor_idx], None, 
+                        #     self.eventuality_extractors[extractor_idx], self.relation_extractors[extractor_idx],
+                        #     self.aser_extractors[extractor_idx]))
+            elif os.path.exists(self.opt.processed_dir):
                 self.logger.info("Loading processed data from %s." % (self.opt.processed_dir))
                 processed_file_names = [file_name for file_name in iter_files(self.opt.processed_dir) if file_name.endswith(".jsonl")]
                 for idx, processed_path in enumerate(processed_file_names):
@@ -146,24 +176,6 @@ class ASERPipe(object):
                     # results.append(run_file(
                     #     None, processed_path, self.opt.processed_dir+os.sep,
                     #     None, self.parsed_readers[extractor_idx], 
-                    #     self.eventuality_extractors[extractor_idx], self.relation_extractors[extractor_idx],
-                    #     self.aser_extractors[extractor_idx]))
-            elif os.path.exists(self.opt.raw_dir):
-                self.logger.info("Processing raw data from %s." % (self.opt.raw_dir))
-                raw_file_names = [file_name for file_name in iter_files(self.opt.raw_dir)]
-                for idx, raw_path in enumerate(raw_file_names):
-                    extractor_idx = idx%self.n_extractors
-                    processed_path = os.path.splitext(raw_path)[0].replace(self.opt.raw_dir, self.opt.processed_dir, 1) + ".jsonl"
-                    if not os.path.exists(os.path.dirname(processed_path)):
-                        os.makedirs(os.path.dirname(processed_path))
-                    results.append(pool.apply_async(run_file, args=(
-                        raw_path, processed_path, self.opt.processed_dir+os.sep,
-                        self.sentence_parsers[extractor_idx], None, 
-                        self.eventuality_extractors[extractor_idx], self.relation_extractors[extractor_idx],
-                        self.aser_extractors[extractor_idx])))
-                    # results.append(run_file(
-                    #     raw_path, processed_path, self.opt.processed_dir+os.sep,
-                    #     self.sentence_parsers[extractor_idx], None, 
                     #     self.eventuality_extractors[extractor_idx], self.relation_extractors[extractor_idx],
                     #     self.aser_extractors[extractor_idx]))
             else:

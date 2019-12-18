@@ -7,7 +7,7 @@ from itertools import chain
 from aser.extract.utils import get_corenlp_client, parse_sentense_with_stanford
 from aser.extract.utils import ANNOTATORS
 
-CORENLP_PATH = '/home/software/stanford-corenlp/stanford-corenlp-full-2018-02-27'
+CORENLP_PATH = "/home/software/stanford-corenlp/stanford-corenlp-full-2018-02-27"
 
 
 class SentenceParser:
@@ -36,24 +36,28 @@ class SentenceParser:
         para_lens, paragraphs = [], []
 
         sid = 1
-        with open(raw_path, "r") as f:
-            # for line in f:
-            #     para = self.parse(line)
-            #     para_lens.append(len(para)+sid)
-            #     if processed_path:
-            #         for sent in para:
-            #             sent["sid"] = self.__generate_sid(sent, processed_path, sid)
-            #             sid += 1
-            #     paragraphs.append(para)
-            paragraphs.append('')
-            for line in f:
-                if line == '\n':
-                    if len(paragraphs[-1]) == 0:
-                        paragraphs.append('')
-                else:
-                    paragraphs[-1] += line
-            if len(paragraphs[-1]) == 0:
-                paragraphs.pop()
+        try:
+            with open(raw_path, "r", encoding="ascii", errors="ignore") as f:
+                # for line in f:
+                #     para = self.parse(line)
+                #     para_lens.append(len(para)+sid)
+                #     if processed_path:
+                #         for sent in para:
+                #             sent["sid"] = self.__generate_sid(sent, processed_path, sid)
+                #             sid += 1
+                #     paragraphs.append(para)
+                paragraphs.append("")
+                for line in f:
+                    if line.startswith(".START") or line == "\n":
+                        if len(paragraphs[-1]) != 0:
+                            paragraphs.append("")
+                    else:
+                        paragraphs[-1] += line
+                if len(paragraphs[-1]) == 0:
+                    paragraphs.pop()
+        except Exception as e:
+            print(raw_path)
+            raise e
 
         for i in range(len(paragraphs)):
             paragraphs[i] = self.parse(paragraphs[i], annotators=annotators, max_len=max_len)
@@ -63,8 +67,8 @@ class SentenceParser:
                     sent["sid"] = self.__generate_sid(sent, processed_path, sid)
                     sid += 1
 
-        with open(processed_path, 'w') as f:
-            f.write(json.dumps({'sentence_lens': para_lens}))
+        with open(processed_path, "w", encoding="utf-8") as f:
+            f.write(json.dumps({"sentence_lens": para_lens}))
             f.write("\n")
             for para in paragraphs:
                 for sent in para:
@@ -84,9 +88,9 @@ class SentenceParser:
         
         return parsed_para
 
-if __name__ == '__main__':
-    raw_path = '/home/data/corpora/aser/data/nyt/raw/1987/01/01/2698.txt'
-    processed_path = '/home/hkeaa/test.jsonl'
+if __name__ == "__main__":
+    raw_path = "/home/data/corpora/aser/data/nyt/raw/1987/01/01/2698.txt"
+    processed_path = "/home/hkeaa/test.jsonl"
     parser = SentenceParser(
-        9109, annotators=['tokenize', 'ssplit', 'parse', 'ner'])
+        9109, annotators=["tokenize", "ssplit", "parse", "ner"])
     parser.process_raw_file(raw_path, processed_path)
