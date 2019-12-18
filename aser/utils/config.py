@@ -56,10 +56,10 @@ def get_pipe_args_parser():
                              "[base_corenlp_port, base_corenlp_port + n_workers - 1]"
                              "should be reserved")
     # Raw Data
-    parser.add_argument("-raw_dir", type=str, default=None,
+    parser.add_argument("-raw_dir", type=str, default="",
                         help="ASER raw data directory")
     # Processed Data
-    parser.add_argument("-processed_dir", type=str, default=None,
+    parser.add_argument("-processed_dir", type=str, default="",
                         help="ASER processed_dir data directory")              
     # KG
     parser.add_argument("-kg_dir", type=str, default="./",
