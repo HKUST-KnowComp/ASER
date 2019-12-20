@@ -7,7 +7,7 @@ from stanfordnlp.server import CoreNLPClient
 ANNOTATORS = ("tokenize", "ssplit", "pos", "lemma", "parse", "ner")
 TYPE_SET = frozenset(["CITY", "ORGANIZATION", "COUNTRY",
             "STATE_OR_PROVINCE", "LOCATION", "NATIONALITY", "PERSON"])
-PRONOUN_SET = frozenset(["I", "me", "my", "mine", "myself", "we", "us", "our", "ours", "ourselves", "you", "your", "yours",
+PRONOUN_SET = frozenset(["i", "I", "me", "my", "mine", "myself", "we", "us", "our", "ours", "ourselves", "you", "your", "yours",
                 "yourself", "yourselves", "he", "him", "his", "himself", "she", "her", "hers", "herself", "it",
                 "its", "itself", "they", "them", "their", "theirs", "themself", "themselves"])
 PUNCTUATION_SET = frozenset(list("""!"#&'*+,-..../:;<=>?@[\]^_`|~""") + ["``", "''"])
@@ -153,7 +153,7 @@ def sort_dependencies_position(dependencies, reset_position=True):
         Output example if fix_position:
         [[2, 'nsubj', 0], [2, 'cop', 1]], {0: 6, 1: 7, 2: 8}
         Output example if not fix_position:
-        [, [8, 'nsubj', 6], [8, 'cop', 7]]
+        [[8, 'nsubj', 6], [8, 'cop', 7]]
     """
 
     tmp_dependencies = set()

@@ -49,7 +49,7 @@ def get_pipe_args_parser():
                         help="Number of ASER workers, "
                              "same as num of corenlp workers")
     # Stanford Corenlp
-    parser.add_argument("-corenlp_path", type=str, default="./",
+    parser.add_argument("-corenlp_path", type=str, default="",
                         help="StanfordCoreNLP path")
     parser.add_argument("-base_corenlp_port", type=int, default=9000,
                         help="Base port of corenlp"
@@ -62,7 +62,7 @@ def get_pipe_args_parser():
     parser.add_argument("-processed_dir", type=str, default="",
                         help="ASER processed_dir data directory")              
     # KG
-    parser.add_argument("-kg_dir", type=str, default="./",
+    parser.add_argument("-kg_dir", type=str, default="",
                         help="ASER KG directory")
     parser.add_argument("-eventuality_frequency_lower_cnt_threshold", type=float, default=0.0,
                         help="eventualities whose frequencies are lower than this will be filtered")

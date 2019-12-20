@@ -145,11 +145,11 @@ class ASERConceptConnection(object):
                 row[c] = " ".join(d)
             else:
                 row[c] = d
-        row["info"] = json.dumps(concept.to_dict()).encode("utf-8")
+        row["info"] = concept.encode()
         return row
 
     def _convert_row_to_concept(self, row):
-        concept = ASERConcept().from_dict(json.loads(row["info"].decode("utf-8")))
+        concept = ASERConcept().decode(row["info"])
         concept.cid = row["_id"]
         return concept
 

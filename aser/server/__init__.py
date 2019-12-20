@@ -165,13 +165,13 @@ class ASERDataBase(Process):
     def handle_exact_match_event(self, data):
         eid = data.decode("ascii")
         matched_event = self.ASER_KG.get_exact_match_event(eid)
-        ret_data = json.dumps(matched_event).encode("ascii")
+        ret_data = matched_event.encode(encoding="ascii")
         return ret_data
 
     def handle_exact_match_relation(self, data):
         eid1, eid2 = data.decode("ascii").split("$")
         matched_relation = self.ASER_KG.get_exact_match_relation([eid1, eid2])
-        ret_data = json.dumps(matched_relation).encode("ascii")
+        ret_data = matched_relation.encode(encoding="ascii")
         return ret_data
 
     def handle_fetch_related_events(self, data):
@@ -183,7 +183,8 @@ class ASERDataBase(Process):
                 related_events[rel] = self.ASER_KG.get_exact_match_events(rel_eids)
         else:
             related_events = {}
-        ret_data = json.dumps(related_events).encode("ascii")
+        rst = [eventualities.encode(encoding="ascii") for eventualities in related_events]
+        ret_data = json.dumps(rst).encode("ascii")
         return ret_data
 
 

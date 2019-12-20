@@ -10,6 +10,12 @@ class ParsedReader:
     def __init__(self):
         pass
 
+    def __del__(self):
+        self.close()
+
+    def close(self):
+        pass
+
     def generate_sid(self, sent, file_name, line_no):
         return file_name + "|" + str(line_no)
 

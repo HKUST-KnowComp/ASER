@@ -1,3 +1,5 @@
+import bisect
+from copy import copy, deepcopy
 from itertools import chain, permutations
 from aser.eventuality import Eventuality
 from aser.extract.rule import ALL_EVENTUALITY_RULES
@@ -149,15 +151,6 @@ class SeedRuleEventualityExtractor(BaseEventualityExtractor):
         
         para_eventualities = [list() for _ in range(len(parsed_result))]
         for sent_parsed_result, sent_eventualities in zip(parsed_result, para_eventualities):
-            # If it is a sentence that has clause word, just skip it
-            # has_clause_word = False
-            # for t in sent_parsed_result["tokens"]:
-            #     if t in CLAUSE_WORDS:
-            #         has_clause_word = True
-            #         break
-            # if has_clause_word:
-            #     continue
-
             seed_rule_eventualities = dict()
             for rule_name in eventuality_rules:
                 tmp_eventualities = self._extract_eventualities_from_dependencies_with_single_rule(
@@ -180,13 +173,13 @@ class SeedRuleEventualityExtractor(BaseEventualityExtractor):
             for eventuality in chain.from_iterable(para_eventualities):
                 eid = eventuality.eid
                 if eid not in eid2eventuality:
-                    eid2eventuality[eid] = copy(eventuality)
+                    eid2eventuality[eid] = deepcopy(eventuality)
                 else:
-                    eid2eventuality[eid].update_frequency(eventuality)
+                    eid2eventuality[eid].update(eventuality)
             if output_format == "Eventuality":
                 eventualities = sorted(eid2eventuality.values(), key=lambda e: e.eid)
             elif output_format == "json":
-                eventualities = sorted([eventuality.encode(eventuality=None) for eventuality in eid2eventuality.values()], key=lambda e: e["eid"])
+                eventualities = sorted([eventuality.encode(encoding=None) for eventuality in eid2eventuality.values()], key=lambda e: e["eid"])
             return eventualities
 
     def _extract_eventualities_from_dependencies_with_single_rule(self, sent_parsed_result, eventuality_rule, rule_name):
@@ -237,7 +230,7 @@ class SeedRuleEventualityExtractor(BaseEventualityExtractor):
             event = Eventuality(pattern=rule_name,
                                 dependencies=selected_edges,
                                 skeleton_dependencies=selected_skeleton_edges,
-                                sent_parsed_results=sent_parsed_result)
+                                sent_parsed_result=sent_parsed_result)
             return event
         else:
             return None
@@ -328,16 +321,6 @@ class SeedRuleEventualityExtractor(BaseEventualityExtractor):
                             tmp_s_v.append(e)
             extracted_eventualities['s-v'] = tmp_s_v
 
-        # Xin: has been replaced by removing "IN" when calling _construct
-        # for relation in extracted_eventualities:
-        #     new_eventualities = list()
-        #     for tmp_e in extracted_eventualities[relation]:
-        #         tmp_e._filter_dependency_by_word_list(CONNECTIVE_LIST, target="dependent")
-
-        #         if len(tmp_e.dependencies) > 0:
-        #             new_eventualities.append(tmp_e)
-        #     extracted_eventualities[relation] = new_eventualities
-
         return extracted_eventualities
 
 class DiscourseEventualityExtractor(BaseEventualityExtractor):
@@ -367,6 +350,7 @@ class DiscourseEventualityExtractor(BaseEventualityExtractor):
         para_clauses = self._extract_clauses(parsed_result, syntax_tree_cache)
         for sent_parsed_result, sent_clauses, sent_eventualities in zip(parsed_result, para_clauses, para_eventualities):
             for clause in sent_clauses:
+                len_clause = len(clause)
                 idx_mapping = {j: i for i, j in enumerate(clause)}
                 indices_set = set(clause)
                 clause_parsed_result = {
@@ -376,6 +360,21 @@ class DiscourseEventualityExtractor(BaseEventualityExtractor):
                     "tokens": [sent_parsed_result["tokens"][idx] for idx in clause],
                     "pos_tags": [sent_parsed_result["pos_tags"][idx] for idx in clause],
                     "lemmas": [sent_parsed_result["lemmas"][idx] for idx in clause]}
+                if "ners" in sent_parsed_result:
+                    clause_parsed_result["ners"] = [sent_parsed_result["ners"][idx] for idx in clause]
+                if "mentions" in sent_parsed_result:
+                    clause_parsed_result["mentions"] = list()
+                    for mention in sent_parsed_result["mentions"]:
+                        start_idx = bisect.bisect_left(clause, mention["start"])
+                        if not (start_idx < len_clause and clause[start_idx] == mention["start"]):
+                            continue
+                        end_idx = bisect.bisect_left(clause, mention["end"]-1)
+                        if not (end_idx < len_clause and clause[end_idx] == mention["end"]-1):
+                            continue
+                        mention = copy(mention)
+                        mention["start"] = start_idx
+                        mention["end"] = end_idx+1
+                        clause_parsed_result["mentions"].append(mention)
                 eventualities = self.seed_rule_eventuality_extractor.extract_from_parsed_result(
                     clause_parsed_result, output_format="Eventuality", in_order=True)
                 len_existed_eventualities = len(sent_eventualities)
@@ -405,13 +404,13 @@ class DiscourseEventualityExtractor(BaseEventualityExtractor):
             for eventuality in chain.from_iterable(para_eventualities):
                 eid = eventuality.eid
                 if eid not in eid2eventuality:
-                    eid2eventuality[eid] = copy(eventuality)
+                    eid2eventuality[eid] = deepcopy(eventuality)
                 else:
-                    eid2eventuality[eid].update_frequency(eventuality)
+                    eid2eventuality[eid].update(eventuality)
             if output_format == "Eventuality":
                 eventualities = sorted(eid2eventuality.values(), key=lambda e: e.eid)
             elif output_format == "json":
-                eventualities = sorted([eventuality.encode(eventuality=None) for eventuality in eid2eventuality.values()], key=lambda e: e["eid"])
+                eventualities = sorted([eventuality.encode(encoding=None) for eventuality in eid2eventuality.values()], key=lambda e: e["eid"])
             return eventualities
 
     def _extract_clauses(self, parsed_result, syntax_tree_cache):
@@ -430,7 +429,7 @@ class DiscourseEventualityExtractor(BaseEventualityExtractor):
             else:
                 syntax_tree = syntax_tree_cache[sent_idx] = SyntaxTree(sent_parsed_result["parse"])
             
-            # the best but too slow
+            # the best but slower
             for indices in powerset(sent_connectives):
                 indices = set(chain.from_iterable(indices))
                 sent_arguments.update(get_clauses(sent_parsed_result, syntax_tree, index_seps=indices))

@@ -9,19 +9,17 @@ from copy import copy, deepcopy
 from functools import partial
 from collections import Counter, defaultdict
 from aser.extract.sentence_parser import SentenceParser
-from aser.extract.aser_extractor import SeedRuleASERExtractor, DiscourseASERExtractor1, DiscourseASERExtractor2, DiscourseASERExtractor3
-from aser.extract.eventuality_extractor import SeedRuleEventualityExtractor, DiscourseEventualityExtractor
-from aser.extract.relation_extractor import SeedRuleRelationExtractor, DiscourseRelationExtractor
 from aser.extract.parsed_reader import ParsedReader
+from aser.extract.aser_extractor import SeedRuleASERExtractor, DiscourseASERExtractor1, DiscourseASERExtractor2, DiscourseASERExtractor3
 from aser.extract.utils import EMPTY_SENT_PARSED_RESULT
 from aser.extract.utils import iter_files, parse_sentense_with_stanford
 from aser.utils.logging import init_logger, close_logger
+from aser.eventuality import Eventuality
 from aser.relation import Relation
 from aser.database.kg_connection import ASERKGConnection
 
 def run_file(raw_path=None, processed_path=None, prefix_to_be_removed="",
     sentence_parser=None, parsed_reader=None, 
-    eventuality_extractor=None, relation_extractor=None,
     aser_extractor=None):
 
     # process raw data or load processed data
@@ -43,20 +41,18 @@ def run_file(raw_path=None, processed_path=None, prefix_to_be_removed="",
 
     eventuality_lists, relation_lists = aser_extractor.extract_from_parsed_result(document)
 
-    # extract eventualities from processed data
-    # eventuality_lists = extract_eventualities(document, eventuality_extractor)
+    # merge eventualities
     eid2sids = defaultdict(list)
     eid2eventuality = dict()
     for sentence, eventuality_list in zip(document, eventuality_lists):
         for eventuality in eventuality_list:
             eid2sids[eventuality.eid].append(sentence["sid"])
             if eventuality.eid not in eid2eventuality:
-                eid2eventuality[eventuality.eid] = copy(eventuality)
+                eid2eventuality[eventuality.eid] = deepcopy(eventuality)
             else:
-                eid2eventuality[eventuality.eid].update_frequency(eventuality)
+                eid2eventuality[eventuality.eid].update(eventuality)
 
-    # extract relations from eventualities
-    # relation_lists = extract_relations(document, eventuality_lists, relation_extractor)
+    # merge relations
     rid2sids = defaultdict(list)
     rid2relation = dict()
     len_doc = len(document)
@@ -70,7 +66,7 @@ def run_file(raw_path=None, processed_path=None, prefix_to_be_removed="",
                 if relation.rid not in rid2relation:
                     rid2relation[relation.rid] = deepcopy(relation)
                 else:
-                    rid2relation[relation.rid].update_relations(relation.relations)
+                    rid2relation[relation.rid].update(relation.relations)
     # PS
     for idx in range(len_doc-1):
         relation_list = relation_lists[len_doc+idx]
@@ -80,12 +76,12 @@ def run_file(raw_path=None, processed_path=None, prefix_to_be_removed="",
                 if relation.rid not in rid2relation:
                     rid2relation[relation.rid] = deepcopy(relation)
                 else:
-                    rid2relation[relation.rid].update_relations(relation.relations)
+                    rid2relation[relation.rid].update(relation.relations)
     
     return eid2sids, rid2sids, eid2eventuality, rid2relation
 
 def process_raw_file(raw_path, processed_path, sentence_parser):
-    return sentence_parser.parse_raw_file(raw_path, processed_path, max_len=99999)
+    return sentence_parser.parse_raw_file(raw_path, processed_path, max_len=1000)
 
 def load_processed_data(processed_path, parsed_reader):
     return parsed_reader.get_parsed_paragraphs_from_file(processed_path)
@@ -101,32 +97,21 @@ class ASERPipe(object):
         self.opt = opt
         self.n_workers = opt.n_workers
         self.n_extractors = opt.n_extractors
-        if opt.corenlp_path:
-            self.sentence_parsers = [SentenceParser(
-                corenlp_path=opt.corenlp_path, corenlp_port=opt.base_corenlp_port+_id) for _id in range(self.n_extractors)]
-        else:
-            self.sentence_parsers = [SentenceParser() for _id in range(self.n_extractors)]
+        self.sentence_parsers = [SentenceParser(
+            corenlp_path=opt.corenlp_path, corenlp_port=opt.base_corenlp_port+_id) for _id in range(self.n_extractors)]
         self.parsed_readers = [ParsedReader() for _id in range(self.n_extractors)]
-        if opt.corenlp_path:
-            self.eventuality_extractors = [SeedRuleEventualityExtractor(
-                corenlp_path=opt.corenlp_path, corenlp_port=opt.base_corenlp_port+_id) for _id in range(self.n_extractors)]
-        else:
-            self.eventuality_extractors = [SeedRuleEventualityExtractor() for _id in range(self.n_extractors)]
-        self.relation_extractors = [SeedRuleRelationExtractor() for _id in range(self.n_extractors)]
-        self.aser_extractors = [DiscourseASERExtractor2(corenlp_path=opt.corenlp_path, corenlp_port=opt.base_corenlp_port+_id) \
-            for _id in range(self.n_extractors)]
+        self.aser_extractors = [DiscourseASERExtractor2() for _id in range(self.n_extractors)]
         self.logger = init_logger(log_file=opt.log_path)
 
     def __del__(self):
         self.close()
 
     def close(self):
-        for eventuality_extractor in self.eventuality_extractors:
-            eventuality_extractor.close()
-        self.logger.info("%d SeedRuleEventualityExtractors are closed." % (len(self.eventuality_extractors)))
-        for relation_extractor in self.relation_extractors:
-            relation_extractor.close()
-        self.logger.info("%d RelationExtractors are closed." % (len(self.relation_extractors)))
+        for _id in range(self.n_extractors):
+            self.sentence_parsers[_id].close()
+            self.parsed_readers[_id].close()
+            self.aser_extractors[_id].close()
+        self.logger.info("%d ASER Extractors are closed." % (len(self.aser_extractors)))
         close_logger(self.logger)
 
     def run(self):
@@ -143,12 +128,10 @@ class ASERPipe(object):
                         results.append(pool.apply_async(run_file, args=(
                             None, processed_path, self.opt.processed_dir+os.sep, 
                             None, self.parsed_readers[extractor_idx], 
-                            self.eventuality_extractors[extractor_idx], self.relation_extractors[extractor_idx],
                             self.aser_extractors[extractor_idx])))
                         # results.append(run_file(
                         #     None, processed_path, self.opt.processed_dir+os.sep,
                         #     None, self.parsed_readers[extractor_idx], 
-                        #     self.eventuality_extractors[extractor_idx], self.relation_extractors[extractor_idx],
                         #     self.aser_extractors[extractor_idx]))
                     else:
                         if not os.path.exists(os.path.dirname(processed_path)):
@@ -156,12 +139,10 @@ class ASERPipe(object):
                         results.append(pool.apply_async(run_file, args=(
                             raw_path, processed_path, self.opt.processed_dir+os.sep,
                             self.sentence_parsers[extractor_idx], None, 
-                            self.eventuality_extractors[extractor_idx], self.relation_extractors[extractor_idx],
                             self.aser_extractors[extractor_idx])))
                         # results.append(run_file(
                         #     raw_path, processed_path, self.opt.processed_dir+os.sep,
                         #     self.sentence_parsers[extractor_idx], None, 
-                        #     self.eventuality_extractors[extractor_idx], self.relation_extractors[extractor_idx],
                         #     self.aser_extractors[extractor_idx]))
             elif os.path.exists(self.opt.processed_dir):
                 self.logger.info("Loading processed data from %s." % (self.opt.processed_dir))
@@ -171,12 +152,10 @@ class ASERPipe(object):
                     results.append(pool.apply_async(run_file, args=(
                         None, processed_path, self.opt.processed_dir+os.sep, 
                         None, self.parsed_readers[extractor_idx], 
-                        self.eventuality_extractors[extractor_idx], self.relation_extractors[extractor_idx],
                         self.aser_extractors[extractor_idx])))
                     # results.append(run_file(
                     #     None, processed_path, self.opt.processed_dir+os.sep,
                     #     None, self.parsed_readers[extractor_idx], 
-                    #     self.eventuality_extractors[extractor_idx], self.relation_extractors[extractor_idx],
                     #     self.aser_extractors[extractor_idx]))
             else:
                 raise ValueError("Error: at least one of raw_dir and processed_dir should not be None.")
@@ -193,15 +172,15 @@ class ASERPipe(object):
                 for eid, eventuality in x_eid2eventuality.items():
                     eventuality_counter[eid] += eventuality.frequency
                     if eid not in eid2eventuality:
-                        eid2eventuality[eid] = copy(eventuality)
+                        eid2eventuality[eid] = deepcopy(eventuality)
                     else:
-                        eid2eventuality[eid].update_frequency(eventuality)
+                        eid2eventuality[eid].update(eventuality)
                 for rid, relation in x_rid2relation.items():
                     relation_counter[rid] += sum(relation.relations.values())
                     if rid not in rid2relation:
                         rid2relation[rid] = deepcopy(relation)
                     else:
-                        rid2relation[rid].update_relations(relation)
+                        rid2relation[rid].update(relation)
             # del x_eid2sids, x_rid2sids, x_eid2eventuality, x_rid2relation
             total_eventuality, total_relation = sum(eventuality_counter.values()), sum(relation_counter.values())
             self.logger.info("%d eventualities (%d unique) have been extracted." % (total_eventuality, len(eid2eventuality)))

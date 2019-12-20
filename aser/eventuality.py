@@ -1,47 +1,73 @@
 import hashlib
 import json
 import pprint
+import bisect
+from collections import Counter
+from copy import copy, deepcopy
 from aser.base import JsonSerializedObject
 from aser.extract.utils import sort_dependencies_position, extract_indices_from_dependencies
 
-
 class Eventuality(JsonSerializedObject):
-    def __init__(self, pattern=None, dependencies=None,
+    def __init__(self, pattern="unknown", dependencies=None,
                  skeleton_dependencies=None,
-                 sent_parsed_results=None):
+                 sent_parsed_result=None):
         super().__init__()
         self.eid = None
         self.pattern = pattern
         self._dependencies = None
         self.words = None
         self.pos_tags = None
-        self._skeleton_dependencies = None
-        self._skeleton_words = None
-        self._verbs = None
+        self._ners = None
+        self._mentions = None
+        self._skeleton_dependency_indices = None
+        self._skeleton_indices = None
+        self._verb_indices = None
         self.raw_sent_mapping = None
         self.frequency = 1.0
-        if pattern and dependencies and skeleton_dependencies and sent_parsed_results:
-            self._construct(dependencies, skeleton_dependencies, sent_parsed_results)
+        if dependencies and skeleton_dependencies and sent_parsed_result:
+            self._construct(dependencies, skeleton_dependencies, sent_parsed_result)
 
-    def update_frequency(self, x):
+    @staticmethod
+    def generate_eid(eventuality):
+        msg = json.dumps(
+            [eventuality.dependencies, eventuality.words, eventuality.pos_tags])
+        return hashlib.sha1(msg.encode('utf-8')).hexdigest()
+
+    def update(self, x):
         if x is not None:
             if isinstance(x, float):
                 self.frequency += x
             elif isinstance(x, Eventuality):
+                if self._ners is not None and x._ners is not None:
+                    for i, (ner, x_ner) in enumerate(zip(self._ners, x._ners)):
+                        if isinstance(ner, str) and isinstance(x_ner, str) and ner == x_ner:
+                            continue
+                        if isinstance(ner, str):
+                            self._ners[i] = Counter({ner: self.frequency})
+                        if isinstance(x_ner, str):
+                            x_ner = Counter({x_ner: x.frequency})
+                        self._ners[i].update(x_ner)
+                if self._mentions is not None and x._mentions is not None:
+                    for s_t, x_mention in x._mentions.items():
+                        self._mentions[s_t] = x_mention
                 self.frequency += x.frequency
-                
+
     def __str__(self):
         repr_dict = {
             "eid": self.eid,
             "pattern": self.pattern,
-            "dependencies": self.dependencies,
-            "words": self.words,
-            "pos_tags":self.pos_tags,
-            "skeleton_dependencies": self.skeleton_dependencies,
-            "skeleton_words": self.skeleton_words,
             "verbs": self.verbs,
-            "frequency": self.frequency
+            "skeleton_words": self.skeleton_words,
+            "words": self.words,
+            "skeleton_dependencies": self.skeleton_dependencies,
+            "dependencies": self.dependencies,
+            "pos_tags": self.pos_tags,
         }
+        if self._ners is not None:
+            repr_dict["ners"] = self._ners
+        if self._mentions is not None:
+            repr_dict["mentions"] = self._mentions
+        repr_dict["frequency"] = self.frequency
         return pprint.pformat(repr_dict)
 
     def __repr__(self):
@@ -52,50 +78,155 @@ class Eventuality(JsonSerializedObject):
         return self._render_dependencies(self._dependencies)
 
     @property
+    def ners(self):
+        if self._ners is None:
+            return None
+        return [self._get_ner(idx) for idx in range(len(self._ners))]
+
+    @property
+    def tokens(self):
+        if self._ners is None:
+            return copy(self.words)
+        _tokens = list()
+        len_words = len(self.words)
+        i = 0
+        while i < len_words:
+            ner = self._get_ner(i)
+            if ner == "O":
+                _tokens.append(self.words[i])
+                i += 1
+                continue
+            j = i + 1
+            while j < len_words and self._get_ner(j) == ner:
+                j += 1
+            _tokens.append(" ".join(self.words[i:j]))
+            i = j
+        return _tokens
+
+    @property
+    def mentions(self):
+        if self._ners is None:
+            return None
+        _mentions = list()
+        len_words = len(self.words)
+        i = 0
+        while i < len_words:
+            ner = self._get_ner(i)
+            if ner == "O":
+                i += 1
+                continue
+            j = i + 1
+            while j < len_words and self._get_ner(j) == ner:
+                j += 1
+            mention = self._mentions.get((i, j), 
+                {"start": i,
+                "end": j,
+                "text": self.words[i:j],
+                "ner": ner,
+                "link": None,
+                "entity": None})
+            _mentions.append(mention)
+            i = j
+        return _mentions
+
+    @property
     def _raw_dependencies(self):
-        if not self.raw_sent_mapping:
+        if self.raw_sent_mapping is None:
             return self._dependencies
         new_dependencies = list()
         for governor, dep, dependent in self._dependencies:
-            new_dependencies.append(
-                (self.raw_sent_mapping[governor],
-                 dep,
-                 self.raw_sent_mapping[dependent])
-            )
+            new_dependencies.append((
+                self.raw_sent_mapping[governor],
+                dep,
+                self.raw_sent_mapping[dependent]))
         return new_dependencies
 
     @property
     def raw_dependencies(self):
-        if not self.raw_sent_mapping:
+        if self.raw_sent_mapping is None:
             return self.dependencies
         tmp_dependencies = self.dependencies
         new_dependencies = list()
         for governor, dep, dependent in tmp_dependencies:
             g_pos, g_word, g_tag = governor
             d_pos, d_word, d_tag = dependent
-            new_dependencies.append(
-                ((self.raw_sent_mapping[g_pos], g_word, g_tag),
-                 dep,
-                 (self.raw_sent_mapping[d_pos], d_word, d_tag))
-            )
+            new_dependencies.append((
+                (self.raw_sent_mapping[g_pos], g_word, g_tag),
+                dep,
+                (self.raw_sent_mapping[d_pos], d_word, d_tag)))
         return new_dependencies
 
     @property
     def skeleton_dependencies(self):
-        dependencies = [self._dependencies[i] for i in self._skeleton_dependencies]
+        dependencies = [self._dependencies[i] for i in self._skeleton_dependency_indices]
         return self._render_dependencies(dependencies)
 
     @property
     def skeleton_words(self):
-        return [self.words[idx] for idx in self._skeleton_words]
+        return [self.words[idx] for idx in self._skeleton_indices]
 
     @property
     def skeleton_pos_tags(self):
-        return [self.pos_tags[idx] for idx in self._skeleton_words]
+        return [self.pos_tags[idx] for idx in self._skeleton_indices]
+
+    @property
+    def skeleton_ners(self):
+        if self._ners is None:
+            return None
+        return [self._get_ner(idx) for idx in self._skeleton_indices]
+
+    @property
+    def skeleton_tokens(self):
+        if self._ners is None:
+            return copy(self.skeleton_words)
+        _skeleton_tokens = list()
+        len_skeleton = len(self.skeleton_words)
+        i = 0
+        while i < len_skeleton:
+            ner = self._get_ner(self._skeleton_indices[i])
+            if ner == "O":
+                _skeleton_tokens.append(self.skeleton_words[i])
+                i += 1
+                continue
+            j = i + 1
+            while j < len_skeleton and self._skeleton_indices[i]+1 == self._skeleton_indices[j] and \
+                self._get_ner(self._skeleton_indices[j]) == ner:
+                j += 1
+            _skeleton_tokens.append(" ".join(self.skeleton_words[i:j]))
+            i = j
+        return _skeleton_tokens
+
+    @property
+    def skeleton_mentions(self):
+        if self._ners is None:
+            return None
+        _skeleton_mentions = list()
+        len_skeleton = len(self.skeleton_words)
+        i = 0
+        while i < len_skeleton:
+            ner = self._get_ner(self._skeleton_indices[i])
+            if ner == "O":
+                i += 1
+                continue
+            j = i + 1
+            while j < len_skeleton and self._skeleton_indices[i]+1 == self._skeleton_indices[j] and \
+                self._get_ner(self._skeleton_indices[j]) == ner:
+                j += 1
+            w_i, w_j = self._skeleton_indices[i], self._skeleton_indices[j-1]+1
+            mention = self._mentions.get((w_i, w_j), 
+                {"start": w_i,
+                "end": w_j,
+                "text": self.words[w_i:w_j],
+                "ner": ner,
+                "link": None,
+                "entity": None})
+            _mentions.append(mention)
+            i = j
+        return _skeleton_mentions
 
     @property
     def verbs(self):
-        return [self.words[idx] for idx in self._verbs]
+        return [self.words[idx] for idx in self._verb_indices]
 
     @property
     def position(self):
@@ -111,28 +242,46 @@ class Eventuality(JsonSerializedObject):
         avg_position = sum(positions) / len(positions) if positions else 0.0
         return avg_position
 
-    def _construct(self, dependencies, skeleton_dependencies, sent_parsed_results):
+    def _construct(self, dependencies, skeleton_dependencies, sent_parsed_result):
         word_indices = extract_indices_from_dependencies(dependencies)
-        if len(word_indices) == 0:
-            return
-        if sent_parsed_results["pos_tags"][word_indices[0]] == "IN":
+        if sent_parsed_result["pos_tags"][word_indices[0]] == "IN":
             poped_idx = word_indices[0]
             for i in range(len(dependencies)-1, -1, -1):
-                if dependencies[i][0] == poped_idx or dependencies[i][2] == poped_idx:
+                if dependencies[i][0] == poped_idx or \
+                    dependencies[i][2] == poped_idx:
                     dependencies.pop(i)
             for i in range(len(skeleton_dependencies)-1, -1, -1):
-                if skeleton_dependencies[i][0] == poped_idx or skeleton_dependencies[i][2] == poped_idx:
+                if skeleton_dependencies[i][0] == poped_idx or \
+                    skeleton_dependencies[i][2] == poped_idx:
                     skeleton_dependencies.pop(i)
             word_indices.pop(0)
-        self.words = [sent_parsed_results["lemmas"][i].lower() for i in word_indices]
-        self.pos_tags = [sent_parsed_results["pos_tags"][i] for i in word_indices]
+        len_words = len(word_indices)
+        self.words = [sent_parsed_result["lemmas"][i].lower() for i in word_indices]
+        self.pos_tags = [sent_parsed_result["pos_tags"][i] for i in word_indices]
+        if "ners" in sent_parsed_result:
+            self._ners = [sent_parsed_result["ners"][i] for i in word_indices]
+        if "mentions" in sent_parsed_result:
+            self._mentions = dict()
+            for mention in sent_parsed_result["mentions"]:
+                start_idx = bisect.bisect_left(word_indices, mention["start"])
+                if not (start_idx < len_words and word_indices[start_idx] == mention["start"]):
+                    continue
+                end_idx = bisect.bisect_left(word_indices, mention["end"]-1)
+                if not (end_idx < len_words and word_indices[end_idx] == mention["end"]-1):
+                    continue
+                mention = copy(mention)
+                mention["start"] = start_idx
+                mention["end"] = end_idx+1
+                mention["text"] = " ".join(self.words[mention["start"]:mention["end"]])
+                self._mentions[(mention["start"], mention["end"])] = mention
         dependencies, raw2reset_idx, reset2raw_idx = sort_dependencies_position(
             dependencies, reset_position=True)
         self._dependencies = dependencies
         self.raw_sent_mapping = reset2raw_idx
 
-        skeleton_word_indices = extract_indices_from_dependencies(skeleton_dependencies)
-        self._skeleton_words = [raw2reset_idx[idx] for idx in skeleton_word_indices]
+        skeleton_word_indices = extract_indices_from_dependencies(
+            skeleton_dependencies)
+        self._skeleton_indices = [raw2reset_idx[idx] for idx in skeleton_word_indices]
 
         _skeleton_dependencies, _, _ = sort_dependencies_position(
             skeleton_dependencies, reset_position=False)
@@ -141,39 +290,68 @@ class Eventuality(JsonSerializedObject):
         for i, dep in enumerate(dependencies):
             if ptr >= len(_skeleton_dependencies):
                 break
-            skeleton_dependency = _skeleton_dependencies[ptr][:]
-            triple = (raw2reset_idx[skeleton_dependency[0]],
-                      skeleton_dependency[1],
-                      raw2reset_idx[skeleton_dependency[2]])
-            if tuple(dep) == triple:
+            skeleton_dep = _skeleton_dependencies[ptr]
+            skeleton_dep = (raw2reset_idx[skeleton_dep[0]], skeleton_dep[1], raw2reset_idx[skeleton_dep[2]])
+            if dep == skeleton_dep:
                 skeleton_dependency_indices.append(i)
                 ptr += 1
-        self._skeleton_dependencies = skeleton_dependency_indices
+        self._skeleton_dependency_indices = skeleton_dependency_indices
 
-        self._verbs = [i for i, tag in enumerate(self.pos_tags) if tag.startswith('VB')]
+        self._verb_indices = [i for i, tag in enumerate(self.pos_tags) if tag.startswith('VB')]
 
         self.eid = Eventuality.generate_eid(self)
 
-    def to_dict(self, minimum=False):
+    def to_dict(self, **kw):
+        minimum = kw.get("minimum", False)
         if minimum:
-            return {
-                "_dependencies": self._dependencies, 
-                "words": self.words, 
-                "pos_tags": self.pos_tags, 
-                "_skeleton_dependencies": self._skeleton_dependencies, 
-                "_skeleton_words": self._skeleton_words, 
-                "_verbs": self._verbs}
+            d = {
+                "_dependencies": self._dependencies,
+                "words": self.words,
+                "pos_tags": self.pos_tags,
+                "_ners": self._ners,
+                "_mentions": self._mentions,
+                "_verb_indices": self._verb_indices,
+                "_skeleton_indices": self._skeleton_indices,
+                "_skeleton_dependency_indices": self._skeleton_dependency_indices}
         else:
-            return self.__dict__
+            d  = self.__dict__
+        return d
 
-    def from_dict(self, d):
-        for attr_name in d:
-            self.__setattr__(attr_name, d[attr_name])
-        if self.raw_sent_mapping:
-            keys = self.raw_sent_mapping.keys()
-            if not all([isinstance(key, int) for key in keys]):
-                for key in keys:
+    def encode(self, encoding="utf-8", **kw):
+        d = self.to_dict(**kw)
+        # key cannot be tuple
+        if d["_mentions"]:
+            d["_mentions"] = {str(k): v for k, v in d["_mentions"].items()}
+        if encoding == "utf-8":
+            msg = json.dumps(d).encode("utf-8")
+        elif encoding == "ascii":
+            msg = json.dumps(d).encode("ascii")
+        else:
+            msg = d
+        return msg
+
+    def decode(self, msg, encoding="utf-8", **kw):
+        if encoding == "utf-8":
+            decoded_dict = json.loads(msg.decode("utf-8"))
+        elif encoding == "ascii":
+            decoded_dict = json.loads(msg.decode("ascii"))
+        else:
+            decoded_dict = msg
+        self.from_dict(decoded_dict, **kw)
+        
+        if self.raw_sent_mapping is not None:
+            keys = list(self.raw_sent_mapping.keys())
+            for key in keys:
+                if not isinstance(key, int):
                     self.raw_sent_mapping[int(key)] = self.raw_sent_mapping.pop(key)
+        if self._ners is not None:
+            for i, ner in enumerate(self._ners):
+                if not isinstance(ner, str):
+                    self._ners[i] = Counter(ner)
+        if self._mentions is not None:
+            keys = list(self._mentions.keys())
+            for key in keys:
+                self._mentions[eval(key)] = self._mentions.pop(key)
         return self
 
     def _render_dependencies(self, dependencies):
@@ -185,111 +363,14 @@ class Eventuality(JsonSerializedObject):
             edges.append(edge)
         return edges
 
-    @staticmethod
-    def generate_eid(eventuality):
-        msg = json.dumps([eventuality.dependencies, eventuality.words, eventuality.pos_tags])
-        return hashlib.sha1(msg.encode('utf-8')).hexdigest()
-
-    def _filter_dependency_by_word_list(self, word_list, target="all"):
-        position_mapping = dict()
-        new_dependencies = list()
-        for i, (governor, dep, dependent) in enumerate(self._dependencies):
-            if target == "all":
-                is_find_word = self.words[governor] in word_list or \
-                               self.words[dependent] in word_list
-            elif target == "governor":
-                is_find_word = self.words[governor] in word_list
-            elif target == "dependent":
-                is_find_word = self.words[dependent] in word_list
+    def _get_ner(self, index):
+        ner = "O"
+        if not self.pos_tags[index].startswith('VB'):
+            if isinstance(self._ners[index], str):
+                ner = self._ners[index]
             else:
-                raise RuntimeError
-            if is_find_word:
-                continue
-            position_mapping[i] = len(new_dependencies)
-            new_dependencies.append([governor, dep, dependent])
-        self._dependencies = new_dependencies
-        new_skeleton_dependencies = list()
-        for idx in self._skeleton_dependencies:
-            if idx in position_mapping:
-                new_skeleton_dependencies.append(position_mapping[idx])
-        self._skeleton_dependencies = new_skeleton_dependencies
-
-        new_word_indices = extract_indices_from_dependencies(
-            self._dependencies)
-        new_word_index_mapping = dict()
-        for i in new_word_indices:
-            new_word_index_mapping[i] = len(new_word_index_mapping)
-        self.words = [self.words[i] for i in new_word_indices]
-        self.pos_tags = [self.pos_tags[i] for i in new_word_indices]
-        for dependency in self._dependencies:
-            dependency[0] = new_word_index_mapping[dependency[0]]
-            dependency[2] = new_word_index_mapping[dependency[2]]
-        self._verbs = [new_word_index_mapping[i] for i in self._verbs 
-                                if i in new_word_index_mapping]
-        self._skeleton_words = [new_word_index_mapping[i] for i in self._skeleton_words
-                                if i in new_word_index_mapping]
-
-        if self.raw_sent_mapping:
-            new_raw_sent_mapping = {new_word_index_mapping[key]: val
-                                    for key, val in self.raw_sent_mapping.items()
-                                    if key in new_word_index_mapping}
-            self.raw_sent_mapping = new_raw_sent_mapping
-
-
-
-# class EventualityList(object):
-#     def __init__(self, eventualities=None):
-#         if eventualities:
-#             self.eventualities = eventualities
-#         else:
-#             self.eventualities = list()
-
-#     def append(self, eventuality):
-#         self.eventualities.append(eventuality)
-
-#     def extend(self, eventualities):
-#         self.eventualities.extend(eventualities)
-
-#     def encode(self, encoding="utf-8"):
-#         encoded_dict_list = list()
-#         for e in self.eventualities:
-#             encoded_dict_list.append(e.encode(encoding=None))
-#         if encoding == "utf-8":
-#             msg = json.dumps(encoded_dict_list).encode("utf-8")
-#         else:
-#             msg = encoded_dict_list
-#         return msg
-
-#     def decode(self, msg, encoding="utf-8"):
-#         if encoding == "utf-8":
-#             decoded_dict_list = json.loads(msg.decode("utf-8"))
-#         elif encoding == "ascii":
-#             decoded_dict_list = json.loads(msg.decode("ascii"))
-#         else:
-#             decoded_dict_list = msg
-#         self.eventualities = []
-#         for decoded_dict in decoded_dict_list:
-#             e = Eventuality()
-#             e.decode(decoded_dict, encoding="None")
-#             self.eventualities.append(e)
-
-#     def __iter__(self):
-#         return self.eventualities.__iter__()
-
-#     def __str__(self):
-#         s = "[\n"
-#         s += "\n".join(e.__str__() for e in self.eventualities)
-#         s += '\n]'
-#         return s
-
-#     def __repr__(self):
-#         return self.__str__()
-
-#     def __setitem__(self, idx, item):
-#         self.eventualities[idx] = item
-
-#     def __getitem__(self, item):
-#         return self.eventualities[item]
-
-#     def __len__(self):
-#         return len(self.eventualities)
+                for x in self._ners[index].most_common():
+                    if x[0] != "O":
+                        ner = x[0]
+                        break
+        return ner

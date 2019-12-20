@@ -20,7 +20,7 @@ class Relation(JsonSerializedObject):
         self.rid = Relation.generate_rid(self.hid, self.tid)
         
         self.relations = dict()
-        self.update_relations(relations)
+        self.update(relations)
 
     @staticmethod
     def generate_rid(hid, tid):
@@ -33,7 +33,7 @@ class Relation(JsonSerializedObject):
             triples.extend([(self.hid, r, self.tid)] * int(self.relations[r]))
         return triples
 
-    def update_relations(self, x):
+    def update(self, x):
         if x is not None:
             if isinstance(x, dict):
                 for r, cnt in x.items():

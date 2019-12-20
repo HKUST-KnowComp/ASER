@@ -80,7 +80,7 @@ if __name__ == "__main__":
         for row in conn.get_columns(EVENTUALITY_TABLE_NAME, EVENTUALITY_COLUMNS):
             total_eventuality += row["frequency"]
             if row["_id"] not in eid2row:
-                eid2row[row["_id"]] = copy(row)
+                eid2row[row["_id"]] = deepcopy(row)
             else:
                 eid2row[row["_id"]]["frequency"] += row["frequency"]
 

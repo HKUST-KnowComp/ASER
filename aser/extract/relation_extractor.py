@@ -134,7 +134,7 @@ class SeedRuleRelationExtractor(BaseRelationExtractor):
                     if relation.rid not in rid2relation:
                         rid2relation[relation.rid] = deeocopy(relation)
                     else:
-                        rid2relation[relation.rid].update_relations(relation)
+                        rid2relation[relation.rid].update(relation)
                 return sorted(rid2relation.values(), key=lambda r: r.rid)
             if output_format == "triple":
                 return sorted([r.to_triples() for relations in para_relations for r in relations])
@@ -381,7 +381,7 @@ class DiscourseRelationExtractor(BaseRelationExtractor):
                             existed_relation = False
                             for relation in relations:
                                 if relation.hid == heid and relation.tid == teid:
-                                    relation.update_relations([sense])
+                                    relation.update([sense])
                                     existed_relation = True
                                     break
                             if not existed_relation:
@@ -402,7 +402,7 @@ class DiscourseRelationExtractor(BaseRelationExtractor):
                             existed_relation = False
                             for relation in relations:
                                 if relation.hid == heid and relation.tid == teid:
-                                    relation.update_relations([sense])
+                                    relation.update([sense])
                                     existed_relation = True
                                     break
                             if not existed_relation:
@@ -420,7 +420,7 @@ class DiscourseRelationExtractor(BaseRelationExtractor):
                     if relation.rid not in rid2relation:
                         rid2relation[relation.rid] = deeocopy(relation)
                     else:
-                        rid2relation[relation.rid].update_relations(relation)
+                        rid2relation[relation.rid].update(relation)
                 return sorted(rid2relation.values(), key=lambda r: r.rid)
             if output_format == "triple":
                 return sorted([r.to_triples() for relations in para_relations for r in relations])

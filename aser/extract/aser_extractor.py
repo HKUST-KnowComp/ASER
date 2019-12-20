@@ -1,3 +1,4 @@
+import bisect
 try:
     import ujson as json
 except:
@@ -89,16 +90,10 @@ class BaseASERExtractor(object):
         else:
             is_single_sent = False
 
-        # from time import time
-        # st = time()
         para_eventualities = self.extract_eventualities_from_parsed_result(parsed_result, 
             output_format="Eventuality", in_order=True, **kw)
-        # print("Eventuality Extraction (%d)" % (sum([e.frequency for es in para_eventualities for e in es])), time()-st)
-        # st = time()
         para_relations = self.extract_relations_from_parsed_result(parsed_result, para_eventualities, 
             output_format="Relation", in_order=True, **kw)
-        # print("Relation Extraction (%d)" % (sum(chain.from_iterable([r.relations.values() for rs in para_relations for r in rs]))), time()-st)
-        # st = time()
 
         if in_order:
             if eventuality_output_format == "json":
@@ -107,7 +102,6 @@ class BaseASERExtractor(object):
             if relation_output_format == "triple":
                 relations = [list(chain.from_iterable([relation.to_triple() for relation in sent_relations])) \
                     for sent_relations in para_relations]
-            # print("Merge", st-time())
             if is_single_sent:
                 return para_eventualities[0], para_relations[0]
             else:
@@ -117,13 +111,13 @@ class BaseASERExtractor(object):
             for eventuality in chain.from_iterable(para_eventualities):
                 eid = eventuality.eid
                 if eid not in eid2eventuality:
-                    eid2eventuality[eid] = copy(eventuality)
+                    eid2eventuality[eid] = deepcopy(eventuality)
                 else:
-                    eid2eventuality[eid].update_frequency(eventuality)
+                    eid2eventuality[eid].update(eventuality)
             if eventuality_output_format == "Eventuality":
                 eventualities = sorted(eid2eventuality.values(), key=lambda e: e.eid)
             elif eventuality_output_format == "json":
-                eventualities = sorted([eventuality.encode(eventuality=None) for eventuality in eid2eventuality.values()], key=lambda e: e["eid"])
+                eventualities = sorted([eventuality.encode(encoding=None) for eventuality in eid2eventuality.values()], key=lambda e: e["eid"])
             
             rid2relation = dict()
             for relation in chain.from_iterable(para_relations):
@@ -131,12 +125,11 @@ class BaseASERExtractor(object):
                 if rid not in rid2relation:
                     rid2relation[rid] = deepcopy(relation)
                 else:
-                    rid2relation[rid].update_relations(relation)
+                    rid2relation[rid].update(relation)
             if relation_output_format == "Relation":
                 relations = sorted(rid2relation.values(), key=lambda r: r.rid)
             elif relation_output_format == "triple":
                 relations = sorted(chain.from_iterable([relation.to_triples() for relation in rid2relation.values()]))
-            # print("Merge", st-time())
             return eventualities, relations
 
     def extract_from_text(self, text, eventuality_output_format="Eventuality", relation_output_format="Relation", in_order=True, annotators=None, **kw):
@@ -169,13 +162,8 @@ class DiscourseASERExtractor2(BaseASERExtractor):
         self.relation_extractor = DiscourseRelationExtractor(**kw)
     
     def extract_from_parsed_result(self, parsed_result, eventuality_output_format="Eventuality", relation_output_format="Relation", in_order=True, **kw):
-        # from time import time
-        # st = time()
         if "syntax_tree_cache" not in kw:
             kw["syntax_tree_cache"] = dict()
-            for sent_idx, sent_parsed_result in enumerate(parsed_result):
-                kw["syntax_tree_cache"][sent_idx] = SyntaxTree(sent_parsed_result["parse"])
-        # print("Constituency Tree Construction", time()-st)
         return super().extract_from_parsed_result(parsed_result, 
             eventuality_output_format=eventuality_output_format, relation_output_format=relation_output_format, in_order=in_order, **kw)
 
@@ -236,13 +224,13 @@ class DiscourseASERExtractor3(BaseASERExtractor):
             for eventuality in chain.from_iterable(para_eventualities):
                 eid = eventuality.eid
                 if eid not in eid2eventuality:
-                    eid2eventuality[eid] = copy(eventuality)
+                    eid2eventuality[eid] = deepcopy(eventuality)
                 else:
-                    eid2eventuality[eid].update_frequency(eventuality)
+                    eid2eventuality[eid].update(eventuality)
             if output_format == "Eventuality":
                 eventualities = sorted(eid2eventuality.values(), key=lambda e: e.eid)
             elif output_format == "json":
-                eventualities = sorted([eventuality.encode(eventuality=None) for eventuality in eid2eventuality.values()], key=lambda e: e["eid"])
+                eventualities = sorted([eventuality.encode(encoding=None) for eventuality in eid2eventuality.values()], key=lambda e: e["eid"])
             return eventualities
     
     def extract_relations_from_parsed_result(self, parsed_result, para_eventualities, output_format="Relation", in_order=True, **kw):
@@ -307,7 +295,7 @@ class DiscourseASERExtractor3(BaseASERExtractor):
                             existed_relation = False
                             for relation in relations:
                                 if relation.hid == heid and relation.tid == teid:
-                                    relation.update_relations([sense])
+                                    relation.update([sense])
                                     existed_relation = True
                                     break
                             if not existed_relation:
@@ -328,7 +316,7 @@ class DiscourseASERExtractor3(BaseASERExtractor):
                             existed_relation = False
                             for relation in relations:
                                 if relation.hid == heid and relation.tid == teid:
-                                    relation.update_relations([sense])
+                                    relation.update([sense])
                                     existed_relation = True
                                     break
                             if not existed_relation:
@@ -346,7 +334,7 @@ class DiscourseASERExtractor3(BaseASERExtractor):
                     if relation.rid not in rid2relation:
                         rid2relation[relation.rid] = deeocopy(relation)
                     else:
-                        rid2relation[relation.rid].update_relations(relation)
+                        rid2relation[relation.rid].update(relation)
                 return sorted(rid2relation.values(), key=lambda r: r.rid)
             if output_format == "triple":
                 return sorted([r.to_triples() for relations in para_relations for r in relations])
@@ -387,6 +375,7 @@ class DiscourseASERExtractor3(BaseASERExtractor):
                 arg1_sent_idx, arg2_sent_idx = arg1["sent_idx"], arg2["sent_idx"]
                 sent_parsed_result1,sent_parsed_result2 = parsed_result[arg1_sent_idx], parsed_result[arg2_sent_idx]
 
+                len_arg1 = len(arg1)
                 idx_mapping1 = {j: i for i, j in enumerate(arg1["indices"])}
                 indices_set1 = set(arg1["indices"])
                 arg1_parsed_result = {
@@ -396,6 +385,21 @@ class DiscourseASERExtractor3(BaseASERExtractor):
                     "tokens": [sent_parsed_result1["tokens"][idx] for idx in arg1["indices"]],
                     "pos_tags": [sent_parsed_result1["pos_tags"][idx] for idx in arg1["indices"]],
                     "lemmas": [sent_parsed_result1["lemmas"][idx] for idx in arg1["indices"]]}
+                if "ners" in sent_parsed_result:
+                    arg1_parsed_result["ners"] = [sent_parsed_result["ners"][idx] for idx in arg1]
+                if "mentions" in sent_parsed_result:
+                    arg1_parsed_result["mentions"] = list()
+                    for mention in sent_parsed_result["mentions"]:
+                        start_idx = bisect.bisect_left(arg1, mention["start"])
+                        if not (start_idx < len_arg1 and arg1[start_idx] == mention["start"]):
+                            continue
+                        end_idx = bisect.bisect_left(arg1, mention["end"]-1)
+                        if not (end_idx < len_arg1 and arg1[end_idx] == mention["end"]-1):
+                            continue
+                        mention = copy(mention)
+                        mention["start"] = start_idx
+                        mention["end"] = end_idx+1
+                        arg1_parsed_result["mentions"].append(mention)
                 eventualities1 = self.eventuality_extractor.extract_from_parsed_result(
                     arg1_parsed_result, output_format="Eventuality", in_order=True)
                 len_existed_eventualities1 = len(para_eventualities[arg1_sent_idx])
@@ -412,6 +416,7 @@ class DiscourseASERExtractor3(BaseASERExtractor):
                     if not existed_eventuality:
                         para_eventualities[arg1_sent_idx].append(e1)
 
+                len_arg2 = len(arg2)
                 idx_mapping2 = {j: i for i, j in enumerate(arg2["indices"])}
                 indices_set2 = set(arg2["indices"])
                 arg2_parsed_result = {
@@ -421,6 +426,21 @@ class DiscourseASERExtractor3(BaseASERExtractor):
                     "tokens": [sent_parsed_result2["tokens"][idx] for idx in arg2["indices"]],
                     "pos_tags": [sent_parsed_result2["pos_tags"][idx] for idx in arg2["indices"]],
                     "lemmas": [sent_parsed_result2["lemmas"][idx] for idx in arg2["indices"]]}
+                if "ners" in sent_parsed_result:
+                    arg2_parsed_result["ners"] = [sent_parsed_result["ners"][idx] for idx in arg2]
+                if "mentions" in sent_parsed_result:
+                    arg2_parsed_result["mentions"] = list()
+                    for mention in sent_parsed_result["mentions"]:
+                        start_idx = bisect.bisect_left(arg2, mention["start"])
+                        if not (start_idx < len_arg2 and arg2[start_idx] == mention["start"]):
+                            continue
+                        end_idx = bisect.bisect_left(arg2, mention["end"]-1)
+                        if not (end_idx < len_arg2 and arg2[end_idx] == mention["end"]-1):
+                            continue
+                        mention = copy(mention)
+                        mention["start"] = start_idx
+                        mention["end"] = end_idx+1
+                        arg2_parsed_result["mentions"].append(mention)
                 eventualities2 = self.eventuality_extractor.extract_from_parsed_result(
                     arg2_parsed_result, output_format="Eventuality", in_order=True)
                 len_existed_eventualities2 = len(para_eventualities[arg2_sent_idx])
@@ -459,7 +479,7 @@ class DiscourseASERExtractor3(BaseASERExtractor):
                         existed_relation = False
                         for relation in relations:
                             if relation.hid == heid and relation.tid == teid:
-                                relation.update_relations(senses)
+                                relation.update(senses)
                                 existed_relation = True
                                 break
                         if not existed_relation:
@@ -481,13 +501,13 @@ class DiscourseASERExtractor3(BaseASERExtractor):
             for eventuality in chain.from_iterable(para_eventualities):
                 eid = eventuality.eid
                 if eid not in eid2eventuality:
-                    eid2eventuality[eid] = copy(eventuality)
+                    eid2eventuality[eid] = deepcopy(eventuality)
                 else:
-                    eid2eventuality[eid].update_frequency(eventuality)
+                    eid2eventuality[eid].update(eventuality)
             if eventuality_output_format == "Eventuality":
                 eventualities = sorted(eid2eventuality.values(), key=lambda e: e.eid)
             elif eventuality_output_format == "json":
-                eventualities = sorted([eventuality.encode(eventuality=None) for eventuality in eid2eventuality.values()], key=lambda e: e["eid"])
+                eventualities = sorted([eventuality.encode(encoding=None) for eventuality in eid2eventuality.values()], key=lambda e: e["eid"])
             
             rid2relation = dict()
             for relation in chain.from_iterable(para_relations):
@@ -495,7 +515,7 @@ class DiscourseASERExtractor3(BaseASERExtractor):
                 if rid not in rid2relation:
                     rid2relation[rid] = deepcopy(relation)
                 else:
-                    rid2relation[rid].update_relations(relation)
+                    rid2relation[rid].update(relation)
             if relation_output_format == "Relation":
                 relations = sorted(rid2relation.values(), key=lambda r: r.rid)
             elif relation_output_format == "triple":
@@ -518,7 +538,7 @@ class DiscourseASERExtractor3(BaseASERExtractor):
             else:
                 syntax_tree = syntax_tree_cache[sent_idx] = SyntaxTree(sent_parsed_result["parse"])
             
-            # the best but too slow
+            # the best but slower
             for indices in powerset(sent_connectives):
                 indices = set(chain.from_iterable(indices))
                 sent_arguments.update(get_clauses(sent_parsed_result, syntax_tree, index_seps=indices))

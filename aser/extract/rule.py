@@ -1,13 +1,11 @@
-# CONNECTIVE_LIST = frozenset(['before', 'afterward', 'next', 'then', 'till', 'until', 'after', 'earlier', 'once', 'previously',
-#                    'meantime', 'meanwhile', 'simultaneously', 'because', 'for', 'accordingly', 'consequently', 'so',
-#                    'thus', 'therefore', 'if', 'but', 'conversely', 'however', 'nonetheless', 'although', 'and',
-#                    'additionally', 'also', 'besides', 'further', 'furthermore', 'similarly', 'likewise', 'moreover',
-#                    'plus', 'specifically', 'alternatively', 'or', 'otherwise', 'unless', 'instead', 'except'])
-# CONNECTIVE_LIST = set()
+CONNECTIVE_LIST = frozenset(['before', 'afterward', 'next', 'then', 'till', 'until', 'after', 'earlier', 'once', 'previously',
+                   'meantime', 'meanwhile', 'simultaneously', 'because', 'for', 'accordingly', 'consequently', 'so',
+                   'thus', 'therefore', 'if', 'but', 'conversely', 'however', 'nonetheless', 'although', 'and',
+                   'additionally', 'also', 'besides', 'further', 'furthermore', 'similarly', 'likewise', 'moreover',
+                   'plus', 'specifically', 'alternatively', 'or', 'otherwise', 'unless', 'instead', 'except'])
 
-# CLAUSE_WORDS = frozenset(['when', 'who', 'what', 'where', 'how', 'When', 'Who', 'What', 'Where', 'How', 'why', 'Why', 'which',
-#                 'Which', '?'])
-# CLAUSE_WORDS = set()
+CLAUSE_WORDS = frozenset(['when', 'who', 'what', 'where', 'how', 'When', 'Who', 'What', 'Where', 'How', 'why', 'Why', 'which',
+                'Which', '?'])
 
 class Rule:
     def __init__(self, rules):
