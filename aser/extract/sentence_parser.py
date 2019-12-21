@@ -29,7 +29,23 @@ class SentenceParser:
     def __generate_sid(self, sent, file_name, sid):
         return file_name + "|" + str(sid)
 
-    def parse_raw_file(self, raw_path, processed_path=None, annotators=None, max_len=230):
+    def parse_raw_file(self, raw_path, processed_path=None, annotators=None, max_len=1000):
+         """ This method parses raw text of a raw file and save the processed data into a file.
+
+        :type raw_path: str
+        :type processed_path: str or None
+        :type annotators: list or None
+        :type max_len: int
+        :param raw_path: the file path of the input file
+        :param processed_path: the file path of the output file
+        :param annotators: the annotators parameter for the stanford corenlp client
+        :param max_len: the max length of paragraphs for parsing as a whole
+        :return: a list of dicts
+
+        .. highlight:: python
+        .. code-block:: python
+        """
+
         if annotators is None:
             annotators = self.annotators
 

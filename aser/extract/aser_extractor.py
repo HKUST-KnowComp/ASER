@@ -46,6 +46,8 @@ class BaseASERExtractor(object):
         return parsed_result
 
     def extract_eventualities_from_parsed_result(self, parsed_result, output_format="Eventuality", in_order=True, **kw):
+        """ This method extracts eventualities from parsed_result of one sentence.
+        """
         if output_format not in ["Eventuality", "json"]:
             raise NotImplementedError("Error: extract_eventualities_from_parsed_result only supports Eventuality or json.")
 
@@ -53,6 +55,8 @@ class BaseASERExtractor(object):
             output_format=output_format, in_order=in_order, **kw)
 
     def extract_eventualities_from_text(self, text, output_format="Eventuality", in_order=True, annotators=None, **kw):
+        """ This method extracts all eventualities for each sentence.
+        """
         if output_format not in ["Eventuality", "json"]:
             raise NotImplementedError("Error: extract_eventualities_from_text only supports Eventuality or json.")
 
@@ -61,6 +65,8 @@ class BaseASERExtractor(object):
             output_format=output_format, in_order=in_order, **kw)
 
     def extract_relations_from_parsed_result(self, parsed_result, para_eventualities, output_format="Relation", in_order=True, **kw):
+        """ This method extracts relations among extracted eventualities.
+        """
         if output_format not in ["Relation", "triple"]:
             raise NotImplementedError("Error: extract_relations_from_parsed_result only supports Relation or triple.")
             
@@ -68,6 +74,8 @@ class BaseASERExtractor(object):
             output_format=output_format, in_order=in_order, **kw)
 
     def extract_relations_from_text(self, text, output_format="Relation", in_order=True, annotators=None, **kw):
+        """ This method extracts relations from parsed_result of one paragraph.
+        """
         if output_format not in ["Relation", "triple"]:
             raise NotImplementedError("Error: extract_relations_from_text only supports Relation or triple.")
 
@@ -77,6 +85,8 @@ class BaseASERExtractor(object):
             output_format=output_format, in_order=in_order, **kw)
 
     def extract_from_parsed_result(self, parsed_result, eventuality_output_format="Eventuality", relation_output_format="Relation", in_order=True, **kw):
+        """ This method extracts eventualities and relations from parsed_result of one paragraph.
+        """
         if eventuality_output_format not in ["Eventuality", "json"]:
             raise NotImplementedError("Error: extract_eventualities only supports Eventuality or json.")
         if relation_output_format not in ["Relation", "triple"]:
@@ -133,6 +143,8 @@ class BaseASERExtractor(object):
             return eventualities, relations
 
     def extract_from_text(self, text, eventuality_output_format="Eventuality", relation_output_format="Relation", in_order=True, annotators=None, **kw):
+        """ This method extracts eventualities and relations for each sentence.
+        """
         if eventuality_output_format not in ["Eventuality", "json"]:
             raise NotImplementedError("Error: extract_eventualities only supports Eventuality or json.")
         if relation_output_format not in ["Relation", "triple"]:
@@ -214,7 +226,7 @@ class DiscourseASERExtractor3(BaseASERExtractor):
         
         if in_order:
             if output_format == "json":
-                para_eventualities = [[eventuality.encode(encoding=None) for Eventuality in sent_eventualities] \
+                para_eventualities = [[eventuality.encode(encoding=None) for eventuality in sent_eventualities] \
                     for sent_eventualities in para_eventualities]
             if is_single_sent:
                 return para_eventualities[0]

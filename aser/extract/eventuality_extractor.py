@@ -34,41 +34,72 @@ class BaseEventualityExtractor(object):
         return parsed_result
 
     def extract_from_text(self, text, output_format="Eventuality", in_order=True, annotators=None, **kw):
-        """ This method would firstly split text into sentences and extract
-            all eventualities for each sentence.
+        """ This method extracts all eventualities for each sentence.
 
-            :type text: str
-            :param text: input text
-            :return: a list of lists of `Eventuality` object
+        :type text: str
+        :type output_format: str
+        :type in_order: bool
+        :type annotators: list or None
+        :param text: input text
+        :param output_format: the specific output format
+        :param in_order: in order or out of order
+        :param annotators: the annotators parameter for the stanford corenlp client
+        :return: a list of lists of `Eventuality` object
 
-            .. highlight:: python
-            .. code-block:: python
+        .. highlight:: python
+        .. code-block:: python
 
-                Input: 'The dog barks loudly. Because he is hungry.'
+            Input: 'The dog barks loudly because it is hungry. But we have no food for it.'
 
-                Output:
+            Output:
                 [
-                    [Eventuality({'dependencies': [((1, 'dog', 'NN'), 'det', (0, 'the', 'DT')),
-                                                 ((2, 'bark', 'VBZ'), 'nsubj', (1, 'dog', 'NN')),
-                                                 ((2, 'bark', 'VBZ'), 'advmod', (3, 'loudly', 'RB'))],
-                                 'eid': 'c605e3d855d7d27cf25ed7e4d4e33962d9b10713',
-                                 'pattern': 's-v',
-                                 'pos_tags': ['DT', 'NN', 'VBZ', 'RB'],
-                                 'skeleton_dependencies': [((2, 'bark', 'VBZ'), 'nsubj', (1, 'dog', 'NN'))],
-                                 'skeleton_words': ['dog', 'bark'],
-                                 'verbs': ['bark'],
-                                 'words': ['the', 'dog', 'bark', 'loudly']})],
-                    [Eventuality({'dependencies': [((2, 'hungry', 'JJ'), 'nsubj', (0, 'he', 'PRP')),
-                                                  ((2, 'hungry', 'JJ'), 'cop', (1, 'be', 'VBZ'))],
-                                  'eid': 'dae842ef792d3ae786db5f71e36b50305dda14a4',
-                                  'pattern': 's-be-a',
-                                  'pos_tags': ['PRP', 'VBZ', 'JJ'],
-                                  'skeleton_dependencies': [((2, 'hungry', 'JJ'), 'nsubj', (0, 'he', 'PRP')),
-                                                            ((2, 'hungry', 'JJ'), 'cop', (1, 'be', 'VBZ'))],
-                                  'skeleton_words': ['he', 'be', 'hungry'],
-                                  'verbs': ['be'],
-                                  'words': ['he', 'be', 'hungry']})]
-                ]
+                    [
+                        Eventuality(
+                            {'dependencies': [((1, 'dog', 'NN'), 'det', (0, 'the', 'DT')),
+                                              ((2, 'bark', 'VBZ'), 'nsubj', (1, 'dog', 'NN')),
+                                              ((2, 'bark', 'VBZ'), 'advmod', (3, 'loudly', 'RB'))],
+                            'eid': 'b51425727182a0d25734a92ae16a456cb5e6351f',
+                            'frequency': 1.0,
+                            'mentions': {},
+                            'ners': ['O', 'O', 'O', 'O'],
+                            'pattern': 's-v',
+                            'pos_tags': ['DT', 'NN', 'VBZ', 'RB'],
+                            'skeleton_dependencies': [((2, 'bark', 'VBZ'), 'nsubj', (1, 'dog', 'NN'))],
+                            'skeleton_words': ['dog', 'bark'],
+                            'verbs': ['bark'],
+                            'words': ['the', 'dog', 'bark', 'loudly']}),
+                        Eventuality(
+                            {'dependencies': [((2, 'hungry', 'JJ'), 'nsubj', (0, 'it', 'PRP')),
+                                              ((2, 'hungry', 'JJ'), 'cop', (1, 'be', 'VBZ'))],
+                            'eid': '8fbd35fcb293f526b54c5989969251d6a31e4893',
+                            'frequency': 1.0,
+                            'mentions': {},
+                            'ners': ['O', 'O', 'O'],
+                            'pattern': 's-be-a',
+                            'pos_tags': ['PRP', 'VBZ', 'JJ'],
+                            'skeleton_dependencies': [((2, 'hungry', 'JJ'), 'nsubj', (0, 'it', 'PRP')),
+                                                    ((2, 'hungry', 'JJ'), 'cop', (1, 'be', 'VBZ'))],
+                            'skeleton_words': ['it', 'be', 'hungry'],
+                            'verbs': ['be'],
+                            'words': ['it', 'be', 'hungry']})],
+                    [
+                        Eventuality(
+                            {'dependencies': [((3, 'have', 'VB'), 'nsubj', (0, 'we', 'PRP')),
+                                              ((3, 'have', 'VB'), 'aux', (1, 'do', 'VBP')),
+                                              ((3, 'have', 'VB'), 'neg', (2, 'not', 'RB')),
+                                              ((3, 'have', 'VB'), 'dobj', (5, 'left', 'NN')),
+                                              ((5, 'left', 'NN'), 'compound', (4, 'food', 'NN'))],
+                            'eid': '32bd10b7e116f7656b7424d3f3a47dab230d52de',
+                            'frequency': 1.0,
+                            'mentions': {},
+                            'ners': ['O', 'O', 'O', 'O', 'O', 'O'],
+                            'pattern': 's-v-o',
+                            'pos_tags': ['PRP', 'VBP', 'RB', 'VB', 'NN', 'NN'],
+                            'skeleton_dependencies': [((3, 'have', 'VB'), 'nsubj', (0, 'we', 'PRP')),
+                                                    ((3, 'have', 'VB'), 'dobj', (5, 'left', 'NN'))],
+                            'skeleton_words': ['we', 'have', 'left'],
+                            'verbs': ['do', 'have'],
+                            'words': ['we', 'do', 'not', 'have', 'food', 'left']})]]
         """
         if output_format not in ["Eventuality", "json"]:
             raise NotImplementedError("Error: extract_from_text only supports Eventuality or json.")
@@ -76,52 +107,99 @@ class BaseEventualityExtractor(object):
         return self.extract_from_parsed_result(parsed_result, output_format, in_order, **kw)
 
     def extract_from_parsed_result(self, parsed_result, output_format="Eventuality", in_order=True, **kw):
-        """ This method would extract eventualities from parsed_result of one sentence
+        """ This method extracts eventualities from parsed_result of one paragraph.
 
-        :type parsed_result: dict, or a list of dict
-        :param parsed_result: a dict generated by `aser.extract.utils.parse_sentense_with_stanford` or a list of dict
-        :return: a list of `Eventuality` objects
+        :type parsed_result: dict, or a list of dicts
+        :type output_format: str
+        :type in_order: bool
+        :param parsed_result: a list of dicts generated by `aser.extract.utils.parse_sentense_with_stanford` or a dict
+        :param output_format: the specific output format
+        :param in_order: in order or out of order
+        :return: a list of lists of `Eventuality` objects or a list of lists of json
 
         .. highlight:: python
         .. code-block:: python
 
             Input:
-                {'dependencies': [(1, 'nsubj', 0),
-                                  (1, 'nmod:to', 3),
-                                  (1, 'advcl:because', 7),
-                                  (1, 'punct', 8),
-                                  (3, 'case', 2),
-                                  (7, 'mark', 4),
-                                  (7, 'nsubj', 5),
-                                  (7, 'cop', 6)],
-                 'lemma': ['I', 'go', 'to', 'lunch', 'because', 'I', 'be', 'hungry', '.'],
-                 'pos_tags': ['PRP', 'VBP', 'TO', 'NN', 'IN', 'PRP', 'VBP', 'JJ', '.'],
-                 'tokens': ['I', 'go', 'to', 'lunch', 'because', 'I', 'am', 'hungry', '.']}
-
+                [
+                    {'text': 'The dog barks loudly because it is hungry.',
+                    'dependencies': [(1, 'det', 0),
+                                     (2, 'nsubj', 1),
+                                     (2, 'advmod', 3),
+                                     (2, 'punct', 8),
+                                     (3, 'dep', 7),
+                                     (7, 'mark', 4),
+                                     (7, 'nsubj', 5),
+                                     (7, 'cop', 6)],
+                    'tokens': ['The', 'dog', 'barks', 'loudly', 'because', 'it', 'is', 'hungry', '.'],
+                    'pos_tags': ['DT', 'NN', 'VBZ', 'RB', 'IN', 'PRP', 'VBZ', 'JJ', '.'],
+                    'lemmas': ['the', 'dog', 'bark', 'loudly', 'because', 'it', 'be', 'hungry', '.'],
+                    'ners': ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'],
+                    'mentions': [],
+                    'parse': '(ROOT (S (NP (DT The) (NN dog)) (VP (VBZ barks) (ADVP (RB loudly) (SBAR (IN because) (S (NP (PRP it)) (VP (VBZ is) (ADJP (JJ hungry))))))) (. .)))'},
+                    {'text': 'The dog barks loudly because',
+                    'dependencies': [(4, 'cc', 0),
+                                     (4, 'nsubj', 1),
+                                     (4, 'aux', 2),
+                                     (4, 'neg', 3),
+                                     (4, 'dobj', 6),
+                                     (4, 'punct', 7),
+                                     (6, 'compound', 5)],
+                    'tokens': ['But', 'we', 'do', "n't", 'have', 'food', 'left', '.'],
+                    'pos_tags': ['CC', 'PRP', 'VBP', 'RB', 'VB', 'NN', 'NN', '.'],
+                    'lemmas': ['but', 'we', 'do', 'not', 'have', 'food', 'left', '.'],
+                    'ners': ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'],
+                    'mentions': [],
+                    'parse': "(ROOT (S (CC But) (NP (PRP we)) (VP (VBP do) (RB n't) (VP (VB have) (NP (NN food) (NN left)))) (. .)))"}]
             Output:
-                [Eventuality({'dependencies': [((2, 'hungry', 'JJ'), 'nsubj', (0, 'I', 'PRP')),
-                                    ((2, 'hungry', 'JJ'), 'cop', (1, 'be', 'VBP'))],
-                                'eid': 'eae8741fad51a57e78092017def1b5cb4f620d7e',
-                                'pattern': 's-be-a',
-                                'pos_tags': ['PRP', 'VBP', 'JJ'],
-                                'skeleton_dependencies': [((2, 'hungry', 'JJ'), 'nsubj', (0, 'I', 'PRP')),
-                                                        ((2, 'hungry', 'JJ'), 'cop', (1, 'be', 'VBP'))],
-                                'skeleton_words': ['I', 'be', 'hungry'],
-                                'verbs': ['be'],
-                                'words': ['I', 'be', 'hungry']}),
-
-                    Eventuality({'dependencies': [((1, 'go', 'VBP'), 'nsubj', (0, 'I', 'PRP')),
-                                                ((1, 'go', 'VBP'), 'nmod:to', (3, 'lunch', 'NN')),
-                                                ((3, 'lunch', 'NN'), 'case', (2, 'to', 'TO'))],
-                                'eid': '12b4aa577e56f2f5d96f4716bc97c633d6272ec4',
-                                'pattern': 's-v-X-o',
-                                'pos_tags': ['PRP', 'VBP', 'TO', 'NN'],
-                                'skeleton_dependencies': [((1, 'go', 'VBP'), 'nsubj', (0, 'I', 'PRP')),
-                                                        ((1, 'go', 'VBP'), 'nmod:to', (3, 'lunch', 'NN')),
-                                                        ((3, 'lunch', 'NN'), 'case', (2, 'to', 'TO'))],
-                                'skeleton_words': ['I', 'go', 'to', 'lunch'],
-                                'verbs': ['go'],
-                                'words': ['I', 'go', 'to', 'lunch']})]
+                [
+                    [
+                        Eventuality(
+                            {'dependencies': [((1, 'dog', 'NN'), 'det', (0, 'the', 'DT')),
+                                              ((2, 'bark', 'VBZ'), 'nsubj', (1, 'dog', 'NN')),
+                                              ((2, 'bark', 'VBZ'), 'advmod', (3, 'loudly', 'RB'))],
+                            'eid': 'b51425727182a0d25734a92ae16a456cb5e6351f',
+                            'frequency': 1.0,
+                            'mentions': {},
+                            'ners': ['O', 'O', 'O', 'O'],
+                            'pattern': 's-v',
+                            'pos_tags': ['DT', 'NN', 'VBZ', 'RB'],
+                            'skeleton_dependencies': [((2, 'bark', 'VBZ'), 'nsubj', (1, 'dog', 'NN'))],
+                            'skeleton_words': ['dog', 'bark'],
+                            'verbs': ['bark'],
+                            'words': ['the', 'dog', 'bark', 'loudly']}),
+                        Eventuality(
+                            {'dependencies': [((2, 'hungry', 'JJ'), 'nsubj', (0, 'it', 'PRP')),
+                                              ((2, 'hungry', 'JJ'), 'cop', (1, 'be', 'VBZ'))],
+                            'eid': '8fbd35fcb293f526b54c5989969251d6a31e4893',
+                            'frequency': 1.0,
+                            'mentions': {},
+                            'ners': ['O', 'O', 'O'],
+                            'pattern': 's-be-a',
+                            'pos_tags': ['PRP', 'VBZ', 'JJ'],
+                            'skeleton_dependencies': [((2, 'hungry', 'JJ'), 'nsubj', (0, 'it', 'PRP')),
+                                                    ((2, 'hungry', 'JJ'), 'cop', (1, 'be', 'VBZ'))],
+                            'skeleton_words': ['it', 'be', 'hungry'],
+                            'verbs': ['be'],
+                            'words': ['it', 'be', 'hungry']})],
+                    [
+                        Eventuality(
+                            {'dependencies': [((3, 'have', 'VB'), 'nsubj', (0, 'we', 'PRP')),
+                                              ((3, 'have', 'VB'), 'aux', (1, 'do', 'VBP')),
+                                              ((3, 'have', 'VB'), 'neg', (2, 'not', 'RB')),
+                                              ((3, 'have', 'VB'), 'dobj', (5, 'left', 'NN')),
+                                              ((5, 'left', 'NN'), 'compound', (4, 'food', 'NN'))],
+                            'eid': '32bd10b7e116f7656b7424d3f3a47dab230d52de',
+                            'frequency': 1.0,
+                            'mentions': {},
+                            'ners': ['O', 'O', 'O', 'O', 'O', 'O'],
+                            'pattern': 's-v-o',
+                            'pos_tags': ['PRP', 'VBP', 'RB', 'VB', 'NN', 'NN'],
+                            'skeleton_dependencies': [((3, 'have', 'VB'), 'nsubj', (0, 'we', 'PRP')),
+                                                    ((3, 'have', 'VB'), 'dobj', (5, 'left', 'NN'))],
+                            'skeleton_words': ['we', 'have', 'left'],
+                            'verbs': ['do', 'have'],
+                            'words': ['we', 'do', 'not', 'have', 'food', 'left']})]]
         """
         if output_format not in ["Eventuality", "json"]:
             raise NotImplementedError("Error: extract_from_parsed_result only supports Eventuality or json.")
@@ -166,7 +244,7 @@ class SeedRuleEventualityExtractor(BaseEventualityExtractor):
         
         if in_order:
             if output_format == "json":
-                para_eventualities = [[eventuality.encode(encoding=None) for Eventuality in sent_eventualities] \
+                para_eventualities = [[eventuality.encode(encoding=None) for eventuality in sent_eventualities] \
                     for sent_eventualities in para_eventualities]
             if is_single_sent:
                 return para_eventualities[0]
@@ -397,7 +475,7 @@ class DiscourseEventualityExtractor(BaseEventualityExtractor):
         
         if in_order:
             if output_format == "json":
-                para_eventualities = [[eventuality.encode(encoding=None) for Eventuality in sent_eventualities] \
+                para_eventualities = [[eventuality.encode(encoding=None) for eventuality in sent_eventualities] \
                     for sent_eventualities in para_eventualities]
             if is_single_sent:
                 return para_eventualities[0]
