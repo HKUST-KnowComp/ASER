@@ -1,0 +1,242 @@
+thereafter|RB-ADVP-RB-NULL
+as a result|PP-VP-VBN-NULL
+Because|IN-ADVP-NULL-NULL
+So|CC-S-NULL-ADVP
+though|IN-VP-*COMMA*-*COMMA*
+But|CC-S-NULL-``
+by then|PP-S-CC-*COMMA*
+In contrast|PP-S-NULL-*COMMA*
+However|RB-ADVP-NULL-NULL
+specifically|RB-ADVP-NULL-NULL
+afterwards|VBD-VP-NULL-NULL
+indeed|RB-ADVP-NULL-NULL
+Or|CC-S-NULL-NP
+Consequently|RB-ADVP-NULL-NULL
+Yet|CC-S-NULL-SBAR
+But|CC-S-NULL-VP
+nonetheless|RB-ADVP-NULL-NULL
+Therefore|RB-ADVP-NULL-NULL
+for example|PP-VP-*COMMA*-NULL
+Or|CC-FRAG-NULL-SBAR
+But|CC-S-``-ADVP
+Similarly|RB-ADVP-NULL-NULL
+in fact|PP-VP-*COMMA*-*COMMA*
+Or|CC-S-NULL-ADVP
+after|IN-PP-ADVP-NP
+afterwards|RB-ADVP-NULL-NULL
+Later|RB-ADVP-NULL-RB
+So|RB-S-NULL-PP
+Then|RB-SINV-NULL-VP
+But|CC-S-NULL-NP
+moreover|RB-ADVP-NULL-NULL
+Thus|RB-ADVP-NULL-NULL
+Later|RB-NP-NULL-NULL
+Otherwise|RB-ADVP-NULL-NULL
+then|RB-ADVP-NULL-NULL
+And|CC-S-NULL-PP
+Still|RB-ADVP-NULL-NULL
+In other words|PP-S-NULL-*COLON*
+Yet|RB-ADVP-NULL-NULL
+Meanwhile|RB-ADVP-NULL-NULL
+But|CC-S-``-X
+Or|CC-SQ-NULL-VBZ
+On the contrary|PP-S-``-*COMMA*
+By comparison|PP-S--LRB--*COMMA*
+on the other hand|PP-S-*COMMA*-*COMMA*
+for example|PP-S-*COMMA*-PRN
+therefore|RB-ADVP-NULL-NULL
+So|RB-S-NULL-SBAR
+in fact|PP-VP-*COMMA*-NULL
+Indeed|RB-ADVP-NULL-NULL
+And|CC-S-NULL-PRN
+Then|RB-NP-NULL-NULL
+By contrast|PP-S-NULL-*COMMA*
+In short|PP-S-NULL-*COLON*
+still|RB-ADVP-NULL-NULL
+yet|RB-ADVP-NULL-NULL
+On the contrary|PP-S-NULL-*COMMA*
+Besides|IN-ADVP-NULL-NULL
+But|CC-S-``-SBAR
+And|CC-S-NULL-ADVP
+Afterwards|RB-ADVP-NULL-NULL
+Nor|CC-SQ-NULL-VBD
+Specifically|RB-ADVP-NULL-NULL
+as well|ADVP-VP-PP-NULL
+instead|RB-ADVP-NULL-NULL
+But|CC-SQ-NULL-VBZ
+Nonetheless|RB-ADVP-NULL-NULL
+in particular|PP-S-*COMMA*-*COMMA*
+For example|PP-S-NULL-*COMMA*
+But|CC-S-``-NP
+for example|PP-VP-*COMMA*-*COMMA*
+So|CC-S-NULL-NP
+later|RB-ADVP-NULL-NULL
+And|CC-S-``-SBAR
+Moreover|RB-ADVP-NULL-NULL
+Thus|RB-S-NULL-PP
+Then|RB-ADVP-NULL-NULL
+On the other hand|PP-S-NULL-*COMMA*
+for instance|PP-S-NP-NULL
+In the end|PP-S-NULL-NP
+Or|CC-SQ-NULL-VBD
+in fact|PP-PRN-*COMMA*-*COMMA*
+So|CC-S-NULL-SBAR
+But|CC-S-``-PRN
+however|RB-ADVP-NULL-NULL
+in turn|PP-S-*COMMA*-*COMMA*
+And|CC-SQ-NULL-FRAG
+So|RB-ADVP-NULL-NULL
+Or|CC-SQ-NULL-MD
+Or|CC-ADVP-NULL-NULL
+For|IN-PP-NULL-NP
+For instance|PP-S-NULL-PRN
+But|CC-FRAG-NULL-RB
+though|RB-ADVP-NULL-NULL
+But|CC-S-NULL-S
+But|CC-S-``-VP
+finally|RB-ADVP-NULL-NULL
+Also|RB-ADVP-NULL-PP
+In other words|PP-S-NULL-*COMMA*
+later|RB-VP-VBD-VP
+in turn|PP-NP-NP-NULL
+Previously|RB-ADVP-NULL-NULL
+Hence|RB-ADJP-NULL-JJ
+But|CC-S-NULL-*COMMA*
+So|CC-S-NULL-VP
+regardless|RB-ADVP-NULL-NULL
+As a result|PP-S-NULL-*COMMA*
+for example|PP-PRN-*COMMA*-*COMMA*
+Nor|CC-SINV-NULL-VBZ
+Yet|RB-S-NULL-ADVP
+next|RB-ADVP-NULL-NULL
+previously|RB-ADVP-NULL-NULL
+Nor|CC-SINV-NULL-VBD
+In fact|PP-S-NULL-*COMMA*
+Afterward|RB-ADVP-NULL-NULL
+And|CC-S-NULL-SBAR
+Overall|RB-ADVP-NULL-NULL
+Also|RB-ADVP-NULL-NULL
+Furthermore|RB-ADVP-NULL-NULL
+In short|PP-S-NULL-*COMMA*
+For example|PP-S-``-*COMMA*
+additionally|RB-ADVP-NULL-NULL
+in turn|PP-VP-VBZ-VP
+still|RB-ADVP-RB-NULL
+Yet|CC-S-``-NP
+likewise|RB-ADVP-NULL-NULL
+Earlier|RB-ADVP-NULL-NULL
+in fact|PP-VP-VBP-VP
+Rather|RB-ADVP-NULL-NULL
+in fact|PP-NP-NP-NULL
+Or|CC-FRAG-NULL-ADVP
+And|CC-S-``-ADVP
+Then|RB-S-NULL-NP
+So|RB-S-NULL-NP
+for example|PP-S-*COMMA*-*COMMA*
+And|CC-S-NULL-*COMMA*
+But|CC-S-NULL-RB
+Nor|CC-SQ-NULL-MD
+So|RB-S-NULL-PRN
+earlier|RB-ADVP-NULL-NULL
+Yet|CC-S-NULL-PP
+thereby|RB-ADVP-NULL-NULL
+because|RB-ADVP-RB-NULL
+As a result|PP-S-``-*COMMA*
+But|CC-SINV-NULL-S
+meanwhile|RB-ADVP-NULL-NULL
+And|CC-SQ-NULL-VBZ
+in other words|PP-S-*COMMA*-*COMMA*
+later|RB-ADVP-NP-NULL
+In particular|PP-S-NULL-*COMMA*
+by comparison|PP-S-*COMMA*-*COMMA*
+by comparison|PP-S-CC-*COMMA*
+in fact|PP-S-*COMMA*-*COMMA*
+Thereafter|RB-ADVP-NULL-NULL
+meanwhile|NN-NP-DT-NULL
+In the end|PP-S-NULL-*COMMA*
+Or|CC-S-NULL-PP
+Ultimately|RB-ADVP-NULL-NULL
+But|CC-S-``-PP
+Conversely|RB-ADVP-NULL-NULL
+though|IN-SBAR-NULL-PRN
+in contrast|PP-S-*COMMA*-*COMMA*
+Likewise|RB-ADVP-NULL-NULL
+In particular|PP-S-NULL-PRN
+For instance|PP-S-NULL-*COMMA*
+Yet|CC-S-NULL-NP
+In addition|PP-S-NULL-PRN
+Before|IN-ADVP-NULL-NULL
+Nor|CC-SINV-NULL-VBP
+Accordingly|RB-ADVP-NULL-NULL
+Later|RB-ADVP-NULL-NULL
+Or|CC-S-NULL-VP
+Because|IN-SBAR-NULL-S
+in particular|PP-NP-NP-NULL
+Hence|RB-ADVP-NULL-NULL
+for example|PP-NP-*COMMA*-NULL
+And|CC-FRAG-NULL-NP
+But|CC-S-NULL-PRN
+In addition|PP-S-NULL-*COMMA*
+And|CC-FRAG-NULL-WP
+ultimately|RB-ADVP-NULL-NULL
+Or|CC-FRAG-NULL-*COMMA*
+On the other hand|PP-S-``-*COMMA*
+Because|IN-S-NULL-NP
+by contrast|PP-S-*COMMA*-*COMMA*
+As well|ADVP-S-NULL-*COMMA*
+By comparison|PP-S-NULL-*COMMA*
+accordingly|RB-ADVP-NULL-NULL
+So|IN-SBAR-NULL-S
+also|RB-ADJP-NULL-JJ
+In fact|PP-S-NULL-PRN
+But|CC-S-NULL-ADVP
+For example|PP-S-NULL-PRN
+Or|CC-S-NULL-*COMMA*
+And|CC-S-NULL-NP
+Nor|CC-S-NULL-VBP
+then|RB-ADVP-RB-NULL
+in the end|PP-S-CC-*COMMA*
+Alternatively|RB-ADVP-NULL-NULL
+furthermore|RB-ADVP-NULL-NULL
+But|CC-S-NULL-PP
+Yet|RB-S-NULL-NP
+simultaneously|RB-ADVP-RB-NULL
+Then|RB-S-NULL-PP
+Further|RB-ADVP-NULL-NULL
+And|CC-S-NULL-VP
+Additionally|RB-ADVP-NULL-NULL
+By then|PP-S-NULL-*COMMA*
+As a result|PP-S-NULL-PRN
+And|CC-S-``-NP
+also|RB-ADVP-NULL-NULL
+indeed|RB-S-NULL-NP
+But|CC-SBARQ-NULL-WHNP
+Besides|RB-ADVP-NULL-NULL
+But|CC-S-NULL-SBAR
+Yet|CC-S-NULL-ADVP
+Nevertheless|RB-ADVP-NULL-NULL
+because|IN-SBAR-NULL-S
+Instead|RB-ADVP-NULL-NULL
+So|CC-S-NULL-PP
+thus|RB-ADVP-NULL-NULL
+And|CC-S-NULL-S
+for example|PP-NP-*COMMA*-*COMMA*
+Separately|RB-ADVP-NULL-NULL
+Unless|IN-S-NULL-*COMMA*
+for instance|PP-VP-*COMMA*-*COMMA*
+In fact|PP-S-NULL-NP
+So|IN-S-NULL-NP
+And|CC-SBARQ-NULL-WHADVP
+as well|ADVP-VP-VB-NULL
+By then|PP-S-NULL-NP
+Also|RB-ADJP-NULL-VBN
+as a result|PP-VP-VB-NULL
+consequently|RB-ADVP-NULL-NULL
+for instance|PP-PRN-*COMMA*-*COMMA*
+So|RB-S-``-NP
+earlier|RBR-ADVP-NULL-NULL
+when|WRB-WHADVP-NULL-NULL
+But|CC-SBARQ-NULL-SQ
+for instance|PP-S-*COMMA*-*COMMA*
+in fact|PP-VP-VBD-NULL
+meantime|NN-NP-DT-NULL

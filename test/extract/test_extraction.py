@@ -1,11 +1,11 @@
 from pprint import pprint
-from aser.extract.eventuality_extractor import EventualityExtractor
+from aser.extract.eventuality_extractor import SeedRuleEventualityExtractor
 from aser.extract.relation_extractor import SeedRuleRelationExtractor
 from aser.extract.utils import parse_sentense_with_stanford
 from multiprocessing import Pool
 
 def fn(i):
-    e_extractor = EventualityExtractor(
+    e_extractor = SeedRuleEventualityExtractor(
         corenlp_path="/home/software/stanford-corenlp/stanford-corenlp-full-2018-02-27/",
         corenlp_port=13000)
 
@@ -16,14 +16,14 @@ def fn(i):
     res2 = e_extractor.extract_from_parsed_result(parsed_result)
     print()
 
-    print("=" * 10 + "`EventualityExtractor.extract`" + "=" * 10)
+    print("=" * 10 + "`SeedRuleEventualityExtractor.extract`" + "=" * 10)
     print("Input: ", text)
     print("Output: ")
     for elist in res1:
         print(elist)
 
     print("\n")
-    print("=" * 10 + "`EventualityExtractor.extract_from_parsed_result`" + "=" * 10)
+    print("=" * 10 + "`SeedRuleEventualityExtractor.extract_from_parsed_result`" + "=" * 10)
     print("Input: ")
     pprint(parsed_result)
     print("Output: ")

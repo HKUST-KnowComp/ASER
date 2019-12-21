@@ -13,13 +13,13 @@ def is_port_occupied(ip='127.0.0.1', port=80):
     except:
         return False
 
-def get_corenlp_client(corenlp_path, port):
+def get_corenlp_client(corenlp_path, corenlp_port):
     os.environ["CORENLP_HOME"] = corenlp_path
 
-    assert not is_port_occupied(port), "Port {} is occupied by other process".format(port)
+    assert not is_port_occupied(corenlp_port), "Port {} is occupied by other process".format(corenlp_port)
     corenlp_client = CoreNLPClient(
         annotators=['tokenize', 'ssplit', 'pos', 'lemma', 'depparse'], timeout=60000,
-        memory='5G', endpoint="http://localhost:%d" % port,
+        memory='5G', endpoint="http://localhost:%d" % corenlp_port,
         start_server=True, be_quiet=False)
     corenlp_client.annotate("hello world",
                             annotators=['tokenize', 'ssplit', 'pos', 'lemma', 'depparse'],
@@ -30,6 +30,6 @@ def get_corenlp_client(corenlp_path, port):
 if __name__ == "__main__":
     client = get_corenlp_client(
         corenlp_path="/home/software/stanford-corenlp/stanford-corenlp-full-2018-02-27/",
-        port=11001)
+        corenlp_port=11001)
     client.annotate("hello world")
     client.stop()

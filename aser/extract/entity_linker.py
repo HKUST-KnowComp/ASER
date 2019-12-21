@@ -10,9 +10,10 @@ try:
 except:
     import json
 
+stop_words = set(corpus.stopwords.words('english'))
+
 random.seed(22)
 base_url = 'https://en.wikipedia.org/?curid={}'
-
 
 class DisjointSet:
     def __init__(self, n, comp):
@@ -85,6 +86,111 @@ def acronym(phrase: str, stopwords: Set[str], ner=None):
     # abbr.add('.'.join(first_cap_letters)+'.')
 
     return abbr
+
+
+# ------------------- parsing and linking section -------------------
+def link(sents):
+    mentions = []
+    for i_s, s in enumerate(sents):
+        if s['text'] != '.':
+            for i_m, m in enumerate(s['mentions']):
+                mentions.append(Mention(m['start'], m['end'], s['text'], m['ner'], m['text'], i_s, i_m))
+                abbr = acronym(m['text'], stop_words, ner=m['ner'])
+                mentions[-1].alias = abbr
+
+    def get_entities(mention: Mention):
+        mset = mention.alias
+        for m in mset:
+            ment_info = share_src.ment_ent_dict.get(m)
+            if ment_info:
+                mention.total_num += ment_info['total']
+                for eid, freq_name in ment_info['entities'].items():
+                    eid = int(eid)
+                    freq = freq_name['freq']
+                    name = freq_name['name']
+                    if eid in mention.candidates:
+                        mention.candidates[eid].freq = max(mention.candidates[eid].freq, freq)
+                    else:
+                        mention.candidates[eid] = Entity(eid, name, freq)
+            true_ent = share_src.redirects.get(m, None)
+            if true_ent:
+                eid, name = int(true_ent['id']), true_ent['name']
+                if eid in mention.candidates:
+                    mention.candidates[eid].freq = 1.0
+                else:
+                    mention.candidates[eid] = Entity(eid, name, 1.0)
+        cands = mention.candidates.items()
+        cands = sorted(cands, key=lambda x: x[1].freq, reverse=True)
+        mention.candidates = [c[1] for c in cands]
+
+    # only for names
+    def coref(mentions: List[Mention]):
+        mention_person = []
+        for m in mentions:
+            if m.ner == 'PERSON':
+                mention_person.append(m)
+            elif len(m.candidates) > 0:
+                highest_candidate: Entity = m.candidates[0]
+                if highest_candidate.name in share_src.persons:
+                    mention_person.append(m)
+        # mention_person = sorted(mention_person,lambda x:len(x.text))
+        mention_num = len(mention_person)
+
+        def is_same_person(i1, i2):
+            if i1 == i2:
+                return True
+            m1, m2 = mention_person[i1].text, mention_person[i2].text
+            return str_contain(m1, m2) or str_contain(m2, m1)
+
+        dset = DisjointSet(mention_num, is_same_person)
+        dset.run()
+        # candidate implement
+        person_cand = {}
+        for k in set(dset.parent):
+            person_cand[k] = {}
+        for i_m, m in enumerate(mention_person):
+            label = dset.parent[i_m]
+            for ent in m.candidates:
+                eid = ent.id
+                if eid in person_cand[label]:
+                    person_cand[label][eid].update(ent)
+                else:
+                    person_cand[label][eid] = ent
+        for i_m, m in enumerate(mention_person):
+            label = dset.parent[i_m]
+            tmp = person_cand[label].items()
+            tmp = sorted(tmp, key=lambda x: x[1].freq, reverse=True)
+            m.candidates = [t[1] for t in tmp]
+
+    for m in mentions:
+        get_entities(m)
+    coref(mentions)
+    for m in mentions:
+        if m.candidates is None or len(m.candidates) <= 0:
+            continue
+        sent_id, ment_id = m.sent_id, m.ment_id
+        ment = sents[sent_id]['mentions'][ment_id]
+
+        cands = [m.candidates[0]]
+
+        # maybe more than one candidates have frequency = 1
+        if abs(cands[0].freq - 1.0) < 1e-4:
+            for i in range(1, len(m.candidates)):
+                if abs(m.candidates[i].freq - 1.0) < 1e-4:
+                    if m.candidates[i].id not in share_src.disambiguation_id2name:
+                        cands.append(m.candidates[i])
+                    else:
+                        pass
+                else:
+                    break
+        if cands[0].id in share_src.disambiguation_id2name:
+            if len(cands) == 1:
+                continue
+            else:
+                cands = cands[1:]
+        rand_int = random.randrange(len(cands))
+        ment['link'] = base_url.format(cands[rand_int].id)
+        ment['entity'] = cands[rand_int].name
 
 
 def write_big_dict(fn, dic, limit=20):
@@ -208,8 +314,6 @@ class Entity:
 
     def update(self, other):
         self.freq = (self.freq + other.freq) / 2
-
-
 
 
 def read_dict_from_dir(path):

@@ -41,7 +41,7 @@ def build_concept_relation_table_from_aser_kg(aser_concept_conn, aser_concept_ex
                     rid = Relation.generate_rid(h_cid, t_cid)
                     if rid not in rid2relation:
                         rid2relation[rid] = Relation(h_cid, t_cid)
-                    rid2relation[rid].update_relations(
+                    rid2relation[rid].update(
                         {k: v * instance_score * score for k, v in relation.relations.items()})
     aser_concept_conn.insert_relations(rid2relation.values())
 

@@ -1,10 +1,27 @@
 import os
 import re
 import socket
+from itertools import chain, combinations
 from stanfordnlp.server import CoreNLPClient
 
+ANNOTATORS = ("tokenize", "ssplit", "pos", "lemma", "parse", "ner")
+TYPE_SET = frozenset(["CITY", "ORGANIZATION", "COUNTRY",
+            "STATE_OR_PROVINCE", "LOCATION", "NATIONALITY", "PERSON"])
+PRONOUN_SET = frozenset(["i", "I", "me", "my", "mine", "myself", "we", "us", "our", "ours", "ourselves", "you", "your", "yours",
+                "yourself", "yourselves", "he", "him", "his", "himself", "she", "her", "hers", "herself", "it",
+                "its", "itself", "they", "them", "their", "theirs", "themself", "themselves"])
+PUNCTUATION_SET = frozenset(list("""!"#&'*+,-..../:;<=>?@[\]^_`|~""") + ["``", "''"])
+CLAUSE_SEPARATOR_SET = frozenset(list(".,:;?!~-") + ["..", "...", "--", "---"])
 
-_ANNOTATORS = ('tokenize', 'ssplit', 'pos', 'lemma', 'depparse')
+EMPTY_SENT_PARSED_RESULT = {
+    "text": ".",
+    "dependencies": [],
+    "tokens": ["."],
+    "lemmas": ["."],
+    "pos_tags": ["."],
+    "parse": "(ROOT (NP (. .)))",
+    "ners": ["O"],
+    "mentions": []}
 
 def is_port_occupied(ip='127.0.0.1', port=80):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -15,67 +32,73 @@ def is_port_occupied(ip='127.0.0.1', port=80):
     except:
         return False
 
-def get_corenlp_client(corenlp_path, port, annotators=_ANNOTATORS):
-    os.environ["CORENLP_HOME"] = corenlp_path
-    print("Starting corenlp client at port {}".format(port))
-    if is_port_occupied(port=port):
+
+def get_corenlp_client(corenlp_path="", corenlp_port=0, annotators=None):
+    if not (corenlp_path and corenlp_port):
+        return None, True
+
+    if not annotators:
+        annotators = list(ANNOTATORS)
+
+    if is_port_occupied(port=corenlp_port):
         try:
+            os.environ["CORENLP_HOME"] = corenlp_path
             corenlp_client = CoreNLPClient(
-                annotators=annotators, timeout=60000,
-                memory='5G', endpoint="http://localhost:%d" % port,
+                annotators=annotators, timeout=99999,
+                memory='4G', endpoint="http://localhost:%d" % corenlp_port,
                 start_server=False, be_quiet=False)
-            corenlp_client.annotate("hello world",
-                                    annotators=list(annotators),
-                                    output_format="json")
+            # corenlp_client.annotate("hello world",
+            #                         annotators=list(annotators),
+            #                         output_format="json")
             return corenlp_client, True
         except Exception as err:
             raise err
     else:
+        print("Starting corenlp client at port {}".format(corenlp_port))
         corenlp_client = CoreNLPClient(
-            annotators=annotators, timeout=60000,
-            memory='5G', endpoint="http://localhost:%d" % port,
+            annotators=annotators, timeout=99999,
+            memory='4G', endpoint="http://localhost:%d" % corenlp_port,
             start_server=True, be_quiet=False)
-        corenlp_client.annotate("hello world",
-                                annotators=list(annotators),
-                                output_format="json")
+        # corenlp_client.annotate("hello world",
+        #                         annotators=list(annotators),
+        #                         output_format="json")
         return corenlp_client, False
 
 
+def clean_sentence_for_parsing(text):
+    return re.sub(r'[^\x00-\x7F]+', ' ', text)
 
-def parse_sentense_with_stanford(input_sentence, corenlp_client:CoreNLPClient,
-                                       annotators=_ANNOTATORS):
-    type_set = {'CITY', 'ORGANIZATION', 'COUNTRY', 'STATE_OR_PROVINCE', 'LOCATION', 'NATIONALITY', 'PERSON'}
-    pronoun_set = {'I', 'me', 'my', 'mine', 'myself', 'we', 'us', 'our', 'ours', 'ourselves', 'you', 'your', 'yours',
-                   'yourself', 'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers', 'herself', 'it',
-                   'its', 'itself', 'they', 'them', 'their', 'theirs', 'themself', 'themselves', }
-
-    EMPTY_SENTENCE_PARSED_RESULT = {'text': '.', 'dependencies': [], 'tokens': ['.']}
-    if 'lemma' in annotators:
-        EMPTY_SENTENCE_PARSED_RESULT['lemmas'] = ['.']
-    if 'ner' in annotators:
-        EMPTY_SENTENCE_PARSED_RESULT['ners'] = ['.']
-        EMPTY_SENTENCE_PARSED_RESULT['mentions'] = ['.']
-    if 'pos' in annotators:
-        EMPTY_SENTENCE_PARSED_RESULT['pos_tags'] = ['.']
-    if 'parse' in annotators:
-        EMPTY_SENTENCE_PARSED_RESULT['parse'] = '(ROOT\r\n  (NP (. .)))'
-
-    threshold = 230
-
-
-    def clean_sentence_for_parsing(text):
-        return re.sub(r'[^\x00-\x7F]+', ' ', text)
-
+def parse_sentense_with_stanford(input_sentence, corenlp_client: CoreNLPClient,
+                                 annotators=None, max_len=1000):
+    if not annotators:
+        annotators = list(ANNOTATORS)
 
     cleaned_para = clean_sentence_for_parsing(input_sentence)
-    raw_sentences = corenlp_client.annotate(cleaned_para, annotators=['tokenize', 'ssplit', ],
-                                            output_format='json')
+
+    need_to_split = len(cleaned_para) <= max_len
+    if not need_to_split:
+        try:
+            raw_sentences = corenlp_client.annotate(cleaned_para, annotators=annotators, output_format='json')['sentences']
+        except Exception:
+            need_to_split = True
+
+    if need_to_split:
+        raw_sentences = list()
+        temp = corenlp_client.annotate(cleaned_para, annotators=["ssplit"], output_format='json')['sentences']
+        for sent in temp:
+            if sent['tokens']:
+                char_st = sent['tokens'][0]['characterOffsetBegin']
+                char_end = sent['tokens'][-1]['characterOffsetEnd']
+            else:
+                char_st, char_end = 0, 0
+            if char_st == char_end:
+                continue
+            sent = cleaned_para[char_st:char_end]
+            raw_sentences.extend(corenlp_client.annotate(sent, annotators=annotators, output_format='json')['sentences'])
 
     parsed_rst_list = list()
-    # annotators_wo_tokenize = [a for a in annotators if a not in {'tokenize','ssplit'}]
 
-    for sent in raw_sentences['sentences']:
-
+    for sent in raw_sentences:
         if sent['tokens']:
             char_st = sent['tokens'][0]['characterOffsetBegin']
             char_end = sent['tokens'][-1]['characterOffsetEnd']
@@ -83,29 +106,8 @@ def parse_sentense_with_stanford(input_sentence, corenlp_client:CoreNLPClient,
             char_st, char_end = 0, 0
 
         raw_text = cleaned_para[char_st:char_end]
-        if len(raw_text) > threshold:
-            parsed_rst_list.append(EMPTY_SENTENCE_PARSED_RESULT)
-            continue
-        try:
-            tmp_output = corenlp_client.annotate(raw_text, annotators=annotators, output_format='json'
-                                                 # properties={
-                                                 #     'annotators': annotators,
-                                                 #     # 'tokenize.language': 'Whitespace',
-                                                 #     # 'tokenize.whitespace': 'true',  # first property
-                                                 #     # 'ssplit.eolonly': 'true',  # second property
-                                                 #     'outputFormat': 'json'
-                                                 # }
-                                                 )
-        except Exception as e:
-            print(e)
-            parsed_rst_list.append(EMPTY_SENTENCE_PARSED_RESULT)
-            continue
-        if len(tmp_output['sentences']) == 0:
-            parsed_rst_list.append(EMPTY_SENTENCE_PARSED_RESULT)
-            continue
-        s = tmp_output['sentences'][0]
 
-        enhanced_dependency_list = s['enhancedPlusPlusDependencies']
+        enhanced_dependency_list = sent['enhancedPlusPlusDependencies']
         dependencies = set()
         for relation in enhanced_dependency_list:
             if relation['dep'] == 'ROOT':
@@ -119,30 +121,29 @@ def parse_sentense_with_stanford(input_sentence, corenlp_client:CoreNLPClient,
         dependencies = list(dependencies)
         dependencies.sort(key=lambda x: (x[0], x[2]))
 
-        parsed_rst_list.append({
+        x = {
             "text": raw_text,
             "dependencies": dependencies,
-            "tokens": [t['word'] for t in s['tokens']],
-        })
+            "tokens": [t['word'] for t in sent['tokens']],
+        }
         if 'pos' in annotators:
-            parsed_rst_list[-1]['pos_tags'] = [t['pos'] for t in s['tokens']]
+            x['pos_tags'] = [t['pos'] for t in sent['tokens']]
         if 'lemma' in annotators:
-            parsed_rst_list[-1]["lemmas"] = [t['lemma'] for t in s['tokens']]
+            x["lemmas"] = [t['lemma'] for t in sent['tokens']]
         if 'ner' in annotators:
             mentions = []
-            for m in s['entitymentions']:
-                if m['ner'] in type_set and m['text'].lower().strip() not in pronoun_set:
+            for m in sent['entitymentions']:
+                if m['ner'] in TYPE_SET and m['text'].lower().strip() not in PRONOUN_SET:
                     mentions.append({'start': m['tokenBegin'], 'end': m['tokenEnd'], 'text': m['text'], 'ner': m['ner'],
                                      'link': None, 'entity': None})
 
-            parsed_rst_list[-1]['ners'] = [t['ner'] for t in s['tokens']]
-            parsed_rst_list[-1]['mentions'] = mentions
+            x['ners'] = [t['ner'] for t in sent['tokens']]
+            x['mentions'] = mentions
         if 'parse' in annotators:
-            parsed_rst_list[-1]['parse'] = s['parse']
+            x['parse'] = re.sub(r"\s+", " ", sent['parse'])
 
+        parsed_rst_list.append(x)
     return parsed_rst_list
-
-
 
 
 def sort_dependencies_position(dependencies, reset_position=True):
@@ -152,7 +153,7 @@ def sort_dependencies_position(dependencies, reset_position=True):
         Output example if fix_position:
         [[2, 'nsubj', 0], [2, 'cop', 1]], {0: 6, 1: 7, 2: 8}
         Output example if not fix_position:
-        [, [8, 'nsubj', 6], [8, 'cop', 7]]
+        [[8, 'nsubj', 6], [8, 'cop', 7]]
     """
 
     tmp_dependencies = set()
@@ -192,6 +193,7 @@ def extract_indices_from_dependencies(dependencies):
 
     return list(sorted(word_positions))
 
+
 def iter_files(path):
     """Walk through all files located under a root path."""
     if os.path.isfile(path):
@@ -203,3 +205,128 @@ def iter_files(path):
     else:
         raise RuntimeError('Path %s is invalid' % path)
 
+def index_from(sequence, x, start_from=0):
+    indices = []
+    for idx in range(start_from, len(sequence)):
+        if x == sequence[idx]:
+            indices.append(idx)
+    return indices
+
+def powerset(iterable, min_size=0, max_size=-1):
+    "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
+    s = sorted(iterable)
+    if max_size == -1:
+        max_size = len(s)
+    return chain.from_iterable(combinations(s, r) for r in range(min_size, max_size+1))
+
+def get_clauses(sent_parsed_result, syntax_tree, index_seps=None):
+    if index_seps is None:
+        index_seps = set()
+    elif isinstance(index_seps, (list, tuple)):
+        index_seps = set(index_seps)
+    sent_len = len(sent_parsed_result["tokens"])
+    
+    clauses = list()
+    clause = list()
+    for t_idx, token in enumerate(sent_parsed_result["tokens"]):
+        # split the sentence by seps
+        valid = token not in CLAUSE_SEPARATOR_SET and t_idx not in index_seps
+        if valid:
+            clause.append(t_idx)
+        if t_idx == sent_len-1 or not valid:
+            # strip_punctuation
+            clause = strip_punctuation(sent_parsed_result, clause)
+            if len(clause) > 0:
+                # split by the SBAR tag
+                clause_tree = syntax_tree.get_subtree_by_token_indices(clause)
+                find_SBAR = False
+                if clause_tree.tree:
+                    for node in clause_tree.tree.traverse():
+                        if node.name == "SBAR":
+                            leaves = set([node.index for node in node.get_leaves()])
+                            if len(leaves) == len(clause):
+                                continue
+                            clause1, clause2 = list(), list()
+                            for idx in clause:
+                                if idx in leaves:
+                                    clause1.append(idx)
+                                else:
+                                    clause2.append(idx)
+                            if clause1[0] < clause2[0]:
+                                clauses.append(tuple(clause1))
+                                clauses.append(tuple(clause2))
+                            else:
+                                clauses.append(tuple(clause2))
+                                clauses.append(tuple(clause1))
+                            find_SBAR = True
+                            break
+                if not find_SBAR:
+                    clauses.append(tuple(clause))
+            clause = list()
+    
+    return clauses
+
+def get_prev_token_index(doc_parsed_result, sent_idx, idx, skip_tokens=None):
+    if skip_tokens is None:
+        skip_tokens = set()
+    prev_sent_idx, prev_idx = -1, -1
+
+    if idx-1 >= 0:
+        prev_sent_idx = sent_idx
+        prev_idx = idx - 1
+    elif sent_idx-1 >= 0:
+        prev_sent_idx = sent_idx - 1
+        prev_idx = len(doc_parsed_result[prev_sent_idx]["tokens"]) - 1
+    else:
+        return -1, -1
+    prev_token = doc_parsed_result[prev_sent_idx]["tokens"][prev_idx]
+    if prev_token not in skip_tokens:
+        return prev_sent_idx, prev_idx
+    else:
+        return get_prev_token_index(doc_parsed_result, prev_sent_idx, prev_idx, skip_tokens)
+
+def get_next_token_index(doc_parsed_result, sent_idx, idx, skip_tokens=None):
+    if skip_tokens is None:
+        skip_tokens = set()
+    next_sent_idx, next_idx = -1, -1
+
+    if idx+1 < len(doc_parsed_result[sent_idx]["tokens"]):
+        next_sent_idx = sent_idx
+        next_idx = idx + 1
+    elif sent_idx+1 < len(doc_parsed_result):
+        next_sent_idx = sent_idx + 1
+        next_idx = 0
+    else:
+        return -1, -1
+    next_token = doc_parsed_result[next_sent_idx]["tokens"][next_idx]
+    if next_token not in skip_tokens:
+        return next_sent_idx, next_idx
+    else:
+        return get_next_token_index(doc_parsed_result, next_sent_idx, next_idx, skip_tokens)
+
+def strip_punctuation(sent_parsed_result, indices):
+    valid_idx1, valid_idx2 = 0, len(indices)
+    while valid_idx1 < valid_idx2:
+        token = sent_parsed_result["tokens"][indices[valid_idx1]]
+        if token in PUNCTUATION_SET:
+            valid_idx1 += 1
+        elif token == "-LCB-":
+            valid_idx1 += 1
+        elif token == "-LRB-":
+            valid_idx1 += 1
+        else:
+            break
+    while valid_idx1 < valid_idx2:
+        token = sent_parsed_result["tokens"][indices[valid_idx2-1]]
+        if token in PUNCTUATION_SET:
+            valid_idx2 -= 1
+        elif token == "-RCB-":
+            valid_idx2 -= 1
+        elif token == "-RRB-":
+            valid_idx2 -= 1
+        else:
+            break
+    if valid_idx1 == 0 and valid_idx2 == len(indices):
+        return indices
+    else:
+        return indices[valid_idx1:valid_idx2]

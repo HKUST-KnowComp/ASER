@@ -4,3 +4,5 @@ pprint
 stanfordnlp
 tqdm
 zmq
+ete3
+scikit-learn

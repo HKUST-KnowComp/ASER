@@ -128,11 +128,11 @@ class ASERKGConnection(object):
                 row[c] = " ".join(d)
             else:
                 row[c] = d
-        row["info"] = json.dumps(eventuality.to_dict(minimum=True)).encode("utf-8")
+        row["info"] = eventuality.encode(minimum=True)
         return row
     
     def _convert_row_to_eventuality(self, row):
-        eventuality = Eventuality().from_dict(json.loads(row["info"].decode("utf-8")))
+        eventuality = Eventuality().decode(row["info"])
         eventuality.eid = row["_id"]
         eventuality.frequency = row["frequency"]
         eventuality.pattern = row["pattern"]

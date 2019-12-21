@@ -1,0 +1,136 @@
+now that|ADVP
+nevertheless|RB
+or|CC
+since|IN
+while|NN
+as a result|PP
+on the contrary|PP
+and|NONE_TREE
+either or|VP
+once|IN
+specifically|RB
+later|RB
+as if|SBAR
+yet|RB
+as though|SBAR
+in the end|PP
+still|RB
+before and after|PP
+so|IN
+in turn|PP
+accordingly|RB
+afterward|RB
+next|JJ
+so|CC
+because|RB
+because|IN
+meantime|NN
+also|NONE_TREE
+nonetheless|RB
+besides|IN
+till|IN
+next|RB
+indeed|RB
+in short|PP
+but|CC
+when and if|SBAR
+likewise|RB
+earlier|RB
+overall|RB
+as long as|ADVP
+as|IN
+and|CC
+if|IN
+as soon as|CONJP
+yet|CC
+for|IN
+though|IN
+as soon as|ADVP
+much as|ADVP
+when|NONE_TREE
+thereafter|RB
+regardless|RB
+lest|IN
+instead|RB
+afterwards|VBD
+therefore|RB
+as well|ADVP
+hence|RB
+otherwise|RB
+rather|RB
+because|NONE_TREE
+later|RBR
+before|RB
+next|IN
+finally|RB
+earlier|RBR
+meanwhile|RB
+in contrast|PP
+by then|PP
+by contrast|PP
+now that|VP
+now that|SBAR
+when|WRB
+whereas|NNS
+in fact|PP
+much as|SBAR
+furthermore|RB
+for instance|SBAR
+plus|NNP
+by then|ADVP
+as an alternative|PP
+unless|IN
+as soon as|SBAR
+alternatively|RB
+thus|RB
+in other words|PP
+as long as|CONJP
+in addition|NONE_TREE
+for example|PP
+ultimately|RB
+overall|JJ
+then|RB
+once|RB
+similarly|RB
+neither nor|VP
+separately|RB
+as|RB
+by comparison|PP
+afterwards|RB
+also|RB
+besides|RB
+conversely|RB
+once|VBG
+if and when|UCP
+before|IN
+in sum|PP
+simultaneously|RB
+if then|SBAR
+else|RB
+until|IN
+in particular|PP
+thereby|RB
+after|IN
+further|RB
+moreover|RB
+for instance|PP
+while|IN
+so that|SBAR
+nor|CC
+though|RB
+either or|S
+in addition|PP
+consequently|RB
+however|RB
+since|RB
+as long as|ADJP
+so|RB
+additionally|RB
+if then|S
+meanwhile|NN
+on the other hand|PP
+whereas|IN
+insofar as|S
+although|IN
+previously|RB
+except|IN

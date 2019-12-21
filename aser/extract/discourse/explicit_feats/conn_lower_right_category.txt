@@ -1,0 +1,322 @@
+overall|NNP
+because|NP
+or|MD
+lest|S
+meantime|NONE
+by then|*COMMA*
+once|NP
+so|SBAR
+but|RB
+otherwise|NONE
+and|NONE_TREE
+furthermore|NONE
+as long as|NONE
+earlier|NONE
+therefore|JJ
+while|FRAG
+but|WHNP
+later|RB
+now that|*COMMA*
+later|JJ
+in the end|NP
+by then|VP
+and|NNS
+yet|S
+while|NONE
+regardless|NONE
+until|S
+while|``
+if|PRN
+later|VBN
+in fact|*COMMA*
+because|PRN
+in turn|PP
+but|``
+until|``
+thus|VP
+then|*COMMA*
+moreover|NONE
+specifically|NONE
+in short|*COMMA*
+since|NONE
+and|SBAR
+additionally|NONE
+but|ADVP
+unless|NONE
+while|PP
+so|PP
+then|S
+in the end|*COMMA*
+by contrast|*COMMA*
+but|SQ
+while|UCP
+as if|*COMMA*
+as if|PRN
+on the contrary|*COMMA*
+if|S
+as an alternative|*COMMA*
+so that|NONE
+thereby|VP
+until|SBAR
+then|PRN
+till|S
+and|NN
+alternatively|NONE
+nor|MD
+meanwhile|NONE
+if|RB
+in short|*COLON*
+but|NNS
+then|TO
+thus|NP
+further|NONE
+though|``
+besides|S
+afterwards|NONE
+as soon as|NONE
+because|``
+separately|NONE
+after|NP
+yet|SBAR
+either or|*COMMA*
+later|NONE
+previously|NONE
+but|S
+or|VBZ
+and|S
+because|S
+while|NP
+but|X
+so|S
+in fact|VP
+or|NP
+then|NP
+thus|NONE
+as soon as|*COMMA*
+in other words|*COMMA*
+but|MD
+also|PP
+because|NONE
+because|-RRB-
+but|WHADVP
+neither nor|.
+in turn|NONE
+therefore|NONE
+before|NONE
+and|RB
+also|JJ
+similarly|NONE
+as well|NONE
+or|ADVP
+afterward|NONE
+as an alternative|PRN
+next|NONE
+nor|SINV
+except|S
+in turn|VP
+in addition|*COMMA*
+yet|PP
+by then|NP
+for instance|PRN
+ultimately|NONE
+then|IN
+but|PRN
+when|NONE_TREE
+then|NONE
+as soon as|NP
+simultaneously|NONE
+or|NONE
+so|PRN
+hence|JJ
+in turn|*COMMA*
+for example|*COMMA*
+then|ADVP
+besides|NP
+or|S
+while|PRN
+hence|NONE
+because|FRAG
+yet|RB
+neither nor|NONE
+yet|ADVP
+since|NP
+if|NONE
+much as|*COMMA*
+as soon as|PP
+in fact|NONE
+after|NONE
+so|*COMMA*
+for instance|*COMMA*
+nevertheless|NONE
+because|NONE_TREE
+so|NP
+as a result|NONE
+although|S
+in the end|NONE
+for|S
+yet|NONE
+so|VP
+still|NONE
+and|SQ
+or|RB
+as soon as|VP
+if|NP
+then|VP
+before and after|NONE
+and|ADVP
+in other words|*COLON*
+before|S
+as though|NONE
+as a result|*COMMA*
+but|VP
+later|VP
+nor|VBD
+so|NONE
+however|NONE
+and|IN
+and|*COMMA*
+or|``
+and|X
+thereby|NONE
+as if|NONE
+instead|NONE
+after|S
+nor|S
+so|WHADVP
+if then|*COMMA*
+and|RRC
+so|WHNP
+while|S
+because|*COMMA*
+either or|NONE
+whereas|S
+on the other hand|*COMMA*
+indeed|NP
+or|SQ
+as|S
+and|PRN
+since|S
+but|SINV
+though|FRAG
+yet|VP
+and|PP
+in particular|*COMMA*
+whereas|NONE
+rather|NONE
+but|WP
+and|SINV
+in fact|NP
+or|PP
+although|ADJP
+then|PP
+until|NP
+thereafter|NONE
+although|``
+if|UCP
+in particular|NONE
+nor|VP
+in addition|PRN
+as long as|NP
+and|VBZ
+next|NP
+but|VBZ
+consequently|S
+once|RB
+for example|NONE
+also|S
+now that|NP
+also|NONE_TREE
+and|WHADVP
+if|PP
+finally|NONE
+or|*COMMA*
+nevertheless|JJ
+likewise|NONE
+if then|NONE
+in fact|PRN
+or|VBD
+later|S
+for instance|NONE
+also|VBN
+indeed|NONE
+or|VP
+for|NP
+or|IN
+else|S
+in addition|*COLON*
+if|ADJP
+as well|*COMMA*
+if then|NP
+unless|*COMMA*
+and|VP
+or|SBAR
+but|FRAG
+though|IN
+but|PP
+while|ADJP
+in contrast|*COMMA*
+and|``
+for example|PRN
+though|PRN
+much as|NONE
+by comparison|*COMMA*
+although|*COMMA*
+consequently|NONE
+and|NP
+and|NONE
+now that|PRN
+if and when|NONE
+though|NONE
+as|NP
+so|ADVP
+and|NX
+conversely|NONE
+once|NN
+when|NONE
+but|*COMMA*
+plus|NONE
+if|FRAG
+but|SBAR
+nonetheless|NONE
+in addition|NONE_TREE
+while|IN
+as long as|S
+nor|VBP
+though|RB
+nor|VBZ
+but|NP
+and|WP
+and|FRAG
+as a result|PRN
+thus|PP
+but|NN
+instead|VP
+thus|S
+before|NP
+accordingly|NONE
+overall|NONE
+rather|NP
+so|RB
+while|*COMMA*
+nor|SQ
+yet|NP
+insofar as|NONE
+then|RB
+though|S
+as long as|*COMMA*
+and|ADJP
+though|*COMMA*
+as well|SBAR
+also|NONE
+while|ADVP
+except|IN
+once|S
+when and if|PRN
+unless|S
+otherwise|VP
+and|SBARQ
+yet|*COMMA*
+in particular|PRN
+besides|NONE
+now that|NONE
+in sum|*COMMA*

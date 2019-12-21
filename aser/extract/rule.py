@@ -1,11 +1,8 @@
-eventuality_rule_names = ['s-be-a', 's-v', 's-v-a', 's-v-a-X-o', 's-v-be-a', 's-v-be-o', 's-v-o', 's-v-o-o', 's-v-o-X-o',
-                       's-v-v', 's-v-v-o', 's-v-X-o', 'spass-v', 'spass-v-X-o']
-
-CONNECTIVE_LIST = {'before', 'afterward', 'next', 'then', 'till', 'until', 'after', 'earlier', 'once', 'previously',
-                   'meantime', 'meanwhile', 'simultaneously', 'because', 'for', 'accordingly', 'consequently', 'so',
-                   'thus', 'therefore', 'if', 'but', 'conversely', 'however', 'nonetheless', 'although', 'and',
-                   'additionally', 'also', 'besides', 'further', 'furthermore', 'similarly', 'likewise', 'moreover',
-                   'plus', 'specifically', 'alternatively', 'or', 'otherwise', 'unless', 'instead', 'except'}
+# CONNECTIVE_LIST = frozenset(['before', 'afterward', 'next', 'then', 'till', 'until', 'after', 'earlier', 'once', 'previously',
+#                    'meantime', 'meanwhile', 'simultaneously', 'because', 'for', 'accordingly', 'consequently', 'so',
+#                    'thus', 'therefore', 'if', 'but', 'conversely', 'however', 'nonetheless', 'although', 'and',
+#                    'additionally', 'also', 'besides', 'further', 'furthermore', 'similarly', 'likewise', 'moreover',
+#                    'plus', 'specifically', 'alternatively', 'or', 'otherwise', 'unless', 'instead', 'except'])
 
 CLAUSE_WORDS = frozenset(['when', 'who', 'what', 'where', 'how', 'When', 'Who', 'What', 'Where', 'How', 'why', 'Why', 'which',
                 'Which', '?'])
@@ -24,6 +21,9 @@ class EventualityRule(object):
         self.positive_rules = list()
         self.possible_rules = list()
         self.negative_rules = list()
+
+EVENTUALITY_PATTERNS = ['s-be-a', 's-v', 's-v-a', 's-v-a-X-o', 's-v-be-a', 's-v-be-o', 's-v-o', 's-v-o-o', 's-v-o-X-o',
+                       's-v-v', 's-v-v-o', 's-v-X-o', 'spass-v', 'spass-v-X-o']
 
 ALL_EVENTUALITY_RULES = dict()
 # # subject-verb-dobj
@@ -207,3 +207,22 @@ A_rule.negative_rules.append(('S1', """+nmod:of/nmod:for/nmod:at""", 'NA'))
 A_rule.negative_rules.append(('O1', """+nmod:of/nmod:for/nmod:at""", 'NA'))
 A_rule.negative_rules.append(('O2', """+nmod:of/nmod:for/nmod:at""", 'NA'))
 ALL_EVENTUALITY_RULES['s-v-o-X-o'] = A_rule
+
+
+SEED_CONNECTIVE_DICT = {
+    'Precedence': [['before']],
+    'Succession': [['after']],
+    'Synchronous': [['meanwhile'], ['at', 'the', 'same', 'time']],
+    'Reason': [['because']],
+    'Result': [['so'], ['thus'], ['therefore']],
+    'Condition': [['if']],
+    'Contrast': [['but'], ['however']],
+    'Concession': [['although']],
+    'Conjunction': [['and'], ['also']],
+    'Instantiation': [['for', 'example'], ['for', 'instance']],
+    'Restatement': [['in', 'other', 'words']],
+    'Alternative': [['or'], ['unless']],
+    'ChosenAlternative': [['instead']],
+    'Exception': [['except']],
+    'Co_Occurrence': list()
+}

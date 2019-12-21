@@ -1,10 +1,10 @@
 from pprint import pprint
-from aser.extract.eventuality_extractor import EventualityExtractor
+from aser.extract.eventuality_extractor import SeedRuleEventualityExtractor
 from aser.extract.relation_extractor import SeedRuleRelationExtractor
 from aser.extract.utils import parse_sentense_with_stanford
 
 if __name__ == "__main__":
-    e_extractor = EventualityExtractor(
+    e_extractor = SeedRuleEventualityExtractor(
         corenlp_path="/home/software/stanford-corenlp/stanford-corenlp-full-2018-02-27/",
         corenlp_port=13000)
 
@@ -17,7 +17,7 @@ if __name__ == "__main__":
     text = "I go to lunch because I am hungry. I go to kitchen before I find some food"
     eventualities_list = e_extractor.extract(text)
 
-    print("=" * 10 + "`EventualityExtractor.extract_eventualities`" + "=" * 10)
+    print("=" * 10 + "`SeedRuleEventualityExtractor.extract_eventualities`" + "=" * 10)
     print("Input: ", text)
     print("Output: ")
     for elist in eventualities_list:
@@ -43,7 +43,7 @@ if __name__ == "__main__":
                      'tokens': ['I', 'go', 'to', 'lunch', 'because', 'I', 'am', 'hungry', '.']}
 
     eventualities = e_extractor.extract_from_parsed_result(parsed_result)
-    print("=" * 10 + "`EventualityExtractor.extract_eventualities_from_parsed_result`" + "=" * 10)
+    print("=" * 10 + "`SeedRuleEventualityExtractor.extract_eventualities_from_parsed_result`" + "=" * 10)
     print("Input: ")
     pprint(parsed_result)
     print("Output: ")
