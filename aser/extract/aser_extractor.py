@@ -146,7 +146,8 @@ class BaseASERExtractor(object):
 class SeedRuleASERExtractor(BaseASERExtractor):
     def __init__(self, **kw):
         super().__init__(**kw)
-        self.eventuality_extractor = SeedRuleEventualityExtractor(**kw)
+        from aser.extract.rule import CLAUSE_WORDS
+        self.eventuality_extractor = SeedRuleEventualityExtractor(skip_words=CLAUSE_WORDS)
         self.relation_extractor = SeedRuleRelationExtractor(**kw)
 
 class DiscourseASERExtractor1(BaseASERExtractor):

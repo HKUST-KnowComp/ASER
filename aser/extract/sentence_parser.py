@@ -76,7 +76,7 @@ class SentenceParser:
                     f.write("\n")
         return paragraphs
 
-    def parse(self, paragraph, annotators=None, max_len=230):
+    def parse(self, paragraph, annotators=None, max_len=1000):
         if annotators is None:
             annotators = self.annotators
 

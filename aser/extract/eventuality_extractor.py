@@ -3,7 +3,6 @@ from copy import copy, deepcopy
 from itertools import chain, permutations
 from aser.eventuality import Eventuality
 from aser.extract.rule import ALL_EVENTUALITY_RULES
-# from aser.extract.rule import CONNECTIVE_LIST, CLAUSE_WORDS
 from aser.extract.utils import parse_sentense_with_stanford, get_corenlp_client, get_clauses, powerset
 from aser.extract.utils import ANNOTATORS
 from aser.extract.discourse_parser import ConnectiveExtractor, ArgumentPositionClassifier, \
@@ -132,6 +131,9 @@ class BaseEventualityExtractor(object):
 class SeedRuleEventualityExtractor(BaseEventualityExtractor):
     def __init__(self, **kw):
         super().__init__(**kw)
+        self.skip_words = kw.get("skip_words", set())
+        if not isinstance(self.skip_words, set):
+            self.skip_words = set(self.skip_words)
 
     def extract_from_parsed_result(self, parsed_result, output_format="Eventuality", in_order=True, **kw):
         if output_format not in ["Eventuality", "json"]:
@@ -151,6 +153,8 @@ class SeedRuleEventualityExtractor(BaseEventualityExtractor):
         
         para_eventualities = [list() for _ in range(len(parsed_result))]
         for sent_parsed_result, sent_eventualities in zip(parsed_result, para_eventualities):
+            if self.skip_words and set(sent_parsed_result["tokens"]) & self.skip_words:
+                continue
             seed_rule_eventualities = dict()
             for rule_name in eventuality_rules:
                 tmp_eventualities = self._extract_eventualities_from_dependencies_with_single_rule(
