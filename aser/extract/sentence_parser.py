@@ -30,7 +30,7 @@ class SentenceParser:
         return file_name + "|" + str(sid)
 
     def parse_raw_file(self, raw_path, processed_path=None, annotators=None, max_len=1000):
-         """ This method parses raw text of a raw file and save the processed data into a file.
+        """ This method parses raw text of a raw file and save the processed data into a file.
 
         :type raw_path: str
         :type processed_path: str or None
@@ -41,9 +41,6 @@ class SentenceParser:
         :param annotators: the annotators parameter for the stanford corenlp client
         :param max_len: the max length of paragraphs for parsing as a whole
         :return: a list of dicts
-
-        .. highlight:: python
-        .. code-block:: python
         """
 
         if annotators is None:

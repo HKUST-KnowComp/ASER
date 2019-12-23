@@ -496,13 +496,19 @@ class DiscourseRelationExtractor(BaseRelationExtractor):
         if eventuality.raw_sent_mapping:
             argument_indices = set(argument["indices"])
             event_indices = set(eventuality.raw_sent_mapping.values())
-            Simpson = len(argument_indices & event_indices) / min(len(argument_indices), len(event_indices))
-            match = Simpson >= threshold
+            try:
+                Simpson = len(argument_indices & event_indices) / min(len(argument_indices), len(event_indices))
+                match = Simpson >= threshold
+            except ZeroDivisionError:
+                match = False
         else:
             argument_tokens = set([sent_parsed_result["lemmas"][idx].lower() for idx in argument["indices"]])
             event_tokens = set(eventuality.words)
-            Simpson = len(argument_tokens & event_tokens) / min(len(argument_tokens), len(event_tokens))
-            match = Simpson >= threshold
+            try:
+                Simpson = len(argument_tokens & event_tokens) / min(len(argument_tokens), len(event_tokens))
+                match = Simpson >= threshold
+            except ZeroDivisionError:
+                match = False
         return match
     
     @staticmethod
@@ -511,13 +517,19 @@ class DiscourseRelationExtractor(BaseRelationExtractor):
         if eventuality.raw_sent_mapping:
             argument_indices = set(argument["indices"])
             event_indices = set(eventuality.raw_sent_mapping.values())
-            Jaccard = len(argument_indices & event_indices) / len(argument_indices | event_indices)
-            match = Jaccard >= threshold
+            try:
+                Jaccard = len(argument_indices & event_indices) / len(argument_indices | event_indices)
+                match = Jaccard >= threshold
+            except ZeroDivisionError:
+                match = False
         else:
             argument_tokens = set([sent_parsed_result["lemmas"][idx].lower() for idx in argument["indices"]])
             event_tokens = set(eventuality.words)
-            Jaccard = len(argument_tokens & event_tokens) / len(argument_tokens | event_tokens)
-            match = Jaccard >= threshold
+            try:
+                Jaccard = len(argument_tokens & event_tokens) / len(argument_tokens | event_tokens)
+                match = Jaccard >= threshold
+            except ZeroDivisionError:
+                match = False
         return match
 
     @staticmethod
