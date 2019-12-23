@@ -313,7 +313,10 @@ class SeedRuleEventualityExtractor(BaseEventualityExtractor):
                                 dependencies=selected_edges,
                                 skeleton_dependencies=selected_skeleton_edges,
                                 sent_parsed_result=sent_parsed_result)
-            return event
+            if len(event) > 0:
+                return event
+            else:
+                return event
         else:
             return None
 
