@@ -551,9 +551,9 @@ class DiscourseASERExtractor3(BaseASERExtractor):
             else:
                 syntax_tree = syntax_tree_cache[sent_idx] = SyntaxTree(sent_parsed_result["parse"])
             
-            # the best but slower
-            for indices in powerset(sent_connectives):
-                indices = set(chain.from_iterable(indices))
-                sent_arguments.update(get_clauses(sent_parsed_result, syntax_tree, index_seps=indices))
-            # sent_arguments.update(get_clauses(sent_parsed_result, syntax_tree, index_seps=set(chain.from_iterable(sent_connectives))))
+            # more but slower
+            # for indices in powerset(sent_connectives):
+            #     indices = set(chain.from_iterable(indices))
+            #     sent_arguments.update(get_clauses(sent_parsed_result, syntax_tree, index_seps=indices))
+            sent_arguments.update(get_clauses(sent_parsed_result, syntax_tree, index_seps=set(chain.from_iterable(sent_connectives))))
         return para_arguments
