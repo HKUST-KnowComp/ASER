@@ -240,7 +240,7 @@ class SyntaxTree:
         for c in text.strip().split(" "):
             if c == ")":
                 node = list()
-                while(1):
+                while len(stack) > 0:
                     popped = stack.pop()
                     if popped == "(":
                         break
