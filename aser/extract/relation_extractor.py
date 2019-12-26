@@ -402,20 +402,20 @@ class DiscourseRelationExtractor(BaseRelationExtractor):
         #         arg2 = connective.get("arg2", None)
         #         if arg1 and arg2 and sense and sense != "None":
         #             x = {
-        #                 "DocID": sentences[0][0]["doc"], 
+        #                 "DocID": parsed_result[0]["doc"], 
         #                 "ID": conn_idx, 
         #                 "Connective": {
         #                     "RawText": connective["connective"],
-        #                     "TokenList": [i+sentences[connective["sent_idx"]][0]["sentence_offset"] for i in connective["indices"]],
-        #                     "Tokens": [sentences[connective["sent_idx"]][0]["tokens"][i] for i in connective["indices"]]},
+        #                     "TokenList": [i+parsed_result[connective["sent_idx"]]["sentence_offset"] for i in connective["indices"]],
+        #                     "Tokens": [parsed_result[connective["sent_idx"]]["tokens"][i] for i in connective["indices"]]},
         #                 "Arg1": {
-        #                     "RawText": " ".join([sentences[arg1["sent_idx"]][0]["tokens"][i] for i in arg1["indices"]]),
-        #                     "TokenList": [i+sentences[arg1["sent_idx"]][0]["sentence_offset"] for i in arg1["indices"]],
-        #                     "Tokens": [sentences[arg1["sent_idx"]][0]["tokens"][i] for i in arg1["indices"]]},
+        #                     "RawText": " ".join([parsed_result[arg1["sent_idx"]]["tokens"][i] for i in arg1["indices"]]),
+        #                     "TokenList": [i+parsed_result[arg1["sent_idx"]]["sentence_offset"] for i in arg1["indices"]],
+        #                     "Tokens": [parsed_result[arg1["sent_idx"]]["tokens"][i] for i in arg1["indices"]]},
         #                 "Arg2": {
-        #                     "RawText": " ".join([sentences[arg2["sent_idx"]][0]["tokens"][i] for i in arg2["indices"]]),
-        #                     "TokenList": [i+sentences[arg2["sent_idx"]][0]["sentence_offset"] for i in arg2["indices"]],
-        #                     "Tokens": [sentences[arg2["sent_idx"]][0]["tokens"][i] for i in arg2["indices"]]},
+        #                     "RawText": " ".join([parsed_result[arg2["sent_idx"]]["tokens"][i] for i in arg2["indices"]]),
+        #                     "TokenList": [i+parsed_result[arg2["sent_idx"]]["sentence_offset"] for i in arg2["indices"]],
+        #                     "Tokens": [parsed_result[arg2["sent_idx"]]["tokens"][i] for i in arg2["indices"]]},
         #                 "Type": "Explicit",
         #                 "Sense": [connective["sense"]]}
         #             f.write(json.dumps(x))
