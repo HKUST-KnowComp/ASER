@@ -177,10 +177,14 @@ class SyntaxTree:
         return self_category_node.up
 
     def get_subtree_by_token_indices(self, token_indices):
+        if self.tree is None:
+            return self
+
         if isinstance(token_indices, (list, tuple)):
             token_indices = set(token_indices)
+            
         if len(token_indices) == 0:
-            subtree = SyntaxTree()
+            return SyntaxTree()
         elif len(token_indices) == len(self.leaves):
             return self
         else:
@@ -211,7 +215,7 @@ class SyntaxTree:
                         if old_child not in kept_leaves:
                             queue1.append(old_child)
                             queue2.append(new_child)
-        return subtree
+            return subtree
 
     def to_newick_format(self, parse_tree):
         # replace `,`
