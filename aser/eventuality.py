@@ -83,25 +83,6 @@ class Eventuality(JsonSerializedObject):
             return None
         return [self._get_ner(idx) for idx in range(len(self._ners))]
 
-    @property
-    def tokens(self):
-        if self._ners is None:
-            return copy(self.words)
-        _tokens = list()
-        len_words = len(self.words)
-        i = 0
-        while i < len_words:
-            ner = self._get_ner(i)
-            if ner == "O":
-                _tokens.append(self.words[i])
-                i += 1
-                continue
-            j = i + 1
-            while j < len_words and self._get_ner(j) == ner:
-                j += 1
-            _tokens.append(" ".join(self.words[i:j]))
-            i = j
-        return _tokens
 
     @property
     def mentions(self):
@@ -176,55 +157,6 @@ class Eventuality(JsonSerializedObject):
         return [self._get_ner(idx) for idx in self._skeleton_indices]
 
     @property
-    def skeleton_tokens(self):
-        if self._ners is None:
-            return copy(self.skeleton_words)
-        _skeleton_tokens = list()
-        len_skeleton = len(self.skeleton_words)
-        i = 0
-        while i < len_skeleton:
-            ner = self._get_ner(self._skeleton_indices[i])
-            if ner == "O":
-                _skeleton_tokens.append(self.skeleton_words[i])
-                i += 1
-                continue
-            j = i + 1
-            while j < len_skeleton and self._skeleton_indices[i]+1 == self._skeleton_indices[j] and \
-                self._get_ner(self._skeleton_indices[j]) == ner:
-                j += 1
-            _skeleton_tokens.append(" ".join(self.skeleton_words[i:j]))
-            i = j
-        return _skeleton_tokens
-
-    @property
-    def skeleton_mentions(self):
-        if self._ners is None:
-            return None
-        _skeleton_mentions = list()
-        len_skeleton = len(self.skeleton_words)
-        i = 0
-        while i < len_skeleton:
-            ner = self._get_ner(self._skeleton_indices[i])
-            if ner == "O":
-                i += 1
-                continue
-            j = i + 1
-            while j < len_skeleton and self._skeleton_indices[i]+1 == self._skeleton_indices[j] and \
-                self._get_ner(self._skeleton_indices[j]) == ner:
-                j += 1
-            w_i, w_j = self._skeleton_indices[i], self._skeleton_indices[j-1]+1
-            mention = self._mentions.get((w_i, w_j), 
-                {"start": w_i,
-                "end": w_j,
-                "text": self.words[w_i:w_j],
-                "ner": ner,
-                "link": None,
-                "entity": None})
-            _mentions.append(mention)
-            i = j
-        return _skeleton_mentions
-
-    @property
     def verbs(self):
         return [self.words[idx] for idx in self._verb_indices]
 
@@ -241,6 +173,78 @@ class Eventuality(JsonSerializedObject):
             positions.add(self.raw_sent_mapping[dependent])
         avg_position = sum(positions) / len(positions) if positions else 0.0
         return avg_position
+
+    @property
+    def phrases(self):
+        if self._ners is None:
+            return copy(self.words)
+        _tokens = list()
+        len_words = len(self.words)
+        i = 0
+        while i < len_words:
+            ner = self._get_ner(i)
+            if ner == "O":
+                _tokens.append(self.words[i])
+                i += 1
+                continue
+            j = i + 1
+            while j < len_words and self._get_ner(j) == ner:
+                j += 1
+            _tokens.append(" ".join(self.words[i:j]))
+            i = j
+        return _tokens
+
+    @property
+    def phrases_ners(self):
+        if self._ners is None:
+            return None
+        _tmp_ners = list()
+        len_words = len(self.words)
+        i = 0
+        while i < len_words:
+            ner = self._get_ner(i)
+            if ner == "O":
+                _tmp_ners.append("O")
+                i += 1
+                continue
+            j = i + 1
+            while j < len_words and self._get_ner(j) == ner:
+                j += 1
+            _tmp_ners.append(ner)
+            i = j
+        return _tmp_ners
+
+    @property
+    def skeleton_phrases(self):
+        if self._ners is None:
+            return copy(self.skeleton_words)
+        _skeleton_tokens = list()
+
+        for idx in self._skeleton_indices:
+            ner = self._get_ner(idx)
+            if ner == "O":
+                _skeleton_tokens.append(self.words[idx])
+            else:
+                i = idx - 1
+                pre_tokens = list()
+                while i >= 0 and self._get_ner(i) == ner:
+                    pre_tokens.append(self.words[i])
+                    i -= 1
+                pre_tokens.reverse()
+
+                i = idx + 1
+                post_tokens = list()
+                while i < len(self.words) and self._get_ner(i) == ner:
+                    post_tokens.append(self.words[i])
+                    i += 1
+                _skeleton_token = " ".join(pre_tokens + [self.words[idx]] + post_tokens)
+                _skeleton_tokens.append(_skeleton_token)
+
+        return _skeleton_tokens
+
+    @property
+    def skeleton_phrases_ners(self):
+        return self.skeleton_ners
 
     def _construct(self, dependencies, skeleton_dependencies, sent_parsed_result):
         word_indices = extract_indices_from_dependencies(dependencies)
