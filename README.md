@@ -10,6 +10,13 @@ Here is the arxiv [link](https://arxiv.org/abs/1905.00270).
 
 Citation:
 
+    @inproceedings{ASER2020,
+      author    = {Hongming Zhang and Xin Liu and Haojie Pan and Yangqiu Song and Cane Wing-Ki Leung},
+      title     = {ASER: A Large-scale Eventuality Knowledge Graph},
+      booktitle = {Proceedings of the Web Conference ({WWW})},
+      year      = {2020}
+    }
+    or 
     @article{ASER2019,
       author    = {Hongming Zhang and Xin Liu and Haojie Pan and Yangqiu Song and Cane Wing-Ki Leung},
       title     = {ASER: A Large-scale Eventuality Knowledge Graph},
