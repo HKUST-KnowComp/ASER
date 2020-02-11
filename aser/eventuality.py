@@ -3,7 +3,7 @@ import json
 import pprint
 import bisect
 from collections import Counter
-from copy import copy, deepcopy
+from copy import copy
 from aser.base import JsonSerializedObject
 from aser.extract.utils import sort_dependencies_position, extract_indices_from_dependencies
 
@@ -23,6 +23,7 @@ class Eventuality(JsonSerializedObject):
         self._skeleton_indices = None
         self._verb_indices = None
         self.raw_sent_mapping = None
+        self._phrase_segment_indices = None
         self.frequency = 1.0
         if dependencies and skeleton_dependencies and sent_parsed_result:
             self._construct(dependencies, skeleton_dependencies, sent_parsed_result)
@@ -83,25 +84,6 @@ class Eventuality(JsonSerializedObject):
             return None
         return [self._get_ner(idx) for idx in range(len(self._ners))]
 
-    @property
-    def tokens(self):
-        if self._ners is None:
-            return copy(self.words)
-        _tokens = list()
-        len_words = len(self.words)
-        i = 0
-        while i < len_words:
-            ner = self._get_ner(i)
-            if ner == "O":
-                _tokens.append(self.words[i])
-                i += 1
-                continue
-            j = i + 1
-            while j < len_words and self._get_ner(j) == ner:
-                j += 1
-            _tokens.append(" ".join(self.words[i:j]))
-            i = j
-        return _tokens
 
     @property
     def mentions(self):
@@ -176,55 +158,6 @@ class Eventuality(JsonSerializedObject):
         return [self._get_ner(idx) for idx in self._skeleton_indices]
 
     @property
-    def skeleton_tokens(self):
-        if self._ners is None:
-            return copy(self.skeleton_words)
-        _skeleton_tokens = list()
-        len_skeleton = len(self.skeleton_words)
-        i = 0
-        while i < len_skeleton:
-            ner = self._get_ner(self._skeleton_indices[i])
-            if ner == "O":
-                _skeleton_tokens.append(self.skeleton_words[i])
-                i += 1
-                continue
-            j = i + 1
-            while j < len_skeleton and self._skeleton_indices[i]+1 == self._skeleton_indices[j] and \
-                self._get_ner(self._skeleton_indices[j]) == ner:
-                j += 1
-            _skeleton_tokens.append(" ".join(self.skeleton_words[i:j]))
-            i = j
-        return _skeleton_tokens
-
-    @property
-    def skeleton_mentions(self):
-        if self._ners is None:
-            return None
-        _skeleton_mentions = list()
-        len_skeleton = len(self.skeleton_words)
-        i = 0
-        while i < len_skeleton:
-            ner = self._get_ner(self._skeleton_indices[i])
-            if ner == "O":
-                i += 1
-                continue
-            j = i + 1
-            while j < len_skeleton and self._skeleton_indices[i]+1 == self._skeleton_indices[j] and \
-                self._get_ner(self._skeleton_indices[j]) == ner:
-                j += 1
-            w_i, w_j = self._skeleton_indices[i], self._skeleton_indices[j-1]+1
-            mention = self._mentions.get((w_i, w_j), 
-                {"start": w_i,
-                "end": w_j,
-                "text": self.words[w_i:w_j],
-                "ner": ner,
-                "link": None,
-                "entity": None})
-            _mentions.append(mention)
-            i = j
-        return _skeleton_mentions
-
-    @property
     def verbs(self):
         return [self.words[idx] for idx in self._verb_indices]
 
@@ -241,6 +174,37 @@ class Eventuality(JsonSerializedObject):
             positions.add(self.raw_sent_mapping[dependent])
         avg_position = sum(positions) / len(positions) if positions else 0.0
         return avg_position
+
+    @property
+    def phrases(self):
+        return [" ".join(self.words[st:end]) for st, end in self._phrase_segment_indices]
+
+    @property
+    def phrases_ners(self):
+        _tmp_ners = list()
+
+        for _range in self._phrase_segment_indices:
+            _tmp_ners.append(self._ners[_range[0]])
+
+        return _tmp_ners
+
+    @property
+    def skeleton_phrases(self):
+        phrase_dict = dict()
+        for _range in self._phrase_segment_indices:
+            for i in range(*_range):
+                phrase_dict[i] = _range
+
+        _skeleton_tokens = list()
+        for idx in self._skeleton_indices:
+            st, end = phrase_dict[idx]
+            _skeleton_tokens.append(" ".join(self.words[st:end]))
+
+        return _skeleton_tokens
+
+    @property
+    def skeleton_phrases_ners(self):
+        return self.skeleton_ners
 
     def _construct(self, dependencies, skeleton_dependencies, sent_parsed_result):
         word_indices = extract_indices_from_dependencies(dependencies)
@@ -299,6 +263,8 @@ class Eventuality(JsonSerializedObject):
 
         self._verb_indices = [i for i, tag in enumerate(self.pos_tags) if tag.startswith('VB')]
 
+        self._phrase_segment_indices = self._phrase_segment()
+
         self.eid = Eventuality.generate_eid(self)
 
     def to_dict(self, **kw):
@@ -352,6 +318,7 @@ class Eventuality(JsonSerializedObject):
             keys = list(self._mentions.keys())
             for key in keys:
                 self._mentions[eval(key)] = self._mentions.pop(key)
+        self._phrase_segment_indices = self._phrase_segment()
         return self
 
     def _render_dependencies(self, dependencies):
@@ -374,3 +341,81 @@ class Eventuality(JsonSerializedObject):
                         ner = x[0]
                         break
         return ner
+
+    def _pos_compound_segment(self):
+        tmp_compound_tuples = list()
+        for governor_idx, dep, dependent_idx in self._dependencies:
+            if dep.startswith("compound"):
+                tmp_compound_tuples.append((governor_idx, dependent_idx))
+
+        compound_tuples = list()
+        i = 0
+        while True:
+            if i >= len(tmp_compound_tuples):
+                break
+            if i == len(tmp_compound_tuples) - 1:
+                compound_tuples.append(tuple(sorted(tmp_compound_tuples[i])))
+                break
+            s1 = set(tmp_compound_tuples[i])
+            while True:
+                if i == len(tmp_compound_tuples) - 1:
+                    i += 1
+                    break
+                i += 1
+                s2 = set(tmp_compound_tuples[i])
+                if s1 & s2:
+                    s1 |= s2
+                else:
+                    break
+            compound_tuples.append(tuple(sorted(s1)))
+
+        segment_rst = list()
+        ptr = 0
+        i = 0
+        while True:
+            if i >= len(self.words):
+                break
+            if ptr < len(compound_tuples) and i == compound_tuples[ptr][0]:
+                segment_rst.append((compound_tuples[ptr][0], compound_tuples[ptr][-1] + 1))
+                i = compound_tuples[ptr][-1] + 1
+                ptr += 1
+            else:
+                segment_rst.append((i, i + 1))
+                i += 1
+        return segment_rst
+
+    def _ner_compound_segment(self):
+        if self._ners is None:
+            return [(i, i + 1) for i in range(len(self.words))]
+        compound_tuples = list()
+        for idx in self._skeleton_indices:
+            ner = self._get_ner(idx)
+            if ner != "O":
+                st = idx - 1
+                while st >= 0 and self._get_ner(st) == ner:
+                    st -= 1
+
+                end = idx + 1
+                post_tokens = list()
+                while end < len(self.words) and self._get_ner(end) == ner:
+                    post_tokens.append(self.words[end])
+                    end += 1
+                compound_tuples.append((st, end))
+
+        segment_rst = list()
+        ptr = 0
+        i = 0
+        while True:
+            if i >= len(self.words):
+                break
+            if ptr < len(compound_tuples) and i == compound_tuples[ptr][0]:
+                segment_rst.append((compound_tuples[ptr][0], compound_tuples[ptr][-1]))
+                i = compound_tuples[ptr][-1]
+                ptr += 1
+            else:
+                segment_rst.append((i, i + 1))
+                i += 1
+        return segment_rst
+
+    def _phrase_segment(self):
+        return self._pos_compound_segment()
