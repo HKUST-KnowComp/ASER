@@ -1,73 +1,85 @@
 from itertools import combinations
-from aser.concept import ASERConcept, seedConcept, ProbaseConcept
+from aser.concept import ASERConcept, ProbaseConcept
 
-class ASERConceptExtractor(object):
-    def __init__(self, source="probase", probase_path=None, probase_topk=None):
-        self.source = source
-        if source=="probase":
-            self.probase = ProbaseConcept(probase_path)
-            self.probase_topk = probase_topk
-        else:
-            self.probase = None
-            self.probase_topk = None
+
+class BaseConceptExtractor(object):
+    def __init__(self):
+        pass
 
     def conceptualize(self, eventuality):
-        """ Conceptualization given a eventuality
+        raise NotImplementedError
+
+
+class ASERSeedConceptExtractor(BaseConceptExtractor):
+    """ Conceptualization based on rules and NERs
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+        self.selected_ners = frozenset([
+            "TIME", "DATE", "DURATION", "MONEY", "PERCENT", "NUMBER",
+            "COUNTRY", "STATE_OR_PROVINCE", "CITY",
+            "NATIONALITY", "PERSON", "RELIGION",
+            "URL"])
+        self.seed_concepts = frozenset([self._render_ner(ner) for ner in self.selected_ners])
+
+        self.person_pronoun_set = frozenset(
+            ["he", "she", "i", "him", "her", "me", "woman", "man", "boy", "girl", "you", "we", "they"])
+        self.pronouns = self.person_pronoun_set | frozenset(['it'])
+
+    def conceptualize(self, eventuality):
+        concept_strs = self.conceptualize_from_text(eventuality.phrases, eventuality.phrases_ners)
+        return [(" ".join(concept_strs), 1.0)]
+
+    def conceptualize_from_text(self, words, ners):
+        output_words = list()
+        ners_dict = {ner: dict() for ner in self.selected_ners}
+        for word, ner in zip(words, ners):
+            if ner in self.selected_ners:
+                if word not in ners_dict[ner]:
+                    ners_dict[ner][word] = len(ners_dict[ner])
+                output_words.append(self._render_ner(ner) + "%d" % ners_dict[ner][word])
+            elif word in self.person_pronoun_set:
+                if word not in ners_dict["PERSON"]:
+                    ners_dict["PERSON"][word] = len(ners_dict["PERSON"])
+                output_words.append(self._render_ner("PERSON") + "%d" % ners_dict["PERSON"][word])
+            else:
+                output_words.append(word)
+        return output_words
+
+    def is_seed_concept(self, word):
+        return word in self.seed_concepts
+
+    def is_pronoun(self, word):
+        return word in self.pronouns
+
+    def _render_ner(self, ner):
+        return "__" + ner + "__"
+
+
+class ASERProbaseConceptExtractor(BaseConceptExtractor):
+    def __init__(self, probase_path=None, probase_topk=None):
+        super().__init__()
+        self.seed_concept_extractor = ASERSeedConceptExtractor()
+        self.probase = ProbaseConcept(probase_path)
+        self.probase_topk = probase_topk
+
+    def conceptualize(self, eventuality):
+        """ Conceptualization use probase given a eventuality
 
         :type eventuality: aser.eventuality.Eventuality
         :param eventuality: `Eventuality` class object
-        :return: concept
+        :return: a list of (concept, score) pair
         """
-        concept_score_pairs = self.conceptualize_from_skeleton(
-            eventuality.skeleton_words, eventuality.pattern)
-        # for concept, score in concept_score_pairs:
-        #     concept.instances.append((eventuality.eid, eventuality.pattern, score))
-        return concept_score_pairs
-
-    def conceptualize_from_skeleton(self, skeleton_words, pattern):
-        """ Conceptualization given a skeleton words and pattern
-
-        :type skeleton_words: list of str
-        :type pattern: str
-        :param skeleton_words: skeleton words of eventuality or concept_str.split(" ")
-        :param pattern: eventuality pattern
-        :return: concept
-        """
-        concept_after_seed_rule = self._get_seed_concepts(skeleton_words)
-        if self.source == "probase":
-            concept_strs = self._get_probase_concepts(concept_after_seed_rule, pattern)
-            if not concept_strs and concept_after_seed_rule != " ".join(skeleton_words):
-                concept_strs = [(concept_after_seed_rule, 1.0)]
-        else:
-            raise NotImplementedError
+        concept_after_seed_rule = self.seed_concept_extractor.conceptualize_from_text(
+            eventuality.skeleton_phrases, eventuality.skeleton_phrases_ners)
+        concept_strs = self._get_probase_concepts(
+            concept_after_seed_rule, eventuality.pattern)
+        if not concept_strs and concept_after_seed_rule != " ".join(eventuality.skeleton_phrases):
+            concept_strs = [(concept_after_seed_rule, 1.0)]
 
         concept_score_pairs = [(ASERConcept(words=concept_str, instances=list()), score)
                     for concept_str, score in concept_strs]
         return concept_score_pairs
-
-    def _get_seed_concepts(self, skeleton_words):
-        output_words = list()
-        persons = dict()
-        for word in skeleton_words:
-            if seedConcept.check_is_year(word):
-                output_words.append(seedConcept.year)
-            elif seedConcept.check_is_digit(word):
-                output_words.append(seedConcept.digit)
-            elif seedConcept.check_is_url(word):
-                output_words.append(seedConcept.url)
-            elif seedConcept.check_is_person(word):
-                if word not in persons:
-                    persons[word] = len(persons)
-                output_words.append(seedConcept.person + "%d" % persons[word])
-            else:
-                output_words.append(word)
-
-        if len(persons) == 1:
-            for i, word in enumerate(output_words):
-                if word.startswith(seedConcept.person):
-                    output_words[i] = seedConcept.person
-
-        return output_words
 
     def _get_probase_concepts(self, skeleton_words, pattern):
         words, patterns = skeleton_words, \
@@ -80,7 +92,8 @@ class ASERConceptExtractor(object):
             word = words[i]
             pattern = patterns[i]
             if pattern == 's' or pattern == 'o':
-                if seedConcept.is_seed_concept(word) or seedConcept.is_pronoun(word):
+                if self.seed_concept_extractor.is_seed_concept(word) \
+                        or self.seed_concept_extractor.is_pronoun(word):
                     continue
                 else:
                     concepts = self.probase.conceptualize(word, score_method="likelihood")
@@ -119,5 +132,32 @@ class ASERConceptExtractor(object):
                 tmp_words_list = new_tmp_words_list
             output_words_list.extend(tmp_words_list)
 
+        for i, (output_words, score) in enumerate(output_words_list):
+            output_words_list[i] = [[word.replace(" ", "-") for word in output_words], score]
+
         output_words_list.sort(key=lambda x: x[1], reverse=True)
         return output_words_list
+
+
+class ASERConceptExtractor(object):
+    def __init__(self, method="probase", *args, **kwargs):
+        """
+        :type method: str
+        :param method: "probase" or "seed"
+        """
+        assert method in ["probase", "seed"]
+        if method == "seed":
+            self.concept_extractor = ASERSeedConceptExtractor(*args, **kwargs)
+        elif method == "probase":
+            self.concept_extractor = ASERProbaseConceptExtractor(*args, **kwargs)
+        else:
+            raise NotImplementedError
+
+    def conceptualize(self, eventuality):
+        """ Conceptualization given a eventuality
+
+        :type eventuality: aser.eventuality.Eventuality
+        :param eventuality: `Eventuality` class object
+        :return: a list of (concept, score) pair
+        """
+        return self.concept_extractor.conceptualize(eventuality)
