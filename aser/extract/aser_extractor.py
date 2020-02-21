@@ -131,11 +131,10 @@ class BaseASERExtractor(object):
             
             rid2relation = dict()
             for relation in chain.from_iterable(para_relations):
-                relation_counter[rid] += sum(relation.relations.values())
-                if rid not in rid2relation:
-                    rid2relation[rid] = deepcopy(relation)
+                if relation.rid not in rid2relation:
+                    rid2relation[relation.rid] = deepcopy(relation)
                 else:
-                    rid2relation[rid].update(relation)
+                    rid2relation[relation.rid].update(relation)
             if relation_output_format == "Relation":
                 relations = sorted(rid2relation.values(), key=lambda r: r.rid)
             elif relation_output_format == "triple":
@@ -524,11 +523,10 @@ class DiscourseASERExtractor3(BaseASERExtractor):
             
             rid2relation = dict()
             for relation in chain.from_iterable(para_relations):
-                relation_counter[rid] += sum(relation.relations.values())
-                if rid not in rid2relation:
-                    rid2relation[rid] = deepcopy(relation)
+                if relation.rid not in rid2relation:
+                    rid2relation[relation.rid] = deepcopy(relation)
                 else:
-                    rid2relation[rid].update(relation)
+                    rid2relation[relation.rid].update(relation)
             if relation_output_format == "Relation":
                 relations = sorted(rid2relation.values(), key=lambda r: r.rid)
             elif relation_output_format == "triple":
