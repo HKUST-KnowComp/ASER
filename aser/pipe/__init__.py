@@ -1,5 +1,6 @@
 import json
 import os
+import shutil
 import random
 import time
 import pickle
@@ -188,48 +189,74 @@ class ASERPipe(object):
             total_eventuality, total_relation = sum(eventuality_counter.values()), sum(relation_counter.values())
             self.logger.info("%d eventualities (%d unique) have been extracted." % (total_eventuality, len(eid2eventuality)))
             self.logger.info("%d relations (%d unique) have been extracted." % (total_relation, len(rid2relation)))
-            
-            # filter high-frequency and low-frequency eventualities
-            self.logger.info("Filtering high-frequency and low-frequency eventualities.")
-            eventuality_frequency_lower_cnt_threshold = self.opt.eventuality_frequency_lower_cnt_threshold
-            eventuality_frequency_upper_cnt_threshold = self.opt.eventuality_frequency_upper_percent_threshold * total_eventuality
-            filtered_eids = set([eid for eid, freq in eventuality_counter.items() \
-                if freq < eventuality_frequency_lower_cnt_threshold or freq > eventuality_frequency_upper_cnt_threshold])
-            for filtered_eid in filtered_eids:
-                eid2sids.pop(filtered_eid)
-                eid2eventuality.pop(filtered_eid)
-                total_eventuality -= eventuality_counter.pop(filtered_eid)
-            del eventuality_counter
-            self.logger.info("%d eventualities (%d unique) will be inserted into KG." % (total_eventuality, len(eid2eventuality)))
 
-            # filter high-frequency and low-frequency relations
-            self.logger.info("Filtering high-frequency and low-frequency relations.")
-            relation_frequency_lower_cnt_threshold = self.opt.relation_frequency_lower_cnt_threshold
-            relation_frequency_upper_cnt_threshold = self.opt.relation_frequency_upper_percent_threshold * total_relation
-            filtered_rids = set([rid for rid, freq in relation_counter.items() \
-                if freq < relation_frequency_lower_cnt_threshold or freq > relation_frequency_upper_cnt_threshold])
-            filtered_rids.update(set([rid for rid, relation in rid2relation.items() \
-                if relation.hid in filtered_eids or relation.tid in filtered_eids]))
-            for filtered_rid in filtered_rids:
-                rid2sids.pop(filtered_rid)
-                rid2relation.pop(filtered_rid)
-                total_relation -= relation_counter.pop(filtered_rid)
-            del relation_counter
-            self.logger.info("%d relations (%d unique) will be inserted into KG." % (total_relation, len(rid2relation)))
+            if self.opt.full_kg_dir:
+                # build eventuality KG
+                self.logger.info("Storing inverted tables and building the full KG.")
+                if not os.path.exists(self.opt.full_kg_dir):
+                    os.mkdir(self.opt.full_kg_dir)
+                with open(os.path.join(self.opt.full_kg_dir, "eid2sids.pkl"), "wb") as f:
+                    pickle.dump(eid2sids, f)
+                with open(os.path.join(self.opt.full_kg_dir, "rid2sids.pkl"), "wb") as f:
+                    pickle.dump(rid2sids, f)
 
-            # build eventuality KG
-            self.logger.info("Storing inverted tables and building the KG.")
-            if not os.path.exists(self.opt.kg_dir):
-                os.mkdir(self.opt.kg_dir)
-            with open(os.path.join(self.opt.kg_dir, "eid2sids.pkl"), "wb") as f:
-                pickle.dump(eid2sids, f)
-            with open(os.path.join(self.opt.kg_dir, "rid2sids.pkl"), "wb") as f:
-                pickle.dump(rid2sids, f)
-            del eid2sids, rid2sids
+                kg_conn = ASERKGConnection(os.path.join(self.opt.full_kg_dir, "KG.db"), mode='insert')
+                kg_conn.insert_eventualities(list(eid2eventuality.values()))
+                kg_conn.insert_relations(list(rid2relation.values()))
+                kg_conn.close()
+                self.logger.info("Done.")
 
-            kg_conn = ASERKGConnection(os.path.join(self.opt.kg_dir, "KG.db"), mode='insert')
-            kg_conn.insert_eventualities(list(eid2eventuality.values()))
-            kg_conn.insert_relations(list(rid2relation.values()))
-            kg_conn.close()
-            del eid2eventuality, rid2relation
-            self.logger.info("Done.")
+            if self.opt.core_kg_dir:
+                # filter high-frequency and low-frequency eventualities
+                self.logger.info("Filtering high-frequency and low-frequency eventualities.")
+                eventuality_frequency_lower_cnt_threshold = self.opt.eventuality_frequency_lower_cnt_threshold
+                eventuality_frequency_upper_cnt_threshold = self.opt.eventuality_frequency_upper_percent_threshold * total_eventuality
+                filtered_eids = set([eid for eid, freq in eventuality_counter.items() \
+                    if freq < eventuality_frequency_lower_cnt_threshold or freq > eventuality_frequency_upper_cnt_threshold])
+                for filtered_eid in filtered_eids:
+                    eid2sids.pop(filtered_eid)
+                    eid2eventuality.pop(filtered_eid)
+                    total_eventuality -= eventuality_counter.pop(filtered_eid)
+                # del eventuality_counter
+                self.logger.info("%d eventualities (%d unique) will be inserted into the core KG." % (total_eventuality, len(eid2eventuality)))
+
+                # filter high-frequency and low-frequency relations
+                self.logger.info("Filtering high-frequency and low-frequency relations.")
+                relation_frequency_lower_cnt_threshold = self.opt.relation_frequency_lower_cnt_threshold
+                relation_frequency_upper_cnt_threshold = self.opt.relation_frequency_upper_percent_threshold * total_relation
+                filtered_rids = set([rid for rid, freq in relation_counter.items() \
+                    if freq < relation_frequency_lower_cnt_threshold or freq > relation_frequency_upper_cnt_threshold])
+                filtered_rids.update(set([rid for rid, relation in rid2relation.items() \
+                    if relation.hid in filtered_eids or relation.tid in filtered_eids]))
+                for filtered_rid in filtered_rids:
+                    rid2sids.pop(filtered_rid)
+                    rid2relation.pop(filtered_rid)
+                    total_relation -= relation_counter.pop(filtered_rid)
+                # del relation_counter
+                self.logger.info("%d relations (%d unique) will be inserted into the core KG." % (total_relation, len(rid2relation)))
+
+                if len(filtered_eids) == 0 and len(filtered_rids) == 0:
+                    # copy KG
+                    self.logger.info("Copying the full KG as the core KG.")
+                    if not os.path.exists(self.opt.core_kg_dir):
+                        os.mkdir(self.opt.core_kg_dir)
+                    shutil.copyfile(os.path.join(self.opt.full_kg_dir, "eid2sids.pkl"), os.path.join(self.opt.core_kg_dir, "eid2sids.pkl"))
+                    shutil.copyfile(os.path.join(self.opt.full_kg_dir, "rid2sids.pkl"), os.path.join(self.opt.core_kg_dir, "rid2sids.pkl"))
+                    shutil.copyfile(os.path.join(self.opt.full_kg_dir, "KG.db"), os.path.join(self.opt.core_kg_dir, "KG.db"))
+                else:
+                    # build eventuality KG
+                    self.logger.info("Storing inverted tables and building the core KG.")
+                    if not os.path.exists(self.opt.core_kg_dir):
+                        os.mkdir(self.opt.core_kg_dir)
+                    with open(os.path.join(self.opt.core_kg_dir, "eid2sids.pkl"), "wb") as f:
+                        pickle.dump(eid2sids, f)
+                    with open(os.path.join(self.opt.core_kg_dir, "rid2sids.pkl"), "wb") as f:
+                        pickle.dump(rid2sids, f)
+                    # del eid2sids, rid2sids
+
+                    kg_conn = ASERKGConnection(os.path.join(self.opt.core_kg_dir, "KG.db"), mode='insert')
+                    kg_conn.insert_eventualities(list(eid2eventuality.values()))
+                    kg_conn.insert_relations(list(rid2relation.values()))
+                    kg_conn.close()
+                    # del eid2eventuality, rid2relation
+                    self.logger.info("Done.")

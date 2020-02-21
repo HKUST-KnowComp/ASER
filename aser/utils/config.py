@@ -62,9 +62,11 @@ def get_pipe_args_parser():
     parser.add_argument("-processed_dir", type=str, default="",
                         help="ASER processed_dir data directory")              
     # KG
-    parser.add_argument("-kg_dir", type=str, default="",
-                        help="ASER KG directory")
-    parser.add_argument("-eventuality_frequency_lower_cnt_threshold", type=float, default=0.0,
+    parser.add_argument("-core_kg_dir", type=str, default="",
+                        help="ASER Core KG directory")
+    parser.add_argument("-full_kg_dir", type=str, default="",
+                        help="ASER Full KG directory")
+    parser.add_argument("-eventuality_frequency_lower_cnt_threshold", type=float, default=2.0,
                         help="eventualities whose frequencies are lower than this will be filtered")
     parser.add_argument("-eventuality_frequency_upper_percent_threshold", type=float, default=1.0,
                         help="eventualities whose frequency percents are higher than this will be filtered")

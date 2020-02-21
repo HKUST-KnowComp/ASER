@@ -366,6 +366,9 @@ class SeedRuleEventualityExtractor(BaseEventualityExtractor):
 
     @staticmethod
     def _filter_special_case(extracted_eventualities):
+        for k, v in extracted_eventualities.items():
+            extracted_eventualities[k] = [e for e in v if "|" not in e.words]
+
         extracted_eventualities['s-v-a'] = []
         extracted_eventualities['s-v-be-o'] = []
 
