@@ -387,7 +387,7 @@ class DiscourseASERExtractor3(BaseASERExtractor):
                 arg1_sent_idx, arg2_sent_idx = arg1["sent_idx"], arg2["sent_idx"]
                 sent_parsed_result1,sent_parsed_result2 = parsed_result[arg1_sent_idx], parsed_result[arg2_sent_idx]
 
-                len_arg1 = len(arg1)
+                len_arg1 = len(arg1["indices"])
                 idx_mapping1 = {j: i for i, j in enumerate(arg1["indices"])}
                 indices_set1 = set(arg1["indices"])
                 arg1_parsed_result = {
@@ -397,16 +397,16 @@ class DiscourseASERExtractor3(BaseASERExtractor):
                     "tokens": [sent_parsed_result1["tokens"][idx] for idx in arg1["indices"]],
                     "pos_tags": [sent_parsed_result1["pos_tags"][idx] for idx in arg1["indices"]],
                     "lemmas": [sent_parsed_result1["lemmas"][idx] for idx in arg1["indices"]]}
-                if "ners" in sent_parsed_result:
-                    arg1_parsed_result["ners"] = [sent_parsed_result["ners"][idx] for idx in arg1]
-                if "mentions" in sent_parsed_result:
+                if "ners" in sent_parsed_result1:
+                    arg1_parsed_result["ners"] = [sent_parsed_result1["ners"][idx] for idx in arg1["indices"]]
+                if "mentions" in sent_parsed_result1:
                     arg1_parsed_result["mentions"] = list()
-                    for mention in sent_parsed_result["mentions"]:
-                        start_idx = bisect.bisect_left(arg1, mention["start"])
-                        if not (start_idx < len_arg1 and arg1[start_idx] == mention["start"]):
+                    for mention in sent_parsed_result1["mentions"]:
+                        start_idx = bisect.bisect_left(arg1["indices"], mention["start"])
+                        if not (start_idx < len_arg1 and arg1["indices"][start_idx] == mention["start"]):
                             continue
-                        end_idx = bisect.bisect_left(arg1, mention["end"]-1)
-                        if not (end_idx < len_arg1 and arg1[end_idx] == mention["end"]-1):
+                        end_idx = bisect.bisect_left(arg1["indices"], mention["end"]-1)
+                        if not (end_idx < len_arg1 and arg1["indices"][end_idx] == mention["end"]-1):
                             continue
                         mention = copy(mention)
                         mention["start"] = start_idx
@@ -428,7 +428,7 @@ class DiscourseASERExtractor3(BaseASERExtractor):
                     if not existed_eventuality:
                         para_eventualities[arg1_sent_idx].append(e1)
 
-                len_arg2 = len(arg2)
+                len_arg2 = len(arg2["indices"])
                 idx_mapping2 = {j: i for i, j in enumerate(arg2["indices"])}
                 indices_set2 = set(arg2["indices"])
                 arg2_parsed_result = {
@@ -438,16 +438,16 @@ class DiscourseASERExtractor3(BaseASERExtractor):
                     "tokens": [sent_parsed_result2["tokens"][idx] for idx in arg2["indices"]],
                     "pos_tags": [sent_parsed_result2["pos_tags"][idx] for idx in arg2["indices"]],
                     "lemmas": [sent_parsed_result2["lemmas"][idx] for idx in arg2["indices"]]}
-                if "ners" in sent_parsed_result:
-                    arg2_parsed_result["ners"] = [sent_parsed_result["ners"][idx] for idx in arg2]
-                if "mentions" in sent_parsed_result:
+                if "ners" in sent_parsed_result2:
+                    arg2_parsed_result["ners"] = [sent_parsed_result2["ners"][idx] for idx in arg2["indices"]]
+                if "mentions" in sent_parsed_result2:
                     arg2_parsed_result["mentions"] = list()
-                    for mention in sent_parsed_result["mentions"]:
-                        start_idx = bisect.bisect_left(arg2, mention["start"])
-                        if not (start_idx < len_arg2 and arg2[start_idx] == mention["start"]):
+                    for mention in sent_parsed_result2["mentions"]:
+                        start_idx = bisect.bisect_left(arg2["indices"], mention["start"])
+                        if not (start_idx < len_arg2 and arg2["indices"][start_idx] == mention["start"]):
                             continue
-                        end_idx = bisect.bisect_left(arg2, mention["end"]-1)
-                        if not (end_idx < len_arg2 and arg2[end_idx] == mention["end"]-1):
+                        end_idx = bisect.bisect_left(arg2["indices"], mention["end"]-1)
+                        if not (end_idx < len_arg2 and arg2["indices"][end_idx] == mention["end"]-1):
                             continue
                         mention = copy(mention)
                         mention["start"] = start_idx
