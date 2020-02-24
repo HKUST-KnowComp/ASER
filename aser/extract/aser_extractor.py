@@ -472,7 +472,7 @@ class DiscourseASERExtractor3(BaseASERExtractor):
                 if arg1_sent_idx == arg2_sent_idx:
                     relation_list_idx = arg1_sent_idx
                 elif arg1_sent_idx+1 == arg2_sent_idx:
-                    arg1_sent_idx + len_sentences
+                    relation_list_idx = arg1_sent_idx + len_sentences
                 else:
                     continue
                 senses = []
