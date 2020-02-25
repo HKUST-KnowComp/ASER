@@ -53,6 +53,9 @@ class Eventuality(JsonSerializedObject):
                         self._mentions[s_t] = x_mention
                 self.frequency += x.frequency
 
+    def __len__(self):
+        return len(self.words)
+
     def __str__(self):
         repr_dict = {
             "eid": self.eid,

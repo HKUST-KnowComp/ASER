@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 import logging
+import os
 
 
 def init_logger(log_file=None):
@@ -13,6 +14,7 @@ def init_logger(log_file=None):
     logger.handlers = [console_handler]
 
     if log_file and log_file != '':
+        os.makedirs(os.path.dirname(log_file), exist_ok=True)
         file_handler = logging.FileHandler(log_file)
         file_handler.setFormatter(log_format)
         logger.addHandler(file_handler)

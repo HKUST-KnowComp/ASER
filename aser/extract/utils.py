@@ -75,17 +75,27 @@ def parse_sentense_with_stanford(input_sentence, corenlp_client: CoreNLPClient,
 
     cleaned_para = clean_sentence_for_parsing(input_sentence)
 
-    need_to_split = len(cleaned_para) <= max_len
+    need_to_split = len(cleaned_para) > max_len
     if not need_to_split:
         try:
-            raw_sentences = corenlp_client.annotate(cleaned_para, annotators=annotators, output_format='json')['sentences']
+            parsed_sentences = corenlp_client.annotate(cleaned_para, annotators=annotators, output_format='json')['sentences']
+            raw_texts = list()
+            for sent in parsed_sentences:
+                if sent['tokens']:
+                    char_st = sent['tokens'][0]['characterOffsetBegin']
+                    char_end = sent['tokens'][-1]['characterOffsetEnd']
+                else:
+                    char_st, char_end = 0, 0
+                raw_text = cleaned_para[char_st:char_end]
+                raw_texts.append(raw_text)
         except Exception:
             need_to_split = True
 
     if need_to_split:
-        raw_sentences = list()
+        parsed_sentences = list()
+        raw_texts = list()
         temp = corenlp_client.annotate(cleaned_para, annotators=["ssplit"], output_format='json')['sentences']
-        for sent in temp:
+        for sent in temp:            
             if sent['tokens']:
                 char_st = sent['tokens'][0]['characterOffsetBegin']
                 char_end = sent['tokens'][-1]['characterOffsetEnd']
@@ -93,20 +103,12 @@ def parse_sentense_with_stanford(input_sentence, corenlp_client: CoreNLPClient,
                 char_st, char_end = 0, 0
             if char_st == char_end:
                 continue
-            sent = cleaned_para[char_st:char_end]
-            raw_sentences.extend(corenlp_client.annotate(sent, annotators=annotators, output_format='json')['sentences'])
+            text = cleaned_para[char_st:char_end]
+            parsed_sentences.extend(corenlp_client.annotate(text, annotators=annotators, output_format='json')['sentences'])
+            raw_texts.append(text)
 
     parsed_rst_list = list()
-
-    for sent in raw_sentences:
-        if sent['tokens']:
-            char_st = sent['tokens'][0]['characterOffsetBegin']
-            char_end = sent['tokens'][-1]['characterOffsetEnd']
-        else:
-            char_st, char_end = 0, 0
-
-        raw_text = cleaned_para[char_st:char_end]
-
+    for sent, text in zip(parsed_sentences, raw_texts):
         enhanced_dependency_list = sent['enhancedPlusPlusDependencies']
         dependencies = set()
         for relation in enhanced_dependency_list:
@@ -122,7 +124,7 @@ def parse_sentense_with_stanford(input_sentence, corenlp_client: CoreNLPClient,
         dependencies.sort(key=lambda x: (x[0], x[2]))
 
         x = {
-            "text": raw_text,
+            "text": text,
             "dependencies": dependencies,
             "tokens": [t['word'] for t in sent['tokens']],
         }

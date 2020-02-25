@@ -402,20 +402,20 @@ class DiscourseRelationExtractor(BaseRelationExtractor):
         #         arg2 = connective.get("arg2", None)
         #         if arg1 and arg2 and sense and sense != "None":
         #             x = {
-        #                 "DocID": sentences[0][0]["doc"], 
+        #                 "DocID": parsed_result[0]["doc"], 
         #                 "ID": conn_idx, 
         #                 "Connective": {
         #                     "RawText": connective["connective"],
-        #                     "TokenList": [i+sentences[connective["sent_idx"]][0]["sentence_offset"] for i in connective["indices"]],
-        #                     "Tokens": [sentences[connective["sent_idx"]][0]["tokens"][i] for i in connective["indices"]]},
+        #                     "TokenList": [i+parsed_result[connective["sent_idx"]]["sentence_offset"] for i in connective["indices"]],
+        #                     "Tokens": [parsed_result[connective["sent_idx"]]["tokens"][i] for i in connective["indices"]]},
         #                 "Arg1": {
-        #                     "RawText": " ".join([sentences[arg1["sent_idx"]][0]["tokens"][i] for i in arg1["indices"]]),
-        #                     "TokenList": [i+sentences[arg1["sent_idx"]][0]["sentence_offset"] for i in arg1["indices"]],
-        #                     "Tokens": [sentences[arg1["sent_idx"]][0]["tokens"][i] for i in arg1["indices"]]},
+        #                     "RawText": " ".join([parsed_result[arg1["sent_idx"]]["tokens"][i] for i in arg1["indices"]]),
+        #                     "TokenList": [i+parsed_result[arg1["sent_idx"]]["sentence_offset"] for i in arg1["indices"]],
+        #                     "Tokens": [parsed_result[arg1["sent_idx"]]["tokens"][i] for i in arg1["indices"]]},
         #                 "Arg2": {
-        #                     "RawText": " ".join([sentences[arg2["sent_idx"]][0]["tokens"][i] for i in arg2["indices"]]),
-        #                     "TokenList": [i+sentences[arg2["sent_idx"]][0]["sentence_offset"] for i in arg2["indices"]],
-        #                     "Tokens": [sentences[arg2["sent_idx"]][0]["tokens"][i] for i in arg2["indices"]]},
+        #                     "RawText": " ".join([parsed_result[arg2["sent_idx"]]["tokens"][i] for i in arg2["indices"]]),
+        #                     "TokenList": [i+parsed_result[arg2["sent_idx"]]["sentence_offset"] for i in arg2["indices"]],
+        #                     "Tokens": [parsed_result[arg2["sent_idx"]]["tokens"][i] for i in arg2["indices"]]},
         #                 "Type": "Explicit",
         #                 "Sense": [connective["sense"]]}
         #             f.write(json.dumps(x))
@@ -496,13 +496,19 @@ class DiscourseRelationExtractor(BaseRelationExtractor):
         if eventuality.raw_sent_mapping:
             argument_indices = set(argument["indices"])
             event_indices = set(eventuality.raw_sent_mapping.values())
-            Simpson = len(argument_indices & event_indices) / min(len(argument_indices), len(event_indices))
-            match = Simpson >= threshold
+            try:
+                Simpson = len(argument_indices & event_indices) / min(len(argument_indices), len(event_indices))
+                match = Simpson >= threshold
+            except ZeroDivisionError:
+                match = False
         else:
             argument_tokens = set([sent_parsed_result["lemmas"][idx].lower() for idx in argument["indices"]])
             event_tokens = set(eventuality.words)
-            Simpson = len(argument_tokens & event_tokens) / min(len(argument_tokens), len(event_tokens))
-            match = Simpson >= threshold
+            try:
+                Simpson = len(argument_tokens & event_tokens) / min(len(argument_tokens), len(event_tokens))
+                match = Simpson >= threshold
+            except ZeroDivisionError:
+                match = False
         return match
     
     @staticmethod
@@ -511,13 +517,19 @@ class DiscourseRelationExtractor(BaseRelationExtractor):
         if eventuality.raw_sent_mapping:
             argument_indices = set(argument["indices"])
             event_indices = set(eventuality.raw_sent_mapping.values())
-            Jaccard = len(argument_indices & event_indices) / len(argument_indices | event_indices)
-            match = Jaccard >= threshold
+            try:
+                Jaccard = len(argument_indices & event_indices) / len(argument_indices | event_indices)
+                match = Jaccard >= threshold
+            except ZeroDivisionError:
+                match = False
         else:
             argument_tokens = set([sent_parsed_result["lemmas"][idx].lower() for idx in argument["indices"]])
             event_tokens = set(eventuality.words)
-            Jaccard = len(argument_tokens & event_tokens) / len(argument_tokens | event_tokens)
-            match = Jaccard >= threshold
+            try:
+                Jaccard = len(argument_tokens & event_tokens) / len(argument_tokens | event_tokens)
+                match = Jaccard >= threshold
+            except ZeroDivisionError:
+                match = False
         return match
 
     @staticmethod

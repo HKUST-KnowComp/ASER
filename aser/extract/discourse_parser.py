@@ -177,10 +177,14 @@ class SyntaxTree:
         return self_category_node.up
 
     def get_subtree_by_token_indices(self, token_indices):
+        if self.tree is None:
+            return self
+
         if isinstance(token_indices, (list, tuple)):
             token_indices = set(token_indices)
+            
         if len(token_indices) == 0:
-            subtree = SyntaxTree()
+            return SyntaxTree()
         elif len(token_indices) == len(self.leaves):
             return self
         else:
@@ -211,7 +215,7 @@ class SyntaxTree:
                         if old_child not in kept_leaves:
                             queue1.append(old_child)
                             queue2.append(new_child)
-        return subtree
+            return subtree
 
     def to_newick_format(self, parse_tree):
         # replace `,`
@@ -221,32 +225,31 @@ class SyntaxTree:
         parse_tree = parse_tree.replace(";", "*SEMICOLON*")
 
         tree_list = self.load_syntax_tree(parse_tree)
-        if tree_list == None:
+        if len(tree_list) == 0:
             return None
-        tree_list = tree_list[1] # remove the root
-        s = self.syntax_tree_to_newick(tree_list)
+        s = self.syntax_tree_to_newick(tree_list[0])
         s = s.replace(",)",")")
         if s[-1] == ",":
             s = s[:-1] + ";"
         return s
 
     def load_syntax_tree(self, text):
-        stack = ["ROOT"]
-        text = text.replace("ROOT", "", 1)
+        stack = []
+        # text = text.replace("ROOT", "", 1)
         text = text.replace("(", " ( ")
         text = text.replace(")", " ) ")
         text = re.sub(r"\s+", " ", text)
-        text = re.sub(r"^\(\s*\(\s*|\s*\)\s*\)$", "", text)
+        # text = re.sub(r"^\s*\(\s*\(\s*|\s*\)\s*\)\s*$", "", text)
         for c in text.strip().split(" "):
             if c == ")":
                 node = list()
-                while(1):
+                while len(stack) > 0:
                     popped = stack.pop()
                     if popped == "(":
                         break
                     node.append(popped)
                 if len(node) == 0:
-                    return None
+                    return []
                 elif len(node) == 1:
                     stack.append(node[0])
                 else:

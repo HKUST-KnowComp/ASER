@@ -313,7 +313,10 @@ class SeedRuleEventualityExtractor(BaseEventualityExtractor):
                                 dependencies=selected_edges,
                                 skeleton_dependencies=selected_skeleton_edges,
                                 sent_parsed_result=sent_parsed_result)
-            return event
+            if len(event) > 0:
+                return event
+            else:
+                return event
         else:
             return None
 
@@ -363,6 +366,9 @@ class SeedRuleEventualityExtractor(BaseEventualityExtractor):
 
     @staticmethod
     def _filter_special_case(extracted_eventualities):
+        for k, v in extracted_eventualities.items():
+            extracted_eventualities[k] = [e for e in v if "|" not in e.words]
+
         extracted_eventualities['s-v-a'] = []
         extracted_eventualities['s-v-be-o'] = []
 
@@ -511,9 +517,9 @@ class DiscourseEventualityExtractor(BaseEventualityExtractor):
             else:
                 syntax_tree = syntax_tree_cache[sent_idx] = SyntaxTree(sent_parsed_result["parse"])
             
-            # the best but slower
-            for indices in powerset(sent_connectives):
-                indices = set(chain.from_iterable(indices))
-                sent_arguments.update(get_clauses(sent_parsed_result, syntax_tree, index_seps=indices))
-            # sent_arguments.update(get_clauses(sent_parsed_result, syntax_tree, index_seps=set(chain.from_iterable(sent_connectives))))
+            # more but slower
+            # for indices in powerset(sent_connectives):
+            #     indices = set(chain.from_iterable(indices))
+            #     sent_arguments.update(get_clauses(sent_parsed_result, syntax_tree, index_seps=indices))
+            sent_arguments.update(get_clauses(sent_parsed_result, syntax_tree, index_seps=set(chain.from_iterable(sent_connectives))))
         return para_arguments
