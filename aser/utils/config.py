@@ -6,6 +6,7 @@ class ASERCmd:
     exact_match_event = b"__EXACT_MATCH_EVENT__"
     exact_match_relation = b"__EXACT_MATCH_RELATION__"
     fetch_related_events = b"__FETCH_RELATED_EVENTS__"
+    none = "__NONE__"
 
 
 def get_server_args_parser():
