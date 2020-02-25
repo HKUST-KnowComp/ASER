@@ -1,4 +1,6 @@
+import os
 import socket
+import uuid
 import zmq
 
 
@@ -13,5 +15,6 @@ def is_port_occupied(ip='127.0.0.1', port=80):
 
 
 def sockets_ipc_bind(socket):
-    socket.bind("ipc://*")
+    tmp_dir = os.path.join("/tmp", str(uuid.uuid1())[:8])
+    socket.bind('ipc://{}'.format(tmp_dir))
     return socket.getsockopt(zmq.LAST_ENDPOINT).decode('ascii')

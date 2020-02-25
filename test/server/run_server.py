@@ -6,11 +6,11 @@ if __name__ == "__main__":
     args = parser.parse_args([
         "-n_workers", "1",
         "-n_concurrent_back_socks", "10",
-        "-port", "12000",
-        "-port_out", "12001",
+        "-port", "20097",
+        "-port_out", "20098",
         "-corenlp_path", "/home/software/stanford-corenlp/stanford-corenlp-full-2018-02-27/",
-        "-base_corenlp_port", "11000",
-        "-kg_dir", "/data/hjpan/ASER/tiny"
+        "-base_corenlp_port", "20099",
+        "-kg_dir", "/data/hjpan/ASER/nyt_test_filtered"
     ])
     server = ASERServer(args)
 

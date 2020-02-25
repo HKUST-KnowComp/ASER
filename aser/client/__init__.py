@@ -4,6 +4,8 @@ import json
 import uuid
 import zmq
 from aser.utils.config import ASERCmd
+from aser.eventuality import Eventuality
+from aser.relation import Relation
 
 
 class ASERClient(object):
@@ -19,7 +21,7 @@ class ASERClient(object):
         :param port_out: port for Subscribe return data from the server to a server
         :param timeout: client receiver timeout (milliseconds), -1 means no timeout
         """
-        self.client_id = str(uuid.uuid4()).encode("ascii")
+        self.client_id = str(uuid.uuid4()).encode("utf-8")
         context = zmq.Context()
         self.sender = context.socket(zmq.PUSH)
         self.sender.setsockopt(zmq.LINGER, 0)
@@ -76,12 +78,12 @@ class ASERClient(object):
             while True:
                 response = self.receiver.recv_multipart()
                 if response[1] == request_id:
-                    msg = json.loads(response[-1].decode("ascii"))
+                    msg = json.loads(response[-1].decode(encoding="utf-8"))
                     return msg
         except Exception as e:
             raise e
 
-    def extract_eventualities(self, sentence, only_events=False):
+    def extract_eventualities(self, sentence):
         """ Extract and linking all eventualities from input sentence
 
         :type sentence: str
@@ -131,74 +133,71 @@ class ASERClient(object):
                                 ['.', '.']]}]
         """
         request_id = self._send(
-            ASERCmd.extract_events, sentence.encode("ascii"))
+            ASERCmd.extract_events, sentence.encode("utf-8"))
         msg = self._recv(request_id)
         if not msg:
             return None
 
         rst_list = []
-        for rst in msg:
-            for eventuality in rst["eventuality_list"]:
-                tmp = self._exact_match_event(eventuality)
-                eventuality["frequency"] = tmp["frequency"] if tmp else 0.0
-            if only_events:
-                rst_list.extend(rst["eventuality_list"])
-            else:
-                rst_list.append(rst)
+        for eventuality_encoded_list in msg:
+            rst = list()
+            for eventuality_encoded in eventuality_encoded_list:
+                eventuality = Eventuality().decode(eventuality_encoded, encoding=None)
+                macthed_eventuality_encoded = self._exact_match_event(eventuality.eid)
+                eventuality.frequency = macthed_eventuality_encoded["frequency"]\
+                    if macthed_eventuality_encoded else 0.0
+                rst.append(eventuality)
+            rst_list.append(rst)
         return rst_list
 
 
-    def predict_relation(self, event1, event2, only_exact=False):
+    def predict_relation(self, event1, event2):
         """ Predict relations between two events
 
-        :type event1: dict
-        :type event2: dict
-        :type only_exact: bool
+        :type event1: Eventuality
+        :type event2: Eventuality
         :param event1: eventuality dict, should include "eid"
         :param event2: eventuality dict, should include "eid"
-        :param only_exact: only return exactly matched relations
-        :return: a dictionary of dictionaries
-        :rtype: dict
+        :return: Relation between two events
+        :rtype: Relation
         """
-        ret_dict = dict()
-        exact_match_rels = self._exact_match_relation(event1, event2)
-        if only_exact:
-            return exact_match_rels
-        else:
-            ret_dict["exact_match"] = exact_match_rels
-            #TODO probabilistic match results
-            return ret_dict
+        return self._exact_match_relation(event1, event2)
+
 
     def fetch_related_events(self, event):
         """ Fetch related events given one event
 
-        :type event: dict
+        :type event: Eventuality
         :param event <dict>: eventuality dict, should include "eid"
         :return: a dictionary of each relation-related events
-        :rtype: dict
+        :rtype: list
         """
-        eid = event['eid'].encode("ascii")
+        eid = event.eid.encode("utf-8")
         request_id = self._send(ASERCmd.fetch_related_events, eid)
         msg = self._recv(request_id)
-        for rel_type, elist in msg.items():
-            for e in elist:
-                e["eid"] = e.pop("_id")
-                del e["skeleton_words_clean"]
-        return msg
+        return [(Eventuality().decode(e_encoded, encoding=None),
+                 Relation().decode(r_encoded, encoding=None))
+                for e_encoded, r_encoded in msg]
 
-    def _exact_match_event(self, event):
-        eid = event['eid'].encode("ascii")
-        request_id = self._send(ASERCmd.exact_match_event, eid)
+    def _exact_match_event(self, eid):
+        request_id = self._send(ASERCmd.exact_match_event, eid.encode("utf-8"))
         msg = self._recv(request_id)
-        return msg
+        return msg if msg != ASERCmd.none else None
 
     def _exact_match_relation(self, event1, event2):
-        data = (event1['eid'] + "$" + event2['eid']).encode("ascii")
+        """ Predict relations between two events by exactly matching
+
+        :type event1: Eventuality
+        :type event2: Eventuality
+        :param event1: eventuality dict, should include "eid"
+        :param event2: eventuality dict, should include "eid"
+        :return: Relation between two events
+        :rtype: Relation
+        """
+        data = (event1.eid + "$" + event2.eid).encode("utf-8")
         request_id = self._send(ASERCmd.exact_match_relation, data)
         msg = self._recv(request_id)
-        if not msg:
-            return {}
-        del msg['_id']
-        del msg['event1_id']
-        del msg['event2_id']
-        return {key: val for key, val in msg.items() if val > 0.0}
+        if msg == ASERCmd.none:
+            return None
+        else:
+            return Relation().decode(msg, encoding=None)

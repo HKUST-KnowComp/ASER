@@ -7,9 +7,9 @@ import time
 import traceback
 import zmq
 import zmq.decorators as zmqd
-from aser.database.db_API import KG_Connection
+from aser.database.kg_connection import ASERKGConnection
 from aser.server.utils import *
-from aser.extract.eventuality_extractor import SeedRuleEventualityExtractor
+from aser.extract.aser_extractor import SeedRuleASERExtractor
 from aser.utils.config import ASERCmd
 
 
@@ -48,7 +48,7 @@ class ASERServer(object):
         sink_addr_receiver_addr = sockets_ipc_bind(sink_addr_receiver)
         self.aser_sink = ASERSink(self.opt, sink_addr_receiver_addr)
         self.aser_sink.start()
-        sink_receiver_addr = sink_addr_receiver.recv().decode("ascii")
+        sink_receiver_addr = sink_addr_receiver.recv().decode("utf-8")
 
         db_senders = []
         db_addr_list = []
@@ -109,9 +109,7 @@ class ASERDataBase(Process):
         print("Connect to the KG...")
         st = time.time()
         kg_dir = opt.kg_dir
-        self.ASER_KG = KG_Connection(db_path=os.path.join(kg_dir, "KG.db"), mode='cache')
-        with open(os.path.join(kg_dir, "inverted_table.json"), "r") as f:
-            self.ASER_KG_INVERTED_TABLE = json.load(f)
+        self.ASER_KG = ASERKGConnection(db_path=os.path.join(kg_dir, "KG.db"), mode="cache")
         print("Connect to the KG finished in {:.4f} s".format(time.time() - st))
 
     def run(self):
@@ -144,8 +142,8 @@ class ASERDataBase(Process):
                     if sock in events:
                         client_id, req_id, cmd, data = sock.recv_multipart()
                         # print("DB received msg ({}, {}, {}, {})".format(
-                        #     client_id.decode("ascii"), req_id.decode("ascii"),
-                        #     cmd.decode("ascii"), data.decode("ascii")
+                        #     client_id.decode("utf-8"), req_id.decode("utf-8"),
+                        #     cmd.decode("utf-8"), data.decode("utf-8")
                         # ))
                         if cmd == ASERCmd.exact_match_event:
                             ret_data = self.handle_exact_match_event(data)
@@ -163,28 +161,30 @@ class ASERDataBase(Process):
                 print(traceback.format_exc())
 
     def handle_exact_match_event(self, data):
-        eid = data.decode("ascii")
-        matched_event = self.ASER_KG.get_exact_match_event(eid)
-        ret_data = matched_event.encode(encoding="ascii")
+        eid = data.decode("utf-8")
+        matched_event = self.ASER_KG.get_exact_match_eventuality(eid)
+        if matched_event:
+            ret_data = json.dumps(matched_event.encode(encoding=None)).encode("utf-8")
+        else:
+            ret_data = json.dumps(ASERCmd.none).encode(encoding="utf-8")
         return ret_data
 
     def handle_exact_match_relation(self, data):
-        eid1, eid2 = data.decode("ascii").split("$")
-        matched_relation = self.ASER_KG.get_exact_match_relation([eid1, eid2])
-        ret_data = matched_relation.encode(encoding="ascii")
+        eid1, eid2 = data.decode("utf-8").split("$")
+        matched_relation = self.ASER_KG.get_exact_match_relation([eid1, eid2])[0]
+        print(matched_relation)
+        if matched_relation:
+            ret_data = json.dumps(matched_relation.encode(encoding=None)).encode("utf-8")
+        else:
+            ret_data = json.dumps(ASERCmd.none).encode(encoding="utf-8")
         return ret_data
 
     def handle_fetch_related_events(self, data):
-        eid = data.decode("ascii")
-        if eid in self.ASER_KG_INVERTED_TABLE:
-            related_eids = self.ASER_KG_INVERTED_TABLE[eid]
-            related_events = {}
-            for rel, rel_eids in related_eids.items():
-                related_events[rel] = self.ASER_KG.get_exact_match_events(rel_eids)
-        else:
-            related_events = {}
-        rst = [eventualities.encode(encoding="ascii") for eventualities in related_events]
-        ret_data = json.dumps(rst).encode("ascii")
+        h_eid = data.decode("utf-8")
+        related_events = self.ASER_KG.get_related_eventualities(h_eid)
+        rst = [(event.encode(encoding=None), relation.encode(encoding=None))
+               for event, relation in related_events]
+        ret_data = json.dumps(rst).encode("utf-8")
         return ret_data
 
 
@@ -194,7 +194,7 @@ class ASERWorker(Process):
         self.worker_id = id
         self.worker_addr_list = worker_addr_list
         self.sink_addr = sink_addr
-        self.eventuality_extractor = SeedRuleEventualityExtractor(
+        self.eventuality_extractor = SeedRuleASERExtractor(
             corenlp_path = opt.corenlp_path,
             corenlp_port=opt.base_corenlp_port + id)
         self.is_ready = multiprocessing.Event()
@@ -229,8 +229,8 @@ class ASERWorker(Process):
                         client_id, req_id, cmd, data = sock.recv_multipart()
                         print("Worker {} received msg ({}, {}, {}, {})".format(
                             self.worker_id,
-                            client_id.decode("ascii"), req_id.decode("ascii"),
-                            cmd.decode("ascii"), data.decode("ascii")
+                            client_id.decode("utf-8"), req_id.decode("utf-8"),
+                            cmd.decode("utf-8"), data.decode("utf-8")
                         ))
                         if cmd == ASERCmd.extract_events:
                             ret_data = self.handle_extract_events(data)
@@ -241,10 +241,12 @@ class ASERWorker(Process):
                 print(traceback.format_exc())
 
     def handle_extract_events(self, data):
-        sentence = data.decode("ascii")
-        eventualities_list = self.eventuality_extractor.extract_eventualities(sentence)
-        rst = [eventualities.encode(encoding=None) for eventualities in eventualities_list]
-        ret_data = json.dumps(rst).encode("ascii")
+        sentence = data.decode("utf-8")
+        eventualities_list = self.eventuality_extractor.extract_eventualities_from_text(sentence)
+        print(eventualities_list)
+
+        rst = [[e.encode(encoding=None) for e in eventualities] for eventualities in eventualities_list]
+        ret_data = json.dumps(rst).encode("utf-8")
         return ret_data
 
 
@@ -263,7 +265,7 @@ class ASERSink(Process):
     @zmqd.socket(zmq.PUB)
     def _run(self, _, addr_sender, receiver, sender):
         addr_sender.connect(self.sink_addr_receiver_addr)
-        receiver_addr = sockets_ipc_bind(receiver).encode("ascii")
+        receiver_addr = sockets_ipc_bind(receiver).encode("utf-8")
         addr_sender.send(receiver_addr)
         sender.bind("tcp://*:%d" % self.port_out)
         print("ASER Sink started")
