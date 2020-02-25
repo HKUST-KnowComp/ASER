@@ -73,7 +73,7 @@ class ASERProbaseConceptExtractor(BaseConceptExtractor):
         concept_after_seed_rule = self.seed_concept_extractor.conceptualize_from_text(
             eventuality.skeleton_phrases, eventuality.skeleton_phrases_ners)
         concept_strs = self._get_probase_concepts(
-            concept_after_seed_rule, eventuality.pattern)
+            concept_after_seed_rule, eventuality.skeleton_pos_tags)
         if not concept_strs and concept_after_seed_rule != " ".join(eventuality.skeleton_phrases):
             concept_strs = [(concept_after_seed_rule, 1.0)]
 
@@ -81,17 +81,16 @@ class ASERProbaseConceptExtractor(BaseConceptExtractor):
                     for concept_str, score in concept_strs]
         return concept_score_pairs
 
-    def _get_probase_concepts(self, skeleton_words, pattern):
-        words, patterns = skeleton_words, \
-                          pattern.split('-')
+    def _get_probase_concepts(self, skeleton_words, skeleton_pos_tags):
+        words, pos_tags = skeleton_words, skeleton_pos_tags
         matched_probase_concepts = dict()
 
-        for i in range(len(patterns)):
+        for i in range(len(pos_tags)):
             if i >= len(words):
                 break
             word = words[i]
-            pattern = patterns[i]
-            if pattern == 's' or pattern == 'o':
+            tag = pos_tags[i]
+            if tag.startswith("NN"):
                 if self.seed_concept_extractor.is_seed_concept(word) \
                         or self.seed_concept_extractor.is_pronoun(word):
                     continue
