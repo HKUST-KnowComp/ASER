@@ -1736,7 +1736,6 @@ class PSArgumentExtractor:
                 clause_last = sent_parsed_result["tokens"][clause[-1]]
 
                 # prev
-                # prev
                 if clause[0] == 0:
                     prev = "NONE"
                 else:

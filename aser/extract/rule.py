@@ -23,10 +23,10 @@ class EventualityRule(object):
         self.negative_rules = list()
 
 EVENTUALITY_PATTERNS = ['s-be-a', 's-v', 's-v-a', 's-v-a-X-o', 's-v-be-a', 's-v-be-o', 's-v-o', 's-v-o-o', 's-v-o-X-o',
-                       's-v-v', 's-v-v-o', 's-v-X-o', 'spass-v', 'spass-v-X-o']
+                       's-v-v', 's-v-v-o', 's-v-o-v-o', 's-v-o-v-o-X-o', 's-v-X-o', 'spass-v', 'spass-v-X-o']
 
 ALL_EVENTUALITY_RULES = dict()
-# # subject-verb-dobj
+
 A_rule = EventualityRule()
 A_rule.positive_rules.append(('V1', 'nsubj', 'S1'))
 A_rule.positive_rules.append(('V1', 'dobj', 'O1'))
@@ -43,6 +43,54 @@ ALL_EVENTUALITY_RULES['s-v-o'] = A_rule
 A_rule = EventualityRule()
 A_rule.positive_rules.append(('V1', 'nsubj', 'S1'))
 A_rule.positive_rules.append(('V1', 'dobj', 'O1'))
+A_rule.positive_rules.append(('V1', 'xcomp', 'V2'))
+A_rule.positive_rules.append(('V2', 'dobj', 'O2'))
+A_rule.possible_rules.append(('V1', '+advmod/neg/aux/compound:prt', 'NA'))
+A_rule.possible_rules.append(('V2', '+advmod/neg/aux/compound:prt', 'NA'))
+A_rule.possible_rules.append(('S1', '+amod/neg/nummod/compound/det/nmod:poss/mark/det:qmod/case', 'NA'))
+A_rule.possible_rules.append(('O1', '+amod/neg/nummod/compound/det/nmod:poss/mark/det:qmod/case', 'NA'))
+A_rule.possible_rules.append(('O2', '+amod/neg/nummod/compound/det/nmod:poss/mark/det:qmod/case', 'NA'))
+A_rule.negative_rules.append(('V1',
+                              """-ccomp/nsubj:xsubj/mark/parataxis/conj:but/advcl/dep/cc/punct/mark/conj:and/nmod:tmod/nmod:after/advcl:to/advcl:though/advcl:after/advcl:if/advcl:while/advcl:as/advcl:for/advcl:in/advcl:since/advcl:from/advcl:before/advcl:because/advcl:based_on/advcl:with/advcl:although/advcl:by/advcl:so/advcl:at/advcl:on/advcl:upon/advcl:until/advcl:'s/advcl:instead_of/advcl:despite/advcl:through/advcl:unless/advcl:in_order/advcl:ago""",
+                              'NA'))
+A_rule.negative_rules.append(('V2',
+                              """-ccomp/nsubj:xsubj/mark/parataxis/conj:but/advcl/dep/cc/punct/mark/conj:and/nmod:tmod/nmod:after/advcl:to/advcl:though/advcl:after/advcl:if/advcl:while/advcl:as/advcl:for/advcl:in/advcl:since/advcl:from/advcl:before/advcl:because/advcl:based_on/advcl:with/advcl:although/advcl:by/advcl:so/advcl:at/advcl:on/advcl:upon/advcl:until/advcl:'s/advcl:instead_of/advcl:despite/advcl:through/advcl:unless/advcl:in_order/advcl:ago""",
+                              'NA'))
+A_rule.negative_rules.append(('S1', """+nmod:of/nmod:for/nmod:at""", 'NA'))
+A_rule.negative_rules.append(('O1', """+nmod:of/nmod:for/nmod:at""", 'NA'))
+A_rule.negative_rules.append(('O2', """+nmod:of/nmod:for/nmod:at""", 'NA'))
+ALL_EVENTUALITY_RULES['s-v-o-v-o'] = A_rule
+
+A_rule = EventualityRule()
+A_rule.positive_rules.append(('V1', 'nsubj', 'S1'))
+A_rule.positive_rules.append(('V1', 'dobj', 'O1'))
+A_rule.positive_rules.append(('V1', 'xcomp', 'V2'))
+A_rule.positive_rules.append(('V2', 'dobj', 'O2'))
+A_rule.positive_rules.append(('V2',
+                              '+nmod:into/nmod:for/nmod:around/nmod:with/nmod:poss/nmod:inside/nmod:at/nmod:outside_of/nmod:than/nmod:from/nmod:in/nmod:on/nmod:to/nmod:away_from/amod:as/nmod:down/nmod:up/nmod:tmod/nmod:along/nmod:over/nmod:out_of/nmod:of/nmod:without/nmod:by/nmod:through/nmod:about',
+                              'O3'))
+A_rule.positive_rules.append(('O3', 'case', 'P1'))
+A_rule.possible_rules.append(('V1', '+advmod/neg/aux/compound:prt', 'NA'))
+A_rule.possible_rules.append(('V2', '+advmod/neg/aux/compound:prt', 'NA'))
+A_rule.possible_rules.append(('S1', '+amod/neg/nummod/compound/det/nmod:poss/mark/det:qmod/case', 'NA'))
+A_rule.possible_rules.append(('O1', '+amod/neg/nummod/compound/det/nmod:poss/mark/det:qmod/case', 'NA'))
+A_rule.possible_rules.append(('O2', '+amod/neg/nummod/compound/det/nmod:poss/mark/det:qmod/case', 'NA'))
+A_rule.possible_rules.append(('O3', '+amod/neg/nummod/compound/det/nmod:poss/mark/det:qmod/case', 'NA'))
+A_rule.negative_rules.append(('V1',
+                              """-ccomp/nsubj:xsubj/parataxis/conj:but/advcl/dep/cc/punct/mark/conj:and/nmod:tmod/nmod:after/advcl:to/advcl:though/advcl:after/advcl:if/advcl:while/advcl:as/advcl:for/advcl:in/advcl:since/advcl:from/advcl:before/advcl:because/advcl:based_on/advcl:with/advcl:although/advcl:by/advcl:so/advcl:at/advcl:on/advcl:upon/advcl:until/advcl:'s/advcl:instead_of/advcl:despite/advcl:through/advcl:unless/advcl:in_order/advcl:ago""",
+                              'NA'))
+A_rule.negative_rules.append(('V2',
+                              """-ccomp/nsubj:xsubj/parataxis/conj:but/advcl/dep/cc/punct/mark/conj:and/nmod:tmod/nmod:after/advcl:to/advcl:though/advcl:after/advcl:if/advcl:while/advcl:as/advcl:for/advcl:in/advcl:since/advcl:from/advcl:before/advcl:because/advcl:based_on/advcl:with/advcl:although/advcl:by/advcl:so/advcl:at/advcl:on/advcl:upon/advcl:until/advcl:'s/advcl:instead_of/advcl:despite/advcl:through/advcl:unless/advcl:in_order/advcl:ago""",
+                              'NA'))
+A_rule.negative_rules.append(('S1', """+nmod:of/nmod:for/nmod:at""", 'NA'))
+A_rule.negative_rules.append(('O1', """+nmod:of/nmod:for/nmod:at""", 'NA'))
+A_rule.negative_rules.append(('O2', """+nmod:of/nmod:for/nmod:at""", 'NA'))
+A_rule.negative_rules.append(('O3', """+nmod:of/nmod:for/nmod:at""", 'NA'))
+ALL_EVENTUALITY_RULES['s-v-o-v-o-X-o'] = A_rule
+
+A_rule = EventualityRule()
+A_rule.positive_rules.append(('V1', 'nsubj', 'S1'))
+A_rule.positive_rules.append(('V1', 'dobj', 'O1'))
 A_rule.positive_rules.append(('V1', 'iobj', 'O2'))
 A_rule.possible_rules.append(('S1', '+amod/neg/nummod/compound/det/nmod:poss/mark/det:qmod/case', 'NA'))
 A_rule.possible_rules.append(('O1', '+amod/neg/nummod/compound/det/nmod:poss/mark/det:qmod/case', 'NA'))
@@ -54,7 +102,7 @@ A_rule.negative_rules.append(('V1',
 A_rule.negative_rules.append(('O1', """+nmod:of/nmod:for/nmod:at""", 'NA'))
 A_rule.negative_rules.append(('O2', """+nmod:of/nmod:for/nmod:at""", 'NA'))
 ALL_EVENTUALITY_RULES['s-v-o-o'] = A_rule
-# # nsubj-verb
+
 A_rule = EventualityRule()
 A_rule.positive_rules.append(('V1', 'nsubj', 'S1'))
 A_rule.possible_rules.append(('S1', '+amod/neg/nummod/compound/det/nmod:poss/mark/det:qmod/case/compound:prt', 'NA1'))
@@ -65,7 +113,6 @@ A_rule.negative_rules.append(('V1',
 A_rule.negative_rules.append(('S1', """+nmod:of/nmod:for/nmod:at""", 'NA'))
 ALL_EVENTUALITY_RULES['s-v'] = A_rule
 
-# # nsubjpass-verb
 A_rule = EventualityRule()
 A_rule.positive_rules.append(('V1', 'nsubjpass', 'S1'))
 A_rule.possible_rules.append(('S1', '+amod/neg/nummod/compound/det/nmod:poss/mark/det:qmod/case', 'NA'))
@@ -76,7 +123,6 @@ A_rule.negative_rules.append(('V1',
 A_rule.negative_rules.append(('S1', """+nmod:of/nmod:for/nmod:at""", 'NA'))
 ALL_EVENTUALITY_RULES['spass-v'] = A_rule
 
-# subj-verb-verb-object
 A_rule = EventualityRule()
 A_rule.positive_rules.append(('V1', 'nsubj', 'S1'))
 A_rule.positive_rules.append(('V1', 'xcomp', 'V2'))
@@ -97,7 +143,6 @@ A_rule.negative_rules.append(('S1', """+nmod:of/nmod:for/nmod:at""", 'NA'))
 A_rule.negative_rules.append(('O1', """+nmod:of/nmod:for/nmod:at""", 'NA'))
 ALL_EVENTUALITY_RULES['s-v-v-o'] = A_rule
 
-# subj-verb-be-object
 A_rule = EventualityRule()
 A_rule.positive_rules.append(('V1', 'nsubj', 'S1'))
 A_rule.positive_rules.append(('V1', 'xcomp', 'A1'))
@@ -127,7 +172,6 @@ A_rule.negative_rules.append(('V2',
 A_rule.negative_rules.append(('S1', """+nmod:of/nmod:for/nmod:at""", 'NA'))
 ALL_EVENTUALITY_RULES['s-v-v'] = A_rule
 
-# s-v-a
 A_rule = EventualityRule()
 A_rule.positive_rules.append(('A1', '^cop', 'V1'))
 A_rule.positive_rules.append(('A1', 'nsubj', 'S1'))
@@ -139,7 +183,6 @@ A_rule.negative_rules.append(('A1',
 A_rule.negative_rules.append(('S1', """+nmod:of/nmod:for/nmod:at""", 'NA'))
 ALL_EVENTUALITY_RULES['s-be-a'] = A_rule
 
-# s-v-a-X-o
 A_rule = EventualityRule()
 A_rule.positive_rules.append(('A1', '^cop', 'V1'))
 A_rule.positive_rules.append(('A1', 'nsubj', 'S1'))
@@ -172,7 +215,6 @@ A_rule.negative_rules.append(('S1', """+nmod:of/nmod:for/nmod:at""", 'NA'))
 A_rule.negative_rules.append(('O1', """+nmod:of/nmod:for/nmod:at""", 'NA'))
 ALL_EVENTUALITY_RULES['s-v-X-o'] = A_rule
 
-# # nsubjpass-verb-X-o
 A_rule = EventualityRule()
 A_rule.positive_rules.append(('V1', 'nsubjpass', 'S1'))
 A_rule.positive_rules.append(('V1',

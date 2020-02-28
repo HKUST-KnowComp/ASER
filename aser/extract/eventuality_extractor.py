@@ -234,11 +234,14 @@ class SeedRuleEventualityExtractor(BaseEventualityExtractor):
             if self.skip_words and set(sent_parsed_result["tokens"]) & self.skip_words:
                 continue
             seed_rule_eventualities = dict()
+            # print(sent_parsed_result["tokens"])
             for rule_name in eventuality_rules:
                 tmp_eventualities = self._extract_eventualities_from_dependencies_with_single_rule(
                     sent_parsed_result, eventuality_rules[rule_name], rule_name)
                 seed_rule_eventualities[rule_name] = tmp_eventualities
+                # print("rule", rule_name, tmp_eventualities)
             seed_rule_eventualities = self._filter_special_case(seed_rule_eventualities)
+            # print("-------------")
             for eventualities in seed_rule_eventualities.values():
                 sent_eventualities.extend(eventualities)
         
@@ -522,4 +525,5 @@ class DiscourseEventualityExtractor(BaseEventualityExtractor):
             #     indices = set(chain.from_iterable(indices))
             #     sent_arguments.update(get_clauses(sent_parsed_result, syntax_tree, index_seps=indices))
             sent_arguments.update(get_clauses(sent_parsed_result, syntax_tree, index_seps=set(chain.from_iterable(sent_connectives))))
+        # print(para_arguments)
         return para_arguments
