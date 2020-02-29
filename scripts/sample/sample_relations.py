@@ -5,7 +5,7 @@ import os
 from collections import defaultdict
 from aser.database.kg_connection import ASERKGConnection
 from aser.extract.parsed_reader import ParsedReader
-from aser.extract.aser_extractor import DiscourseASERExtractor1
+from aser.extract.aser_extractor import DiscourseASERExtractor2
 
 
 if __name__ == "__main__":
@@ -20,7 +20,7 @@ if __name__ == "__main__":
 
     kg_conn = ASERKGConnection(db_path, mode="memory")
     parsed_reader = ParsedReader()
-    aser_extractor = DiscourseASERExtractor1()
+    aser_extractor = DiscourseASERExtractor2()
     with open(rid2sids_path, "rb") as f:
         rid2sids = pickle.load(f)
 
@@ -32,29 +32,35 @@ if __name__ == "__main__":
     for sense, rids in relation2rids.items():
         relations = list()
         np.random.shuffle(rids)
-        for i in range(min(len(rids), N)):
-            rid = rids[i]
+        for rid in rids:
             relation = kg_conn.get_exact_match_relation(rid)
             hid, tid = relation.hid, relation.tid
             sids = list(rid2sids[rid])
             np.random.shuffle(sids)
-            sid1, sid2 = sids[0]
-            sentence1 = parsed_reader.get_parsed_sentence_and_context(os.path.join(processed_path, sid1))["sentence"]
-            if sid2 != sid1:
-                sentence2 = parsed_reader.get_parsed_sentence_and_context(os.path.join(processed_path, sid2))["sentence"]
-                extracted_eventualities, extracted_relations = aser_extractor.extract_from_parsed_result([sentence1, sentence2], in_order=False)
-            else:
-                sentence2 = sentence1
-                extracted_eventualities, extracted_relations = aser_extractor.extract_from_parsed_result([sentence1], in_order=False)
-            relations.append({
-                "sids": sids[0],
-                "sentences": [sentence1] if sid1 == sid2 else [sentence1, sentence2],
-                "hid": hid,
-                "tid": tid,
-                "rid": rid,
-                "eventualities": [e.encode(encoding="utf-8").decode("utf-8") for e in extracted_eventualities],
-                "relations": [r.encode(encoding="utf-8").decode("utf-8") for r in extracted_relations]
-                })
+            for (sid1, sid2) in sids:
+                sentence1 = parsed_reader.get_parsed_sentence_and_context(os.path.join(processed_path, sid1))["sentence"]
+                if sid2 != sid1:
+                    sentence2 = parsed_reader.get_parsed_sentence_and_context(os.path.join(processed_path, sid2))["sentence"]
+                    extracted_eventualities, extracted_relations = aser_extractor.extract_from_parsed_result([sentence1, sentence2], in_order=False)
+                else:
+                    sentence2 = sentence1
+                    extracted_eventualities, extracted_relations = aser_extractor.extract_from_parsed_result([sentence1], in_order=False)
+                if len(extracted_relations) > 0 and not sense in set.union(*[set(r.relations.keys()) for r in extracted_relations]):
+                    continue
+                else:
+                    relations.append({
+                        "sids": (sid1, sid2),
+                        "sentences": [sentence1] if sid1 == sid2 else [sentence1, sentence2],
+                        "hid": hid,
+                        "tid": tid,
+                        "rid": rid,
+                        "eventualities": [e.encode(encoding="utf-8").decode("utf-8") for e in extracted_eventualities],
+                        "relations": [r.encode(encoding="utf-8").decode("utf-8") for r in extracted_relations]
+                        })
+                    break
+            if len(relations) >= N:
+                break
+            
         sampled_relations[sense] = relations
         print(sense, len(relations))
     
