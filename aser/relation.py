@@ -43,11 +43,13 @@ class Relation(JsonSerializedObject):
                     else:
                         self.relations[r] += cnt
             elif isinstance(x, (list, tuple)):
+                # cnt = 1.0/len(x) if len(x) > 0 else 0.0
+                cnt = 1.0
                 for r in x:
                     if r not in self.relations:
-                        self.relations[r] = 1.0
+                        self.relations[r] = cnt
                     else:
-                        self.relations[r] += 1.0
+                        self.relations[r] += cnt
             elif isinstance(x, Relation):
                 if self.hid == x.hid and self.tid == x.tid:
                     for r, cnt in x.relations.items():

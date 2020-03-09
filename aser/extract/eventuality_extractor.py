@@ -373,7 +373,9 @@ class SeedRuleEventualityExtractor(BaseEventualityExtractor):
             extracted_eventualities[k] = [e for e in v if "|" not in e.words]
 
         extracted_eventualities['s-v-a'] = []
+        extracted_eventualities['s-be-o'] = []
         extracted_eventualities['s-v-be-o'] = []
+        extracted_eventualities['s-v-o-be-o'] = []
 
         if len(extracted_eventualities['s-v-v']) > 0:
             tmp_s_v_v = list()
@@ -402,6 +404,34 @@ class SeedRuleEventualityExtractor(BaseEventualityExtractor):
                         break
             extracted_eventualities['s-v-be-a'] = tmp_s_v_be_a
             extracted_eventualities['s-v-be-o'] = tmp_s_v_be_o
+
+        if len(extracted_eventualities['s-be-a']) > 0:
+            tmp_s_be_a = list()
+            tmp_s_be_o = list()
+            for e in extracted_eventualities['s-be-a']:
+                for edge in e.dependencies:
+                    if edge[1] == 'xcomp':
+                        if 'JJ' in edge[2][2]:
+                            tmp_s_be_a.append(e)
+                        if 'NN' in edge[2][2]:
+                            tmp_s_be_o.append(e)
+                        break
+            extracted_eventualities['s-be-a'] = tmp_s_be_a
+            extracted_eventualities['s-be-o'] = tmp_s_be_o
+
+        if len(extracted_eventualities['s-v-o-be-a']) > 0:
+            tmp_s_v_o_be_a = list()
+            tmp_s_v_o_be_o = list()
+            for e in extracted_eventualities['s-v-o-be-a']:
+                for edge in e.dependencies:
+                    if edge[1] == 'xcomp':
+                        if 'JJ' in edge[2][2]:
+                            tmp_s_v_o_be_a.append(e)
+                        if 'NN' in edge[2][2]:
+                            tmp_s_v_o_be_o.append(e)
+                        break
+            extracted_eventualities['s-v-o-be-a'] = tmp_s_v_o_be_a
+            extracted_eventualities['s-v-o-be-o'] = tmp_s_v_o_be_o
 
         if len(extracted_eventualities['s-v']) > 0:
             tmp_s_v = list()
@@ -525,5 +555,5 @@ class DiscourseEventualityExtractor(BaseEventualityExtractor):
             #     indices = set(chain.from_iterable(indices))
             #     sent_arguments.update(get_clauses(sent_parsed_result, syntax_tree, index_seps=indices))
             sent_arguments.update(get_clauses(sent_parsed_result, syntax_tree, index_seps=set(chain.from_iterable(sent_connectives))))
-        # print(para_arguments)
+        # print("'clause indices':", para_arguments)
         return para_arguments

@@ -434,49 +434,30 @@ class DiscourseRelationExtractor(BaseRelationExtractor):
             if conn_indices and arg1 and arg2 and (sense and sense != "None"):
                 arg1_sent_idx = arg1["sent_idx"]
                 arg2_sent_idx = arg2["sent_idx"]
-                if arg1_sent_idx == arg2_sent_idx:
-                    relation_list_idx = arg1_sent_idx
-                    relations = para_relations[relation_list_idx]
-                    sent_parsed_result, sent_eventualities = parsed_result[arg1_sent_idx], para_eventualities[arg1_sent_idx]
-                    for head_e in sent_eventualities:
-                        if not similarity_func(sent_parsed_result, arg1, head_e, threshold=threshold, conn_indices=conn_indices):
-                            continue
-                        heid = head_e.eid
-                        for tail_e in sent_eventualities:
-                            if not head_e.position < tail_e.position:
-                                continue
-                            if not similarity_func(sent_parsed_result, arg2, tail_e, threshold=threshold, conn_indices=conn_indices):
-                                continue
-                            teid = tail_e.eid
-                            existed_relation = False
-                            for relation in relations:
-                                if relation.hid == heid and relation.tid == teid:
-                                    relation.update([sense])
-                                    existed_relation = True
-                                    break
-                            if not existed_relation:
-                                relations.append(Relation(heid, teid, [sense]))
-                elif arg1_sent_idx+1 == arg2_sent_idx:
-                    relation_list_idx = arg1_sent_idx + len_sentences
-                    relations = para_relations[relation_list_idx]
-                    sent_parsed_result1, sent_eventualities1 = parsed_result[arg1_sent_idx], para_eventualities[arg1_sent_idx]
-                    sent_parsed_result2, sent_eventualities2 = parsed_result[arg2_sent_idx], para_eventualities[arg2_sent_idx]
-                    for head_e in sent_eventualities1:
-                        if not similarity_func(sent_parsed_result, arg1, head_e, threshold=threshold, conn_indices=conn_indices):
-                            continue
-                        heid = head_e.eid
-                        for tail_e in sent_eventualities2:
-                            if not similarity_func(sent_parsed_result, arg2, tail_e, threshold=threshold, conn_indices=conn_indices):
-                                continue
-                            teid = tail_e.eid
-                            existed_relation = False
-                            for relation in relations:
-                                if relation.hid == heid and relation.tid == teid:
-                                    relation.update([sense])
-                                    existed_relation = True
-                                    break
-                            if not existed_relation:
-                                relations.append(Relation(heid, teid, [sense]))
+                relation_list_idx = arg1_sent_idx if arg1_sent_idx == arg2_sent_idx else arg1_sent_idx + len_sentences
+                relations = para_relations[relation_list_idx]
+                sent_parsed_result1, sent_eventualities1 = parsed_result[arg1_sent_idx], para_eventualities[arg1_sent_idx]
+                sent_parsed_result2, sent_eventualities2 = parsed_result[arg2_sent_idx], para_eventualities[arg2_sent_idx]
+                arg1_eventualities = [e for e in sent_eventualities1 if \
+                    similarity_func(sent_parsed_result1, arg1, e, threshold=threshold, conn_indices=conn_indices)]
+                arg2_eventualities = [e for e in sent_eventualities2 if \
+                    similarity_func(sent_parsed_result2, arg2, e, threshold=threshold, conn_indices=conn_indices)]
+                cnt = 0.0
+                if len(arg1_eventualities) > 0 and len(arg2_eventualities) > 0:
+                    cnt = 1.0 / (len(arg1_eventualities) * len(arg2_eventualities))
+                for e1 in arg1_eventualities:
+                    heid = e1.eid
+                    for e2 in arg2_eventualities:
+                        teid = e2.eid
+                        is_existed = False
+                        for relation in relations:
+                            if relation.hid == heid and relation.tid == teid:
+                                relation.update({sense: cnt})
+                                is_existed = True
+                                break
+                        if not is_existed:
+                            relations.append(Relation(heid, teid, {sense: cnt}))
+
         if in_order:
             if output_format == "Relation":
                 return para_relations
