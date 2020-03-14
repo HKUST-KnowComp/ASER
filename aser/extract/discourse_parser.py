@@ -466,10 +466,15 @@ class ConnectiveExtractor:
             while c_idx < len(self.sorted_conn):
                 conn = self.sorted_conn[c_idx]
                 c_idx += 1
-                if not conn.startswith(token):
+                if len(conn) < len(token):
                     break
+                elif not conn.startswith(token):
+                    break
+
                 if ".." in conn:
                     conn_lists = [c.split() for c in conn.split("..")] # c1..c2..
+                    if conn_lists[0][0] != token:
+                        break
                     if len(conn_lists[0]) + t_idx <= len(tokens):
                         # check conn_lists[0]
                         match = True
@@ -482,22 +487,21 @@ class ConnectiveExtractor:
                         indices = list(range(t_idx, t_idx+len(conn_lists[0])))
 
                         # check conn_lists[1]
-                        match = False
                         for t_idx in index_from(tokens, conn_lists[1][0], start_from=t_idx):
-                            # TODO: consider more locations
-                            # here we only consider as near as possible
-                            match = True
-                            for w_idx, c in enumerate(conn_lists[1]):
-                                if tokens[w_idx + t_idx] != c:
-                                    match = False
-                                    break
-                            if match:
-                                indices.extend(range(t_idx, t_idx+len(conn_lists[1])))
-                                break
-                        if match:
-                            all_connectives.append({"connective": conn, "indices": indices})
+                            match = False
+                            if len(conn_lists[1]) + t_idx <= len(tokens):
+                                match = True
+                                for w_idx, c in enumerate(conn_lists[1]):
+                                    if tokens[w_idx + t_idx] != c:
+                                        match = False
+                                        break
+                                if match:
+                                    all_connectives.append(
+                                        {"connective": conn, "indices": indices + list(range(t_idx, t_idx+len(conn_lists[1])))})
                 else:
                     conn_list = conn.split()
+                    if conn_list[0] != token:
+                        break
                     if len(conn_list) + t_idx <= len(tokens):
                         match = True
                         for w_idx, c in enumerate(conn_list):
@@ -505,8 +509,8 @@ class ConnectiveExtractor:
                                 match = False
                                 break
                         if match:
-                            all_connectives.append({"connective": conn, "indices": list(range(t_idx, t_idx+len(conn_list)))})
-        
+                            all_connectives.append(
+                                {"connective": conn, "indices": list(range(t_idx, t_idx+len(conn_list)))})
         # filter shorter and duplicative conn
         all_connectives.sort(key=lambda x: (-len(x["indices"]), -x["indices"][0]))
         filtered_connectives = list()
@@ -2187,10 +2191,15 @@ class ExplicitSenseClassifier:
             while c_idx < len(self.sorted_conn):
                 conn = self.sorted_conn[c_idx]
                 c_idx += 1
-                if not conn.startswith(token):
+                if len(conn) < len(token):
                     break
+                elif not conn.startswith(token):
+                    break
+
                 if ".." in conn:
                     conn_lists = [c.split() for c in conn.split("..")] # c1..c2..
+                    if conn_lists[0][0] != token:
+                        break
                     if len(conn_lists[0]) + t_idx <= len(tokens):
                         # check conn_lists[0]
                         match = True
@@ -2203,22 +2212,21 @@ class ExplicitSenseClassifier:
                         indices = list(range(t_idx, t_idx+len(conn_lists[0])))
 
                         # check conn_lists[1]
-                        match = False
                         for t_idx in index_from(tokens, conn_lists[1][0], start_from=t_idx):
-                            # TODO: consider more locations
-                            # here we only consider as near as possible
-                            match = True
-                            for w_idx, c in enumerate(conn_lists[1]):
-                                if tokens[w_idx + t_idx] != c:
-                                    match = False
-                                    break
-                            if match:
-                                indices.extend(range(t_idx, t_idx+len(conn_lists[1])))
-                                break
-                        if match:
-                            all_connectives.append({"connective": conn, "indices": indices})
+                            match = False
+                            if len(conn_lists[1]) + t_idx <= len(tokens):
+                                match = True
+                                for w_idx, c in enumerate(conn_lists[1]):
+                                    if tokens[w_idx + t_idx] != c:
+                                        match = False
+                                        break
+                                if match:
+                                    all_connectives.append(
+                                        {"connective": conn, "indices": indices + list(range(t_idx, t_idx+len(conn_lists[1])))})
                 else:
                     conn_list = conn.split()
+                    if conn_list[0] != token:
+                        break
                     if len(conn_list) + t_idx <= len(tokens):
                         match = True
                         for w_idx, c in enumerate(conn_list):
@@ -2226,10 +2234,10 @@ class ExplicitSenseClassifier:
                                 match = False
                                 break
                         if match:
-                            all_connectives.append({"connective": conn, "indices": list(range(t_idx, t_idx+len(conn_list)))})
-        
+                            all_connectives.append(
+                                {"connective": conn, "indices": list(range(t_idx, t_idx+len(conn_list)))})
         # filter shorter and duplicative conn
-        all_connectives.sort(key=lambda x: (-len(x["indices"]), x["indices"][0]))
+        all_connectives.sort(key=lambda x: (-len(x["indices"]), -x["indices"][0]))
         filtered_connectives = list()
         used_indices = set()
         for conn_indices in all_connectives:

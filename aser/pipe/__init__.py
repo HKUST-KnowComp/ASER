@@ -192,7 +192,7 @@ class ASERPipe(object):
 
             if self.opt.full_kg_dir:
                 # build eventuality KG
-                self.logger.info("Storing inverted tables and building the full KG.")
+                self.logger.info("Storing inverted tables.")
                 if not os.path.exists(self.opt.full_kg_dir):
                     os.mkdir(self.opt.full_kg_dir)
                 with open(os.path.join(self.opt.full_kg_dir, "eid2sids.pkl"), "wb") as f:
@@ -200,9 +200,10 @@ class ASERPipe(object):
                 with open(os.path.join(self.opt.full_kg_dir, "rid2sids.pkl"), "wb") as f:
                     pickle.dump(rid2sids, f)
 
+                self.logger.info("Building the full KG.")
                 kg_conn = ASERKGConnection(os.path.join(self.opt.full_kg_dir, "KG.db"), mode='insert')
-                kg_conn.insert_eventualities(list(eid2eventuality.values()))
-                kg_conn.insert_relations(list(rid2relation.values()))
+                kg_conn.insert_eventualities(eid2eventuality.values())
+                kg_conn.insert_relations(rid2relation.values())
                 kg_conn.close()
                 self.logger.info("Done.")
 
@@ -245,7 +246,7 @@ class ASERPipe(object):
                     shutil.copyfile(os.path.join(self.opt.full_kg_dir, "KG.db"), os.path.join(self.opt.core_kg_dir, "KG.db"))
                 else:
                     # build eventuality KG
-                    self.logger.info("Storing inverted tables and building the core KG.")
+                    self.logger.info("Storing inverted tables.")
                     if not os.path.exists(self.opt.core_kg_dir):
                         os.mkdir(self.opt.core_kg_dir)
                     with open(os.path.join(self.opt.core_kg_dir, "eid2sids.pkl"), "wb") as f:
@@ -254,9 +255,10 @@ class ASERPipe(object):
                         pickle.dump(rid2sids, f)
                     # del eid2sids, rid2sids
 
+                    self.logger.info("Building the full KG.")
                     kg_conn = ASERKGConnection(os.path.join(self.opt.core_kg_dir, "KG.db"), mode='insert')
-                    kg_conn.insert_eventualities(list(eid2eventuality.values()))
-                    kg_conn.insert_relations(list(rid2relation.values()))
+                    kg_conn.insert_eventualities(eid2eventuality.values())
+                    kg_conn.insert_relations(rid2relation.values())
                     kg_conn.close()
                     # del eid2eventuality, rid2relation
                     self.logger.info("Done.")
