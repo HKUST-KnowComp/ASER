@@ -218,11 +218,13 @@ class SyntaxTree:
             return subtree
 
     def to_newick_format(self, parse_tree):
-        # replace `,`
-
+        # replace `,`, `:`, `;`
         parse_tree = parse_tree.replace(",", "*COMMA*")
         parse_tree = parse_tree.replace(":", "*COLON*")
         parse_tree = parse_tree.replace(";", "*SEMICOLON*")
+
+        # replace `<ref>`
+        parse_tree = re.sub(r"<ref(.*?)>", "<ref>", parse_tree)
 
         tree_list = self.load_syntax_tree(parse_tree)
         if len(tree_list) == 0:
