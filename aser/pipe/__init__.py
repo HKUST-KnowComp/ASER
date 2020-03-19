@@ -5,6 +5,7 @@ import random
 import time
 import pickle
 import multiprocessing
+import math
 from tqdm import tqdm
 from copy import copy, deepcopy
 from functools import partial
@@ -19,9 +20,57 @@ from aser.eventuality import Eventuality
 from aser.relation import Relation
 from aser.database.kg_connection import ASERKGConnection
 
+
+
+def run_files(raw_paths=None, processed_paths=None, prefix_to_be_removed="",
+    sentence_parser=None, parsed_reader=None, aser_extractor=None):
+    eid2sids = defaultdict(list)
+    rid2sids = defaultdict(list)
+    eid2eventuality = dict()
+    rid2relation = dict()
+    if raw_paths:
+        for raw_path, processed_path in zip(raw_paths, processed_paths):
+            x_eid2sids, x_rid2sids, x_eid2eventuality, x_rid2relation = \
+                run_file(raw_path, processed_path, prefix_to_be_removed,
+                    sentence_parser, parsed_reader, aser_extractor)
+            for eid, sids in x_eid2sids.items():
+                eid2sids[eid].extend(sids)
+            for rid, sids in x_rid2sids.items():
+                rid2sids[rid].extend(sids)
+            for eid, eventuality in x_eid2eventuality.items():
+                if eid not in eid2eventuality:
+                    eid2eventuality[eid] = eventuality
+                else:
+                    eid2eventuality[eid].update(eventuality)
+            for rid, relation in x_rid2relation.items():
+                if rid not in rid2relation:
+                    rid2relation[rid] = relation
+                else:
+                    rid2relation[rid].update(relation)
+    else:
+        for processed_path in processed_paths:
+            x_eid2sids, x_rid2sids, x_eid2eventuality, x_rid2relation = \
+                run_file(None, processed_path, prefix_to_be_removed,
+                    sentence_parser, parsed_reader, aser_extractor)
+            for eid, sids in x_eid2sids.items():
+                eid2sids[eid].extend(sids)
+            for rid, sids in x_rid2sids.items():
+                rid2sids[rid].extend(sids)
+            for eid, eventuality in x_eid2eventuality.items():
+                if eid not in eid2eventuality:
+                    eid2eventuality[eid] = eventuality
+                else:
+                    eid2eventuality[eid].update(eventuality)
+            for rid, relation in x_rid2relation.items():
+                if rid not in rid2relation:
+                    rid2relation[rid] = relation
+                else:
+                    rid2relation[rid].update(relation)
+    del x_eid2sids, x_rid2sids, x_eid2eventuality, x_rid2relation
+    return eid2sids, rid2sids, eid2eventuality, rid2relation
+
 def run_file(raw_path=None, processed_path=None, prefix_to_be_removed="",
-    sentence_parser=None, parsed_reader=None, 
-    aser_extractor=None):
+    sentence_parser=None, parsed_reader=None, aser_extractor=None):
 
     # process raw data or load processed data
     if os.path.exists(processed_path):
@@ -67,7 +116,7 @@ def run_file(raw_path=None, processed_path=None, prefix_to_be_removed="",
                 if relation.rid not in rid2relation:
                     rid2relation[relation.rid] = deepcopy(relation)
                 else:
-                    rid2relation[relation.rid].update(relation.relations)
+                    rid2relation[relation.rid].update(relation)
     # PS
     for idx in range(len_doc-1):
         relation_list = relation_lists[len_doc+idx]
@@ -77,7 +126,7 @@ def run_file(raw_path=None, processed_path=None, prefix_to_be_removed="",
                 if relation.rid not in rid2relation:
                     rid2relation[relation.rid] = deepcopy(relation)
                 else:
-                    rid2relation[relation.rid].update(relation.relations)
+                    rid2relation[relation.rid].update(relation)
     
     return eid2sids, rid2sids, eid2eventuality, rid2relation
 
@@ -86,12 +135,6 @@ def process_raw_file(raw_path, processed_path, sentence_parser):
 
 def load_processed_data(processed_path, parsed_reader):
     return parsed_reader.get_parsed_paragraphs_from_file(processed_path)
-
-def extract_eventualities(processed_data, eventuality_extractor):
-    return list(map(eventuality_extractor.extract_from_parsed_result, processed_data))
-
-def extract_relations(processed_data, eventuality_lists, relation_extractor):
-    return relation_extractor.extract(list(zip(processed_data, eventuality_lists)), output_format="Relation", in_order=True)
 
 class ASERPipe(object):
     def __init__(self, opt):
@@ -124,45 +167,38 @@ class ASERPipe(object):
             results = list()
             if os.path.exists(self.opt.raw_dir):
                 self.logger.info("Processing raw data from %s." % (self.opt.raw_dir))
-                raw_file_names = [file_name for file_name in iter_files(self.opt.raw_dir)]
-                for idx, raw_path in enumerate(raw_file_names):
-                    extractor_idx = idx%self.n_extractors
-                    processed_path = os.path.splitext(raw_path)[0].replace(self.opt.raw_dir, self.opt.processed_dir, 1) + ".jsonl"
-                    if os.path.exists(processed_path):
-                        results.append(pool.apply_async(run_file, args=(
-                            None, processed_path, self.opt.processed_dir+os.sep, 
-                            None, self.parsed_readers[extractor_idx], 
-                            self.aser_extractors[extractor_idx])))
-                        # results.append(run_file(
-                        #     None, processed_path, self.opt.processed_dir+os.sep,
-                        #     None, self.parsed_readers[extractor_idx], 
-                        #     self.aser_extractors[extractor_idx]))
-                    else:
-                        if not os.path.exists(os.path.dirname(processed_path)):
-                            os.makedirs(os.path.dirname(processed_path))
-                        results.append(pool.apply_async(run_file, args=(
-                            raw_path, processed_path, self.opt.processed_dir+os.sep,
-                            self.sentence_parsers[extractor_idx], None, 
-                            self.aser_extractors[extractor_idx])))
-                        # results.append(run_file(
-                        #     raw_path, processed_path, self.opt.processed_dir+os.sep,
-                        #     self.sentence_parsers[extractor_idx], None, 
-                        #     self.aser_extractors[extractor_idx]))
+                raw_paths, processed_paths = list(), list()
+                for file_name in iter_files(self.opt.raw_dir):
+                    raw_paths.append(file_name)
+                    processed_path.append(
+                        os.path.splitext(file_name)[0].replace(self.opt.raw_dir, self.opt.processed_dir, 1) + ".jsonl")
             elif os.path.exists(self.opt.processed_dir):
                 self.logger.info("Loading processed data from %s." % (self.opt.processed_dir))
-                processed_file_names = [file_name for file_name in iter_files(self.opt.processed_dir) if file_name.endswith(".jsonl")]
-                for idx, processed_path in enumerate(processed_file_names):
-                    extractor_idx = idx%self.n_extractors
-                    results.append(pool.apply_async(run_file, args=(
-                        None, processed_path, self.opt.processed_dir+os.sep, 
-                        None, self.parsed_readers[extractor_idx], 
-                        self.aser_extractors[extractor_idx])))
-                    # results.append(run_file(
-                    #     None, processed_path, self.opt.processed_dir+os.sep,
-                    #     None, self.parsed_readers[extractor_idx], 
-                    #     self.aser_extractors[extractor_idx]))
+                raw_paths = list()
+                processed_paths = [file_name for file_name in iter_files(self.opt.processed_dir) if file_name.endswith(".jsonl")]
             else:
                 raise ValueError("Error: at least one of raw_dir and processed_dir should not be None.")
+            self.logger.info("Number of files: %d." % (len(processed_paths)))
+            prefix_to_be_removed = self.opt.processed_dir+os.sep
+            if len(processed_paths) < 10000:
+                for worker_idx, (raw_path, processed_path) in enumerate(zip(raw_paths, processed_paths)):
+                    extractor_idx = worker_idx%self.n_extractors
+                    results.append(pool.apply_async(run_file, args=(
+                        raw_path, processed_path, prefix_to_be_removed, 
+                        self.sentence_parsers[extractor_idx], self.parsed_readers[extractor_idx], 
+                        self.aser_extractors[extractor_idx])))
+            else:
+                chunk_size = 10
+                while math.ceil(len(processed_paths)/chunk_size) > 10000:
+                    chunk_size *= 10
+                for worker_idx in range(math.ceil(len(processed_paths)/chunk_size)):
+                    extractor_idx = worker_idx%self.n_extractors
+                    i = worker_idx * chunk_size
+                    j = min(i +  chunk_size, len(processed_paths))
+                    results.append(pool.apply_async(run_files, args=(
+                        raw_paths[i:j], processed_paths[i:j], prefix_to_be_removed, 
+                        self.sentence_parsers[extractor_idx], self.parsed_readers[extractor_idx], 
+                        self.aser_extractors[extractor_idx])))
             pool.close()
             
             # merge all results
@@ -170,22 +206,30 @@ class ASERPipe(object):
             eventuality_counter, relation_counter = Counter(), Counter()
             for x in tqdm(results):
                 x_eid2sids, x_rid2sids, x_eid2eventuality, x_rid2relation = x.get()
-                # x_eid2sids, x_rid2sids, x_eid2eventuality, x_rid2relation = x
-                eid2sids.update(x_eid2sids)
-                rid2sids.update(x_rid2sids)
-                for eid, eventuality in x_eid2eventuality.items():
-                    eventuality_counter[eid] += eventuality.frequency
-                    if eid not in eid2eventuality:
-                        eid2eventuality[eid] = deepcopy(eventuality)
-                    else:
-                        eid2eventuality[eid].update(eventuality)
-                for rid, relation in x_rid2relation.items():
-                    relation_counter[rid] += sum(relation.relations.values())
-                    if rid not in rid2relation:
-                        rid2relation[rid] = deepcopy(relation)
-                    else:
-                        rid2relation[rid].update(relation)
-            # del x_eid2sids, x_rid2sids, x_eid2eventuality, x_rid2relation
+                if len(eid2eventuality) == 0 and len(rid2relation) == 0:
+                    eid2sids, rid2sids, eid2eventuality, rid2relation = x_eid2sids, x_rid2sids, x_eid2eventuality, x_rid2relation
+                    for eid, eventuality in x_eid2eventuality.items():
+                        eventuality_counter[eid] += eventuality.frequency
+                    for rid, relation in x_rid2relation.items():
+                        relation_counter[rid] += sum(relation.relations.values())
+                else:
+                    for eid, sids in x_eid2sids.items():
+                        eid2sids[eid].extend(sids)
+                    for rid, sids in x_rid2sids.items():
+                        rid2sids[rid].extend(sids)
+                    for eid, eventuality in x_eid2eventuality.items():
+                        eventuality_counter[eid] += eventuality.frequency
+                        if eid not in eid2eventuality:
+                            eid2eventuality[eid] = eventuality
+                        else:
+                            eid2eventuality[eid].update(eventuality)
+                    for rid, relation in x_rid2relation.items():
+                        relation_counter[rid] += sum(relation.relations.values())
+                        if rid not in rid2relation:
+                            rid2relation[rid] = relation
+                        else:
+                            rid2relation[rid].update(relation)
+            del x_eid2sids, x_rid2sids, x_eid2eventuality, x_rid2relation
             total_eventuality, total_relation = sum(eventuality_counter.values()), sum(relation_counter.values())
             self.logger.info("%d eventualities (%d unique) have been extracted." % (total_eventuality, len(eid2eventuality)))
             self.logger.info("%d relations (%d unique) have been extracted." % (total_relation, len(rid2relation)))
@@ -255,7 +299,7 @@ class ASERPipe(object):
                         pickle.dump(rid2sids, f)
                     # del eid2sids, rid2sids
 
-                    self.logger.info("Building the full KG.")
+                    self.logger.info("Building the core KG.")
                     kg_conn = ASERKGConnection(os.path.join(self.opt.core_kg_dir, "KG.db"), mode='insert')
                     kg_conn.insert_eventualities(eid2eventuality.values())
                     kg_conn.insert_relations(rid2relation.values())
