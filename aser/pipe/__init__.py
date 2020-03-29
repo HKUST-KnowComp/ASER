@@ -162,147 +162,162 @@ class ASERPipe(object):
         close_logger(self.logger)
 
     def run(self):
-        with multiprocessing.Pool(self.n_workers) as pool:
-            self.logger.info("Start the pipeline.")
-            results = list()
-            if os.path.exists(self.opt.raw_dir):
-                self.logger.info("Processing raw data from %s." % (self.opt.raw_dir))
-                raw_paths, processed_paths = list(), list()
-                for file_name in iter_files(self.opt.raw_dir):
-                    raw_paths.append(file_name)
-                    processed_path.append(
-                        os.path.splitext(file_name)[0].replace(self.opt.raw_dir, self.opt.processed_dir, 1) + ".jsonl")
-            elif os.path.exists(self.opt.processed_dir):
-                self.logger.info("Loading processed data from %s." % (self.opt.processed_dir))
-                raw_paths = list()
-                processed_paths = [file_name for file_name in iter_files(self.opt.processed_dir) if file_name.endswith(".jsonl")]
-            else:
-                raise ValueError("Error: at least one of raw_dir and processed_dir should not be None.")
-            self.logger.info("Number of files: %d." % (len(processed_paths)))
-            prefix_to_be_removed = self.opt.processed_dir+os.sep
-            if len(processed_paths) < 10000:
-                for worker_idx, (raw_path, processed_path) in enumerate(zip(raw_paths, processed_paths)):
-                    extractor_idx = worker_idx%self.n_extractors
-                    results.append(pool.apply_async(run_file, args=(
-                        raw_path, processed_path, prefix_to_be_removed, 
-                        self.sentence_parsers[extractor_idx], self.parsed_readers[extractor_idx], 
-                        self.aser_extractors[extractor_idx])))
-            else:
-                chunk_size = 10
-                while math.ceil(len(processed_paths)/chunk_size) > 10000:
-                    chunk_size *= 10
-                for worker_idx in range(math.ceil(len(processed_paths)/chunk_size)):
-                    extractor_idx = worker_idx%self.n_extractors
-                    i = worker_idx * chunk_size
-                    j = min(i +  chunk_size, len(processed_paths))
-                    results.append(pool.apply_async(run_files, args=(
-                        raw_paths[i:j], processed_paths[i:j], prefix_to_be_removed, 
-                        self.sentence_parsers[extractor_idx], self.parsed_readers[extractor_idx], 
-                        self.aser_extractors[extractor_idx])))
-            pool.close()
-            
-            # merge all results
-            eid2sids, rid2sids, eid2eventuality, rid2relation = defaultdict(list), defaultdict(list), dict(), dict()
-            eventuality_counter, relation_counter = Counter(), Counter()
-            for x in tqdm(results):
-                x_eid2sids, x_rid2sids, x_eid2eventuality, x_rid2relation = x.get()
-                if len(eid2eventuality) == 0 and len(rid2relation) == 0:
-                    eid2sids, rid2sids, eid2eventuality, rid2relation = x_eid2sids, x_rid2sids, x_eid2eventuality, x_rid2relation
-                    for eid, eventuality in x_eid2eventuality.items():
-                        eventuality_counter[eid] += eventuality.frequency
-                    for rid, relation in x_rid2relation.items():
-                        relation_counter[rid] += sum(relation.relations.values())
-                else:
-                    for eid, sids in x_eid2sids.items():
-                        eid2sids[eid].extend(sids)
-                    for rid, sids in x_rid2sids.items():
-                        rid2sids[rid].extend(sids)
-                    for eid, eventuality in x_eid2eventuality.items():
-                        eventuality_counter[eid] += eventuality.frequency
-                        if eid not in eid2eventuality:
-                            eid2eventuality[eid] = eventuality
-                        else:
-                            eid2eventuality[eid].update(eventuality)
-                    for rid, relation in x_rid2relation.items():
-                        relation_counter[rid] += sum(relation.relations.values())
-                        if rid not in rid2relation:
-                            rid2relation[rid] = relation
-                        else:
-                            rid2relation[rid].update(relation)
-            del x_eid2sids, x_rid2sids, x_eid2eventuality, x_rid2relation
-            total_eventuality, total_relation = sum(eventuality_counter.values()), sum(relation_counter.values())
-            self.logger.info("%d eventualities (%d unique) have been extracted." % (total_eventuality, len(eid2eventuality)))
-            self.logger.info("%d relations (%d unique) have been extracted." % (total_relation, len(rid2relation)))
+        self.logger.info("Start the pipeline.")
+        if os.path.exists(self.opt.raw_dir):
+            self.logger.info("Processing raw data from %s." % (self.opt.raw_dir))
+            raw_paths, processed_paths = list(), list()
+            for file_name in iter_files(self.opt.raw_dir):
+                raw_paths.append(file_name)
+                processed_path.append(
+                    os.path.splitext(file_name)[0].replace(self.opt.raw_dir, self.opt.processed_dir, 1) + ".jsonl")
+        elif os.path.exists(self.opt.processed_dir):
+            self.logger.info("Loading processed data from %s." % (self.opt.processed_dir))
+            raw_paths = list()
+            processed_paths = [file_name for file_name in iter_files(self.opt.processed_dir) if file_name.endswith(".jsonl")]
+        else:
+            raise ValueError("Error: at least one of raw_dir and processed_dir should not be None.")
+        self.logger.info("Number of files: %d." % (len(processed_paths)))
+        prefix_to_be_removed = self.opt.processed_dir+os.sep
 
-            if self.opt.full_kg_dir:
+        
+        if self.n_workers > 1:
+            with multiprocessing.Pool(self.n_workers) as pool:
+                results = list()
+                if len(processed_paths) < 10000:
+                    for worker_idx, (raw_path, processed_path) in enumerate(zip(raw_paths, processed_paths)):
+                        extractor_idx = worker_idx%self.n_extractors
+                        results.append(pool.apply_async(run_file, args=(
+                            raw_path, processed_path, prefix_to_be_removed, 
+                            self.sentence_parsers[extractor_idx], self.parsed_readers[extractor_idx], 
+                            self.aser_extractors[extractor_idx])))
+                else:
+                    chunk_size = 10
+                    while math.ceil(len(processed_paths)/chunk_size) > 10000:
+                        chunk_size *= 10
+                    for worker_idx in range(math.ceil(len(processed_paths)/chunk_size)):
+                        extractor_idx = worker_idx%self.n_extractors
+                        i = worker_idx * chunk_size
+                        j = min(i +  chunk_size, len(processed_paths))
+                        results.append(pool.apply_async(run_files, args=(
+                            raw_paths[i:j], processed_paths[i:j], prefix_to_be_removed, 
+                            self.sentence_parsers[extractor_idx], self.parsed_readers[extractor_idx], 
+                            self.aser_extractors[extractor_idx])))
+                pool.close()
+                
+                # merge all results
+                eid2sids, rid2sids, eid2eventuality, rid2relation = defaultdict(list), defaultdict(list), dict(), dict()
+                eventuality_counter, relation_counter = Counter(), Counter()
+                for x in tqdm(results):
+                    x_eid2sids, x_rid2sids, x_eid2eventuality, x_rid2relation = x.get()
+                    if len(eid2eventuality) == 0 and len(rid2relation) == 0:
+                        eid2sids, rid2sids, eid2eventuality, rid2relation = x_eid2sids, x_rid2sids, x_eid2eventuality, x_rid2relation
+                        for eid, eventuality in x_eid2eventuality.items():
+                            eventuality_counter[eid] += eventuality.frequency
+                        for rid, relation in x_rid2relation.items():
+                            relation_counter[rid] += sum(relation.relations.values())
+                    else:
+                        for eid, sids in x_eid2sids.items():
+                            eid2sids[eid].extend(sids)
+                        for rid, sids in x_rid2sids.items():
+                            rid2sids[rid].extend(sids)
+                        for eid, eventuality in x_eid2eventuality.items():
+                            eventuality_counter[eid] += eventuality.frequency
+                            if eid not in eid2eventuality:
+                                eid2eventuality[eid] = eventuality
+                            else:
+                                eid2eventuality[eid].update(eventuality)
+                        for rid, relation in x_rid2relation.items():
+                            relation_counter[rid] += sum(relation.relations.values())
+                            if rid not in rid2relation:
+                                rid2relation[rid] = relation
+                            else:
+                                rid2relation[rid].update(relation)
+                if len(eid2sids) > 0 or len(rid2sids) > 0:
+                    del x_eid2sids, x_rid2sids, x_eid2eventuality, x_rid2relation
+        else:
+            eid2sids, rid2sids, eid2eventuality, rid2relation = run_files(
+                raw_paths, processed_paths, prefix_to_be_removed, 
+                self.sentence_parsers[0], self.parsed_readers[0], 
+                self.aser_extractors[0])
+            eventuality_counter, relation_counter = Counter(), Counter()
+            for eid, eventuality in x_eid2eventuality.items():
+                eventuality_counter[eid] += eventuality.frequency
+            for rid, relation in x_rid2relation.items():
+                relation_counter[rid] += sum(relation.relations.values())
+
+        total_eventuality, total_relation = sum(eventuality_counter.values()), sum(relation_counter.values())
+        self.logger.info("%d eventualities (%d unique) have been extracted." % (total_eventuality, len(eid2eventuality)))
+        self.logger.info("%d relations (%d unique) have been extracted." % (total_relation, len(rid2relation)))
+
+        if self.opt.full_kg_dir:
+            # build eventuality KG
+            self.logger.info("Storing inverted tables.")
+            if not os.path.exists(self.opt.full_kg_dir):
+                os.mkdir(self.opt.full_kg_dir)
+            with open(os.path.join(self.opt.full_kg_dir, "eid2sids.pkl"), "wb") as f:
+                pickle.dump(eid2sids, f)
+            with open(os.path.join(self.opt.full_kg_dir, "rid2sids.pkl"), "wb") as f:
+                pickle.dump(rid2sids, f)
+
+            self.logger.info("Building the full KG.")
+            kg_conn = ASERKGConnection(os.path.join(self.opt.full_kg_dir, "KG.db"), mode='insert')
+            kg_conn.insert_eventualities(eid2eventuality.values())
+            kg_conn.insert_relations(rid2relation.values())
+            kg_conn.close()
+            self.logger.info("Done.")
+
+        if self.opt.core_kg_dir:
+            # filter high-frequency and low-frequency eventualities
+            self.logger.info("Filtering high-frequency and low-frequency eventualities.")
+            eventuality_frequency_lower_cnt_threshold = self.opt.eventuality_frequency_lower_cnt_threshold
+            eventuality_frequency_upper_cnt_threshold = self.opt.eventuality_frequency_upper_percent_threshold * total_eventuality
+            filtered_eids = set([eid for eid, freq in eventuality_counter.items() \
+                if freq < eventuality_frequency_lower_cnt_threshold or freq > eventuality_frequency_upper_cnt_threshold])
+            for filtered_eid in filtered_eids:
+                eid2sids.pop(filtered_eid)
+                eid2eventuality.pop(filtered_eid)
+                total_eventuality -= eventuality_counter.pop(filtered_eid)
+            # del eventuality_counter
+            self.logger.info("%d eventualities (%d unique) will be inserted into the core KG." % (total_eventuality, len(eid2eventuality)))
+
+            # filter high-frequency and low-frequency relations
+            self.logger.info("Filtering high-frequency and low-frequency relations.")
+            relation_frequency_lower_cnt_threshold = self.opt.relation_frequency_lower_cnt_threshold
+            relation_frequency_upper_cnt_threshold = self.opt.relation_frequency_upper_percent_threshold * total_relation
+            filtered_rids = set([rid for rid, freq in relation_counter.items() \
+                if freq < relation_frequency_lower_cnt_threshold or freq > relation_frequency_upper_cnt_threshold])
+            filtered_rids.update(set([rid for rid, relation in rid2relation.items() \
+                if relation.hid in filtered_eids or relation.tid in filtered_eids]))
+            for filtered_rid in filtered_rids:
+                rid2sids.pop(filtered_rid)
+                rid2relation.pop(filtered_rid)
+                total_relation -= relation_counter.pop(filtered_rid)
+            # del relation_counter
+            self.logger.info("%d relations (%d unique) will be inserted into the core KG." % (total_relation, len(rid2relation)))
+
+            if len(filtered_eids) == 0 and len(filtered_rids) == 0:
+                # copy KG
+                self.logger.info("Copying the full KG as the core KG.")
+                if not os.path.exists(self.opt.core_kg_dir):
+                    os.mkdir(self.opt.core_kg_dir)
+                shutil.copyfile(os.path.join(self.opt.full_kg_dir, "eid2sids.pkl"), os.path.join(self.opt.core_kg_dir, "eid2sids.pkl"))
+                shutil.copyfile(os.path.join(self.opt.full_kg_dir, "rid2sids.pkl"), os.path.join(self.opt.core_kg_dir, "rid2sids.pkl"))
+                shutil.copyfile(os.path.join(self.opt.full_kg_dir, "KG.db"), os.path.join(self.opt.core_kg_dir, "KG.db"))
+            else:
                 # build eventuality KG
                 self.logger.info("Storing inverted tables.")
-                if not os.path.exists(self.opt.full_kg_dir):
-                    os.mkdir(self.opt.full_kg_dir)
-                with open(os.path.join(self.opt.full_kg_dir, "eid2sids.pkl"), "wb") as f:
+                if not os.path.exists(self.opt.core_kg_dir):
+                    os.mkdir(self.opt.core_kg_dir)
+                with open(os.path.join(self.opt.core_kg_dir, "eid2sids.pkl"), "wb") as f:
                     pickle.dump(eid2sids, f)
-                with open(os.path.join(self.opt.full_kg_dir, "rid2sids.pkl"), "wb") as f:
+                with open(os.path.join(self.opt.core_kg_dir, "rid2sids.pkl"), "wb") as f:
                     pickle.dump(rid2sids, f)
+                # del eid2sids, rid2sids
 
-                self.logger.info("Building the full KG.")
-                kg_conn = ASERKGConnection(os.path.join(self.opt.full_kg_dir, "KG.db"), mode='insert')
+                self.logger.info("Building the core KG.")
+                kg_conn = ASERKGConnection(os.path.join(self.opt.core_kg_dir, "KG.db"), mode='insert')
                 kg_conn.insert_eventualities(eid2eventuality.values())
                 kg_conn.insert_relations(rid2relation.values())
                 kg_conn.close()
+                # del eid2eventuality, rid2relation
                 self.logger.info("Done.")
-
-            if self.opt.core_kg_dir:
-                # filter high-frequency and low-frequency eventualities
-                self.logger.info("Filtering high-frequency and low-frequency eventualities.")
-                eventuality_frequency_lower_cnt_threshold = self.opt.eventuality_frequency_lower_cnt_threshold
-                eventuality_frequency_upper_cnt_threshold = self.opt.eventuality_frequency_upper_percent_threshold * total_eventuality
-                filtered_eids = set([eid for eid, freq in eventuality_counter.items() \
-                    if freq < eventuality_frequency_lower_cnt_threshold or freq > eventuality_frequency_upper_cnt_threshold])
-                for filtered_eid in filtered_eids:
-                    eid2sids.pop(filtered_eid)
-                    eid2eventuality.pop(filtered_eid)
-                    total_eventuality -= eventuality_counter.pop(filtered_eid)
-                # del eventuality_counter
-                self.logger.info("%d eventualities (%d unique) will be inserted into the core KG." % (total_eventuality, len(eid2eventuality)))
-
-                # filter high-frequency and low-frequency relations
-                self.logger.info("Filtering high-frequency and low-frequency relations.")
-                relation_frequency_lower_cnt_threshold = self.opt.relation_frequency_lower_cnt_threshold
-                relation_frequency_upper_cnt_threshold = self.opt.relation_frequency_upper_percent_threshold * total_relation
-                filtered_rids = set([rid for rid, freq in relation_counter.items() \
-                    if freq < relation_frequency_lower_cnt_threshold or freq > relation_frequency_upper_cnt_threshold])
-                filtered_rids.update(set([rid for rid, relation in rid2relation.items() \
-                    if relation.hid in filtered_eids or relation.tid in filtered_eids]))
-                for filtered_rid in filtered_rids:
-                    rid2sids.pop(filtered_rid)
-                    rid2relation.pop(filtered_rid)
-                    total_relation -= relation_counter.pop(filtered_rid)
-                # del relation_counter
-                self.logger.info("%d relations (%d unique) will be inserted into the core KG." % (total_relation, len(rid2relation)))
-
-                if len(filtered_eids) == 0 and len(filtered_rids) == 0:
-                    # copy KG
-                    self.logger.info("Copying the full KG as the core KG.")
-                    if not os.path.exists(self.opt.core_kg_dir):
-                        os.mkdir(self.opt.core_kg_dir)
-                    shutil.copyfile(os.path.join(self.opt.full_kg_dir, "eid2sids.pkl"), os.path.join(self.opt.core_kg_dir, "eid2sids.pkl"))
-                    shutil.copyfile(os.path.join(self.opt.full_kg_dir, "rid2sids.pkl"), os.path.join(self.opt.core_kg_dir, "rid2sids.pkl"))
-                    shutil.copyfile(os.path.join(self.opt.full_kg_dir, "KG.db"), os.path.join(self.opt.core_kg_dir, "KG.db"))
-                else:
-                    # build eventuality KG
-                    self.logger.info("Storing inverted tables.")
-                    if not os.path.exists(self.opt.core_kg_dir):
-                        os.mkdir(self.opt.core_kg_dir)
-                    with open(os.path.join(self.opt.core_kg_dir, "eid2sids.pkl"), "wb") as f:
-                        pickle.dump(eid2sids, f)
-                    with open(os.path.join(self.opt.core_kg_dir, "rid2sids.pkl"), "wb") as f:
-                        pickle.dump(rid2sids, f)
-                    # del eid2sids, rid2sids
-
-                    self.logger.info("Building the core KG.")
-                    kg_conn = ASERKGConnection(os.path.join(self.opt.core_kg_dir, "KG.db"), mode='insert')
-                    kg_conn.insert_eventualities(eid2eventuality.values())
-                    kg_conn.insert_relations(rid2relation.values())
-                    kg_conn.close()
-                    # del eid2eventuality, rid2relation
-                    self.logger.info("Done.")
