@@ -113,7 +113,8 @@ class SyntaxTree:
                         leaf.add_feature("index", idx)
                 else:
                     self.leaves = list()
-            except:
+            except BaseException as e:
+                print(e)
                 self.tree = None
                 self.leaves = list()
 
@@ -218,18 +219,27 @@ class SyntaxTree:
             return subtree
 
     def to_newick_format(self, parse_tree):
+        # replace `<ref>`
+        parse_tree = re.sub(r"<ref(.*?)>", "<ref>", parse_tree)
+
+        # replace `url`
+        # parse_tree = re.sub(r"(?:https?|ftp)://[\w/\-?=%&.]+\.[\w/\-?=&%.]+", "<url>", parse_tree)
+        parse_tree = re.sub(r"(?:(?:https?|ftp):\/\/)?[\w/\-?=%&.]+\.[\w/\-?=&%.]+", "<url>", parse_tree)
+        parse_tree = re.sub(r"<url>[\W]*<url>", "<url>", parse_tree)
+
         # replace `,`, `:`, `;`
         parse_tree = parse_tree.replace(",", "*COMMA*")
         parse_tree = parse_tree.replace(":", "*COLON*")
         parse_tree = parse_tree.replace(";", "*SEMICOLON*")
 
-        # replace `<ref>`
-        parse_tree = re.sub(r"<ref(.*?)>", "<ref>", parse_tree)
-
         tree_list = self.load_syntax_tree(parse_tree)
         if len(tree_list) == 0:
             return None
-        s = self.syntax_tree_to_newick(tree_list[0])
+        tree = tree_list[0]
+        for i in range(1, len(tree_list)):
+            if len(tree) < len(tree_list[i]):
+                tree = tree_list[i]
+        s = self.syntax_tree_to_newick(tree)
         s = s.replace(",)",")")
         if s[-1] == ",":
             s = s[:-1] + ";"
@@ -1240,7 +1250,7 @@ class SSArgumentExtractor:
                 conn_node = syntax_tree.get_self_category_node_by_token_indices(conn_indices)
             except BaseException as e:
                 print(sent_parsed_result)
-                raise e
+                continue
             
             left_number, right_number = 0, 0
             if conn_node.up:
