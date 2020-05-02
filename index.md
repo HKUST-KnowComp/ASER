@@ -17,6 +17,7 @@ ASER (activities, states, events,and their relations) is a large-scale eventuali
 <strong>Publications:</strong>
 
 <ul>
+<li>Changlong Yu, Hongming Zhang, <strong>Yangqiu Song</strong>, Wilfred Ng, Lifeng Shang . Enriching Large-Scale Eventuality Knowledge Graph with Entailment Relations. Conference on Automated Knowledge Base Construction (AKBC). 2020.  [<a href="https://openreview.net/forum?id=-oXaOxy6up">pdf</a>]</li>
 <li>Hongming Zhang, Daniel Khashabi, Yangqiu Song, and Dan Roth. TransOMCS: From Linguistic Graphs to Commonsense Knowledge. International Joint Conference on Artificial Intelligence (IJCAI). 2020.</li>
 <li>Mutian He, Yangqiu Song, Kun Xu, and Yu Dong. On the Role of Conceptualization in Commonsense Knowledge Graph Construction. HKUST Technical Report, March 6th, 2020.[<a href="https://arxiv.org/abs/2003.03239">pdf</a>]</li>
 <li>Hongming Zhang*, Xin Liu*, Haojie Pan*, Yangqiu Song, and Cane Wing-Ki Leung. ASER: A Large-scale Eventuality Knowledge Graph. The Web Conference (WWW), 2020. (Previously a Technical Report at HKUST, May 2019) [<a href="https://arxiv.org/abs/1905.00270">pdf</a>], [<a href="http://home.cse.ust.hk/~yqsong/papers/ASER-WWW20.pptx">ppt</a>]</li>
