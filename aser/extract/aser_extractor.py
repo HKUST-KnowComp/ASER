@@ -189,6 +189,52 @@ class DiscourseASERExtractor3(BaseASERExtractor):
         self.ps_extractor = PSArgumentExtractor(**kw)
         self.explicit_classifier = ExplicitSenseClassifier(**kw)
 
+    def _extract_eventualities_from_clause(self, sent_parsed_result, clause):
+        len_clause = len(clause)
+        idx_mapping = {j: i for i, j in enumerate(clause)}
+        indices_set = set(clause)
+        clause_parsed_result = {
+            "text": "",
+            "dependencies": [(idx_mapping[dep[0]], dep[1], idx_mapping[dep[2]]) for dep in sent_parsed_result["dependencies"] \
+                if dep[0] in indices_set and dep[2] in indices_set],
+            "tokens": [sent_parsed_result["tokens"][idx] for idx in clause],
+            "pos_tags": [sent_parsed_result["pos_tags"][idx] for idx in clause],
+            "lemmas": [sent_parsed_result["lemmas"][idx] for idx in clause]}
+        if "ners" in sent_parsed_result:
+            clause_parsed_result["ners"] = [sent_parsed_result["ners"][idx] for idx in clause]
+        if "mentions" in sent_parsed_result:
+            clause_parsed_result["mentions"] = list()
+            for mention in sent_parsed_result["mentions"]:
+                start_idx = bisect.bisect_left(clause, mention["start"])
+                if not (start_idx < len_clause and clause[start_idx] == mention["start"]):
+                    continue
+                end_idx = bisect.bisect_left(clause, mention["end"]-1)
+                if not (end_idx < len_clause and clause[end_idx] == mention["end"]-1):
+                    continue
+                mention = copy(mention)
+                mention["start"] = start_idx
+                mention["end"] = end_idx+1
+                clause_parsed_result["mentions"].append(mention)
+        eventualities = self.eventuality_extractor.extract_from_parsed_result(
+            clause_parsed_result, output_format="Eventuality", in_order=True)
+        for eventuality in eventualities:
+            for k, v in eventuality.raw_sent_mapping.items():
+                eventuality.raw_sent_mapping[k] = clause[v]
+            eventuality.eid = Eventuality.generate_eid(eventuality)
+        return eventualities
+
+    def _append_new_eventuaities_to_list(self, existed_eventualities, new_eventualities):
+        len_existed_eventualities = len(existed_eventualities)
+        for new_e in new_eventualities:
+            is_existed = False
+            for old_idx in range(len_existed_eventualities):
+                old_e = existed_eventualities[old_idx]
+                if old_e.eid == new_e.eid and old_e.raw_sent_mapping == new_e.raw_sent_mapping:
+                    is_existed = True
+                    break
+            if not is_existed:
+                existed_eventualities.append(new_e)
+
     def extract_eventualities_from_parsed_result(self, parsed_result, output_format="Eventuality", in_order=True, **kw):
         if output_format not in ["Eventuality", "json"]:
             raise NotImplementedError("Error: extract_from_parsed_result only supports Eventuality or json.")
@@ -207,21 +253,7 @@ class DiscourseASERExtractor3(BaseASERExtractor):
         para_clauses = self._extract_clauses(parsed_result, syntax_tree_cache)
         for sent_parsed_result, sent_clauses, sent_eventualities in zip(parsed_result, para_clauses, para_eventualities):
             for clause in sent_clauses:
-                idx_mapping = {j: i for i, j in enumerate(clause)}
-                indices_set = set(clause)
-                clause_parsed_result = {
-                    "text": "",
-                    "dependencies": [(idx_mapping[dep[0]], dep[1], idx_mapping[dep[2]]) for dep in sent_parsed_result["dependencies"] \
-                        if dep[0] in indices_set and dep[2] in indices_set],
-                    "tokens": [sent_parsed_result["tokens"][idx] for idx in clause],
-                    "pos_tags": [sent_parsed_result["pos_tags"][idx] for idx in clause],
-                    "lemmas": [sent_parsed_result["lemmas"][idx] for idx in clause]}
-                eventualities = self.eventuality_extractor.extract_from_parsed_result(
-                    clause_parsed_result, output_format="Eventuality", in_order=True)
-                for eventtuality in eventualities:
-                    for k, v in eventtuality.raw_sent_mapping.items():
-                        eventtuality.raw_sent_mapping[k] = clause[v]
-                sent_eventualities.extend(eventualities)
+                sent_eventualities.extend(self._extract_eventualities_from_clause(sent_parsed_result, clause))
         
         if in_order:
             if output_format == "json":
@@ -256,6 +288,19 @@ class DiscourseASERExtractor3(BaseASERExtractor):
             else:
                 return list()
 
+        similarity = kw.get("similarity", "simpson").lower()
+        threshold = kw.get("threshold", 0.8)
+        if threshold < 0.0 or threshold > 1.0:
+            raise ValueError("Error: threshold should be between 0.0 and 1.0.")
+        if similarity == "simpson":
+            similarity_func = self._match_argument_eventuality_by_Simpson
+        elif similarity == "jaccard":
+            similarity_func = self._match_argument_eventuality_by_Jaccard
+        elif similarity == "discourse":
+            similarity_func = self._match_argument_eventuality_by_dependencies
+        else:
+            raise NotImplementedError("Error: extract_from_parsed_result only supports Simpson or Jaccard.")
+
         syntax_tree_cache = kw.get("syntax_tree_cache", dict())
 
         para_relations = [list() for _ in range(2*len_sentences-1)]
@@ -264,13 +309,13 @@ class DiscourseASERExtractor3(BaseASERExtractor):
         filtered_parsed_result = list()
         for sent_idx, (sent_parsed_result, sent_eventualities) in enumerate(zip(parsed_result, para_eventualities)):
             if len(sent_eventualities) > 0:
-                filtered_parsed_result.append(sent_parsed_result)
                 relations_in_sent = para_relations[sent_idx]
                 for e1_idx in range(len(sent_eventualities)-1):
                     heid = sent_eventualities[e1_idx].eid
                     for e2_idx in range(e1_idx+1, len(sent_eventualities)):
                         teid = sent_eventualities[e2_idx].eid
                         relations_in_sent.append(Relation(heid, teid, ["Co_Occurrence"]))
+                filtered_parsed_result.append(sent_parsed_result)
             else:
                 filtered_parsed_result.append(EMPTY_SENT_PARSED_RESULT) # empty sentence
                 # filtered_parsed_result.append(sent_parsed_result)
@@ -290,49 +335,30 @@ class DiscourseASERExtractor3(BaseASERExtractor):
             if conn_indices and arg1 and arg2 and (sense and sense != "None"):
                 arg1_sent_idx = arg1["sent_idx"]
                 arg2_sent_idx = arg2["sent_idx"]
-                if arg1_sent_idx == arg2_sent_idx:
-                    relation_list_idx = arg1_sent_idx
-                    relations = para_relations[relation_list_idx]
-                    sent_parsed_result, sent_eventualities = parsed_result[arg1_sent_idx], para_eventualities[arg1_sent_idx]
-                    for e1_idx in range(len(sent_eventualities)-1):
-                        e1 = sent_eventualities[e1_idx]
-                        if not DiscourseRelationExtractor._match_argument_eventuality_by_Simpson(sent_parsed_result, arg1, e1, threshold=0.99):
-                            continue
-                        heid = e1.eid
-                        for e2_idx in range(e1_idx+1, len(sent_eventualities)):
-                            e2 = sent_eventualities[e2_idx]
-                            if not DiscourseRelationExtractor._match_argument_eventuality_by_Simpson(sent_parsed_result, arg2, e2, threshold=0.99):
-                                continue
-                            teid = e2.eid
-                            existed_relation = False
-                            for relation in relations:
-                                if relation.hid == heid and relation.tid == teid:
-                                    relation.update([sense])
-                                    existed_relation = True
-                                    break
-                            if not existed_relation:
-                                relations.append(Relation(heid, teid, [sense]))
-                else:
-                    relation_list_idx = arg1_sent_idx + len_sentences
-                    relations = para_relations[relation_list_idx]
-                    sent_parsed_result1, sent_eventualities1 = parsed_result[arg1_sent_idx], para_eventualities[arg1_sent_idx]
-                    sent_parsed_result2, sent_eventualities2 = parsed_result[arg2_sent_idx], para_eventualities[arg2_sent_idx]
-                    for e1 in sent_eventualities1:
-                        if not DiscourseRelationExtractor._match_argument_eventuality_by_Simpson(sent_parsed_result, arg1, e1, threshold=0.99):
-                            continue
-                        heid = e1.eid
-                        for e2 in sent_eventualities2:
-                            if not DiscourseRelationExtractor._match_argument_eventuality_by_Simpson(sent_parsed_result, arg2, e2, threshold=0.99):
-                                continue
-                            teid = e2.eid
-                            existed_relation = False
-                            for relation in relations:
-                                if relation.hid == heid and relation.tid == teid:
-                                    relation.update([sense])
-                                    existed_relation = True
-                                    break
-                            if not existed_relation:
-                                relations.append(Relation(heid, teid, [sense]))
+                relation_list_idx = arg1_sent_idx if arg1_sent_idx == arg2_sent_idx else arg1_sent_idx + len_sentences
+                relations = para_relations[relation_list_idx]
+                sent_parsed_result1, sent_eventualities1 = parsed_result[arg1_sent_idx], para_eventualities[arg1_sent_idx]
+                sent_parsed_result2, sent_eventualities2 = parsed_result[arg2_sent_idx], para_eventualities[arg2_sent_idx]
+                arg1_eventualities = [e for e in sent_eventualities1 if \
+                    similarity_func(sent_parsed_result1, arg1, e, threshold=threshold, conn_indices=conn_indices)]
+                arg2_eventualities = [e for e in sent_eventualities2 if \
+                    similarity_func(sent_parsed_result2, arg2, e, threshold=threshold, conn_indices=conn_indices)]
+                cnt = 0.0
+                if len(arg1_eventualities) > 0 and len(arg2_eventualities) > 0:
+                    cnt = 1.0 / (len(arg1_eventualities) * len(arg2_eventualities))
+                for e1 in arg1_eventualities:
+                    heid = e1.eid
+                    for e2 in arg2_eventualities:
+                        teid = e2.eid
+                        existed_relation = False
+                        for relation in relations:
+                            if relation.hid == heid and relation.tid == teid:
+                                relation.update({sense: cnt})
+                                existed_relation = True
+                                break
+                        if not existed_relation:
+                            relations.append(Relation(heid, teid, {sense: cnt}))
+
         if in_order:
             if output_format == "Relation":
                 return para_relations
@@ -384,97 +410,8 @@ class DiscourseASERExtractor3(BaseASERExtractor):
             arg2 = connective.get("arg2", None)
             sense = connective.get("sense", None)
             if conn_indices and arg1 and arg2:
-                arg1_sent_idx, arg2_sent_idx = arg1["sent_idx"], arg2["sent_idx"]
-                sent_parsed_result1,sent_parsed_result2 = parsed_result[arg1_sent_idx], parsed_result[arg2_sent_idx]
-
-                len_arg1 = len(arg1["indices"])
-                idx_mapping1 = {j: i for i, j in enumerate(arg1["indices"])}
-                indices_set1 = set(arg1["indices"])
-                arg1_parsed_result = {
-                    "text": "",
-                    "dependencies": [(idx_mapping1[dep[0]], dep[1], idx_mapping1[dep[2]]) for dep in sent_parsed_result1["dependencies"] \
-                        if dep[0] in indices_set1 and dep[2] in indices_set1],
-                    "tokens": [sent_parsed_result1["tokens"][idx] for idx in arg1["indices"]],
-                    "pos_tags": [sent_parsed_result1["pos_tags"][idx] for idx in arg1["indices"]],
-                    "lemmas": [sent_parsed_result1["lemmas"][idx] for idx in arg1["indices"]]}
-                if "ners" in sent_parsed_result1:
-                    arg1_parsed_result["ners"] = [sent_parsed_result1["ners"][idx] for idx in arg1["indices"]]
-                if "mentions" in sent_parsed_result1:
-                    arg1_parsed_result["mentions"] = list()
-                    for mention in sent_parsed_result1["mentions"]:
-                        start_idx = bisect.bisect_left(arg1["indices"], mention["start"])
-                        if not (start_idx < len_arg1 and arg1["indices"][start_idx] == mention["start"]):
-                            continue
-                        end_idx = bisect.bisect_left(arg1["indices"], mention["end"]-1)
-                        if not (end_idx < len_arg1 and arg1["indices"][end_idx] == mention["end"]-1):
-                            continue
-                        mention = copy(mention)
-                        mention["start"] = start_idx
-                        mention["end"] = end_idx+1
-                        arg1_parsed_result["mentions"].append(mention)
-                eventualities1 = self.eventuality_extractor.extract_from_parsed_result(
-                    arg1_parsed_result, output_format="Eventuality", in_order=True)
-                len_existed_eventualities1 = len(para_eventualities[arg1_sent_idx])
-                for e1 in eventualities1:
-                    for k, v in e1.raw_sent_mapping.items():
-                        e1.raw_sent_mapping[k] = arg1["indices"][v]
-                    e1.eid = Eventuality.generate_eid(e1)
-                    existed_eventuality = False
-                    for e_idx in range(len_existed_eventualities1):
-                        if para_eventualities[arg1_sent_idx][e_idx].eid == e1.eid and \
-                            para_eventualities[arg1_sent_idx][e_idx].raw_sent_mapping == e1.raw_sent_mapping:
-                            existed_eventuality = True
-                            break
-                    if not existed_eventuality:
-                        para_eventualities[arg1_sent_idx].append(e1)
-
-                len_arg2 = len(arg2["indices"])
-                idx_mapping2 = {j: i for i, j in enumerate(arg2["indices"])}
-                indices_set2 = set(arg2["indices"])
-                arg2_parsed_result = {
-                    "text": "",
-                    "dependencies": [(idx_mapping2[dep[0]], dep[1], idx_mapping2[dep[2]]) for dep in sent_parsed_result2["dependencies"] \
-                        if dep[0] in indices_set2 and dep[2] in indices_set2],
-                    "tokens": [sent_parsed_result2["tokens"][idx] for idx in arg2["indices"]],
-                    "pos_tags": [sent_parsed_result2["pos_tags"][idx] for idx in arg2["indices"]],
-                    "lemmas": [sent_parsed_result2["lemmas"][idx] for idx in arg2["indices"]]}
-                if "ners" in sent_parsed_result2:
-                    arg2_parsed_result["ners"] = [sent_parsed_result2["ners"][idx] for idx in arg2["indices"]]
-                if "mentions" in sent_parsed_result2:
-                    arg2_parsed_result["mentions"] = list()
-                    for mention in sent_parsed_result2["mentions"]:
-                        start_idx = bisect.bisect_left(arg2["indices"], mention["start"])
-                        if not (start_idx < len_arg2 and arg2["indices"][start_idx] == mention["start"]):
-                            continue
-                        end_idx = bisect.bisect_left(arg2["indices"], mention["end"]-1)
-                        if not (end_idx < len_arg2 and arg2["indices"][end_idx] == mention["end"]-1):
-                            continue
-                        mention = copy(mention)
-                        mention["start"] = start_idx
-                        mention["end"] = end_idx+1
-                        arg2_parsed_result["mentions"].append(mention)
-                eventualities2 = self.eventuality_extractor.extract_from_parsed_result(
-                    arg2_parsed_result, output_format="Eventuality", in_order=True)
-                len_existed_eventualities2 = len(para_eventualities[arg2_sent_idx])
-                for e2 in eventualities2:
-                    for k, v in e2.raw_sent_mapping.items():
-                        e2.raw_sent_mapping[k] = arg2["indices"][v]
-                    e2.eid = Eventuality.generate_eid(e2)
-                    existed_eventuality = False
-                    for e_idx in range(len_existed_eventualities2):
-                        if para_eventualities[arg2_sent_idx][e_idx].eid == e2.eid and \
-                            para_eventualities[arg2_sent_idx][e_idx].raw_sent_mapping == e2.raw_sent_mapping:
-                            existed_eventuality = True
-                            break
-                    if not existed_eventuality:
-                        para_eventualities[arg2_sent_idx].append(e2)
-
-                if arg1_sent_idx == arg2_sent_idx:
-                    relation_list_idx = arg1_sent_idx
-                elif arg1_sent_idx+1 == arg2_sent_idx:
-                    relation_list_idx = arg1_sent_idx + len_sentences
-                else:
-                    continue
+                arg1_sent_idx = arg1["sent_idx"]
+                arg2_sent_idx = arg2["sent_idx"]
                 senses = []
                 if arg1_sent_idx == arg2_sent_idx:
                     senses.append("Co_Occurrence")
@@ -482,20 +419,30 @@ class DiscourseASERExtractor3(BaseASERExtractor):
                     senses.append(sense)
                 if len(senses) == 0:
                     continue
-
+                relation_list_idx = arg1_sent_idx if arg1_sent_idx == arg2_sent_idx else arg1_sent_idx + len_sentences
                 relations = para_relations[relation_list_idx]
-                for e1 in eventualities1:
+                sent_parsed_result1, sent_eventualities1 = parsed_result[arg1_sent_idx], para_eventualities[arg1_sent_idx]
+                sent_parsed_result2, sent_eventualities2 = parsed_result[arg2_sent_idx], para_eventualities[arg2_sent_idx]
+                arg1_eventualities = self._extract_eventualities_from_clause(sent_parsed_result1, arg1["indices"])
+                arg2_eventualities = self._extract_eventualities_from_clause(sent_parsed_result2, arg2["indices"])
+                self._append_new_eventuaities_to_list(sent_eventualities1, arg1_eventualities)
+                self._append_new_eventuaities_to_list(sent_eventualities2, arg2_eventualities)
+
+                cnt = 0.0
+                if len(arg1_eventualities) > 0 and len(arg2_eventualities) > 0:
+                    cnt = 1.0 / (len(arg1_eventualities) * len(arg2_eventualities))
+                for e1 in arg1_eventualities:
                     heid = e1.eid
-                    for e2 in eventualities2:
+                    for e2 in arg2_eventualities:
                         teid = e2.eid
-                        existed_relation = False
+                        is_existed = False
                         for relation in relations:
                             if relation.hid == heid and relation.tid == teid:
-                                relation.update(senses)
-                                existed_relation = True
+                                relation.update({sense: cnt for sense in senses})
+                                is_existed = True
                                 break
-                        if not existed_relation:
-                            relations.append(Relation(heid, teid, senses))
+                        if not is_existed:
+                            relations.append(Relation(heid, teid, {sense: cnt for sense in senses}))
 
         if in_order:
             if eventuality_output_format == "json":

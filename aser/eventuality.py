@@ -39,19 +39,20 @@ class Eventuality(JsonSerializedObject):
             if isinstance(x, float):
                 self.frequency += x
             elif isinstance(x, Eventuality):
-                if self._ners is not None and x._ners is not None:
-                    for i, (ner, x_ner) in enumerate(zip(self._ners, x._ners)):
-                        if isinstance(ner, str) and isinstance(x_ner, str) and ner == x_ner:
-                            continue
-                        if isinstance(ner, str):
-                            self._ners[i] = Counter({ner: self.frequency})
-                        if isinstance(x_ner, str):
-                            x_ner = Counter({x_ner: x.frequency})
-                        self._ners[i].update(x_ner)
-                if self._mentions is not None and x._mentions is not None:
-                    for s_t, x_mention in x._mentions.items():
-                        self._mentions[s_t] = x_mention
-                self.frequency += x.frequency
+                if x.eid == self.eid:
+                    if self._ners is not None and x._ners is not None:
+                        for i, (ner, x_ner) in enumerate(zip(self._ners, x._ners)):
+                            if isinstance(ner, str) and isinstance(x_ner, str) and ner == x_ner:
+                                continue
+                            if isinstance(ner, str):
+                                self._ners[i] = Counter({ner: self.frequency})
+                            if isinstance(x_ner, str):
+                                x_ner = Counter({x_ner: x.frequency})
+                            self._ners[i].update(x_ner)
+                    if self._mentions is not None and x._mentions is not None:
+                        for s_t, x_mention in x._mentions.items():
+                            self._mentions[s_t] = x_mention
+                    self.frequency += x.frequency
 
     def __len__(self):
         return len(self.words)

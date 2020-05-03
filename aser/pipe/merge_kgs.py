@@ -1,7 +1,9 @@
 import os
 import pickle
+import shutil
+import gc
 from copy import copy, deepcopy
-from collections import defaultdict
+from collections import defaultdict, Counter
 from aser.database.base import SqliteConnection, MongoDBConnection
 from aser.database.kg_connection import CHUNKSIZE
 from aser.database.kg_connection import EVENTUALITY_TABLE_NAME, EVENTUALITY_COLUMNS, EVENTUALITY_COLUMN_TYPES
@@ -15,14 +17,12 @@ log_path = "./.merge_kg.log"
 
 if __name__ == "__main__":
     logger = init_logger(log_file=log_path)
-    datasets = ["gutenberg", "nyt", "reddit", "subtitles", "wikipedia" , "yelp"]
-    # datasets = ["nyt_test"]
-    kg_paths = [os.path.join("/home/data/corpora/aser/database/core", dataset) for dataset in datasets]
-    # kg_paths = [os.path.join(r"D:\Workspace\ASER-core\data\database", dataset) for dataset in datasets]
-    prefixes_to_be_added = [os.path.join(dataset, "parsed")+os.sep for dataset in datasets]
+    datasets = ["yelp", "nyt", "wikipedia", "reddit", "subtitles", "gutenberg"]
+    kg_paths = ["/home/data/corpora/aser/database/0.3/%s_core_0.3" % (dataset) for dataset in datasets]
+    prefixes_to_be_added = [os.path.join(dataset, "parsed_para")+os.sep for dataset in datasets]
 
-    merged_kg_path = "/home/data/corpora/aser/database/core/all"
-    # merged_kg_path = r"D:\Workspace\ASER-core\data\database\all"
+    # merged_kg_path = "/home/data/corpora/aser/database/0.3/reddit_full_0.3"
+    merged_kg_path = "/home/data/corpora/aser/database/0.3/core"
     if not os.path.exists(merged_kg_path):
         os.mkdir(merged_kg_path)
 
@@ -42,7 +42,10 @@ if __name__ == "__main__":
         pickle.dump(eid2sids, f)
     with open(os.path.join(merged_kg_path, "rid2sids.pkl"), "wb") as f:
         pickle.dump(rid2sids, f)
-    del eid2sids, rid2sids
+    del eid2sids
+    del rid2sids
+    # gc.collect()
+
 
     if db == "sqlite":
         merged_conn = SqliteConnection(os.path.join(merged_kg_path, "KG.db"), CHUNKSIZE)
@@ -62,11 +65,10 @@ if __name__ == "__main__":
         try:
             merged_conn.create_table(table_name, columns, column_types)
         except BaseException as e:
-            raise e
+            print(e)
     
-    eid2row = dict()
-    rid2row = dict()
-    total_eventuality, total_relation = 0, 0
+    eid2row, rid2row = dict(), dict()
+    eventuality_counter, relation_counter = Counter(), Counter()
     for kg_path in kg_paths:
         logger.info("Connecting %s" % (os.path.join(kg_path, "KG.db")))
         if db == "sqlite":
@@ -78,7 +80,7 @@ if __name__ == "__main__":
 
         logger.info("Retrieving rows from %s.%s..." % (kg_path, EVENTUALITY_TABLE_NAME))
         for row in conn.get_columns(EVENTUALITY_TABLE_NAME, EVENTUALITY_COLUMNS):
-            total_eventuality += row["frequency"]
+            eventuality_counter[row["_id"]] += row["frequency"]
             if row["_id"] not in eid2row:
                 eid2row[row["_id"]] = deepcopy(row)
             else:
@@ -86,22 +88,28 @@ if __name__ == "__main__":
 
         logger.info("Retrieving rows from %s.%s..." % (kg_path, RELATION_TABLE_NAME))
         for row in conn.get_columns(RELATION_TABLE_NAME, RELATION_COLUMNS):
+            relation_counter[row["_id"]] += sum([row.get(r, 0.0) for r in relation_senses])
             if row["_id"] not in rid2row:
-                total_relation += sum([row.get(r, 0.0) for r in relation_senses])
                 rid2row[row["_id"]] = deepcopy(row)
             else:
                 for r in relation_senses:
-                    freq = row.get(r, 0.0)
-                    total_relation += freq
-                    rid2row[row["_id"]][r] += freq
+                    rid2row[row["_id"]][r] += row.get(r, 0.0)
+        conn.close()
+    total_eventuality, total_relation = sum(eventuality_counter.values()), sum(relation_counter.values())
     logger.info("%d eventualities (%d unique) have been extracted." % (total_eventuality, len(eid2row)))
     logger.info("%d relations (%d unique) have been extracted." % (total_relation, len(rid2row)))
-    
-    logger.info("Building the KG.")
+
+    logger.info("%d eventualities (%d unique) will be inserted into the core KG." % (total_eventuality, len(eid2row)))
     merged_conn.insert_rows(EVENTUALITY_TABLE_NAME, eid2row.values())
+    del eid2row
+    # gc.collect()
+
+    logger.info("%d relations (%d unique) will be inserted into the core KG." % (total_relation, len(rid2row)))
     merged_conn.insert_rows(RELATION_TABLE_NAME, rid2row.values())
+    del rid2row
+    # gc.collect()
+
     merged_conn.close()
-    del eid2row, rid2row
 
     logger.info("Done.")
     close_logger(logger)

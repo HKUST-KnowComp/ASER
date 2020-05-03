@@ -23,6 +23,8 @@ EMPTY_SENT_PARSED_RESULT = {
     "ners": ["O"],
     "mentions": []}
 
+MAX_ATTEMPT=10
+
 def is_port_occupied(ip='127.0.0.1', port=80):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
@@ -222,13 +224,37 @@ def powerset(iterable, min_size=0, max_size=-1):
     return chain.from_iterable(combinations(s, r) for r in range(min_size, max_size+1))
 
 def get_clauses(sent_parsed_result, syntax_tree, index_seps=None):
+    def find_clauses(clause):
+        # split by the SBAR tag
+        clause_tree = syntax_tree.get_subtree_by_token_indices(clause)
+        find_SBAR = False
+        if clause_tree.tree:
+            for node in clause_tree.tree.traverse():
+                if node.name == "SBAR":
+                    leaves = set([node.index for node in node.get_leaves()])
+                    if len(leaves) == len(clause):
+                        continue
+                    clause1, clause2 = list(), list()
+                    for idx in clause:
+                        if idx in leaves:
+                            clause1.append(idx)
+                        else:
+                            clause2.append(idx)
+                    if clause1[0] < clause2[0]:
+                        return tuple(clause1), tuple(clause2)
+                        # return find_clauses(clause1) + find_clauses(clause2)
+                    else:
+                        return tuple(clause2), tuple(clause1)
+                        # return find_clauses(clause2) + find_clauses(clause1)
+        return [tuple(clause)]
+
     if index_seps is None:
         index_seps = set()
     elif isinstance(index_seps, (list, tuple)):
         index_seps = set(index_seps)
     sent_len = len(sent_parsed_result["tokens"])
     
-    clauses = list()
+    clauses = list() # (parent, indices)
     clause = list()
     for t_idx, token in enumerate(sent_parsed_result["tokens"]):
         # split the sentence by seps
@@ -239,92 +265,62 @@ def get_clauses(sent_parsed_result, syntax_tree, index_seps=None):
             # strip_punctuation
             clause = strip_punctuation(sent_parsed_result, clause)
             if len(clause) > 0:
-                # split by the SBAR tag
-                clause_tree = syntax_tree.get_subtree_by_token_indices(clause)
-                find_SBAR = False
-                if clause_tree.tree:
-                    for node in clause_tree.tree.traverse():
-                        if node.name == "SBAR":
-                            leaves = set([node.index for node in node.get_leaves()])
-                            if len(leaves) == len(clause):
-                                continue
-                            clause1, clause2 = list(), list()
-                            for idx in clause:
-                                if idx in leaves:
-                                    clause1.append(idx)
-                                else:
-                                    clause2.append(idx)
-                            if clause1[0] < clause2[0]:
-                                clauses.append(tuple(clause1))
-                                clauses.append(tuple(clause2))
-                            else:
-                                clauses.append(tuple(clause2))
-                                clauses.append(tuple(clause1))
-                            find_SBAR = True
-                            break
-                if not find_SBAR:
-                    clauses.append(tuple(clause))
+                clauses.extend(find_clauses(clause))
             clause = list()
-    
     return clauses
 
 def get_prev_token_index(doc_parsed_result, sent_idx, idx, skip_tokens=None):
     if skip_tokens is None:
         skip_tokens = set()
-    prev_sent_idx, prev_idx = -1, -1
+    curr_sent_idx, curr_idx = sent_idx, idx
 
-    if idx-1 >= 0:
-        prev_sent_idx = sent_idx
-        prev_idx = idx - 1
-    elif sent_idx-1 >= 0:
-        prev_sent_idx = sent_idx - 1
-        prev_idx = len(doc_parsed_result[prev_sent_idx]["tokens"]) - 1
-    else:
-        return -1, -1
-    prev_token = doc_parsed_result[prev_sent_idx]["tokens"][prev_idx]
-    if prev_token not in skip_tokens:
-        return prev_sent_idx, prev_idx
-    else:
-        return get_prev_token_index(doc_parsed_result, prev_sent_idx, prev_idx, skip_tokens)
+    for i in range(MAX_ATTEMPT):
+        if curr_idx-1 >= 0:
+            curr_idx = curr_idx - 1
+        elif curr_sent_idx-1 >= 0:
+            curr_sent_idx = curr_sent_idx - 1
+            curr_idx = len(doc_parsed_result[curr_sent_idx]["tokens"]) - 1
+        else:
+            return -1, -1
+        curr_token = doc_parsed_result[curr_sent_idx]["tokens"][curr_idx]
+        if curr_token not in skip_tokens:
+            return curr_sent_idx, curr_idx
+    return -1, -1
 
 def get_next_token_index(doc_parsed_result, sent_idx, idx, skip_tokens=None):
     if skip_tokens is None:
         skip_tokens = set()
-    next_sent_idx, next_idx = -1, -1
+    curr_sent_idx, curr_idx = sent_idx, idx
 
-    if idx+1 < len(doc_parsed_result[sent_idx]["tokens"]):
-        next_sent_idx = sent_idx
-        next_idx = idx + 1
-    elif sent_idx+1 < len(doc_parsed_result):
-        next_sent_idx = sent_idx + 1
-        next_idx = 0
-    else:
-        return -1, -1
-    next_token = doc_parsed_result[next_sent_idx]["tokens"][next_idx]
-    if next_token not in skip_tokens:
-        return next_sent_idx, next_idx
-    else:
-        return get_next_token_index(doc_parsed_result, next_sent_idx, next_idx, skip_tokens)
+    for i in range(MAX_ATTEMPT):
+        if curr_idx+1 < len(doc_parsed_result[curr_sent_idx]["tokens"]):
+            curr_idx = curr_idx + 1
+        elif curr_sent_idx+1 < len(doc_parsed_result):
+            curr_sent_idx = curr_sent_idx + 1
+            curr_idx = 0
+        else:
+            return -1, -1
+        curr_token = doc_parsed_result[curr_sent_idx]["tokens"][curr_idx]
+        if curr_token not in skip_tokens:
+            return curr_sent_idx, curr_idx
+    return -1, -1
 
 def strip_punctuation(sent_parsed_result, indices):
     valid_idx1, valid_idx2 = 0, len(indices)
     while valid_idx1 < valid_idx2:
+        if indices[valid_idx1] >= len(sent_parsed_result["tokens"]):
+            break
         token = sent_parsed_result["tokens"][indices[valid_idx1]]
-        if token in PUNCTUATION_SET:
-            valid_idx1 += 1
-        elif token == "-LCB-":
-            valid_idx1 += 1
-        elif token == "-LRB-":
+        if token in PUNCTUATION_SET or token == "-LCB-" or token == "-LRB-":
             valid_idx1 += 1
         else:
             break
     while valid_idx1 < valid_idx2:
+        if indices[valid_idx2-1] >= len(sent_parsed_result["tokens"]):
+            valid_idx2 -= 1
+            continue
         token = sent_parsed_result["tokens"][indices[valid_idx2-1]]
-        if token in PUNCTUATION_SET:
-            valid_idx2 -= 1
-        elif token == "-RCB-":
-            valid_idx2 -= 1
-        elif token == "-RRB-":
+        if token in PUNCTUATION_SET or token == "-LCB-" or token == "-LRB-":
             valid_idx2 -= 1
         else:
             break

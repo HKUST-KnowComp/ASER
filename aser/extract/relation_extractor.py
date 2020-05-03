@@ -164,13 +164,14 @@ class SeedRuleRelationExtractor(BaseRelationExtractor):
             relations_in_sent = list()
             for head_eventuality in eventualities:
                 for tail_eventuality in eventualities:
-                    if head_eventuality.position < tail_eventuality.position:
-                        heid = head_eventuality.eid
-                        teid = tail_eventuality.eid
-                        extracted_senses = self._extract_from_eventuality_pair_in_one_sentence(
-                            connective_dict, sent_parsed_result, head_eventuality, tail_eventuality)
-                        if len(extracted_senses) > 0:
-                            relations_in_sent.append(Relation(heid, teid, extracted_senses))
+                    if not head_eventuality.position < tail_eventuality.position:
+                        continue
+                    heid = head_eventuality.eid
+                    teid = tail_eventuality.eid
+                    extracted_senses = self._extract_from_eventuality_pair_in_one_sentence(
+                        connective_dict, sent_parsed_result, head_eventuality, tail_eventuality)
+                    if len(extracted_senses) > 0:
+                        relations_in_sent.append(Relation(heid, teid, extracted_senses))
             para_relations.append(relations_in_sent)
 
         for i in range(len(parsed_result) - 1):
@@ -347,13 +348,15 @@ class DiscourseRelationExtractor(BaseRelationExtractor):
             raise NotImplementedError("Error: extract_from_parsed_result only supports Relation or triple.")
         
         similarity = kw.get("similarity", "simpson").lower()
-        threshold = kw.get("threshold", 0.6)
+        threshold = kw.get("threshold", 0.8)
         if threshold < 0.0 or threshold > 1.0:
             raise ValueError("Error: threshold should be between 0.0 and 1.0.")
         if similarity == "simpson":
-            similarity_func = partial(self._match_argument_eventuality_by_Simpson, threshold=threshold)
+            similarity_func = self._match_argument_eventuality_by_Simpson
         elif similarity == "jaccard":
-            similarity_func = partial(self._match_argument_eventuality_by_Jaccard, threshold=threshold)
+            similarity_func = self._match_argument_eventuality_by_Jaccard
+        elif similarity == "discourse":
+            similarity_func = self._match_argument_eventuality_by_dependencies
         else:
             raise NotImplementedError("Error: extract_from_parsed_result only supports Simpson or Jaccard.")
 
@@ -374,10 +377,12 @@ class DiscourseRelationExtractor(BaseRelationExtractor):
             if len(sent_eventualities) > 0:
                 filtered_parsed_result.append(sent_parsed_result)
                 relations_in_sent = para_relations[sent_idx]
-                for e1_idx in range(len(sent_eventualities)-1):
-                    heid = sent_eventualities[e1_idx].eid
-                    for e2_idx in range(e1_idx+1, len(sent_eventualities)):
-                        teid = sent_eventualities[e2_idx].eid
+                for head_e in sent_eventualities:
+                    heid = head_e.eid
+                    for tail_e in sent_eventualities:
+                        if not head_e.position < tail_e.position:
+                            continue
+                        teid = tail_e.eid
                         relations_in_sent.append(Relation(heid, teid, ["Co_Occurrence"]))
             else:
                 filtered_parsed_result.append(EMPTY_SENT_PARSED_RESULT) # empty sentence
@@ -429,49 +434,30 @@ class DiscourseRelationExtractor(BaseRelationExtractor):
             if conn_indices and arg1 and arg2 and (sense and sense != "None"):
                 arg1_sent_idx = arg1["sent_idx"]
                 arg2_sent_idx = arg2["sent_idx"]
-                if arg1_sent_idx == arg2_sent_idx:
-                    relation_list_idx = arg1_sent_idx
-                    relations = para_relations[relation_list_idx]
-                    sent_parsed_result, sent_eventualities = parsed_result[arg1_sent_idx], para_eventualities[arg1_sent_idx]
-                    for e1_idx in range(len(sent_eventualities)-1):
-                        e1 = sent_eventualities[e1_idx]
-                        if not similarity_func(sent_parsed_result, arg1, e1):
-                            continue
-                        heid = e1.eid
-                        for e2_idx in range(e1_idx+1, len(sent_eventualities)):
-                            e2 = sent_eventualities[e2_idx]
-                            if not similarity_func(sent_parsed_result, arg2, e2):
-                                continue
-                            teid = e2.eid
-                            existed_relation = False
-                            for relation in relations:
-                                if relation.hid == heid and relation.tid == teid:
-                                    relation.update([sense])
-                                    existed_relation = True
-                                    break
-                            if not existed_relation:
-                                relations.append(Relation(heid, teid, [sense]))
-                elif arg1_sent_idx+1 == arg2_sent_idx:
-                    relation_list_idx = arg1_sent_idx + len_sentences
-                    relations = para_relations[relation_list_idx]
-                    sent_parsed_result1, sent_eventualities1 = parsed_result[arg1_sent_idx], para_eventualities[arg1_sent_idx]
-                    sent_parsed_result2, sent_eventualities2 = parsed_result[arg2_sent_idx], para_eventualities[arg2_sent_idx]
-                    for e1 in sent_eventualities1:
-                        if not similarity_func(sent_parsed_result, arg1, e1):
-                            continue
-                        heid = e1.eid
-                        for e2 in sent_eventualities2:
-                            if not similarity_func(sent_parsed_result, arg2, e2):
-                                continue
-                            teid = e2.eid
-                            existed_relation = False
-                            for relation in relations:
-                                if relation.hid == heid and relation.tid == teid:
-                                    relation.update([sense])
-                                    existed_relation = True
-                                    break
-                            if not existed_relation:
-                                relations.append(Relation(heid, teid, [sense]))
+                relation_list_idx = arg1_sent_idx if arg1_sent_idx == arg2_sent_idx else arg1_sent_idx + len_sentences
+                relations = para_relations[relation_list_idx]
+                sent_parsed_result1, sent_eventualities1 = parsed_result[arg1_sent_idx], para_eventualities[arg1_sent_idx]
+                sent_parsed_result2, sent_eventualities2 = parsed_result[arg2_sent_idx], para_eventualities[arg2_sent_idx]
+                arg1_eventualities = [e for e in sent_eventualities1 if \
+                    similarity_func(sent_parsed_result1, arg1, e, threshold=threshold, conn_indices=conn_indices)]
+                arg2_eventualities = [e for e in sent_eventualities2 if \
+                    similarity_func(sent_parsed_result2, arg2, e, threshold=threshold, conn_indices=conn_indices)]
+                cnt = 0.0
+                if len(arg1_eventualities) > 0 and len(arg2_eventualities) > 0:
+                    cnt = 1.0 / (len(arg1_eventualities) * len(arg2_eventualities))
+                for e1 in arg1_eventualities:
+                    heid = e1.eid
+                    for e2 in arg2_eventualities:
+                        teid = e2.eid
+                        is_existed = False
+                        for relation in relations:
+                            if relation.hid == heid and relation.tid == teid:
+                                relation.update({sense: cnt})
+                                is_existed = True
+                                break
+                        if not is_existed:
+                            relations.append(Relation(heid, teid, {sense: cnt}))
+
         if in_order:
             if output_format == "Relation":
                 return para_relations
@@ -491,7 +477,8 @@ class DiscourseRelationExtractor(BaseRelationExtractor):
                 return sorted([r.to_triples() for relations in para_relations for r in relations])
 
     @staticmethod
-    def _match_argument_eventuality_by_Simpson(sent_parsed_result, argument, eventuality, threshold=0.6):
+    def _match_argument_eventuality_by_Simpson(sent_parsed_result, argument, eventuality, **kw):
+        threshold = kw.get("threshold", 0.8)
         match = False
         if eventuality.raw_sent_mapping:
             argument_indices = set(argument["indices"])
@@ -512,7 +499,8 @@ class DiscourseRelationExtractor(BaseRelationExtractor):
         return match
     
     @staticmethod
-    def _match_argument_eventuality_by_Jaccard(sent_parsed_result, argument, eventuality, threshold=0.6):
+    def _match_argument_eventuality_by_Jaccard(sent_parsed_result, argument, eventuality, **kw):
+        threshold = kw.get("threshold", 0.8)
         match = False
         if eventuality.raw_sent_mapping:
             argument_indices = set(argument["indices"])
@@ -533,7 +521,8 @@ class DiscourseRelationExtractor(BaseRelationExtractor):
         return match
 
     @staticmethod
-    def _match_argument_eventuality_by_dependencies(sent_parsed_result, conn_indices, argument, eventuality):
+    def _match_argument_eventuality_by_dependencies(sent_parsed_result, argument, eventuality, **kw):
+        conn_indices = kw.get("conn_indices", list())
         match = False
         conn_indices = set(conn_indices)
         if eventuality.raw_sent_mapping:

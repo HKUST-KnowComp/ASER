@@ -57,7 +57,6 @@ class ParsedReader:
         sent, lctx, rctx = None, list(), list()
         with open(file_name, "r") as f:
             sent_len = json.loads(f.readline())['sentence_lens']
-            # print('sent_len:{}'.format(sent_len))
             if len(sent_len) == 0:
                 print('id:{} exceeds file limit.. file:{} is empty'.format(sid, file_name))
             elif line_no >= sent_len[-1]:
