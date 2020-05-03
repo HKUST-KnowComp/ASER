@@ -295,7 +295,7 @@ class ASERPipe(object):
             # del relation_counter
             self.logger.info("%d relations (%d unique) will be inserted into the core KG." % (total_relation, len(rid2relation)))
 
-            if len(filtered_eids) == 0 and len(filtered_rids) == 0:
+            if len(filtered_eids) == 0 and len(filtered_rids) == 0 and self.opt.full_kg_dir:
                 # copy KG
                 self.logger.info("Copying the full KG as the core KG.")
                 if not os.path.exists(self.opt.core_kg_dir):

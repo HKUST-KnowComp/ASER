@@ -308,22 +308,19 @@ def get_next_token_index(doc_parsed_result, sent_idx, idx, skip_tokens=None):
 def strip_punctuation(sent_parsed_result, indices):
     valid_idx1, valid_idx2 = 0, len(indices)
     while valid_idx1 < valid_idx2:
+        if indices[valid_idx1] >= len(sent_parsed_result["tokens"]):
+            break
         token = sent_parsed_result["tokens"][indices[valid_idx1]]
-        if token in PUNCTUATION_SET:
-            valid_idx1 += 1
-        elif token == "-LCB-":
-            valid_idx1 += 1
-        elif token == "-LRB-":
+        if token in PUNCTUATION_SET or token == "-LCB-" or token == "-LRB-":
             valid_idx1 += 1
         else:
             break
     while valid_idx1 < valid_idx2:
+        if indices[valid_idx2-1] >= len(sent_parsed_result["tokens"]):
+            valid_idx2 -= 1
+            continue
         token = sent_parsed_result["tokens"][indices[valid_idx2-1]]
-        if token in PUNCTUATION_SET:
-            valid_idx2 -= 1
-        elif token == "-RCB-":
-            valid_idx2 -= 1
-        elif token == "-RRB-":
+        if token in PUNCTUATION_SET or token == "-LCB-" or token == "-LRB-":
             valid_idx2 -= 1
         else:
             break
