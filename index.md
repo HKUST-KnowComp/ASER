@@ -10,10 +10,16 @@ ASER (activities, states, events,and their relations) is a large-scale eventuali
 
 <strong>Talks:</strong>
 
-<ul>2020 Summer: Knowledge Works at Fudan. ASER: Building a Commonsense Knowledge Graph by Higher-order Selectional Preference. [<a href="http://home.cse.ust.hk/~yqsong/papers/ASER-202007-KnowledgeWorks.pdf">pdf</a>], [<a href="http://home.cse.ust.hk/~yqsong/papers/ASER-202007-KnowledgeWorks.pptx">ppt</a>]</ul>
+<ul>
+  <li>
+    2020 Summer: Knowledge Works at Fudan. ASER: Building a Commonsense Knowledge Graph by Higher-order Selectional Preference. [<a href="http://home.cse.ust.hk/~yqsong/papers/ASER-202007-KnowledgeWorks.pdf">pdf</a>], [<a href="http://home.cse.ust.hk/~yqsong/papers/ASER-202007-KnowledgeWorks.pptx">ppt</a>]
+  </li>
+</ul>
 
 <ul>
-<li>2019 Summer: ASER: A Large scale Eventuality Knowledge Graph, Yangqiu Song. [<a href="http://home.cse.ust.hk/~yqsong/papers/ASER-YangqiuSong.pdf">pdf</a>], [<a href="http://home.cse.ust.hk/~yqsong/papers/ASER-YangqiuSong.pptx">ppt</a>] </li>
+  <li>
+  2019 Summer: ASER: A Large scale Eventuality Knowledge Graph, Yangqiu Song. [<a href="http://home.cse.ust.hk/~yqsong/papers/ASER-YangqiuSong.pdf">pdf</a>], [<a href="http://home.cse.ust.hk/~yqsong/papers/ASER-YangqiuSong.pptx">ppt</a>] 
+  </li>
 </ul>
 
 <strong>Publications:</strong>
