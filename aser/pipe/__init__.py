@@ -164,11 +164,13 @@ class ASERPipe(object):
     def run(self):
         self.logger.info("Start the pipeline.")
         if os.path.exists(self.opt.raw_dir):
+            if not os.path.exists(self.opt.processed_dir):
+                os.mkdir(self.opt.processed_dir)
             self.logger.info("Processing raw data from %s." % (self.opt.raw_dir))
             raw_paths, processed_paths = list(), list()
             for file_name in iter_files(self.opt.raw_dir):
                 raw_paths.append(file_name)
-                processed_path.append(
+                processed_paths.append(
                     os.path.splitext(file_name)[0].replace(self.opt.raw_dir, self.opt.processed_dir, 1) + ".jsonl")
         elif os.path.exists(self.opt.processed_dir):
             self.logger.info("Loading processed data from %s." % (self.opt.processed_dir))
@@ -240,9 +242,9 @@ class ASERPipe(object):
                 self.sentence_parsers[0], self.parsed_readers[0], 
                 self.aser_extractors[0])
             eventuality_counter, relation_counter = Counter(), Counter()
-            for eid, eventuality in x_eid2eventuality.items():
+            for eid, eventuality in eid2eventuality.items():
                 eventuality_counter[eid] += eventuality.frequency
-            for rid, relation in x_rid2relation.items():
+            for rid, relation in rid2relation.items():
                 relation_counter[rid] += sum(relation.relations.values())
 
         total_eventuality, total_relation = sum(eventuality_counter.values()), sum(relation_counter.values())

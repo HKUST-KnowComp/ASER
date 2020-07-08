@@ -1,12 +1,12 @@
 import os
 import sys
 import time
+import copy
 from tqdm import tqdm
 from aser.relation import Relation
 from aser.concept.concept_extractor import ASERConceptExtractor
 from aser.concept.concept_connection import ASERConceptConnection
 from aser.database.kg_connection import ASERKGConnection
-from copy import copy
 
 
 def build_concept_instance_table_from_aser_kg(aser_concept_conn, aser_concept_extractor, aser_kg_conn):
@@ -18,7 +18,7 @@ def build_concept_instance_table_from_aser_kg(aser_concept_conn, aser_concept_ex
         results = aser_concept_extractor.conceptualize(event)
         for concept, score in results:
             if concept.cid not in cid2concept:
-                cid2concept[concept.cid] = copy(concept)
+                cid2concept[concept.cid] = copy.copy(concept)
             concept = cid2concept[concept.cid]
             if (event.eid, event.pattern, score) not in concept.instances:
                 concept.instances.append(((event.eid, event.pattern, score)))
@@ -69,7 +69,8 @@ if __name__ == "__main__":
 
     aser_concept_extractor = ASERConceptExtractor(
         method="probase",
-        probase_path="/data/hjpan/probase/data-concept-instance-relations-yq.txt",
+        # probase_path="/data/hjpan/probase/data-concept-instance-relations-yq.txt",
+        probase_path=r"D:\Data\probase\data-concept-instance-relations-yq.txt",
         probase_topk=5)
     aser_concept_conn = ASERConceptConnection(
         db_path=os.path.join(aser_concept_dir, "concept.db"), mode="memory") # insert cannot retrieve
