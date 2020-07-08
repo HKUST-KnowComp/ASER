@@ -386,6 +386,7 @@ class SeedRuleEventualityExtractor(BaseEventualityExtractor):
                         if 'VB' in edge[2][2]:
                             tmp_s_v_v.append(e)
                         if 'JJ' in edge[2][2]:
+                            e.pattern = 's-v-a'
                             tmp_s_v_a.append(e)
                         break
             extracted_eventualities['s-v-v'] = tmp_s_v_v
@@ -400,6 +401,7 @@ class SeedRuleEventualityExtractor(BaseEventualityExtractor):
                         if 'JJ' in edge[2][2]:
                             tmp_s_v_be_a.append(e)
                         if 'NN' in edge[2][2]:
+                            e.pattern = 's-v-be-o'
                             tmp_s_v_be_o.append(e)
                         break
             extracted_eventualities['s-v-be-a'] = tmp_s_v_be_a
@@ -410,10 +412,11 @@ class SeedRuleEventualityExtractor(BaseEventualityExtractor):
             tmp_s_be_o = list()
             for e in extracted_eventualities['s-be-a']:
                 for edge in e.dependencies:
-                    if edge[1] == 'xcomp':
-                        if 'JJ' in edge[2][2]:
+                    if edge[1] == 'cop':
+                        if 'JJ' in edge[0][2]:
                             tmp_s_be_a.append(e)
-                        if 'NN' in edge[2][2]:
+                        if 'NN' in edge[0][2]:
+                            e.pattern = 's-be-o'
                             tmp_s_be_o.append(e)
                         break
             extracted_eventualities['s-be-a'] = tmp_s_be_a
@@ -428,6 +431,7 @@ class SeedRuleEventualityExtractor(BaseEventualityExtractor):
                         if 'JJ' in edge[2][2]:
                             tmp_s_v_o_be_a.append(e)
                         if 'NN' in edge[2][2]:
+                            e.pattern = 's-v-o-be-o'
                             tmp_s_v_o_be_o.append(e)
                         break
             extracted_eventualities['s-v-o-be-a'] = tmp_s_v_o_be_a
