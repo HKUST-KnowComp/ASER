@@ -371,9 +371,10 @@ class ASERKGConnection(object):
         if failed, try to use skeleton_words_clean to match exactly, and compute similarity between words
         if failed, try to use verbs to match exactly, and compute similarity between words
         """
+        assert self.grain is not None
         # exact match by skeleton_words, skeleton_words_clean or verbs, and compute similarity according type
         for by in bys:
-            key_match_eventualities = self.get_eventualities_by_keys([by], [eventuality[by]])
+            key_match_eventualities = self.get_eventualities_by_keys([by], [" ".join(getattr(eventuality, by))])
             if len(key_match_eventualities) == 0:
                 continue
             if not sort:
@@ -385,18 +386,19 @@ class ASERKGConnection(object):
             queue = []
             queue_len = 0
             for idx, key_match_eventuality in enumerate(key_match_eventualities):
-                similarity = compute_overlap(eventuality.get(self.grain), key_match_eventuality.get(self.grain))
+                similarity = compute_overlap(getattr(eventuality, self.grain), getattr(key_match_eventuality, self.grain))
                 if similarity >= threshold:
                     if not top_n or queue_len < top_n:
-                        heapq.heappush(queue, (similarity, key_match_eventuality.get("frequency"), idx, key_match_eventuality))
+                        heapq.heappush(queue, (similarity, key_match_eventuality.frequency, idx, key_match_eventuality))
                         queue_len += 1
                     else:
-                        heapq.heappushpop(queue, (similarity, key_match_eventuality.get("frequency"), idx, key_match_eventuality))
+                        heapq.heappushpop(queue, (similarity, key_match_eventuality.frequency, idx, key_match_eventuality))
             key_match_results = []
             while len(queue) > 0:
                 x = heapq.heappop(queue)
                 key_match_results.append((x[0], x[-1]))
-            return reversed(key_match_results)
+            key_match_results.reverse()
+            return key_match_results
         return []
 
 
