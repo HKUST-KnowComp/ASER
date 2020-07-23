@@ -86,10 +86,10 @@ class ASERKGConnection(object):
                 self.eid2eventuality_cache[e.eid] = e
                 # handle another cache
                 for k, v in self.partial2eids_cache.items():
-                    if getattr(e, k) not in v:
-                        v[getattr(e, k)] = [e.eid]
+                    if " ".join(getattr(e, k)) not in v:
+                        v[" ".join(getattr(e, k))] = [e.eid]
                     else:
-                        v[getattr(e, k)].append(e.eid)
+                        v[" ".join(getattr(e, k))].append(e.eid)
             for r in map(self._convert_row_to_relation, self._conn.get_columns(self.relation_table_name, self.relation_columns)):
                 self.rids.add(r.rid)
                 self.rid2relation_cache[r.rid] = r
