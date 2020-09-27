@@ -12,7 +12,7 @@ from functools import partial
 from collections import Counter, defaultdict
 from aser.extract.sentence_parser import SentenceParser
 from aser.extract.parsed_reader import ParsedReader
-from aser.extract.aser_extractor import SeedRuleASERExtractor, DiscourseASERExtractor1, DiscourseASERExtractor2, DiscourseASERExtractor3
+from aser.extract.aser_extractor import SeedRuleASERExtractor, DiscourseASERExtractor
 from aser.extract.utils import EMPTY_SENT_PARSED_RESULT
 from aser.extract.utils import iter_files, parse_sentense_with_stanford
 from aser.utils.logging import init_logger, close_logger
@@ -144,10 +144,7 @@ class ASERPipe(object):
         self.sentence_parsers = [SentenceParser(
             corenlp_path=opt.corenlp_path, corenlp_port=opt.base_corenlp_port+_id) for _id in range(self.n_extractors)]
         self.parsed_readers = [ParsedReader() for _id in range(self.n_extractors)]
-        # self.aser_extractors = [SeedRuleASERExtractor() for _id in range(self.n_extractors)]
-        # self.aser_extractors = [DiscourseASERExtractor1() for _id in range(self.n_extractors)]
-        self.aser_extractors = [DiscourseASERExtractor2() for _id in range(self.n_extractors)]
-        # self.aser_extractors = [DiscourseASERExtractor3() for _id in range(self.n_extractors)]
+        self.aser_extractors = [DiscourseASERExtractor() for _id in range(self.n_extractors)]
         self.logger = init_logger(log_file=opt.log_path)
 
     def __del__(self):
