@@ -5,7 +5,7 @@ import os
 from collections import defaultdict
 from aser.database.kg_connection import ASERKGConnection
 from aser.extract.parsed_reader import ParsedReader
-from aser.extract.aser_extractor import DiscourseASERExtractor2
+from aser.extract.aser_extractor import DiscourseASERExtractor
 
 
 if __name__ == "__main__":
@@ -20,7 +20,7 @@ if __name__ == "__main__":
 
     kg_conn = ASERKGConnection(db_path, mode="memory")
     parsed_reader = ParsedReader()
-    aser_extractor = DiscourseASERExtractor2()
+    aser_extractor = DiscourseASERExtractor()
     with open(eid2sids_path, "rb") as f:
         eid2sids = pickle.load(f)
 
