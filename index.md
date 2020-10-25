@@ -18,7 +18,7 @@ ASER (activities, states, events,and their relations) is a large-scale eventuali
     2020 Summer: Knowledge Works at Fudan. ASER: Building a Commonsense Knowledge Graph by Higher-order Selectional Preference. Presented by Yangqiu Song. [<a href="http://home.cse.ust.hk/~yqsong/papers/ASER-202007-KnowledgeWorks.pdf">pdf</a>], [<a href="http://home.cse.ust.hk/~yqsong/papers/ASER-202007-KnowledgeWorks.pptx">ppt</a>]
   </li>
   <li>
-    2019 October: Microsoft Research Asia (MSRA). Event-centric Commonsense Reasoning with Structured Knowledge. Presented by Hongming Zhang. [<a href="https://hkustconnect-my.sharepoint.com/:b:/g/personal/hzhangal_connect_ust_hk/ETe0bW0XPTBBs62-xDi3Qi8B0gqdzQMPZa5VFCEtwEky1Q?e=a3yXjiJ">pdf</a>]
+    2019 October: Microsoft Research Asia (MSRA). Event-centric Commonsense Reasoning with Structured Knowledge. Presented by Hongming Zhang. [<a href="https://hkustconnect-my.sharepoint.com/:b:/g/personal/hzhangal_connect_ust_hk/ETe0bW0XPTBBs62-xDi3Qi8B0gqdzQMPZa5VFCEtwEky1Q?e=a3yXjiJ">ppt</a>]
   </li>  
   <li>
   2019 Summer: ASER: A Large scale Eventuality Knowledge Graph. Presented by Yangqiu Song. [<a href="http://home.cse.ust.hk/~yqsong/papers/ASER-YangqiuSong.pdf">pdf</a>], [<a href="http://home.cse.ust.hk/~yqsong/papers/ASER-YangqiuSong.pptx">ppt</a>] 
