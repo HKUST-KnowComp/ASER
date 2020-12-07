@@ -20,6 +20,9 @@ from aser.eventuality import Eventuality
 from aser.relation import Relation
 from aser.database.kg_connection import ASERKGConnection
 
+MAX_THREADS = 1024
+MAX_LEN = 1000
+
 
 def run_files(raw_paths=None, processed_paths=None, prefix_to_be_removed="",
     sentence_parser=None, parsed_reader=None, aser_extractor=None):
@@ -130,7 +133,7 @@ def run_file(raw_path=None, processed_path=None, prefix_to_be_removed="",
     return eid2sids, rid2sids, eid2eventuality, rid2relation
 
 def process_raw_file(raw_path, processed_path, sentence_parser):
-    return sentence_parser.parse_raw_file(raw_path, processed_path, max_len=1000)
+    return sentence_parser.parse_raw_file(raw_path, processed_path, max_len=MAX_LEN)
 
 def load_processed_data(processed_path, parsed_reader):
     return parsed_reader.get_parsed_paragraphs_from_file(processed_path)
@@ -177,29 +180,24 @@ class ASERPipe(object):
         self.logger.info("Number of files: %d." % (len(processed_paths)))
         prefix_to_be_removed = self.opt.processed_dir+os.sep
 
+        raw_paths.sort()
+        processed_paths.sort()
         
         if self.n_workers > 1:
             with multiprocessing.Pool(self.n_workers) as pool:
                 results = list()
-                if len(processed_paths) < 10000:
-                    for worker_idx, (raw_path, processed_path) in enumerate(zip(raw_paths, processed_paths)):
-                        extractor_idx = worker_idx%self.n_extractors
-                        results.append(pool.apply_async(run_file, args=(
-                            raw_path, processed_path, prefix_to_be_removed, 
-                            self.sentence_parsers[extractor_idx], self.parsed_readers[extractor_idx], 
-                            self.aser_extractors[extractor_idx])))
-                else:
-                    chunk_size = 10
-                    while math.ceil(len(processed_paths)/chunk_size) > 10000:
-                        chunk_size *= 10
-                    for worker_idx in range(math.ceil(len(processed_paths)/chunk_size)):
-                        extractor_idx = worker_idx%self.n_extractors
-                        i = worker_idx * chunk_size
-                        j = min(i +  chunk_size, len(processed_paths))
-                        results.append(pool.apply_async(run_files, args=(
-                            raw_paths[i:j], processed_paths[i:j], prefix_to_be_removed, 
-                            self.sentence_parsers[extractor_idx], self.parsed_readers[extractor_idx], 
-                            self.aser_extractors[extractor_idx])))
+
+                chunk_size = 1
+                while math.ceil(len(processed_paths)/chunk_size) > MAX_THREADS:
+                    chunk_size *= 2
+                for worker_idx in range(math.ceil(len(processed_paths)/chunk_size)):
+                    extractor_idx = worker_idx%self.n_extractors
+                    i = worker_idx * chunk_size
+                    j = min(i +  chunk_size, len(processed_paths))
+                    results.append(pool.apply_async(run_files, args=(
+                        raw_paths[i:j], processed_paths[i:j], prefix_to_be_removed, 
+                        self.sentence_parsers[extractor_idx], self.parsed_readers[extractor_idx], 
+                        self.aser_extractors[extractor_idx])))
                 pool.close()
                 
                 # merge all results

@@ -138,8 +138,7 @@ if __name__ == "__main__":
     del filtered_rids
     del rid2row
     merged_conn.insert_rows(RELATION_TABLE_NAME, rid2row_core.values())
-    del rid2row_core
-    gc.collect()
+    # gc.collect()
 
     merged_conn.close()
 

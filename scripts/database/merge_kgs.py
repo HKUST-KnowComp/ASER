@@ -14,6 +14,10 @@ from aser.utils.logging import init_logger, close_logger
 
 db = "sqlite"
 log_path = "./.merge_kg.log"
+eventuality_frequency_lower_cnt_threshold = 2
+eventuality_frequency_upper_percent_threshold = 1.0
+relation_frequency_lower_cnt_threshold = 2
+relation_frequency_upper_percent_threshold = 1.0
 
 if __name__ == "__main__":
     logger = init_logger(log_file=log_path)
@@ -99,14 +103,74 @@ if __name__ == "__main__":
     logger.info("%d eventualities (%d unique) have been extracted." % (total_eventuality, len(eid2row)))
     logger.info("%d relations (%d unique) have been extracted." % (total_relation, len(rid2row)))
 
-    logger.info("%d eventualities (%d unique) will be inserted into the core KG." % (total_eventuality, len(eid2row)))
-    merged_conn.insert_rows(EVENTUALITY_TABLE_NAME, eid2row.values())
+    # filter high-frequency and low-frequency eventualities
+    logger.info("Filtering high-frequency and low-frequency eventualities.")
+    eventuality_frequency_lower_cnt_threshold = eventuality_frequency_lower_cnt_threshold
+    eventuality_frequency_upper_cnt_threshold = eventuality_frequency_upper_percent_threshold * total_eventuality
+    for eid, freq in eventuality_counter.items():
+        if freq < eventuality_frequency_lower_cnt_threshold or freq > eventuality_frequency_upper_cnt_threshold:
+            filtered_eids.append(eid)
+    logger.info("%d eventualities (%d unique) will be inserted into the core KG." % (
+        total_eventuality-sum([eventuality_counter[eid] for eid in filtered_eids]), len(eventuality_counter)-len(filtered_eids)))
+    del eventuality_counter
+    if len(filtered_eids) == 0:
+        shutil.copyfile(os.path.join(merged_kg_path, "eid2sids_full.pkl"), os.path.join(merged_kg_path, "eid2sids_core.pkl"))
+        eid2row_core = eid2row
+        del eid2sids 
+    else:
+        filtered_eids = set(filtered_eids)
+        eid2sids_core = defaultdict(list)
+        for eid, sids in eid2sids.items():
+            if eid not in filtered_eids:
+                eid2sids_core[eid] = sids
+        with open(os.path.join(merged_kg_path, "eid2sids_core.pkl"), "wb") as f:
+            pickle.dump(eid2sids_core, f)
+        del eid2sids_core
+        del eid2sids
+        eid2row_core = dict()
+        for eid, row in eid2row.items():
+            if eid not in filtered_eids:
+                eid2row_core[eid] = row
+    del filtered_eids
     del eid2row
+    merged_conn.insert_rows(EVENTUALITY_TABLE_NAME, eid2row_core.values())
     # gc.collect()
 
-    logger.info("%d relations (%d unique) will be inserted into the core KG." % (total_relation, len(rid2row)))
-    merged_conn.insert_rows(RELATION_TABLE_NAME, rid2row.values())
+    # filter high-frequency and low-frequency relations
+    logger.info("Filtering high-frequency and low-frequency relations.")
+    relation_frequency_lower_cnt_threshold = relation_frequency_lower_cnt_threshold
+    relation_frequency_upper_cnt_threshold = relation_frequency_upper_percent_threshold * total_relation
+    for rid, freq in relation_counter.items():
+        if freq < relation_frequency_lower_cnt_threshold or freq > relation_frequency_upper_cnt_threshold:
+            filtered_rids.append(rid)
+        else:
+            row = rid2row[rid]
+            if row["hid"] not in eid2row_core or row["tid"] not in eid2row_core:
+                filtered_rids.append(rid)
+    logger.info("%d relations (%d unique) will be inserted into the core KG." % (
+        total_relation-sum([relation_counter[rid] for rid in filtered_rids]), len(relation_counter)-len(filtered_rids)))
+    del relation_counter
+    if len(filtered_rids) == 0:
+        shutil.copyfile(os.path.join(merged_kg_path, "rid2sids_full.pkl"), os.path.join(merged_kg_path, "rid2sids_core.pkl"))
+        rid2row_core = rid2row
+        del rid2sids 
+    else:
+        filtered_rids = set(filtered_rids)
+        rid2sids_core = defaultdict(list)
+        for rid, sids in rid2sids.items():
+            if rid not in filtered_rids:
+                rid2sids_core[rid] = sids
+        with open(os.path.join(merged_kg_path, "rid2sids_core.pkl"), "wb") as f:
+            pickle.dump(rid2sids_core, f)
+        del rid2sids_core
+        del rid2sids
+        rid2row_core = dict()
+        for rid, row in rid2row.items():
+            if rid not in filtered_rids:
+                rid2row_core[rid] = row
+    del filtered_rids
     del rid2row
+    merged_conn.insert_rows(RELATION_TABLE_NAME, rid2row_core.values())
     # gc.collect()
 
     merged_conn.close()

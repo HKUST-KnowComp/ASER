@@ -128,8 +128,7 @@ if __name__ == "__main__":
     del filtered_eids
     del eid2row
     merged_conn.insert_rows(EVENTUALITY_TABLE_NAME, eid2row_core.values())
-    del eid2row_core
-    gc.collect()
+    # gc.collect()
 
     merged_conn.close()
 
