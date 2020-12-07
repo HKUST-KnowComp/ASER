@@ -59,13 +59,7 @@ class Relation(JsonSerializedObject):
                             self.relations[r] += cnt
 
     def __str__(self):
-        repr_dict = {
-            "rid": self.rid,
-            "hid": self.hid,
-            "tid": self.tid,
-            "relations": self.relations.__str__()
-        }
-        return pprint.pformat(repr_dict)
+        return pprint.pformat(self.to_dict())
 
     def __repr__(self):
         return "(%s, %s, %s)" % (self.hid, self.tid, self.relations)
