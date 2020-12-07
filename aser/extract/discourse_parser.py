@@ -223,7 +223,14 @@ class SyntaxTree:
         parse_tree = re.sub(r"<ref(.*?)>", "<ref>", parse_tree)
 
         # replace `url`
-        parse_tree = re.sub(r"(?:(?:https?|ftp):\/\/)?[\w/\-?=%&.]+\.[\w/\-?=&%.]+", "<url>", parse_tree)
+        regex = re.compile(
+            r'^(https?|ftp)://'  # http://, https://, or ftp://
+            r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?|'  # domain...
+            r'localhost|'  # localhost...
+            r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # ...or ip
+            r'(?::\d+)?'  # optional port
+            r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+        parse_tree = re.sub(regex, "<url>", parse_tree)
         parse_tree = re.sub(r"<url>[\(\)\[\]]*<url>", "<url>", parse_tree)
 
         # replace `,`, `:`, `;`
@@ -1805,7 +1812,7 @@ class ExplicitSenseClassifier:
             0: "None",
             1: "Precedence",         # "Temporal.Asynchronous.Precedence"
             2: "Succession",         # "Temporal.Asynchronous.Succession"
-            3: "Synchrony",          # "Temporal.Synchrony"
+            3: "Synchronous",        # "Temporal.Synchrony"
             4: "Reason",             # "Contingency.Cause.Reason"
             5: "Result",             # "Contingency.Cause.Result"
             6: "Condition",          # "Contingency.Condition"

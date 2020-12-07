@@ -21,7 +21,6 @@ from aser.relation import Relation
 from aser.database.kg_connection import ASERKGConnection
 
 
-
 def run_files(raw_paths=None, processed_paths=None, prefix_to_be_removed="",
     sentence_parser=None, parsed_reader=None, aser_extractor=None):
     eid2sids = defaultdict(list)

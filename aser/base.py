@@ -5,7 +5,7 @@ class JsonSerializedObject(object):
         pass
 
     def to_dict(self, **kw):
-        return self.__dict__
+        return dict(self.__dict__) # shadow copy
 
     def from_dict(self, d, **kw):
         for attr_name in d:
@@ -13,12 +13,13 @@ class JsonSerializedObject(object):
         return self
 
     def encode(self, encoding="utf-8", **kw):
+        d = self.to_dict(**kw)
         if encoding == "utf-8":
-            msg = json.dumps(self.to_dict(**kw)).encode("utf-8")
+            msg = json.dumps(d).encode("utf-8")
         elif encoding == "ascii":
-            msg = json.dumps(self.to_dict(**kw)).encode("ascii")
+            msg = json.dumps(d).encode("ascii")
         else:
-            msg = self.to_dict(**kw)
+            msg = d
         return msg
 
     def decode(self, msg, encoding="utf-8", **kw):

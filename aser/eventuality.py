@@ -279,26 +279,14 @@ class Eventuality(JsonSerializedObject):
                 "words": self.words,
                 "pos_tags": self.pos_tags,
                 "_ners": self._ners,
-                "_mentions": self._mentions,
+                "_mentions": {str(k): v for k, v in self._mentions.items()}, # key cannot be tuple
                 "_verb_indices": self._verb_indices,
                 "_skeleton_indices": self._skeleton_indices,
                 "_skeleton_dependency_indices": self._skeleton_dependency_indices}
         else:
-            d  = self.__dict__
+            d  = dict(self.__dict__) # shadow copy
+            d["_mentions"] = {str(k): v for k, v in d["_mentions"].items()} # key cannot be tuple
         return d
-
-    def encode(self, encoding="utf-8", **kw):
-        d = self.to_dict(**kw)
-        # key cannot be tuple
-        if d["_mentions"]:
-            d["_mentions"] = {str(k): v for k, v in d["_mentions"].items()}
-        if encoding == "utf-8":
-            msg = json.dumps(d).encode("utf-8")
-        elif encoding == "ascii":
-            msg = json.dumps(d).encode("ascii")
-        else:
-            msg = d
-        return msg
 
     def decode(self, msg, encoding="utf-8", **kw):
         if encoding == "utf-8":

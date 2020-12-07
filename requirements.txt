@@ -1,6 +1,5 @@
 flask
 pandas
-pprint
 stanfordnlp
 tqdm
 zmq
