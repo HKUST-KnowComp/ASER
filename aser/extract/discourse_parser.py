@@ -465,10 +465,12 @@ class ConnectiveExtractor:
         if len(doc_connectives) == 0:
             return list()
         
-        doc_conn_feats = self._generate_connective_features(doc_parsed_result, doc_connectives, syntax_tree_cache)
-        doc_conn_labels = self._classify_connectives(doc_parsed_result, doc_conn_feats)
+        try:
+            doc_conn_feats = self._generate_connective_features(doc_parsed_result, doc_connectives, syntax_tree_cache)
+            doc_conn_labels = self._classify_connectives(doc_parsed_result, doc_conn_feats)
         
-        return [c for c, l in zip(doc_connectives, doc_conn_labels) if l[1]]
+            return [c for c, l in zip(doc_connectives, doc_conn_labels) if l[1]]
+        
 
     def _extract_connectives(self, sent_parsed_result):
         return sorted(self._extract_connectives_by_tokens(sent_parsed_result["tokens"]), key=lambda x: x["connective"])
@@ -1590,7 +1592,13 @@ class PSArgumentExtractor:
             conn_lower = conn.lower()
             conn_category = self.conn_category_mapping[conn_lower]
             cpos = "_".join([sent_parsed_result["pos_tags"][idx] for idx in conn_indices])
-            conn_node = syntax_tree.get_self_category_node_by_token_indices(conn_indices)
+
+            try:
+                conn_node = syntax_tree.get_self_category_node_by_token_indices(conn_indices)
+            except BaseException as e:
+                print(sent_parsed_result)
+                continue
+
             parent_node = conn_node.up
             if parent_node:
                 parent_category = parent_node.name
@@ -1613,6 +1621,7 @@ class PSArgumentExtractor:
             conn_ctx.append(left_node.name if left_node else "NULL")
             conn_ctx.append(right_node.name if right_node else "NULL")
             conn_ctx = "-".join(conn_ctx)
+
 
             for clause_idx, clause in enumerate(arg2_clauses):
                 # clause
