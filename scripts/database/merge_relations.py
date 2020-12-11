@@ -2,6 +2,7 @@ import os
 import pickle
 import shutil
 import gc
+import argparse
 from copy import copy, deepcopy
 from collections import defaultdict, Counter
 from aser.database.base import SqliteConnection, MongoDBConnection
@@ -12,50 +13,70 @@ from aser.eventuality import Eventuality
 from aser.relation import Relation, relation_senses
 from aser.utils.logging import init_logger, close_logger
 
-db = "sqlite"
-log_path = "./merge_kg_gutenberg.log"
-eventuality_frequency_lower_cnt_threshold = 2
-eventuality_frequency_upper_percent_threshold = 1.0
-relation_frequency_lower_cnt_threshold = 2
-relation_frequency_upper_percent_threshold = 1.0
-
 if __name__ == "__main__":
-    logger = init_logger(log_file=log_path)
-    # datasets = ["gutenberg", "nyt", "reddit", "subtitles", "wikipedia" , "yelp"]
-    # datasets = ["nyt_test"]
-    # kg_paths = [os.path.join("/home/data/corpora/aser/database/0.3/gutenberg_full_0.3", dataset) for dataset in datasets]
-    # kg_paths = [os.path.join(r"D:\Workspace\ASER-core\data\database", dataset) for dataset in datasets]
-    # prefixes_to_be_added = [os.path.join(dataset, "parsed")+os.sep for dataset in datasets]
-    # prefixes_to_be_added = [""] * len(kg_paths)
-    prefix_to_be_added = ""
-    kg_path = "/home/data/corpora/aser/database/0.3/gutenberg_full_0.3"
+    parser = argparse.ArgumentParser()
 
-    merged_kg_path = "/home/data/corpora/aser/database/0.3/gutenberg_full_0.3"
-    # merged_kg_path = r"D:\Workspace\ASER-core\data\database\all"
-    if not os.path.exists(merged_kg_path):
-        os.mkdir(merged_kg_path)
+    parser.add_argument("-db", type=str, default="sqlite", choices=["sqlite"])
+    parser.add_argument("-kg_path", type=str)
+    parser.add_argument("-merged_kg_path", type=str)
+    parser.add_argument("-fix_prefix", action="store_true")
+    parser.add_argument("-relation_frequency_lower_cnt_threshold", type=float, default=1.0001)
+    parser.add_argument("-relation_frequency_upper_percent_threshold", type=float, default=1.0)
+
+    args = parser.parse_args()
+
+    if not os.path.exists(args.merged_kg_path):
+        os.mkdir(args.merged_kg_path)
+    logger = init_logger(log_file=os.path.join(args.merged_kg_path, "merge_kg.log"))
 
     eid2sids, rid2sids = defaultdict(list), defaultdict(list)
-    # for i in range(1, 5):
-    #     logger.info("Connecting %s" % (os.path.join(kg_path, "rid2sids_%d.pkl" % (i))))
-    #     with open(os.path.join(kg_path, "rid2sids_%d.pkl" % (i)), "rb") as f:
-    #         for rid, sids in pickle.load(f).items():
-    #             rid2sids[rid].extend([tuple([prefix_to_be_added+x for x in sid]) for sid in sids])
-    # logger.info("Storing inverted tables")
-    # with open(os.path.join(merged_kg_path, "rid2sids_full.pkl"), "wb") as f:
-    #     pickle.dump(rid2sids, f)
+    
+    if not os.path.exists(os.path.join(args.merged_kg_path, "eid2sids_core.pkl")):
+        logger.error("Error: eid2sids_core.pkl is not found in %s. Please generate it fistly." % (args.merged_kg_path))
+        raise FileNotFoundError("eid2sids_core.pkl is not found in %s." % (args.merged_kg_path))
+    with open(os.path.join(args.merged_kg_path, "eid2sids_core.pkl"), "rb") as f:
+        eid2sids = pickle.load(f)
+
+    if os.path.exists(os.path.join(args.kg_path, "rid2sids_full.pkl")):
+        logger.info("rid2sids_full.pkl is found in %s. We would copy it directly." % (args.kg_path))
+        # shutil.copyfile(os.path.join(args.kg_path, "rid2sids_full.pkl"), os.path.join(args.merged_kg_path, "rid2sids_full.pkl"))
+        os.symlink(os.path.join(args.kg_path, "rid2sids_full.pkl"), os.path.join(args.merged_kg_path, "rid2sids_full.pkl"))
+        logger.info("Openning inverted tables")
+        with open(os.path.join(args.merged_kg_path, "rid2sids_full.pkl"), "rb") as f:
+            rid2sids = pickle.load(f)
+    else:
+        logger.info("Generating inverted tables")
+        for filename in os.listdir(args.kg_path):
+            if not (filename.startswith("rid2sids") and filename.endswith(".pkl")):
+                continue
+            if filename in ["rid2sids_full.pkl", "rid2sids_core.pkl"]:
+                continue
+            filename = os.path.join(args.kg_path, filename)
+            logger.info("Connecting %s" % (filename))
+            if args.fix_prefix:
+                prefix = ""
+                for d in ["nyt", "yelp", "wikipedia", "reddit", "subtitles", "gutenberg"]:
+                    if d in filename:
+                        prefix = d + os.sep + "parsed_para" + os.sep
+                        break
+                if prefix == "":
+                    logger.warning("Warning: %s is not matched for 6 datasets." % (filename))
+                    continue
+                with open(filename, "rb") as f:
+                    for rid, sids in pickle.load(f).items():
+                        rid2sids[rid].extend([tuple([prefix+x for x in sid]) for sid in sids])
+            else:
+                with open(filename, "rb") as f:
+                    for rid, sids in pickle.load(f).items():
+                        rid2sids[rid].extend(sids)
+        logger.info("Storing inverted tables")
+        with open(os.path.join(args.merged_kg_path, "rid2sids_full.pkl"), "wb") as f:
+            pickle.dump(rid2sids, f)
     # gc.collect()
 
-    with open(os.path.join(merged_kg_path, "eid2sids_core.pkl"), "rb") as f:
-        eid2sids = pickle.load(f)
-    with open(os.path.join(merged_kg_path, "rid2sids_full.pkl"), "rb") as f:
-        rid2sids = pickle.load(f)
-
-    logger.info("Connecting %s" % (os.path.join(merged_kg_path, "KG.db")))
-    if db == "sqlite":
-        merged_conn = SqliteConnection(os.path.join(merged_kg_path, "KG.db"), CHUNKSIZE)
-    elif db == "mongoDB":
-        merged_conn = MongoDBConnection(os.path.join(merged_kg_path, "KG.db"), CHUNKSIZE)
+    logger.info("Connecting %s" % (os.path.join(args.merged_kg_path, "KG.db")))
+    if args.db == "sqlite":
+        merged_conn = SqliteConnection(os.path.join(args.merged_kg_path, "KG.db"), CHUNKSIZE)
     else:
         raise NotImplementedError
 
@@ -79,16 +100,17 @@ if __name__ == "__main__":
         relation_counter[row["_id"]] += sum([row.get(r, 0.0) for r in relation_senses])
         rid2row[row["_id"]] = row
 
-    for i in range(1, 5):
-        logger.info("Connecting %s" % (os.path.join(kg_path, "KG_%d.db" % (i))))
-        if db == "sqlite":
-            conn = SqliteConnection(os.path.join(kg_path, "KG_%d.db" % (i)), CHUNKSIZE)
-        elif db == "mongoDB":
-            conn = MongoDBConnection(os.path.join(kg_path, "KG_%d.db" % (i)), CHUNKSIZE)
+    for filename in os.listdir(args.kg_path):
+        if not (filename.startswith("KG") and filename.endswith(".db")):
+            continue
+        filename = os.path.join(args.kg_path, filename)
+        logger.info("Connecting %s" % (filename))
+        if args.db == "sqlite":
+            conn = SqliteConnection(filename, CHUNKSIZE)
         else:
             raise NotImplementedError
 
-        logger.info("Retrieving rows from %s.%s..." % (kg_path, RELATION_TABLE_NAME))
+        logger.info("Retrieving rows from %s.%s..." % (filename, RELATION_TABLE_NAME))
         for row in conn.get_columns(RELATION_TABLE_NAME, RELATION_COLUMNS):
             if row["_id"] not in rid2sids:
                 continue
@@ -100,13 +122,15 @@ if __name__ == "__main__":
                 for r in relation_senses:
                     rid2row[row["_id"]][r] += row.get(r, 0.0)
 
+        conn.close()
+
     total_relation = sum(relation_counter.values())
     logger.info("%d relations (%d unique) have been extracted." % (total_relation, len(relation_counter)))
 
     # filter high-frequency and low-frequency relations
     logger.info("Filtering high-frequency and low-frequency relations.")
-    relation_frequency_lower_cnt_threshold = relation_frequency_lower_cnt_threshold
-    relation_frequency_upper_cnt_threshold = relation_frequency_upper_percent_threshold * total_relation
+    relation_frequency_lower_cnt_threshold = args.relation_frequency_lower_cnt_threshold
+    relation_frequency_upper_cnt_threshold = args.relation_frequency_upper_percent_threshold * total_relation
     for rid, freq in relation_counter.items():
         if freq < relation_frequency_lower_cnt_threshold or freq > relation_frequency_upper_cnt_threshold:
             filtered_rids.append(rid)
@@ -118,7 +142,8 @@ if __name__ == "__main__":
         total_relation-sum([relation_counter[rid] for rid in filtered_rids]), len(relation_counter)-len(filtered_rids)))
     del relation_counter
     if len(filtered_rids) == 0:
-        shutil.copyfile(os.path.join(merged_kg_path, "rid2sids_full.pkl"), os.path.join(merged_kg_path, "rid2sids_core.pkl"))
+        # shutil.copyfile(os.path.join(args.merged_kg_path, "rid2sids_full.pkl"), os.path.join(args.merged_kg_path, "rid2sids_core.pkl"))
+        os.symlink(os.path.join(args.merged_kg_path, "rid2sids_full.pkl"), os.path.join(args.merged_kg_path, "rid2sids_core.pkl"))
         rid2row_core = rid2row
         del rid2sids 
     else:
@@ -127,7 +152,7 @@ if __name__ == "__main__":
         for rid, sids in rid2sids.items():
             if rid not in filtered_rids:
                 rid2sids_core[rid] = sids
-        with open(os.path.join(merged_kg_path, "rid2sids_core.pkl"), "wb") as f:
+        with open(os.path.join(args.merged_kg_path, "rid2sids_core.pkl"), "wb") as f:
             pickle.dump(rid2sids_core, f)
         del rid2sids_core
         del rid2sids
