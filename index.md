@@ -29,7 +29,8 @@ ASER (activities, states, events,and their relations) is a large-scale eventuali
 <strong>Publications:</strong>
 
 <ul>
-<li>Tianqing Fang, Hongming Zhang, Weiqi Wang, Yangqiu Song, and Bin He. DISCOS: Bridging the Gap between Discourse Knowledge and Commonsense Knowledge. HKUST Technical Report, Jan 1st. 2020. [<a href="https://arxiv.org/abs/2101.00154">pdf</a>]</li>
+<li>Changlong Yu, Hongming Zhang, Yangqiu Song, Wilfred Ng. CoCoLM: COmplex COmmonsense Enhanced Language Model. HKUST Technical Report, 2021. [<a href="https://arxiv.org/abs/2012.15643">pdf</a>]</li>
+<li>Tianqing Fang, Hongming Zhang, Weiqi Wang, Yangqiu Song, and Bin He. DISCOS: Bridging the Gap between Discourse Knowledge and Commonsense Knowledge. The Web Conference (WWW), 2021. [<a href="https://arxiv.org/abs/2101.00154">pdf</a>]</li>
 <li>Hongming Zhang, Muhao Chen, Haoyu Wang, Yangqiu Song, and Dan Roth. Analogous Process Structure Induction for Sub-event Sequence Prediction. Conference on Empirical Methods in Natural Language Processing (EMNLP). 2020. [<a href="https://arxiv.org/abs/2010.08525">pdf</a>]</li>
 <li>Changlong Yu, Hongming Zhang, Yangqiu Song, Wilfred Ng, and Lifeng Shang . Enriching Large-Scale Eventuality Knowledge Graph with Entailment Relations. Conference on Automated Knowledge Base Construction (AKBC). 2020.  [<a href="https://openreview.net/forum?id=-oXaOxy6up">pdf</a>]</li>
 <li>Hongming Zhang, Daniel Khashabi, Yangqiu Song, and Dan Roth. TransOMCS: From Linguistic Graphs to Commonsense Knowledge. International Joint Conference on Artificial Intelligence (IJCAI). 2020. [<a href="https://arxiv.org/abs/2005.00206">pdf</a>]</li>
