@@ -2,6 +2,7 @@ import os
 import pickle
 import shutil
 import gc
+import argparse
 from copy import copy, deepcopy
 from collections import defaultdict, Counter
 from aser.database.base import SqliteConnection, MongoDBConnection
@@ -12,48 +13,64 @@ from aser.eventuality import Eventuality
 from aser.relation import Relation, relation_senses
 from aser.utils.logging import init_logger, close_logger
 
-db = "sqlite"
-log_path = "./merge_kg_reddit.log"
-eventuality_frequency_lower_cnt_threshold = 2
-eventuality_frequency_upper_percent_threshold = 1.0
-relation_frequency_lower_cnt_threshold = 2
-relation_frequency_upper_percent_threshold = 1.0
-
 if __name__ == "__main__":
-    logger = init_logger(log_file=log_path)
-    # datasets = ["gutenberg", "nyt", "reddit", "subtitles", "wikipedia" , "yelp"]
-    # datasets = ["nyt_test"]
-    # kg_paths = [os.path.join("/home/data/corpora/aser/database/0.3/gutenberg_full_0.3", dataset) for dataset in datasets]
-    # kg_paths = [os.path.join(r"D:\Workspace\ASER-core\data\database", dataset) for dataset in datasets]
-    # prefixes_to_be_added = [os.path.join(dataset, "parsed")+os.sep for dataset in datasets]
-    # prefixes_to_be_added = [""] * len(kg_paths)
-    prefix_to_be_added = ""
-    kg_path = "/home/data/corpora/aser/database/0.3/reddit_full_0.3"
+    parser = argparse.ArgumentParser()
 
-    merged_kg_path = "/home/data/corpora/aser/database/0.3/reddit_full_0.3"
-    # merged_kg_path = r"D:\Workspace\ASER-core\data\database\all"
-    if not os.path.exists(merged_kg_path):
-        os.mkdir(merged_kg_path)
+    parser.add_argument("-db", type=str, default="sqlite", choices=["sqlite"])
+    parser.add_argument("-kg_path", type=str)
+    parser.add_argument("-merged_kg_path", type=str)
+    parser.add_argument("-fix_prefix", action="store_true")
+    parser.add_argument("-eventuality_frequency_lower_cnt_threshold", type=float, default=2.0)
+    parser.add_argument("-eventuality_frequency_upper_percent_threshold", type=float, default=1.0)
 
-    eid2sids, rid2sids = defaultdict(list), defaultdict(list)
-    for i in range(1, 5):
-        logger.info("Connecting %s" % (os.path.join(kg_path, "eid2sids_%d.pkl" % (i))))
-        with open(os.path.join(kg_path, "eid2sids_%d.pkl" % (i)), "rb") as f:
-            for eid, sids in pickle.load(f).items():
-                eid2sids[eid].extend([prefix_to_be_added+sid for sid in sids])
-    logger.info("Storing inverted tables")
-    with open(os.path.join(merged_kg_path, "eid2sids_full.pkl"), "wb") as f:
-        pickle.dump(eid2sids, f)
-    gc.collect()
+    args = parser.parse_args()
 
-    # with open(os.path.join(merged_kg_path, "eid2sids_full.pkl"), "rb") as f:
-    #     eid2sids = pickle.load(f)
+    if not os.path.exists(args.merged_kg_path):
+        os.mkdir(args.merged_kg_path)
+    logger = init_logger(log_file=os.path.join(args.merged_kg_path, "merge_kg.log"))
+
+    eid2sids = defaultdict(list)
     
-    logger.info("Connecting %s" % (os.path.join(merged_kg_path, "KG.db")))
-    if db == "sqlite":
-        merged_conn = SqliteConnection(os.path.join(merged_kg_path, "KG.db"), CHUNKSIZE)
-    elif db == "mongoDB":
-        merged_conn = MongoDBConnection(os.path.join(merged_kg_path, "KG.db"), CHUNKSIZE)
+    if os.path.exists(os.path.join(args.kg_path, "eid2sids_full.pkl")):
+        logger.info("eid2sids_full.pkl is found in %s. We would copy it directly." % (args.kg_path))
+        # shutil.copyfile(os.path.join(args.kg_path, "eid2sids_full.pkl"), os.path.join(args.merged_kg_path, "eid2sids_full.pkl"))
+        os.symlink(os.path.join(args.kg_path, "eid2sids_full.pkl"), os.path.join(args.merged_kg_path, "eid2sids_full.pkl"))
+        logger.info("Openning inverted tables")
+        with open(os.path.join(args.merged_kg_path, "eid2sids_full.pkl"), "rb") as f:
+            eid2sids = pickle.load(f)
+    else:
+        logger.info("Generating inverted tables")
+        for filename in os.listdir(args.kg_path):
+            if not (filename.startswith("eid2sids") and filename.endswith(".pkl")):
+                continue
+            if filename in ["eid2sids_full.pkl", "eid2sids_core.pkl"]:
+                continue
+            filename = os.path.join(args.kg_path, filename)
+            logger.info("Connecting %s" % (filename))
+            if args.fix_prefix:
+                prefix = ""
+                for d in ["nyt", "yelp", "wikipedia", "reddit", "subtitles", "gutenberg"]:
+                    if d in filename:
+                        prefix = d + os.sep + "parsed_para" + os.sep
+                        break
+                if prefix == "":
+                    logger.warning("Warning: %s is not matched for 6 datasets." % (filename))
+                    continue
+                with open(filename, "rb") as f:
+                    for eid, sids in pickle.load(f).items():
+                        eid2sids[eid].extend([prefix+sid for sid in sids])
+            else:
+                with open(filename, "rb") as f:
+                    for eid, sids in pickle.load(f).items():
+                        eid2sids[eid].extend(sids)
+        logger.info("Storing inverted tables")
+        with open(os.path.join(args.merged_kg_path, "eid2sids_full.pkl"), "wb") as f:
+            pickle.dump(eid2sids, f)
+    # gc.collect()
+    
+    logger.info("Connecting %s" % (os.path.join(args.merged_kg_path, "KG.db")))
+    if args.db == "sqlite":
+        merged_conn = SqliteConnection(os.path.join(args.merged_kg_path, "KG.db"), CHUNKSIZE)
     else:
         raise NotImplementedError
 
@@ -77,38 +94,43 @@ if __name__ == "__main__":
         eventuality_counter[row["_id"]] += row["frequency"]
         eid2row[row["_id"]] = row
 
-    for i in range(1, 5):
-        logger.info("Connecting %s" % (os.path.join(kg_path, "KG_%d.db" % (i))))
-        if db == "sqlite":
-            conn = SqliteConnection(os.path.join(kg_path, "KG_%d.db" % (i)), CHUNKSIZE)
-        elif db == "mongoDB":
-            conn = MongoDBConnection(os.path.join(kg_path, "KG_%d.db" % (i)), CHUNKSIZE)
+    for filename in os.listdir(args.kg_path):
+        if not (filename.startswith("KG") and filename.endswith(".db")):
+            continue
+        filename = os.path.join(args.kg_path, filename)
+        logger.info("Connecting %s" % (filename))
+        if args.db == "sqlite":
+            conn = SqliteConnection(filename, CHUNKSIZE)
         else:
             raise NotImplementedError
 
-        logger.info("Retrieving rows from %s.%s..." % (kg_path, EVENTUALITY_TABLE_NAME))
+        logger.info("Retrieving rows from %s.%s..." % (filename, EVENTUALITY_TABLE_NAME))
         for row in conn.get_columns(EVENTUALITY_TABLE_NAME, EVENTUALITY_COLUMNS):
             eventuality_counter[row["_id"]] += row["frequency"]
             if row["_id"] not in eid2row:
                 eid2row[row["_id"]] = row
             else:
                 eid2row[row["_id"]]["frequency"] += row["frequency"]
+        
+        conn.close()
 
     total_eventuality = sum(eventuality_counter.values())
     logger.info("%d eventualities (%d unique) have been extracted." % (total_eventuality, len(eventuality_counter)))
 
     # filter high-frequency and low-frequency eventualities
     logger.info("Filtering high-frequency and low-frequency eventualities.")
-    eventuality_frequency_lower_cnt_threshold = eventuality_frequency_lower_cnt_threshold
-    eventuality_frequency_upper_cnt_threshold = eventuality_frequency_upper_percent_threshold * total_eventuality
+    eventuality_frequency_lower_cnt_threshold = args.eventuality_frequency_lower_cnt_threshold
+    eventuality_frequency_upper_cnt_threshold = args.eventuality_frequency_upper_percent_threshold * total_eventuality
     for eid, freq in eventuality_counter.items():
         if freq < eventuality_frequency_lower_cnt_threshold or freq > eventuality_frequency_upper_cnt_threshold:
             filtered_eids.append(eid)
     logger.info("%d eventualities (%d unique) will be inserted into the core KG." % (
         total_eventuality-sum([eventuality_counter[eid] for eid in filtered_eids]), len(eventuality_counter)-len(filtered_eids)))
     del eventuality_counter
+
     if len(filtered_eids) == 0:
-        shutil.copyfile(os.path.join(merged_kg_path, "eid2sids_full.pkl"), os.path.join(merged_kg_path, "eid2sids_core.pkl"))
+        # shutil.copyfile(os.path.join(args.merged_kg_path, "eid2sids_full.pkl"), os.path.join(args.merged_kg_path, "eid2sids_core.pkl"))
+        os.symlink(os.path.join(args.merged_kg_path, "eid2sids_full.pkl"), os.path.join(args.merged_kg_path, "eid2sids_core.pkl"))
         eid2row_core = eid2row
         del eid2sids 
     else:
@@ -117,7 +139,7 @@ if __name__ == "__main__":
         for eid, sids in eid2sids.items():
             if eid not in filtered_eids:
                 eid2sids_core[eid] = sids
-        with open(os.path.join(merged_kg_path, "eid2sids_core.pkl"), "wb") as f:
+        with open(os.path.join(args.merged_kg_path, "eid2sids_core.pkl"), "wb") as f:
             pickle.dump(eid2sids_core, f)
         del eid2sids_core
         del eid2sids
@@ -128,8 +150,7 @@ if __name__ == "__main__":
     del filtered_eids
     del eid2row
     merged_conn.insert_rows(EVENTUALITY_TABLE_NAME, eid2row_core.values())
-    del eid2row_core
-    gc.collect()
+    # gc.collect()
 
     merged_conn.close()
 

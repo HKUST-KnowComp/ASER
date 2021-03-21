@@ -69,8 +69,7 @@ if __name__ == "__main__":
 
     aser_concept_extractor = ASERConceptExtractor(
         method="probase",
-        # probase_path="/data/hjpan/probase/data-concept-instance-relations-yq.txt",
-        probase_path=r"D:\Data\probase\data-concept-instance-relations-yq.txt",
+        probase_path="/home/data/corpora/probase/data-concept-instance-relations-demo.txt",
         probase_topk=5)
     aser_concept_conn = ASERConceptConnection(
         db_path=os.path.join(aser_concept_dir, "concept.db"), mode="memory") # insert cannot retrieve

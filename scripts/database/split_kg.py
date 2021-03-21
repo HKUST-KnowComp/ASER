@@ -40,8 +40,6 @@ if __name__ == "__main__":
     logger.info("Connecting %s" % (os.path.join(kg_path, "KG.db")))
     if db == "sqlite":
         conn = SqliteConnection(os.path.join(kg_path, "KG.db"), CHUNKSIZE)
-    elif db == "mongoDB":
-        conn = MongoDBConnection(os.path.join(kg_path, "KG.db"), CHUNKSIZE)
     else:
         raise NotImplementedError
 

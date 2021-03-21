@@ -439,18 +439,6 @@ class ConnectiveExtractor:
         with open(conn_model_file, "rb") as f:
             self.conn_model = pickle.load(f)
 
-    # def help_func(self, doc_parsed_result, syntax_tree_cache=None):
-    #     doc_connectives = list() # [[sent_idx, connective, indices], ...]
-    #     for sent_idx, sent_parsed_result in enumerate(doc_parsed_result):
-    #         sent_connectives = self._extract_connectives(sent_parsed_result)
-    #         for conn_idx, connective in enumerate(sent_connectives):
-    #             connective["sent_idx"] = sent_idx
-    #             doc_connectives.append(connective)
-
-    #     doc_conn_feats = self._generate_connective_features(doc_parsed_result, doc_connectives, syntax_tree_cache)
-
-    #     return doc_connectives, doc_conn_feats
-
     def extract(self, doc_parsed_result, syntax_tree_cache=None):
         if len(doc_parsed_result) == 0:
             return list()
@@ -467,8 +455,9 @@ class ConnectiveExtractor:
         
         doc_conn_feats = self._generate_connective_features(doc_parsed_result, doc_connectives, syntax_tree_cache)
         doc_conn_labels = self._classify_connectives(doc_parsed_result, doc_conn_feats)
-        
+    
         return [c for c, l in zip(doc_connectives, doc_conn_labels) if l[1]]
+        
 
     def _extract_connectives(self, sent_parsed_result):
         return sorted(self._extract_connectives_by_tokens(sent_parsed_result["tokens"]), key=lambda x: x["connective"])
@@ -758,11 +747,6 @@ class ArgumentPositionClassifier:
         with open(argpos_model_file, "rb") as f:
             self.argpos_model = pickle.load(f)
 
-    # def help_func(self, doc_parsed_result, doc_connectives, syntax_tree_cache=None):
-    #     doc_argpos_feats = self._generate_argument_position_features(doc_parsed_result, doc_connectives, syntax_tree_cache)
-
-    #     return doc_connectives, doc_argpos_feats
-    
     def classify(self, doc_parsed_result, doc_connectives, syntax_tree_cache=None):
         SS_connectives, PS_connectives = list(), list()
         if len(doc_connectives) == 0:
@@ -804,36 +788,46 @@ class ArgumentPositionClassifier:
             # prev1
             prev1_sent_idx, prev1_idx = get_prev_token_index(doc_parsed_result, sent_idx, indices[0])
             if prev1_sent_idx != -1:
-                prev1, prev1pos = doc_parsed_result[prev1_sent_idx]["tokens"][prev1_idx], doc_parsed_result[prev1_sent_idx]["pos_tags"][prev1_idx]
+                prev1 = doc_parsed_result[prev1_sent_idx]["tokens"][prev1_idx]
+                prev1pos = doc_parsed_result[prev1_sent_idx]["pos_tags"][prev1_idx]
             else:
-                prev1, prev1pos = "NONE", "NONE"
+                prev1 = "NONE"
+                prev1pos = "NONE"
 
             # prev2
             if prev1_sent_idx != -1:
                 prev2_sent_idx, prev2_idx = get_prev_token_index(doc_parsed_result, prev1_sent_idx, prev1_idx)
                 if prev2_sent_idx != -1:
-                    prev2, prev2pos = doc_parsed_result[prev2_sent_idx]["tokens"][prev2_idx], doc_parsed_result[prev2_sent_idx]["pos_tags"][prev2_idx]
+                    prev2 = doc_parsed_result[prev2_sent_idx]["tokens"][prev2_idx]
+                    prev2pos = doc_parsed_result[prev2_sent_idx]["pos_tags"][prev2_idx]
                 else:
-                    prev2, prev2pos = "NONE", "NONE"
+                    prev2 = "NONE"
+                    prev2pos = "NONE"
             else:
-                prev2, prev2pos = "NONE", "NONE"
+                prev2 = "NONE"
+                prev2pos = "NONE"
 
             # next1
             next1_sent_idx, next1_idx = get_next_token_index(doc_parsed_result, sent_idx, indices[-1])
             if next1_sent_idx != -1:
-                next1, next1pos = doc_parsed_result[next1_sent_idx]["tokens"][next1_idx], doc_parsed_result[next1_sent_idx]["pos_tags"][next1_idx]
+                next1 = doc_parsed_result[next1_sent_idx]["tokens"][next1_idx]
+                next1pos = doc_parsed_result[next1_sent_idx]["pos_tags"][next1_idx]
             else:
-                next1, next1pos = "NONE", "NONE"
+                next1 = "NONE"
+                next1pos = "NONE"
             
             # next2
             if next1_sent_idx != -1:
                 next2_sent_idx, next2_idx = get_next_token_index(doc_parsed_result, next1_sent_idx, next1_idx)
                 if next2_sent_idx != -1:
-                    next2, next2pos = doc_parsed_result[next2_sent_idx]["tokens"][next2_idx], doc_parsed_result[next2_sent_idx]["pos_tags"][next2_idx]
+                    next2 = doc_parsed_result[next2_sent_idx]["tokens"][next2_idx]
+                    next2pos = doc_parsed_result[next2_sent_idx]["pos_tags"][next2_idx]
                 else:
-                    next2, next2pos = "NONE", "NONE"
+                    next2 = "NONE"
+                    next2pos = "NONE"
             else:
-                next2, next2pos = "NONE", "NONE"
+                next2 = "NONE"
+                next2pos = "NONE"
 
             # conn_to_root_path
             try:
@@ -935,94 +929,6 @@ class SSArgumentExtractor:
         ss_arg_model_file = kw.get("ss_arg_model_file", os.path.join(discourse_path, "ss_arg_classifier.pkl"))
         with open(ss_arg_model_file, "rb") as f:
             self.ss_arg_model = pickle.load(f)
-
-    # def help_func(self, doc_parsed_result, doc_connectives, syntax_tree_cache=None):
-    #     if syntax_tree_cache is None:
-    #         syntax_tree_cache = dict()
-        
-    #     parallel_connectives, non_parallel_connectives = self._divide_connectives_parallel(doc_connectives)
-
-    #     doc_ss_arg_conns, doc_ss_arg_feats = list(), list()
-    #     for conn_idx, connective in enumerate(non_parallel_connectives):
-    #         sent_idx, conn_indices = connective["sent_idx"], connective["indices"]
-    #         sent_parsed_result = doc_parsed_result[sent_idx]
-
-    #         if sent_idx in syntax_tree_cache:
-    #             syntax_tree = syntax_tree_cache[sent_idx]
-    #         else:
-    #             syntax_tree = syntax_tree_cache[sent_idx] = SyntaxTree(sent_parsed_result["parse"])
-            
-    #         conn = " ".join([sent_parsed_result["tokens"][idx] for idx in conn_indices])
-    #         conn_lower = conn.lower()
-    #         conn_category = self.conn_category_mapping[conn_lower]
-    #         cpos = "_".join([sent_parsed_result["pos_tags"][idx] for idx in conn_indices])
-    #         try:
-    #             conn_node = syntax_tree.get_self_category_node_by_token_indices(conn_indices)
-    #         except BaseException as e:
-    #             print(sent_parsed_result)
-    #             raise e
-            
-    #         left_number, right_number = 0, 0
-    #         if conn_node.up:
-    #             children = conn_node.up.get_children()
-    #             for child_idx, child in enumerate(children):
-    #                 if conn_node == child:
-    #                     left_number, right_number = child_idx, len(children)-1-child_idx
-    #                     break
-            
-    #         constituents = self._get_constituents(connective, syntax_tree)
-    #         constituents.sort(key=lambda x: x["indices"][0])
-
-    #         for nt_idx, constituent in enumerate(constituents):
-    #             constituent_node = constituent["node"]
-    #             parent_constituent_node, left_constituent_node, right_constituent_node = constituent_node.up, None, None
-    #             if parent_constituent_node:
-    #                 children = parent_constituent_node.get_children()
-    #                 for child_idx, child in enumerate(children):
-    #                     if constituent_node == child:
-    #                         if child_idx > 0:
-    #                             left_constituent_node = children[child_idx-1]
-    #                         if child_idx < len(children) - 1:
-    #                             right_constituent_node = children[child_idx+1]
-    #                         break
-                
-    #             # nt_ctx
-    #             nt_ctx = list() # self, parent, left, right
-    #             nt_ctx.append(constituent_node.name)
-    #             nt_ctx.append(parent_constituent_node.name if parent_constituent_node else "NULL")
-    #             nt_ctx.append(left_constituent_node.name if left_constituent_node else "NULL")
-    #             nt_ctx.append(right_constituent_node.name if right_constituent_node else "NULL")
-    #             nt_ctx = "-".join(nt_ctx)
-
-    #             # conn_nt_path
-    #             conn_nt_path = syntax_tree.get_node_to_node_path(conn_node, constituent_node)
-    #             # conn_nt_path_left_number
-    #             conn_nt_path_left_number = conn_nt_path + (":>1" if left_number > 1 else ":<=1")
-
-    #             # conn_nt_position
-    #             conn_nt_position = syntax_tree.get_relative_position(conn_node, constituent_node)
-
-    #             ss_arg_feats = list()
-    #             ss_arg_feats.append(Feature.get_feature_by_feat(self.conn_dict, conn))
-    #             ss_arg_feats.append(Feature.get_feature_by_feat(self.conn_lower_dict, conn_lower))
-    #             ss_arg_feats.append(Feature.get_feature_by_feat(self.nt_ctx_dict, nt_ctx))
-    #             ss_arg_feats.append(Feature.get_feature_by_feat(self.conn_nt_path_dict, conn_nt_path))
-    #             ss_arg_feats.append(Feature.get_feature_by_feat(self.conn_nt_path_left_number_dict, conn_nt_path_left_number))
-    #             ss_arg_feats.append(Feature.get_feature_by_feat(self.conn_category_dict, conn_category))
-    #             ss_arg_feats.append(Feature.get_feature_by_list([left_number]))
-    #             ss_arg_feats.append(Feature.get_feature_by_list([right_number]))
-    #             ss_arg_feats.append(Feature.get_feature_by_feat(self.conn_nt_position_dict, conn_nt_position))
-
-    #             # merge
-    #             ss_arg_feats = Feature.merge_features(ss_arg_feats, 
-    #                 "%d|%d|%s" % (sent_idx, conn_idx, ",".join([str(idx) for idx in constituent["indices"]])))
-
-    #             ss_arg_conn = copy(connective)
-    #             ss_arg_conn["nt_indices"] = constituent["indices"]
-
-    #             doc_ss_arg_conns.append(ss_arg_conn)
-    #             doc_ss_arg_feats.append(ss_arg_feats)
-    #     return doc_ss_arg_conns, doc_ss_arg_feats
             
     def extract(self, doc_parsed_result, doc_connectives, syntax_tree_cache=None):
         if len(doc_connectives) == 0:
@@ -1590,7 +1496,13 @@ class PSArgumentExtractor:
             conn_lower = conn.lower()
             conn_category = self.conn_category_mapping[conn_lower]
             cpos = "_".join([sent_parsed_result["pos_tags"][idx] for idx in conn_indices])
-            conn_node = syntax_tree.get_self_category_node_by_token_indices(conn_indices)
+
+            try:
+                conn_node = syntax_tree.get_self_category_node_by_token_indices(conn_indices)
+            except BaseException as e:
+                print(sent_parsed_result)
+                continue
+
             parent_node = conn_node.up
             if parent_node:
                 parent_category = parent_node.name
@@ -1743,6 +1655,7 @@ class PSArgumentExtractor:
     def _get_argument2_clauses(self, sent_parsed_result, connective, syntax_tree):
         return get_clauses(sent_parsed_result, syntax_tree, index_seps=set(connective["indices"]))
 
+
 ######################################################
 ###########    Explicit Sense Classifier    ##########
 ######################################################
@@ -1825,11 +1738,6 @@ class ExplicitSenseClassifier:
             13: "ChosenAlternative", # "Expansion.Alternative.Chosen alternative"
             14: "Exception"          # "Expansion.Exception"
         }
-
-    # def help_func(self, doc_parsed_result, doc_connectives, syntax_tree_cache=None):
-    #     doc_explicit_feats = self._generate_explicit_features(doc_parsed_result, doc_connectives, syntax_tree_cache)
-
-    #     return doc_connectives, doc_explicit_feats
         
     def classify(self, doc_parsed_result, doc_connectives, syntax_tree_cache=None):
         if len(doc_connectives) == 0:
