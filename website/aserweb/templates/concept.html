@@ -52,122 +52,23 @@
             <div class="col-sm-12">
                 <div class="ibox float-e-margins">
                     <div class="ibox-title">
-                        <h5> Eventuality </h5>
+                        <h5> Concept </h5>
                     </div>
                     <div class="ibox-content">
                         <h2>
-                            {{ event.words }}<br/>
+                            {{ event.concept }}<br/>
                         </h2>
-
-                        <br>
-
-                        <div class="row">
-                            <div class="col-sm-2">
-                                <span class="label label-default">Raw sentence</span>
-                            </div>
-                            <div class="col-sm-8">
-                                {{ event.sentence }}
-                            </div>
-                        </div>
-
-                        <p></p>
-
-                        <div class="row">
-                            <div class="col-sm-2">
-                                <span class="label label-default">Verbs</span>
-                            </div>
-                            <div class="col-sm-8">
-                                {{ event.verbs }}
-                            </div>
-                        </div>
-
-                        <p></p>
-
-
-                        <div class="row">
-                            <div class="col-sm-2">
-                                <span class="label label-default">Skeleton words</span>
-                            </div>
-                            <div class="col-sm-8">
-                                {{ event.skeleton_words }}
-                            </div>
-                        </div>
-
-                        <p></p>
-
-
-                        <div class="row">
-                            <div class="col-sm-2">
-                                <span class="label label-default">Frequency</span>
-                            </div>
-                            <div class="col-sm-8">
-                                {{ event.frequency }}
-                            </div>
-                        </div>
-
-                        <p></p>
-
-
-                        <div class="row">
-                            <div class="col-sm-2">
-                                <span class="label label-default">Show in KG</span>
-                            </div>
-                            <div class="col-sm-8">
-                                {{ event.show_in_kg }}
-                            </div>
-                        </div>
-
-                        <p></p>
-
-                        <div class="row">
-                            <div class="col-sm-2">
-                                <span class="label label-default">Concept</span>
-                            </div>
-                            <div class="col-sm-4">
-                                {% if event.concepts[0].__len__() == 3 %}
-                                    <a href="{{ event.concepts[0][2] }}">
-                                        {{ event.concepts[0][0] }}
-                                    </a>
-                                {% else %}
-                                    {{ event.concepts[0][0] }}
-                                {% endif %}
-                            </div>
-                            <div class="col-sm-2">
-                                {{ event.concepts[0][1] }}
-                            </div>
-                        </div>
-
-                        {% for concept in event.concepts[1:] %}
-                            <div class="row">
-                                <div class="col-sm-2">
-                                    <span class="label label-default"></span>
-                                </div>
-                                <div class="col-sm-4">
-                                    {% if concept.__len__() == 3 %}
-                                        <a href="{{ concept[2] }}">
-                                            {{ concept[0] }}
-                                        </a>
-                                    {% else %}
-                                        {{ concept[0] }}
-                                    {% endif%}
-                                </div>
-                                <div class="col-sm-2">
-                                    {{ concept[1] }}
-                                </div>
-                            </div>
-                        {% endfor %}
 
                     </div>
                 </div>
             </div>
         </div>
 
-
         <div class="row">
             <div class="col-sm-12">
                 <div class="ibox float-e-margins">
                     <div class="ibox-title">
-                        <h5> Contextualization </h5>
+                        <h5> Related Concept </h5>
                     </div>
 
                     <div class="ibox-content">
@@ -176,7 +77,7 @@
 
                                 {% for rel in event.rel_keys %}
 
-                                {% if event.related_events[rel].__len__() > 0%}
+                                {% if event.related_concepts[rel].__len__() > 0%}
                                 <div class="panel panel-default">
                                     <div class="panel-heading">
                                         <h4 class="panel-title">
@@ -185,14 +86,14 @@
                                                 {{rel}}
                                                 <span></span>
                                                 <span class="badge badge-success">
-                                                      {{ event.related_events[rel].__len__() }}
+                                                      {{ event.related_concepts[rel].__len__() }}
                                                 </span>
                                             </a>
                                         </h4>
                                     </div>
                                     <div id="collapse{{rel}}" class="panel-collapse collapse">
                                         <div class="panel-body">
-                                            {% for rel_e in event.related_events[rel] %}
+                                            {% for rel_e in event.related_concepts[rel] %}
                                                 <li>
                                                     {% if rel_e.__len__() == 2 %}
                                                         <a href="{{ rel_e[1] }}">

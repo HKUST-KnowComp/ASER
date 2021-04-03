@@ -43,6 +43,22 @@
 
 </header>
 
+<body style="background-color: white;">
+
+    <img src="static/images/ASER_demo.png" class="block_center" style="margin-top: 40pt"/>
+    <div class="wrapper wrapper-content animated fadeIn center block_center">
+        <p> ASER (activities, states, events,and their relations) is a large-scale eventuality knowledge graph extracted from more than11-billion-token unstructured textual data. </p>
+        <h3> Examples </h3>
+        <p> </p>
+        <div class="row">
+        {% for event in events %}
+            <a  href="{{ event[1] }}"><span class="label label-default">{{ event[0] }}</span></a>
+        {% endfor %}
+        </div>
+    </div>
+
+</body>
+
 <script>
 
 	$(document).ready(function() {
@@ -60,5 +76,14 @@
 	});
 
 </script>
+
+<style>
+.block_center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
+</style>
 
 </html>
