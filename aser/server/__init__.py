@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import json
 import multiprocessing
 from multiprocessing import Process
@@ -7,6 +8,8 @@ import time
 import traceback
 import zmq
 import zmq.decorators as zmqd
+from aser.concept.concept_extractor import ASERProbaseConceptExtractor
+from aser.eventuality import Eventuality
 from aser.database.kg_connection import ASERKGConnection
 from aser.server.utils import *
 from aser.extract.aser_extractor import SeedRuleASERExtractor
@@ -84,7 +87,7 @@ class ASERServer(object):
             try:
                 client_msg = client_msg_receiver.recv_multipart()
                 client_id, req_id, cmd, data = client_msg
-                if cmd == ASERCmd.extract_events:
+                if cmd in [ASERCmd.extract_events, ASERCmd.conceptualize_event]:
                     worker_sender_id, worker_sender = random.choice(
                         [(i, sender) for i, sender in enumerate(worker_senders)
                          if i != worker_sender_id])
@@ -195,9 +198,14 @@ class ASERWorker(Process):
         self.worker_addr_list = worker_addr_list
         self.sink_addr = sink_addr
         self.eventuality_extractor = SeedRuleASERExtractor(
-            corenlp_path = opt.corenlp_path,
+            corenlp_path=opt.corenlp_path,
             corenlp_port=opt.base_corenlp_port + id)
+        print("Eventuality Extractor init finished")
+        self.concept_extractor = ASERProbaseConceptExtractor(
+            probase_path=opt.probase_path, probase_topk=5)
+        print("Concept Extractor init finished")
         self.is_ready = multiprocessing.Event()
+        self.worker_cache = OrderedDict()
 
     def run(self):
         self._run()
@@ -235,6 +243,9 @@ class ASERWorker(Process):
                         if cmd == ASERCmd.extract_events:
                             ret_data = self.handle_extract_events(data)
                             sink.send_multipart([client_id, req_id, cmd, ret_data])
+                        elif cmd == ASERCmd.conceptualize_event:
+                            ret_data = self.handle_conceptualize_event(data)
+                            sink.send_multipart([client_id, req_id, cmd, ret_data])
                         else:
                             raise RuntimeError
             except Exception:
@@ -242,13 +253,26 @@ class ASERWorker(Process):
 
     def handle_extract_events(self, data):
         sentence = data.decode("utf-8")
+        if sentence in self.worker_cache:
+            return self.worker_cache[sentence]
         eventualities_list = self.eventuality_extractor.extract_eventualities_from_text(sentence)
         print(eventualities_list)
 
         rst = [[e.encode(encoding=None) for e in eventualities] for eventualities in eventualities_list]
         ret_data = json.dumps(rst).encode("utf-8")
+        if len(self.worker_cache) >= 512:
+            self.worker_cache.popitem(last=False)
+        self.worker_cache[sentence] = ret_data
         return ret_data
 
+    def handle_conceptualize_event(self, data):
+        eventuality = Eventuality().decode(data, encoding="utf-8")
+        concept_list = self.concept_extractor.conceptualize(eventuality)
+        ret_list = list()
+        for concept, score in concept_list:
+            ret_list.append((concept.words, score))
+        ret_data = json.dumps(ret_list).encode("utf-8")
+        return ret_data
 
 class ASERSink(Process):
     def __init__(self, args, sink_addr_receiver_addr):

@@ -49,9 +49,9 @@ def get_corenlp_client(corenlp_path="", corenlp_port=0, annotators=None):
                 annotators=annotators, timeout=99999,
                 memory='4G', endpoint="http://localhost:%d" % corenlp_port,
                 start_server=False, be_quiet=False)
-            # corenlp_client.annotate("hello world",
-            #                         annotators=list(annotators),
-            #                         output_format="json")
+            corenlp_client.annotate("hello world",
+                                    annotators=list(annotators),
+                                    output_format="json")
             return corenlp_client, True
         except Exception as err:
             raise err
@@ -61,9 +61,9 @@ def get_corenlp_client(corenlp_path="", corenlp_port=0, annotators=None):
             annotators=annotators, timeout=99999,
             memory='4G', endpoint="http://localhost:%d" % corenlp_port,
             start_server=True, be_quiet=False)
-        # corenlp_client.annotate("hello world",
-        #                         annotators=list(annotators),
-        #                         output_format="json")
+        corenlp_client.annotate("hello world",
+                                annotators=list(annotators),
+                                output_format="json")
         return corenlp_client, False
 
 

@@ -6,6 +6,7 @@ class ASERCmd:
     exact_match_event = b"__EXACT_MATCH_EVENT__"
     exact_match_relation = b"__EXACT_MATCH_RELATION__"
     fetch_related_events = b"__FETCH_RELATED_EVENTS__"
+    conceptualize_event = b"__CONCEPTUALIZE_EVENT__"
     none = "__NONE__"
 
 
@@ -25,6 +26,8 @@ def get_server_args_parser():
     # Stanford Corenlp
     parser.add_argument("-corenlp_path", type=str, default="./",
                         help="StanfordCoreNLP path")
+    parser.add_argument("-probase_path", type=str, default="./",
+                        help="Probase path for conceptualization")
     parser.add_argument("-base_corenlp_port", type=int, default=9000,
                         help="Base port of corenlp"
                              "[base_corenlp_port, base_corenlp_port + n_workers - 1]"

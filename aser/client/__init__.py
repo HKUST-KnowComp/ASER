@@ -3,6 +3,7 @@ from functools import wraps
 import json
 import uuid
 import zmq
+from aser.concept import ASERConcept
 from aser.utils.config import ASERCmd
 from aser.eventuality import Eventuality
 from aser.relation import Relation
@@ -77,9 +78,12 @@ class ASERClient(object):
         try:
             while True:
                 response = self.receiver.recv_multipart()
-                if response[1] == request_id:
-                    msg = json.loads(response[-1].decode(encoding="utf-8"))
-                    return msg
+                if len(response) > 1:
+                    if response[1] == request_id:
+                        msg = json.loads(response[-1].decode(encoding="utf-8"))
+                        return msg
+                else:
+                    return []
         except Exception as e:
             raise e
 
@@ -150,6 +154,17 @@ class ASERClient(object):
             rst_list.append(rst)
         return rst_list
 
+    def conceptualize_event(self, event):
+        request_id = self._send(
+            ASERCmd.conceptualize_event, event.encode("utf-8"))
+        msg = self._recv(request_id)
+        if not msg:
+            return None
+        rst_list = list()
+        for words, score in msg:
+            concept = ASERConcept(words)
+            rst_list.append((concept, score))
+        return rst_list
 
     def predict_relation(self, event1, event2):
         """ Predict relations between two events
@@ -162,7 +177,6 @@ class ASERClient(object):
         :rtype: Relation
         """
         return self._exact_match_relation(event1, event2)
-
 
     def fetch_related_events(self, event):
         """ Fetch related events given one event
