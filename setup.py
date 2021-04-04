@@ -20,7 +20,7 @@ setup(
     packages=find_packages(exclude=('data')),
     install_requires=reqs.strip().split('\n'),
     entry_points={
-        'console_scripts': ['aser-server=aser.server.cli:main'],
-        'console_scripts': ['aser-pipe=aser.pipe.cli:main']
+        'console_scripts': ['aser-server=aser.server.cli:main',
+                            'aser-pipe=aser.pipe.cli:main'],
     },
 )
