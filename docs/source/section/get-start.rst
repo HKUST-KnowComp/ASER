@@ -11,7 +11,7 @@ Currently we only support setup from source. So the first step download this rep
 .. highlight:: bash
 .. code-block:: bash
 
-    $ git clone https://github.com/yqsong-hkust/ASER-core.git
+    $ git clone https://github.com/HKUST-KnowComp/ASER.git
 
 Then install ASER requirements
 
@@ -38,7 +38,7 @@ You can start aser server from command line
 
     $ aser-server -n_workers 2 -n_concurrent_back_socks 10 -port 11000 -port_out 11001 \
         -corenlp_path /home/software/stanford-corenlp/stanford-corenlp-full-2018-02-27/ \
-        -base_corenlp_port 9000 -kg_dir /data/hjpan/ASER/tiny
+        -base_corenlp_port 9000 -kg_dir /path/to/kg_dir
 
 Please wait patiently until  `"Loading Server Finished in xx s"` shows up in your console
 
@@ -54,7 +54,7 @@ Now you can access ASER from your python code
 .. code-block:: python
 
     from aser.client import ASERClient
-    client = ASERClient(ip="songcpu4.cse.ust.hk", port=20002, port_out=20003)
+    client = ASERClient(port=20002, port_out=20003)
 
 And you can extract the eventualities
 

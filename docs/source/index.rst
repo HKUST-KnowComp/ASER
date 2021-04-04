@@ -2,7 +2,7 @@ ASER Documentation
 =====================================
 ASER (activities, states, events,and their relations) is a large-scale eventuality knowledge graph extracted from more than11-billion-token unstructured textual data.
 
-.. image:: ../../.images/aser-demo.png
+.. image:: ../aser-demo.png
 
 Contents
 ========
@@ -10,6 +10,8 @@ Contents
    :maxdepth: 2
 
    section/get-start
+   api/extractor
+   api/database
+   api/concept
    api/aser-server
    api/aser-client
-   api/extractor
