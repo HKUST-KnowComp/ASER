@@ -7,10 +7,16 @@ ASER (activities, states, events,and their relations) is a large-scale eventuali
 
 <center> <img src='{{ site.baseurl }}/static/images/ASER_demo.png' width='80%'/> </center>
 
+<strong>Data:</strong>
+<ul>
+  <li><a href="https://hkustconnect-my.sharepoint.com/personal/xliucr_connect_ust_hk/_layouts/15/onedrive.aspx?originalPath=aHR0cHM6Ly9oa3VzdGNvbm5lY3QtbXkuc2hhcmVwb2ludC5jb20vOmY6L2cvcGVyc29uYWwveGxpdWNyX2Nvbm5lY3RfdXN0X2hrL0VnMmtjZkt4bG14RnZtODFKWEpTQzFVQkMyZFgweG55TGpCSjNtTUdrQXJmQlE%5FcnRpbWU9QVpTX21IVUIyVWc&id=%2Fpersonal%2Fxliucr%5Fconnect%5Fust%5Fhk%2FDocuments%2FDocuments%2FHKUST%2FResearch%2FASER%2Fv1%2E0">ASER 1.0</a></li>
+  <li><a href="https://hkustconnect-my.sharepoint.com/personal/xliucr_connect_ust_hk/_layouts/15/onedrive.aspx?originalPath=aHR0cHM6Ly9oa3VzdGNvbm5lY3QtbXkuc2hhcmVwb2ludC5jb20vOmY6L2cvcGVyc29uYWwveGxpdWNyX2Nvbm5lY3RfdXN0X2hrL0VnMmtjZkt4bG14RnZtODFKWEpTQzFVQkMyZFgweG55TGpCSjNtTUdrQXJmQlE%5FcnRpbWU9QVpTX21IVUIyVWc&id=%2Fpersonal%2Fxliucr%5Fconnect%5Fust%5Fhk%2FDocuments%2FDocuments%2FHKUST%2FResearch%2FASER%2Fv2%2E0">ASER 2.0</a></li>  
+</ul>
 
 <strong>Talks:</strong>
 
 <ul>
+  <li>2021 April: An Overview of Commonsense Knowledge Graph Construction and Reasoning at HKUST. Presented by Yangqiu Song. [<a href="http://home.cse.ust.hk/~yqsong/papers/ASER-2021.04-ReminUniversity.pdf">pdf</a>], [<a href="http://home.cse.ust.hk/~yqsong/papers/ASER-2021.04-ReminUniversity.pptx">ppt</a>]</li>
   <li>
     2020 September: NLP with Friends. Commonsense Reasoning from the Angle of Eventualities. Presented by Hongming Zhang. [<a href="https://hkustconnect-my.sharepoint.com/:p:/g/personal/hzhangal_connect_ust_hk/EbZn6BSgoENIhvuiKWxaZTABh3KfB0IqOqRUI83xgahBvA?e=rlKGvJ">pdf</a>], [<a href="https://www.youtube.com/watch?v=pI-SiaKsR8w">video</a>]
   </li>  
@@ -29,6 +35,7 @@ ASER (activities, states, events,and their relations) is a large-scale eventuali
 <strong>Publications:</strong>
 
 <ul>
+<li>Hongming Zhang, Xin Liu, Haojie Pan, Haowen Ke, Jiefu Ou, Tianqing Fang, and Yangqiu Song. ASER: Towards Large-scale Commonsense Knowledge Acquisition via Higher-order Selectional Preference over Eventualities. HKUST Technical Report, April 5th, 2021. [<a href="https://arxiv.org/abs/2104.02137">pdf</a>]</li>
 <li>Changlong Yu, Hongming Zhang, Yangqiu Song, Wilfred Ng. CoCoLM: COmplex COmmonsense Enhanced Language Model. HKUST Technical Report, 2021. [<a href="https://arxiv.org/abs/2012.15643">pdf</a>]</li>
 <li>Tianqing Fang, Hongming Zhang, Weiqi Wang, Yangqiu Song, and Bin He. DISCOS: Bridging the Gap between Discourse Knowledge and Commonsense Knowledge. The Web Conference (WWW), 2021. [<a href="https://arxiv.org/abs/2101.00154">pdf</a>]</li>
 <li>Hongming Zhang, Muhao Chen, Haoyu Wang, Yangqiu Song, and Dan Roth. Analogous Process Structure Induction for Sub-event Sequence Prediction. Conference on Empirical Methods in Natural Language Processing (EMNLP). 2020. [<a href="https://arxiv.org/abs/2010.08525">pdf</a>]</li>
