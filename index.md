@@ -35,7 +35,7 @@ ASER (activities, states, events,and their relations) is a large-scale eventuali
 <strong>Publications:</strong>
 
 <ul>
-<li>Hongming Zhang, Xin Liu, Haojie Pan, Haowen Ke, Jiefu Ou, Tianqing Fang, and Yangqiu Song. ASER: Towards Large-scale Commonsense Knowledge Acquisition via Higher-order Selectional Preference over Eventualities. HKUST Technical Report, April 5th, 2021. [<a href="https://arxiv.org/abs/2104.02137">pdf</a>]</li>
+<li>Hongming Zhang*, Xin Liu*, Haojie Pan*, Haowen Ke, Jiefu Ou, Tianqing Fang, and Yangqiu Song. ASER: Towards Large-scale Commonsense Knowledge Acquisition via Higher-order Selectional Preference over Eventualities. HKUST Technical Report, April 5th, 2021. [<a href="https://arxiv.org/abs/2104.02137">pdf</a>]</li>
 <li>Changlong Yu, Hongming Zhang, Yangqiu Song, Wilfred Ng. CoCoLM: COmplex COmmonsense Enhanced Language Model. HKUST Technical Report, 2021. [<a href="https://arxiv.org/abs/2012.15643">pdf</a>]</li>
 <li>Tianqing Fang, Hongming Zhang, Weiqi Wang, Yangqiu Song, and Bin He. DISCOS: Bridging the Gap between Discourse Knowledge and Commonsense Knowledge. The Web Conference (WWW), 2021. [<a href="https://arxiv.org/abs/2101.00154">pdf</a>]</li>
 <li>Hongming Zhang, Muhao Chen, Haoyu Wang, Yangqiu Song, and Dan Roth. Analogous Process Structure Induction for Sub-event Sequence Prediction. Conference on Empirical Methods in Natural Language Processing (EMNLP). 2020. [<a href="https://arxiv.org/abs/2010.08525">pdf</a>]</li>
