@@ -3,7 +3,7 @@ layout: default
 title: Home
 ---
 
-<p><img alt="ASER (activities, states, events, and their relations) is a large-scale eventuality knowledge graph extracted from more than 11-billion-token unstructured textual data." src="{{ site.baseurl }}/static/images/ASER_logo.png" style="float:left; height=40px" /></p>
+ASER (activities, states, events, and their relations) is a large-scale eventuality knowledge graph extracted from more than 11-billion-token unstructured textual data.
 
 <center> <img src='{{ site.baseurl }}/static/images/ASER_demo_new.png' width='80%'/> </center>
 
