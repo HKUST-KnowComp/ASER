@@ -9,8 +9,8 @@ ASER (activities, states, events, and their relations) is a large-scale eventual
 
 <strong>Data:</strong>
 <ul>
-  <li><a href="https://hkustconnect-my.sharepoint.com/personal/xliucr_connect_ust_hk/_layouts/15/onedrive.aspx?originalPath=aHR0cHM6Ly9oa3VzdGNvbm5lY3QtbXkuc2hhcmVwb2ludC5jb20vOmY6L2cvcGVyc29uYWwveGxpdWNyX2Nvbm5lY3RfdXN0X2hrL0VnMmtjZkt4bG14RnZtODFKWEpTQzFVQkMyZFgweG55TGpCSjNtTUdrQXJmQlE%5FcnRpbWU9QVpTX21IVUIyVWc&id=%2Fpersonal%2Fxliucr%5Fconnect%5Fust%5Fhk%2FDocuments%2FDocuments%2FHKUST%2FResearch%2FASER%2Fv2%2E0">ASER 2.0</a> [<a href="https://arxiv.org/abs/2104.02137">Paper</a>] (2021)</li>  
-  <li><a href="https://hkustconnect-my.sharepoint.com/personal/xliucr_connect_ust_hk/_layouts/15/onedrive.aspx?originalPath=aHR0cHM6Ly9oa3VzdGNvbm5lY3QtbXkuc2hhcmVwb2ludC5jb20vOmY6L2cvcGVyc29uYWwveGxpdWNyX2Nvbm5lY3RfdXN0X2hrL0VnMmtjZkt4bG14RnZtODFKWEpTQzFVQkMyZFgweG55TGpCSjNtTUdrQXJmQlE%5FcnRpbWU9QVpTX21IVUIyVWc&id=%2Fpersonal%2Fxliucr%5Fconnect%5Fust%5Fhk%2FDocuments%2FDocuments%2FHKUST%2FResearch%2FASER%2Fv1%2E0">ASER 1.0</a> [<a href="https://arxiv.org/abs/1905.00270">Paper</a>] (2019)</li>
+  <li><a href="https://hkustconnect-my.sharepoint.com/:f:/g/personal/xliucr_connect_ust_hk/EnlOIunfqNRKsCQIBSXe9pQBL0KhLxTNMSNSJ3Mzt0bmhA?e=xm86PF">ASER 2.0</a> [<a href="https://arxiv.org/abs/2104.02137">Paper</a>] (2021)</li>  
+  <li><a href="https://hkustconnect-my.sharepoint.com/:f:/g/personal/xliucr_connect_ust_hk/EoNC-hFNEsNLrZvg73i14e8BMAUDR20TmuLY0W-6tFhKEQ?e=BveOrc">ASER 1.0</a> [<a href="https://arxiv.org/abs/1905.00270">Paper</a>] (2019)</li>
 </ul>
 
 <strong>Talks:</strong>
