@@ -94,7 +94,7 @@ def get_corenlp_client(corenlp_path="", corenlp_port=0, annotators=None):
             )
             # corenlp_client.annotate("hello world", annotators=list(annotators), output_format="json")
             return corenlp_client, True
-        except Exception as err:
+        except BaseException as err:
             raise err
     elif corenlp_path != "":
         print("Starting corenlp client at port {}".format(corenlp_port))

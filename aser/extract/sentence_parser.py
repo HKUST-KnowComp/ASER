@@ -81,7 +81,7 @@ class SentenceParser:
                         paragraphs[-1] += line
                 if len(paragraphs[-1]) == 0:
                     paragraphs.pop()
-        except Exception as e:
+        except BaseException as e:
             print(raw_path)
             print(e)
             raise e

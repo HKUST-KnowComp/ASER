@@ -102,7 +102,7 @@ def check_func(task):
         try:
             for _ in open(fn):
                 return False
-        except Exception as e:
+        except BaseException as e:
             print(f'{fn} error: {e}')
             return False
         return True

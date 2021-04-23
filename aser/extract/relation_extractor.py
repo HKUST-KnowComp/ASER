@@ -448,7 +448,6 @@ class DiscourseRelationExtractor(BaseRelationExtractor):
         #             f.write("\n")
 
         for connective in connectives:
-            print(connective)
             conn_indices = connective.get("indices", None)
             arg1 = connective.get("arg1", None)
             arg2 = connective.get("arg2", None)

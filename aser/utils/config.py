@@ -2,12 +2,21 @@ import argparse
 
 
 class ASERCmd:
-    extract_events = b"__EXTRACT_EVENTS__"
-    exact_match_event = b"__EXACT_MATCH_EVENT__"
-    exact_match_relation = b"__EXACT_MATCH_RELATION__"
-    fetch_related_events = b"__FETCH_RELATED_EVENTS__"
-    conceptualize_event = b"__CONCEPTUALIZE_EVENT__"
+    parse_text = b"__PARSE_TEXT__"
+    extract_eventualities = b"__EXTRACT_EVENTUALITIES__"
+    extract_relations = b"__EXTRACT_RELATIONS__"
+    extract_eventualities_and_relations = b"__EXTRACT_EVENTUALITIES_AND_RELATIONS__"
+    conceptualize_eventuality = b"__CONCEPTUALIZE_EVENTUALITY__"
+    exact_match_eventuality = b"__EXACT_MATCH_EVENTUALITY__"
+    exact_match_eventuality_relation = b"__EXACT_MATCH_EVENTUALITY_RELATION__"
+    fetch_related_eventualities = b"__FETCH_RELATED_EVENTUALITIES__"
+    exact_match_concept = b"__EXACT_MATCH_CONCEPT__"
+    exact_match_concept_relation = b"__EXACT_MATCH_CONCEPT_RELATION__"
+    fetch_related_concepts = b"__FETCH_RELATED_CONCEPTS__"
     none = "__NONE__"
+
+
+ASERError = "__ASERERROR__"
 
 
 def get_server_args_parser():
@@ -24,18 +33,27 @@ def get_server_args_parser():
                         help="client port for receving return data from server")
 
     # Stanford Corenlp
-    parser.add_argument("-corenlp_path", type=str, default="./",
+    parser.add_argument("-corenlp_path", type=str, default="",
                         help="StanfordCoreNLP path")
-    parser.add_argument("-probase_path", type=str, default="./",
-                        help="Probase path for conceptualization")
     parser.add_argument("-base_corenlp_port", type=int, default=9000,
                         help="Base port of corenlp"
                              "[base_corenlp_port, base_corenlp_port + n_workers - 1]"
                              "should be reserved")
 
     # KG
-    parser.add_argument("-kg_dir", type=str, default="./",
+    parser.add_argument("-aser_kg_dir", type=str, default="",
                         help="ASER KG directory")
+    parser.add_argument("-concept_kg_dir", type=str, default="",
+                        help="concept KG directory")
+
+    # Concept
+    parser.add_argument("-concept_method", type=str, default="probase", choices=["probase", "seed"],
+                        help="the method to do conceptualization, using probase or seeds")
+    parser.add_argument("-probase_path", type=str, default="",
+                        help="the file_path to probase .txt file,"
+                             "which is available at https://concept.research.microsoft.com/Home/Download")
+    parser.add_argument("-concept_topk", type=int, default=5,
+                        help="how many top conceptualized eventualities are kept")
 
     # I/O
     parser.add_argument("-log_path", type=str, default="./.server.log",

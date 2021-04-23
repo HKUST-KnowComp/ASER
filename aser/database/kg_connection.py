@@ -600,7 +600,7 @@ class ASERKGConnection(object):
         return relations
 
     def _get_relation_and_store_in_cache(self, rid):
-        return self._get_relations_and_store_in_cache([rid])
+        return self._get_relations_and_store_in_cache([rid])[0]
 
     def _get_relations_and_store_in_cache(self, rids):
         relations = list(
@@ -1468,7 +1468,7 @@ class ASERConceptConnection(object):
         return relations
 
     def _get_relation_and_store_in_cache(self, rid):
-        return self._get_relations_and_store_in_cache([rid])
+        return self._get_relations_and_store_in_cache([rid])[0]
 
     def _get_relations_and_store_in_cache(self, rids):
         relations = list(

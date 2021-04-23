@@ -2,8 +2,14 @@ from itertools import combinations
 from ..concept import ASERConcept, ProbaseConcept
 
 
-class BaseConceptualizer(object):
+class BaseASERConceptualizer(object):
     def __init__(self):
+        pass
+
+    def close(self):
+        """ Close the ASER Conceptualizer safely
+
+        """
         pass
 
     def conceptualize(self, eventuality):
@@ -18,7 +24,7 @@ class BaseConceptualizer(object):
         raise NotImplementedError
 
 
-class SeedRuleASERConceptualizer(BaseConceptualizer):
+class SeedRuleASERConceptualizer(BaseASERConceptualizer):
     """ Conceptualization based on rules and NERs
     """
     def __init__(self, **kw):
@@ -84,12 +90,19 @@ class SeedRuleASERConceptualizer(BaseConceptualizer):
         return "__" + ner + "__"
 
 
-class ProbaseASERConceptualizer(BaseConceptualizer):
+class ProbaseASERConceptualizer(BaseASERConceptualizer):
     def __init__(self, probase_path=None, probase_topk=None):
         super().__init__()
         self.seed_conceptualizer = SeedRuleASERConceptualizer()
         self.probase = ProbaseConcept(probase_path)
         self.probase_topk = probase_topk
+
+    def close(self):
+        """ Close the ASER Conceptualizer safely
+
+        """
+        del self.probase
+        self.probase = None
 
     def conceptualize(self, eventuality):
         """ Conceptualization use probase given a eventuality

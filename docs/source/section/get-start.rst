@@ -38,7 +38,7 @@ You can start aser server from command line
 
     $ aser-server -n_workers 2 -n_concurrent_back_socks 10 -port 11000 -port_out 11001 \
         -corenlp_path /home/software/stanford-corenlp/stanford-corenlp-full-2018-02-27/ \
-        -base_corenlp_port 9000 -kg_dir /path/to/kg_dir
+        -base_corenlp_port 9000 -aser_kg_dir /path/to/aser_kg_dir
 
 Please wait patiently until  `"Loading Server Finished in xx s"` shows up in your console
 
