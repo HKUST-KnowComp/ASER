@@ -11,8 +11,7 @@ ASER (core) contains 53 million eventualities and 52 million edges between event
 With the help of [Probase](https://concept.research.microsoft.com/), ASER (concept) contains 15 million conceptualized eventualities and 224 million edges between conceptualied eventualities.
 
 The homepage of the project and data is [https://hkust-knowcomp.github.io/ASER](https://hkust-knowcomp.github.io/ASER/).
-You can play the [demo](http://songcpu1.cse.ust.hk/aser/demo).
-And the full [documentation](http://songcpu1.cse.ust.hk/aser/document) is comming soon.
+[Demo](http://songcpu1.cse.ust.hk/aser/demo) and [documentation](http://songcpu1.cse.ust.hk/aser/document) will come soon.
 
 
 * ASER 2.0 (arXiv:2104.02137): ASER: Towards Large-scale Commonsense Knowledge Acquisition via Higher-order Selectional Preference over Eventualities. [[pdf](https://arxiv.org/abs/2104.02137)] [[code branch](https://github.com/HKUST-KnowComp/ASER)]
