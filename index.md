@@ -7,20 +7,21 @@ ASER (activities, states, events, and their relations) is a large-scale eventual
 
 <center> <img src='{{ site.baseurl }}/static/images/ASER_demo_new.png' width='80%'/> </center>
 
-<strong>Code:</strong>
-<ul>
-  <li>https://github.com/HKUST-KnowComp/ASER</li>  
-  <li>https://github.com/HKUST-KnowComp/TransOMCS</li>  
-  <li>https://github.com/HKUST-KnowComp/DISCOS-commonsense</li>  
-  <li>https://github.com/HKUST-KnowComp/ASER-EEG</li>
-</ul>
-
 
 <strong>Data:</strong>
 <ul>
   <li>ASER 2.0 [<a href="https://hkustconnect-my.sharepoint.com/:f:/g/personal/xliucr_connect_ust_hk/EnlOIunfqNRKsCQIBSXe9pQBL0KhLxTNMSNSJ3Mzt0bmhA?e=xm86PF">data</a>] [<a href="https://arxiv.org/abs/2104.02137">pdf</a>] [<a href="https://github.com/HKUST-KnowComp/ASER">code branch</a>] (2021)</li>  
   <li>ASER 1.0 [<a href="https://hkustconnect-my.sharepoint.com/:f:/g/personal/xliucr_connect_ust_hk/EoNC-hFNEsNLrZvg73i14e8BMAUDR20TmuLY0W-6tFhKEQ?e=BveOrc">data</a>] [<a href="https://arxiv.org/abs/1905.00270">pdf</a>] [<a href="https://github.com/HKUST-KnowComp/ASER/tree/release/1.0">code branch</a>] (2019)</li>  
 </ul>
+
+<strong>Related Code:</strong>
+<ul>
+  <li>[<a href="https://github.com/HKUST-KnowComp/ASER">ASER Extraction, Usage, and APIs</a>]</li>  
+  <li>[<a href="https://github.com/HKUST-KnowComp/TransOMCS">Transfer to OMCS</a>]</li>  
+  <li>[<a href="https://github.com/HKUST-KnowComp/DISCOS-commonsense">Transfer to ATOMIC</a>]</li>  
+  <li>[<a href="https://github.com/HKUST-KnowComp/ASER-EEG">Eventuality Entailment Graph</a>]</li>
+</ul>
+
 
 <strong>Talks:</strong>
 
