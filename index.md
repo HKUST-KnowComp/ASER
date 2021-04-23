@@ -16,10 +16,10 @@ ASER (activities, states, events, and their relations) is a large-scale eventual
 
 <strong>Related Code:</strong>
 <ul>
-  <li>[<a href="https://github.com/HKUST-KnowComp/ASER">ASER Extraction, Usage, and APIs</a>]</li>  
-  <li>[<a href="https://github.com/HKUST-KnowComp/TransOMCS">Transfer to OMCS</a>]</li>  
-  <li>[<a href="https://github.com/HKUST-KnowComp/DISCOS-commonsense">Transfer to ATOMIC</a>]</li>  
-  <li>[<a href="https://github.com/HKUST-KnowComp/ASER-EEG">Eventuality Entailment Graph</a>]</li>
+  <li><a href="https://github.com/HKUST-KnowComp/ASER">ASER Extraction, Usage, and APIs</a></li>  
+  <li><a href="https://github.com/HKUST-KnowComp/TransOMCS">Transfer to OMCS</a></li>  
+  <li><a href="https://github.com/HKUST-KnowComp/DISCOS-commonsense">Transfer to ATOMIC</a></li>  
+  <li><a href="https://github.com/HKUST-KnowComp/ASER-EEG">Eventuality Entailment Graph</a></li>
 </ul>
 
 
