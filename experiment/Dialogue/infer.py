@@ -14,7 +14,7 @@ def model_infer(model_path, inp_path, outp_path):
 
     meta_opt = train_opt.meta
     test_iter = DialogueDatasetIterator(
-        file_path=inp_path, vocabs=vocabs,
+        file_name=inp_path, vocabs=vocabs,
         epochs=meta_opt.epochs, batch_size=1,
         is_train=False, n_workers=meta_opt.n_workers,
         use_cuda=meta_opt.use_cuda, opt=meta_opt)

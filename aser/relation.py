@@ -1,10 +1,6 @@
 import hashlib
-try:
-    import ujson as json
-except:
-    import json
 import pprint
-from aser.base import JsonSerializedObject
+from aser.object import JsonSerializedObject
 
 relation_senses = [
     'Precedence', 'Succession', 'Synchronous',
@@ -15,9 +11,22 @@ relation_senses = [
     'Co_Occurrence']
 
 class Relation(JsonSerializedObject):
-    def __init__(self, hid=None, tid=None, relations=None):
-        self.hid = hid if hid else ""
-        self.tid = tid if tid else ""
+    """ ASER Relation
+
+    """
+    def __init__(self, hid="", tid="", relations=None):
+        """
+
+        :param hid: the unique eid to the head eventuality or conceptualied eventuality
+        :type hid: str
+        :param tid: the unique eid to the tail eventuality or conceptualied eventuality
+        :type tid: str
+        :param relations: the corresponding relations
+        :type relations: Union[None, Dict[str, float], aser.relation.Relation]
+        """
+
+        self.hid = hid
+        self.tid = tid
         self.rid = Relation.generate_rid(self.hid, self.tid)
         
         self.relations = dict()
@@ -25,16 +34,40 @@ class Relation(JsonSerializedObject):
 
     @staticmethod
     def generate_rid(hid, tid):
+        """
+
+        :param hid: the unique eid to the head eventuality or conceptualied eventuality
+        :type hid: str
+        :param tid: the unique eid to the tail eventuality or conceptualied eventuality
+        :type tid: str
+        :return: the unique rid to the pair
+        :rtype: str
+        """
+
         key = hid + "$" + tid
         return hashlib.sha1(key.encode('utf-8')).hexdigest()
 
-    def to_triples(self):
-        triples = []
+    def to_triplets(self):
+        """ Convert a relation to triplets
+
+        :return: a list of triplets
+        :rtype: List[Tuple[str, str]]
+        """
+
+        triplets = []
         for r in sorted(self.relations.keys()):
-            triples.extend([(self.hid, r, self.tid)] * int(self.relations[r]))
-        return triples
+            triplets.extend([(self.hid, r, self.tid)] * int(self.relations[r]))
+        return triplets
 
     def update(self, x):
+        """  Update the relation ('s frequency)
+
+        :param x: the given relation
+        :type x: Union[Dict[str, float], Tuple[str], aser.relation.Relation]
+        :return: the updated relation
+        :rtype: aser.relation.Relation
+        """
+
         if x is not None:
             if isinstance(x, dict):
                 for r, cnt in x.items():
@@ -57,6 +90,9 @@ class Relation(JsonSerializedObject):
                             self.relations[r] = cnt
                         else:
                             self.relations[r] += cnt
+            else:
+                raise ValueError("Error: the input of Relation.update is invalid.")
+        return self
 
     def __str__(self):
         return pprint.pformat(self.to_dict())

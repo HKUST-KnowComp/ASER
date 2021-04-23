@@ -65,22 +65,33 @@ def get_pipe_args_parser():
     # Processed Data
     parser.add_argument("-processed_dir", type=str, default="",
                         help="ASER processed_dir data directory")              
-    # KG
+    # ASER
     parser.add_argument("-core_kg_dir", type=str, default="",
                         help="ASER Core KG directory")
     parser.add_argument("-full_kg_dir", type=str, default="",
                         help="ASER Full KG directory")
-    parser.add_argument("-eventuality_frequency_lower_cnt_threshold", type=float, default=2.0,
+    parser.add_argument("-eventuality_frequency_threshold", type=float, default=2.0,
                         help="eventualities whose frequencies are lower than this will be filtered")
-    parser.add_argument("-eventuality_frequency_upper_percent_threshold", type=float, default=1.0,
-                        help="eventualities whose frequency percents are higher than this will be filtered")
-    parser.add_argument("-relation_frequency_lower_cnt_threshold", type=float, default=0.0,
-                        help="relations whose frequencies are lower than this will be filtered")
-    parser.add_argument("-relation_frequency_upper_percent_threshold", type=float, default=1.0,
-                        help="relations whose frequency percents are higher than this will be filtered")
+    parser.add_argument("-relation_weight_threshold", type=float, default=0.0,
+                        help="relations whose weights are lower than this will be filtered")
+    # Concept
+    parser.add_argument("-concept_kg_dir", type=str, default="",
+                        help="ASER Concept KG directory")
+    parser.add_argument("-concept_method", type=str, default="probase", choices=["probase", "seed"],
+                        help="the method to do conceptualization, using probase or seeds")
+    parser.add_argument("-probase_path", type=str, default="",
+                        help="the file_path to probase .txt file,"
+                             "which is available at https://concept.research.microsoft.com/Home/Download")
+    parser.add_argument("-eventuality_threshold_to_conceptualize", type=float, default=5.0,
+                        help="eventualities whose frequencies are no less than this will be conceptualized")
+    parser.add_argument("-concept_weight_threshold", type=float, default=0.0,
+                        help="concepts whose weights are lower than this will be filtered")
+    parser.add_argument("-concept_topk", type=int, default=5,
+                        help="how many top conceptualized eventualities are kept")
+
     # Log
     parser.add_argument("-log_path", type=str, default="./.pipe.log",
-                        help="Logging path of pipe output")
+                        help="logging path of pipe output")
 
     return parser
 

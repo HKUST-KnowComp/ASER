@@ -1,21 +1,16 @@
 import os
-import random
 import math
 import errno
-import argparse
+import ujson as json
 from typing import List
 from multiprocessing import Pool
 from shutil import copyfile
 from tqdm import tqdm
 
-try:
-    import ujson as json
-except:
-    import json
-
 from aser.extract.utils import get_corenlp_client, parse_sentense_with_stanford
 from aser.extract.entity_linker import LinkSharedSource, Mention, Entity, str_contain, acronym, DisjointSet, base_url, link
 from aser.utils.config import get_raw_process_parser
+
 
 # ------------------- class section -------------------
 class FileName:
@@ -48,9 +43,9 @@ def read_raw(file_name):
     return raw
 
 
-def silent_remove(filename: str):
+def silent_remove(file_name: str):
     try:
-        os.remove(filename)
+        os.remove(file_name)
     except OSError as e:
         if e.errno != errno.ENOENT:
             raise
@@ -96,6 +91,7 @@ def change_file_extension(fn, new_extension='jsonl'):
     fs.append(new_extension)
     return '.'.join(fs)
 
+
 def check_func(task):
     parsed_num, unparsed_num, empty_num = 0, 0, 0
     file_list = task.file_list
@@ -137,7 +133,9 @@ def check_func(task):
         # raw file not empty (unparsed or parsed)
         else:
             if os.path.exists(parsed_fn_list[i_f]):
-                parsed_file_flg = not check_file_empty(parsed_fn_list[i_f]) and check_file_integrity(parsed_fn_list[i_f])
+                parsed_file_flg = not check_file_empty(parsed_fn_list[i_f]) and check_file_integrity(
+                    parsed_fn_list[i_f]
+                )
                 # unparsed or corrupted
                 if not parsed_file_flg:
                     unparsed_num += 1
@@ -250,7 +248,7 @@ def main():
         ment_ent_fn = '/home/data/corpora/wikipedia/ment_ent'
         person_fn = '/home/hkeaa/data/nel/basic_data/p_e_m_data/persons.txt'
         share_src = LinkSharedSource(disam_fn, redirect_fn, ment_ent_fn, person_fn)
-        
+
     aser_root = '/home/data/corpora/aser/data'
     dataset_name = args.data
     raw_root = os.path.join(aser_root, dataset_name + '/raw')
@@ -328,6 +326,7 @@ def main():
             res.get()
             res.wait()
         print(f'cost {time.time()-t}f')
+
 
 if __name__ == '__main__':
     main()

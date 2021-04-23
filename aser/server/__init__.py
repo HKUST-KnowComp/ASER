@@ -1,5 +1,5 @@
 from collections import OrderedDict
-import json
+import ujson as json
 import multiprocessing
 from multiprocessing import Process
 import os
@@ -8,7 +8,7 @@ import time
 import traceback
 import zmq
 import zmq.decorators as zmqd
-from aser.concept.concept_extractor import ASERProbaseConceptExtractor
+from aser.conceptualize.aser_conceptualizer import ProbaseASERConceptualizer
 from aser.eventuality import Eventuality
 from aser.database.kg_connection import ASERKGConnection
 from aser.server.utils import *
@@ -149,11 +149,11 @@ class ASERDataBase(Process):
                         #     cmd.decode("utf-8"), data.decode("utf-8")
                         # ))
                         if cmd == ASERCmd.exact_match_event:
-                            ret_data = self.handle_exact_match_event(data)
+                            ret_data = self.handle_exact_match_eventuality(data)
                         elif cmd == ASERCmd.exact_match_relation:
                             ret_data = self.handle_exact_match_relation(data)
                         elif cmd == ASERCmd.fetch_related_events:
-                            ret_data = self.handle_fetch_related_events(data)
+                            ret_data = self.handle_fetch_related_eventualities(data)
                         else:
                             raise RuntimeError
                         sink.send_multipart([client_id, req_id, cmd, ret_data])
@@ -163,11 +163,11 @@ class ASERDataBase(Process):
             except Exception:
                 print(traceback.format_exc())
 
-    def handle_exact_match_event(self, data):
+    def handle_exact_match_eventuality(self, data):
         eid = data.decode("utf-8")
-        matched_event = self.ASER_KG.get_exact_match_eventuality(eid)
-        if matched_event:
-            ret_data = json.dumps(matched_event.encode(encoding=None)).encode("utf-8")
+        matched_eventuality = self.ASER_KG.get_exact_match_eventuality(eid)
+        if matched_eventuality:
+            ret_data = json.dumps(matched_eventuality.encode(encoding=None)).encode("utf-8")
         else:
             ret_data = json.dumps(ASERCmd.none).encode(encoding="utf-8")
         return ret_data
@@ -182,11 +182,11 @@ class ASERDataBase(Process):
             ret_data = json.dumps(ASERCmd.none).encode(encoding="utf-8")
         return ret_data
 
-    def handle_fetch_related_events(self, data):
+    def handle_fetch_related_eventualities(self, data):
         h_eid = data.decode("utf-8")
         related_events = self.ASER_KG.get_related_eventualities(h_eid)
-        rst = [(event.encode(encoding=None), relation.encode(encoding=None))
-               for event, relation in related_events]
+        rst = [(eventuality.encode(encoding=None), relation.encode(encoding=None))
+               for eventuality, relation in related_events]
         ret_data = json.dumps(rst).encode("utf-8")
         return ret_data
 
@@ -201,7 +201,7 @@ class ASERWorker(Process):
             corenlp_path=opt.corenlp_path,
             corenlp_port=opt.base_corenlp_port + id)
         print("Eventuality Extractor init finished")
-        self.concept_extractor = ASERProbaseConceptExtractor(
+        self.conceptualizer = ProbaseASERConceptualizer(
             probase_path=opt.probase_path, probase_topk=5)
         print("Concept Extractor init finished")
         self.is_ready = multiprocessing.Event()
@@ -241,17 +241,17 @@ class ASERWorker(Process):
                             cmd.decode("utf-8"), data.decode("utf-8")
                         ))
                         if cmd == ASERCmd.extract_events:
-                            ret_data = self.handle_extract_events(data)
+                            ret_data = self.handle_extract_eventualities(data)
                             sink.send_multipart([client_id, req_id, cmd, ret_data])
                         elif cmd == ASERCmd.conceptualize_event:
-                            ret_data = self.handle_conceptualize_event(data)
+                            ret_data = self.handle_conceptualize_eventuality(data)
                             sink.send_multipart([client_id, req_id, cmd, ret_data])
                         else:
                             raise RuntimeError
             except Exception:
                 print(traceback.format_exc())
 
-    def handle_extract_events(self, data):
+    def handle_extract_eventualities(self, data):
         sentence = data.decode("utf-8")
         if sentence in self.worker_cache:
             return self.worker_cache[sentence]
@@ -265,9 +265,9 @@ class ASERWorker(Process):
         self.worker_cache[sentence] = ret_data
         return ret_data
 
-    def handle_conceptualize_event(self, data):
+    def handle_conceptualize_eventuality(self, data):
         eventuality = Eventuality().decode(data, encoding="utf-8")
-        concept_list = self.concept_extractor.conceptualize(eventuality)
+        concept_list = self.conceptualizer.conceptualize(eventuality)
         ret_list = list()
         for concept, score in concept_list:
             ret_list.append((concept.words, score))

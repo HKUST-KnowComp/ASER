@@ -1,16 +1,30 @@
 import hashlib
-import json
+import ujson as json
 import pprint
 import bisect
 from collections import Counter
 from copy import copy
-from aser.base import JsonSerializedObject
+from aser.object import JsonSerializedObject
 from aser.extract.utils import sort_dependencies_position, extract_indices_from_dependencies
 
+
 class Eventuality(JsonSerializedObject):
-    def __init__(self, pattern="unknown", dependencies=None,
-                 skeleton_dependencies=None,
-                 sent_parsed_result=None):
+    """ ASER Eventuality
+
+    """
+    def __init__(self, pattern="unknown", dependencies=None, skeleton_dependencies=None, parsed_result=None):
+        """
+
+        :param pattern: the corresponding pattern
+        :type pattern: str
+        :param dependencies: the corresponding dependencies (e.g., [(1, "nsubj", 0)])
+        :type dependencies: List[Tuple[int, str, int]]
+        :param skeleton_dependencies: the corresponding dependencies without optional edges (e.g., [(1, "nsubj", 0)])
+        :type skeleton_dependencies: List[Tuple[int, str, int]]
+        :param parsed_result: the parsed result of a sentence
+        :type parsed_result: Dict[str, object]
+        """
+
         super().__init__()
         self.eid = None
         self.pattern = pattern
@@ -25,16 +39,29 @@ class Eventuality(JsonSerializedObject):
         self.raw_sent_mapping = None
         self._phrase_segment_indices = None
         self.frequency = 1.0
-        if dependencies and skeleton_dependencies and sent_parsed_result:
-            self._construct(dependencies, skeleton_dependencies, sent_parsed_result)
+        if dependencies and skeleton_dependencies and parsed_result:
+            self._construct(dependencies, skeleton_dependencies, parsed_result)
 
     @staticmethod
     def generate_eid(eventuality):
-        msg = json.dumps(
-            [eventuality.dependencies, eventuality.words, eventuality.pos_tags])
+        """ Generate the eid to an eventuality
+
+        :param eventuality: the given eventuality
+        :type eventuality: aser.eventuality.Eventuality
+        :return: the unique eid to the eventuality
+        :rtype: str
+        """
+        msg = json.dumps([eventuality.dependencies, eventuality.words, eventuality.pos_tags])
         return hashlib.sha1(msg.encode('utf-8')).hexdigest()
 
     def update(self, x):
+        """  Update the eventuality ('s frequency)
+
+        :param x: the given frequency or eventuality
+        :type x: Union[float, aser.eventuality.Eventuality]
+        :return: the updated eventuality
+        :rtype: aser.eventuality.Eventuality
+        """
         if x is not None:
             if isinstance(x, float):
                 self.frequency += x
@@ -53,6 +80,9 @@ class Eventuality(JsonSerializedObject):
                         for s_t, x_mention in x._mentions.items():
                             self._mentions[s_t] = x_mention
                     self.frequency += x.frequency
+            else:
+                raise ValueError("Error: the input of Eventuality.update is invalid.")
+        return self
 
     def __len__(self):
         return len(self.words)
@@ -88,7 +118,6 @@ class Eventuality(JsonSerializedObject):
             return None
         return [self._get_ner(idx) for idx in range(len(self._ners))]
 
-
     @property
     def mentions(self):
         if self._ners is None:
@@ -104,13 +133,16 @@ class Eventuality(JsonSerializedObject):
             j = i + 1
             while j < len_words and self._get_ner(j) == ner:
                 j += 1
-            mention = self._mentions.get((i, j), 
-                {"start": i,
-                "end": j,
-                "text": self.words[i:j],
-                "ner": ner,
-                "link": None,
-                "entity": None})
+            mention = self._mentions.get(
+                (i, j), {
+                    "start": i,
+                    "end": j,
+                    "text": self.words[i:j],
+                    "ner": ner,
+                    "link": None,
+                    "entity": None
+                }
+            )
             _mentions.append(mention)
             i = j
         return _mentions
@@ -121,10 +153,7 @@ class Eventuality(JsonSerializedObject):
             return self._dependencies
         new_dependencies = list()
         for governor, dep, dependent in self._dependencies:
-            new_dependencies.append((
-                self.raw_sent_mapping[governor],
-                dep,
-                self.raw_sent_mapping[dependent]))
+            new_dependencies.append((self.raw_sent_mapping[governor], dep, self.raw_sent_mapping[dependent]))
         return new_dependencies
 
     @property
@@ -136,10 +165,9 @@ class Eventuality(JsonSerializedObject):
         for governor, dep, dependent in tmp_dependencies:
             g_pos, g_word, g_tag = governor
             d_pos, d_word, d_tag = dependent
-            new_dependencies.append((
-                (self.raw_sent_mapping[g_pos], g_word, g_tag),
-                dep,
-                (self.raw_sent_mapping[d_pos], d_word, d_tag)))
+            new_dependencies.append(
+                ((self.raw_sent_mapping[g_pos], g_word, g_tag), dep, (self.raw_sent_mapping[d_pos], d_word, d_tag))
+            )
         return new_dependencies
 
     @property
@@ -210,49 +238,46 @@ class Eventuality(JsonSerializedObject):
     def skeleton_phrases_ners(self):
         return self.skeleton_ners
 
-    def _construct(self, dependencies, skeleton_dependencies, sent_parsed_result):
+    def _construct(self, dependencies, skeleton_dependencies, parsed_result):
         word_indices = extract_indices_from_dependencies(dependencies)
-        if sent_parsed_result["pos_tags"][word_indices[0]] == "IN":
+        if parsed_result["pos_tags"][word_indices[0]] == "IN":
             poped_idx = word_indices[0]
-            for i in range(len(dependencies)-1, -1, -1):
+            for i in range(len(dependencies) - 1, -1, -1):
                 if dependencies[i][0] == poped_idx or \
                     dependencies[i][2] == poped_idx:
                     dependencies.pop(i)
-            for i in range(len(skeleton_dependencies)-1, -1, -1):
+            for i in range(len(skeleton_dependencies) - 1, -1, -1):
                 if skeleton_dependencies[i][0] == poped_idx or \
                     skeleton_dependencies[i][2] == poped_idx:
                     skeleton_dependencies.pop(i)
             word_indices.pop(0)
         len_words = len(word_indices)
-        self.words = [sent_parsed_result["lemmas"][i].lower() for i in word_indices]
-        self.pos_tags = [sent_parsed_result["pos_tags"][i] for i in word_indices]
-        if "ners" in sent_parsed_result:
-            self._ners = [sent_parsed_result["ners"][i] for i in word_indices]
-        if "mentions" in sent_parsed_result:
+        self.words = [parsed_result["lemmas"][i].lower() for i in word_indices]
+        self.pos_tags = [parsed_result["pos_tags"][i] for i in word_indices]
+        if "ners" in parsed_result:
+            self._ners = [parsed_result["ners"][i] for i in word_indices]
+        if "mentions" in parsed_result:
             self._mentions = dict()
-            for mention in sent_parsed_result["mentions"]:
+            for mention in parsed_result["mentions"]:
                 start_idx = bisect.bisect_left(word_indices, mention["start"])
                 if not (start_idx < len_words and word_indices[start_idx] == mention["start"]):
                     continue
-                end_idx = bisect.bisect_left(word_indices, mention["end"]-1)
-                if not (end_idx < len_words and word_indices[end_idx] == mention["end"]-1):
+                end_idx = bisect.bisect_left(word_indices, mention["end"] - 1)
+                if not (end_idx < len_words and word_indices[end_idx] == mention["end"] - 1):
                     continue
                 mention = copy(mention)
                 mention["start"] = start_idx
-                mention["end"] = end_idx+1
+                mention["end"] = end_idx + 1
                 mention["text"] = " ".join(self.words[mention["start"]:mention["end"]])
                 self._mentions[(mention["start"], mention["end"])] = mention
-        dependencies, raw2reset_idx, reset2raw_idx = sort_dependencies_position(
-            dependencies, reset_position=True)
+        dependencies, raw2reset_idx, reset2raw_idx = sort_dependencies_position(dependencies, reset_position=True)
         self._dependencies = dependencies
         self.raw_sent_mapping = reset2raw_idx
 
-        skeleton_word_indices = extract_indices_from_dependencies(
-            skeleton_dependencies)
+        skeleton_word_indices = extract_indices_from_dependencies(skeleton_dependencies)
         self._skeleton_indices = [raw2reset_idx[idx] for idx in skeleton_word_indices]
 
-        _skeleton_dependencies, _, _ = sort_dependencies_position(
-            skeleton_dependencies, reset_position=False)
+        _skeleton_dependencies, _, _ = sort_dependencies_position(skeleton_dependencies, reset_position=False)
         skeleton_dependency_indices = list()
         ptr = 0
         for i, dep in enumerate(dependencies):
@@ -272,6 +297,14 @@ class Eventuality(JsonSerializedObject):
         self.eid = Eventuality.generate_eid(self)
 
     def to_dict(self, **kw):
+        """ Convert an eventuality to a dictionary
+
+        :param kw: other parameters
+        :type kw: Dict[str, object]
+        :return: the converted dictionary that contains necessary information
+        :rtype: Dict[str, object]
+        """
+
         minimum = kw.get("minimum", False)
         if minimum:
             d = {
@@ -279,16 +312,30 @@ class Eventuality(JsonSerializedObject):
                 "words": self.words,
                 "pos_tags": self.pos_tags,
                 "_ners": self._ners,
-                "_mentions": {str(k): v for k, v in self._mentions.items()}, # key cannot be tuple
+                "_mentions": {str(k): v
+                              for k, v in self._mentions.items()},  # key cannot be tuple
                 "_verb_indices": self._verb_indices,
                 "_skeleton_indices": self._skeleton_indices,
-                "_skeleton_dependency_indices": self._skeleton_dependency_indices}
+                "_skeleton_dependency_indices": self._skeleton_dependency_indices
+            }
         else:
-            d  = dict(self.__dict__) # shadow copy
-            d["_mentions"] = {str(k): v for k, v in d["_mentions"].items()} # key cannot be tuple
+            d = dict(self.__dict__)  # shadow copy
+            d["_mentions"] = {str(k): v for k, v in d["_mentions"].items()}  # key cannot be tuple
         return d
 
     def decode(self, msg, encoding="utf-8", **kw):
+        """ Decode the eventuality
+
+        :param msg: the encoded bytes
+        :type msg: bytes
+        :param encoding: the encoding format
+        :type encoding: str (default = "utf-8")
+        :param kw: other parameters
+        :type kw: Dict[str, object]
+        :return: the decoded bytes
+        :rtype: bytes
+        """
+
         if encoding == "utf-8":
             decoded_dict = json.loads(msg.decode("utf-8"))
         elif encoding == "ascii":
@@ -296,7 +343,7 @@ class Eventuality(JsonSerializedObject):
         else:
             decoded_dict = msg
         self.from_dict(decoded_dict, **kw)
-        
+
         if self.raw_sent_mapping is not None:
             keys = list(self.raw_sent_mapping.keys())
             for key in keys:
@@ -316,9 +363,10 @@ class Eventuality(JsonSerializedObject):
     def _render_dependencies(self, dependencies):
         edges = list()
         for governor_idx, dep, dependent_idx in dependencies:
-            edge = ((governor_idx, self.words[governor_idx], self.pos_tags[governor_idx]),
-                    dep,
-                    (dependent_idx, self.words[dependent_idx], self.pos_tags[dependent_idx]))
+            edge = (
+                (governor_idx, self.words[governor_idx], self.pos_tags[governor_idx]), dep,
+                (dependent_idx, self.words[dependent_idx], self.pos_tags[dependent_idx])
+            )
             edges.append(edge)
         return edges
 

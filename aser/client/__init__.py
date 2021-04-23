@@ -1,27 +1,28 @@
 import time
-from functools import wraps
-import json
 import uuid
 import zmq
-from aser.concept import ASERConcept
-from aser.utils.config import ASERCmd
-from aser.eventuality import Eventuality
-from aser.relation import Relation
+import ujson as json
+from functools import wraps
+from ..concept import ASERConcept
+from ..eventuality import Eventuality
+from ..relation import Relation
+from ..utils.config import ASERCmd
 
 
 class ASERClient(object):
     def __init__(self, ip="localhost", port=8000, port_out=8001, timeout=-1):
         """ A client object of ASER
 
-        :type ip: str
-        :type port: int
-        :type port_out: int
-        :type timeout: float
         :param ip: ip address of the server
+        :type ip: str
         :param port: port for push request from a client to the server
+        :type port: int
         :param port_out: port for Subscribe return data from the server to a server
+        :type port_out: int
         :param timeout: client receiver timeout (milliseconds), -1 means no timeout
+        :type timeout: float
         """
+
         self.client_id = str(uuid.uuid4()).encode("utf-8")
         context = zmq.Context()
         self.sender = context.socket(zmq.PUSH)
@@ -43,23 +44,24 @@ class ASERClient(object):
     def _timeout(func):
         """
             Raise timeout error while there's no response for a while
-            this code is from https://github.com/hanxiao/bert-as-service/
-            blob/master/client/bert_serving/client/__init__.py
+            this code is from
+            https://github.com/hanxiao/bert-as-service/blob/master/client/bert_serving/client/__init__.py
         """
         @wraps(func)
-        def arg_wrapper(self, *args, **kwargs):
+        def arg_wrapper(self, **kw):
             if 'blocking' in kwargs and not kwargs['blocking']:
                 # override client timeout setting if `func` is called in non-blocking way
                 self.receiver.setsockopt(zmq.RCVTIMEO, -1)
             else:
                 self.receiver.setsockopt(zmq.RCVTIMEO, self.timeout)
             try:
-                return func(self, *args, **kwargs)
+                return func(self, **kw)
             except zmq.error.Again as _e:
                 t_e = TimeoutError(
                     'no response from the server (with "timeout"=%d ms), please check the following:'
                     'is the server still online? is the network broken? are "port" and "port_out" correct? '
-                    'are you encoding a huge amount of data whereas the timeout is too small for that?' % self.timeout)
+                    'are you encoding a huge amount of data whereas the timeout is too small for that?' % self.timeout
+                )
                 raise t_e
             finally:
                 self.receiver.setsockopt(zmq.RCVTIMEO, -1)
@@ -68,8 +70,7 @@ class ASERClient(object):
 
     def _send(self, cmd, data):
         request_id = b"%d" % self.request_num
-        self.sender.send_multipart([
-            self.client_id, request_id, cmd, data])
+        self.sender.send_multipart([self.client_id, request_id, cmd, data])
         self.request_num += 1
         return request_id
 
@@ -90,17 +91,17 @@ class ASERClient(object):
     def extract_eventualities(self, sentence):
         """ Extract and linking all eventualities from input sentence
 
+        :param sentence: input sentence (only support one sentence now)
         :type sentence: str
-        :type only_events: bool
-        :param sentence: input sentence. only support one sentence now.
-        :param only_events: output eventualities only
         :return: a dictionary, here is a example while ret_type is "tokens"
-        :rtype: dict
+        :rtype: List[Dict[str, List]]
 
         .. highlight:: python
         .. code-block:: python
 
-            Input: 'The dog barks loudly'
+            Input:
+
+            "The dog barks loudly"
 
             Output:
 
@@ -136,8 +137,8 @@ class ASERClient(object):
                                 ['loudly', 'RB'],
                                 ['.', '.']]}]
         """
-        request_id = self._send(
-            ASERCmd.extract_events, sentence.encode("utf-8"))
+
+        request_id = self._send(ASERCmd.extract_events, sentence.encode("utf-8"))
         msg = self._recv(request_id)
         if not msg:
             return None
@@ -147,16 +148,15 @@ class ASERClient(object):
             rst = list()
             for eventuality_encoded in eventuality_encoded_list:
                 eventuality = Eventuality().decode(eventuality_encoded, encoding=None)
-                macthed_eventuality_encoded = self._exact_match_event(eventuality.eid)
+                macthed_eventuality_encoded = self._exact_match_eventuality(eventuality.eid)
                 eventuality.frequency = macthed_eventuality_encoded["frequency"]\
                     if macthed_eventuality_encoded else 0.0
                 rst.append(eventuality)
             rst_list.append(rst)
         return rst_list
 
-    def conceptualize_event(self, event):
-        request_id = self._send(
-            ASERCmd.conceptualize_event, event.encode("utf-8"))
+    def conceptualize_eventuality(self, eventuality):
+        request_id = self._send(ASERCmd.conceptualize_event, eventuality.encode("utf-8"))
         msg = self._recv(request_id)
         if not msg:
             return None
@@ -166,49 +166,53 @@ class ASERClient(object):
             rst_list.append((concept, score))
         return rst_list
 
-    def predict_relation(self, event1, event2):
+    def predict_relation(self, eventuality1, eventuality2):
         """ Predict relations between two events
 
-        :type event1: Eventuality
-        :type event2: Eventuality
-        :param event1: eventuality dict, should include "eid"
-        :param event2: eventuality dict, should include "eid"
-        :return: Relation between two events
-        :rtype: Relation
+        :param eventuality1: one `Eventuality` object
+        :type eventuality1: aser.eventuality.Eventuality
+        :param eventuality1: the other `Eventuality` object
+        :type eventuality2: aser.eventuality.Eventuality
+        :return: a `Relation` object between the two given eventualities
+        :rtype: aser.relation.Relation
         """
-        return self._exact_match_relation(event1, event2)
 
-    def fetch_related_events(self, event):
+        return self._exact_match_relation(eventuality1, eventuality2)
+
+    def fetch_related_eventualities(self, event):
         """ Fetch related events given one event
 
-        :type event: Eventuality
-        :param event <dict>: eventuality dict, should include "eid"
-        :return: a dictionary of each relation-related events
-        :rtype: list
+        :param event: an `Eventuality` object
+        :type event: aser.eventuality.Eventuality
+        :return: a list of related eventualities associated with corresponding relations
+        :rtype: List[Tuple[aser.eventuality.Eventuality, aser.relation.Relation]]
         """
-        eid = event.eid.encode("utf-8")
+
+        eid = eventuality.eid.encode("utf-8")
         request_id = self._send(ASERCmd.fetch_related_events, eid)
         msg = self._recv(request_id)
-        return [(Eventuality().decode(e_encoded, encoding=None),
-                 Relation().decode(r_encoded, encoding=None))
-                for e_encoded, r_encoded in msg]
+        return [
+            (Eventuality().decode(e_encoded, encoding=None), Relation().decode(r_encoded, encoding=None))
+            for e_encoded, r_encoded in msg
+        ]
 
-    def _exact_match_event(self, eid):
+    def _exact_match_eventuality(self, eid):
         request_id = self._send(ASERCmd.exact_match_event, eid.encode("utf-8"))
         msg = self._recv(request_id)
         return msg if msg != ASERCmd.none else None
 
-    def _exact_match_relation(self, event1, event2):
+    def _exact_match_relation(self, eventuality1, eventuality2):
         """ Predict relations between two events by exactly matching
 
-        :type event1: Eventuality
-        :type event2: Eventuality
-        :param event1: eventuality dict, should include "eid"
-        :param event2: eventuality dict, should include "eid"
-        :return: Relation between two events
-        :rtype: Relation
+        :param eventuality1: one `Eventuality` object
+        :type eventuality1: aser.eventuality.Eventuality
+        :param eventuality1: the other `Eventuality` object
+        :type eventuality2: aser.eventuality.Eventuality
+        :return: a `Relation` object between the two given eventualities
+        :rtype: aser.relation.Relation
         """
-        data = (event1.eid + "$" + event2.eid).encode("utf-8")
+
+        data = (eventuality1.eid + "$" + eventuality2.eid).encode("utf-8")
         request_id = self._send(ASERCmd.exact_match_relation, data)
         msg = self._recv(request_id)
         if msg == ASERCmd.none:

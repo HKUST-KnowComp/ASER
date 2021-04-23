@@ -12,8 +12,8 @@ with open('requirements.txt') as f:
 
 setup(
     name='aser',
-    version='0.2.0',
-    description='A Large-scale Eventuality Knowledge Graph',
+    version='2.0.0',
+    description='The higher-order selectional preference over collected linguistic graphs reflects various kinds of commonsense knowledge.',
     long_description=readme,
     license=license,
     python_requires='>=3',

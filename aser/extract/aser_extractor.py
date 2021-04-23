@@ -1,32 +1,39 @@
-import bisect
-try:
-    import ujson as json
-except:
-    import json
 from copy import copy, deepcopy
 from itertools import chain
-from aser.eventuality import Eventuality
-from aser.relation import Relation, relation_senses
 from aser.extract.eventuality_extractor import SeedRuleEventualityExtractor, DiscourseEventualityExtractor
 from aser.extract.relation_extractor import SeedRuleRelationExtractor, DiscourseRelationExtractor
-from aser.extract.discourse_parser import ConnectiveExtractor, ArgumentPositionClassifier, \
-    SSArgumentExtractor, PSArgumentExtractor, ExplicitSenseClassifier, SyntaxTree
-from aser.extract.utils import parse_sentense_with_stanford, get_corenlp_client, powerset, get_clauses
-from aser.extract.utils import ANNOTATORS, EMPTY_SENT_PARSED_RESULT
+from aser.extract.utils import parse_sentense_with_stanford, get_corenlp_client
+from aser.extract.utils import ANNOTATORS
 
 
 class BaseASERExtractor(object):
-    def __init__(self, **kw):
-        self.corenlp_path = kw.get("corenlp_path", "")
-        self.corenlp_port = kw.get("corenlp_port", 0)
+    """ Base ASER Extractor to extract both eventualities and relations
+
+    """
+    def __init__(self, corenlp_path="", corenlp_port=0, **kw):
+        """
+
+        :param corenlp_path: corenlp path, e.g., /home/xliucr/stanford-corenlp-3.9.2
+        :type corenlp_path: str (default = "")
+        :param corenlp_port: corenlp port, e.g., 9000
+        :type corenlp_port: int (default = 0)
+        :param kw: other parameters
+        :type kw: Dict[str, object]
+        """
+
+        self.corenlp_path = corenlp_path
+        self.corenlp_port = corenlp_port
         self.annotators = kw.get("annotators", list(ANNOTATORS))
 
         _, self.is_externel_corenlp = get_corenlp_client(corenlp_path=self.corenlp_path, corenlp_port=self.corenlp_port)
-        
+
         self.eventuality_extractor = None
         self.relation_extractor = None
 
     def close(self):
+        """ Close the extractor safely
+        """
+
         if not self.is_externel_corenlp:
             corenlp_client, _ = get_corenlp_client(corenlp_path=self.corenlp_path, corenlp_port=self.corenlp_port)
             corenlp_client.stop()
@@ -37,68 +44,593 @@ class BaseASERExtractor(object):
 
     def __del__(self):
         self.close()
-    
+
     def parse_text(self, text, annotators=None):
+        """ Parse a raw text by corenlp
+
+        :param text: a raw text
+        :type text: str
+        :param annotators: annotators for corenlp, please refer to https://stanfordnlp.github.io/CoreNLP/annotators.html
+        :type annotators: Union[List, None] (default = None)
+        :return: the parsed result
+        :rtype: List[Dict[str, object]]
+
+        .. highlight:: python
+        .. code-block:: python
+
+            Input:
+
+            "My army will find your boat. In the meantime, I'm sure we could find you suitable accommodations."
+
+            Output:
+
+            [{'dependencies': [(1, 'nmod:poss', 0),
+                               (3, 'nsubj', 1),
+                               (3, 'aux', 2),
+                               (3, 'dobj', 5),
+                               (3, 'punct', 6),
+                               (5, 'nmod:poss', 4)],
+              'lemmas': ['my', 'army', 'will', 'find', 'you', 'boat', '.'],
+              'mentions': [],
+              'ners': ['O', 'O', 'O', 'O', 'O', 'O', 'O'],
+              'parse': '(ROOT (S (NP (PRP$ My) (NN army)) (VP (MD will) (VP (VB find) (NP '
+                       '(PRP$ your) (NN boat)))) (. .)))',
+              'pos_tags': ['PRP$', 'NN', 'MD', 'VB', 'PRP$', 'NN', '.'],
+              'text': 'My army will find your boat.',
+              'tokens': ['My', 'army', 'will', 'find', 'your', 'boat', '.']},
+             {'dependencies': [(2, 'case', 0),
+                               (2, 'det', 1),
+                               (6, 'nmod:in', 2),
+                               (6, 'punct', 3),
+                               (6, 'nsubj', 4),
+                               (6, 'cop', 5),
+                               (6, 'ccomp', 9),
+                               (6, 'punct', 13),
+                               (9, 'nsubj', 7),
+                               (9, 'aux', 8),
+                               (9, 'iobj', 10),
+                               (9, 'dobj', 12),
+                               (12, 'amod', 11)],
+              'lemmas': ['in',
+                         'the',
+                         'meantime',
+                         ',',
+                         'I',
+                         'be',
+                         'sure',
+                         'we',
+                         'could',
+                         'find',
+                         'you',
+                         'suitable',
+                         'accommodation',
+                         '.'],
+              'mentions': [],
+              'ners': ['O',
+                       'O',
+                       'O',
+                       'O',
+                       'O',
+                       'O',
+                       'O',
+                       'O',
+                       'O',
+                       'O',
+                       'O',
+                       'O',
+                       'O',
+                       'O'],
+              'parse': '(ROOT (S (PP (IN In) (NP (DT the) (NN meantime))) (, ,) (NP (PRP '
+                       "I)) (VP (VBP 'm) (ADJP (JJ sure) (SBAR (S (NP (PRP we)) (VP (MD "
+                       'could) (VP (VB find) (NP (PRP you)) (NP (JJ suitable) (NNS '
+                       'accommodations)))))))) (. .)))',
+              'pos_tags': ['IN',
+                           'DT',
+                           'NN',
+                           ',',
+                           'PRP',
+                           'VBP',
+                           'JJ',
+                           'PRP',
+                           'MD',
+                           'VB',
+                           'PRP',
+                           'JJ',
+                           'NNS',
+                           '.'],
+              'text': "In the meantime, I'm sure we could find you suitable "
+                      'accommodations.',
+              'tokens': ['In',
+                         'the',
+                         'meantime',
+                         ',',
+                         'I',
+                         "'m",
+                         'sure',
+                         'we',
+                         'could',
+                         'find',
+                         'you',
+                         'suitable',
+                         'accommodations',
+                         '.']}]
+        """
         if annotators is None:
             annotators = self.annotators
 
-        corenlp_client, _ = get_corenlp_client(corenlp_path=self.corenlp_path, corenlp_port=self.corenlp_port, annotators=annotators)
+        corenlp_client, _ = get_corenlp_client(
+            corenlp_path=self.corenlp_path, corenlp_port=self.corenlp_port, annotators=annotators
+        )
         parsed_result = parse_sentense_with_stanford(text, corenlp_client, self.annotators)
         return parsed_result
 
-    def extract_eventualities_from_parsed_result(self, parsed_result,
-                                                 output_format="Eventuality", in_order=True, **kw):
-        """ This method extracts eventualities from parsed_result of one sentence.
+    def extract_eventualities_from_parsed_result(self, parsed_result, output_format="Eventuality", in_order=True, **kw):
+        """ Extract eventualities from the parsed result
+
+        :param parsed_result: the parsed result returned by corenlp
+        :type parsed_result: List[Dict[str, object]]
+        :param output_format: which format to return, "Eventuality" or "json"
+        :type output_format: str (default = "Eventuality")
+        :param in_order: whether the returned order follows the input token order
+        :type in_order: bool (default = True)
+        :param kw: other parameters
+        :type kw: Dict[str, object]
+        :return: the extracted eventualities
+        :rtype: Union[List[aser.eventuality.Eventuality, Dict[str, object]], List[List[aser.eventuality.Eventuality, Dict[str, object]]]]
+
+        .. highlight:: python
+        .. code-block:: python
+
+            Input:
+
+            [{'dependencies': [(1, 'nmod:poss', 0),
+                               (3, 'nsubj', 1),
+                               (3, 'aux', 2),
+                               (3, 'dobj', 5),
+                               (3, 'punct', 6),
+                               (5, 'nmod:poss', 4)],
+              'lemmas': ['my', 'army', 'will', 'find', 'you', 'boat', '.'],
+              'mentions': [],
+              'ners': ['O', 'O', 'O', 'O', 'O', 'O', 'O'],
+              'parse': '(ROOT (S (NP (PRP$ My) (NN army)) (VP (MD will) (VP (VB find) (NP '
+                       '(PRP$ your) (NN boat)))) (. .)))',
+              'pos_tags': ['PRP$', 'NN', 'MD', 'VB', 'PRP$', 'NN', '.'],
+              'text': 'My army will find your boat.',
+              'tokens': ['My', 'army', 'will', 'find', 'your', 'boat', '.']},
+             {'dependencies': [(2, 'case', 0),
+                               (2, 'det', 1),
+                               (6, 'nmod:in', 2),
+                               (6, 'punct', 3),
+                               (6, 'nsubj', 4),
+                               (6, 'cop', 5),
+                               (6, 'ccomp', 9),
+                               (6, 'punct', 13),
+                               (9, 'nsubj', 7),
+                               (9, 'aux', 8),
+                               (9, 'iobj', 10),
+                               (9, 'dobj', 12),
+                               (12, 'amod', 11)],
+              'lemmas': ['in',
+                         'the',
+                         'meantime',
+                         ',',
+                         'I',
+                         'be',
+                         'sure',
+                         'we',
+                         'could',
+                         'find',
+                         'you',
+                         'suitable',
+                         'accommodation',
+                         '.'],
+              'mentions': [],
+              'ners': ['O',
+                       'O',
+                       'O',
+                       'O',
+                       'O',
+                       'O',
+                       'O',
+                       'O',
+                       'O',
+                       'O',
+                       'O',
+                       'O',
+                       'O',
+                       'O'],
+              'parse': '(ROOT (S (PP (IN In) (NP (DT the) (NN meantime))) (, ,) (NP (PRP '
+                       "I)) (VP (VBP 'm) (ADJP (JJ sure) (SBAR (S (NP (PRP we)) (VP (MD "
+                       'could) (VP (VB find) (NP (PRP you)) (NP (JJ suitable) (NNS '
+                       'accommodations)))))))) (. .)))',
+              'pos_tags': ['IN',
+                           'DT',
+                           'NN',
+                           ',',
+                           'PRP',
+                           'VBP',
+                           'JJ',
+                           'PRP',
+                           'MD',
+                           'VB',
+                           'PRP',
+                           'JJ',
+                           'NNS',
+                           '.'],
+              'text': "In the meantime, I'm sure we could find you suitable "
+                      'accommodations.',
+              'tokens': ['In',
+                         'the',
+                         'meantime',
+                         ',',
+                         'I',
+                         "'m",
+                         'sure',
+                         'we',
+                         'could',
+                         'find',
+                         'you',
+                         'suitable',
+                         'accommodations',
+                         '.']}]
+
+            Output:
+
+            [[my army will find you boat],
+             [i be sure, we could find you suitable accommodation]]
+
         """
+
         if output_format not in ["Eventuality", "json"]:
-            raise NotImplementedError("Error: extract_eventualities_from_parsed_result only supports Eventuality or json.")
+            raise ValueError(
+                "Error: extract_eventualities_from_parsed_result only supports Eventuality or json."
+            )
 
-        return self.eventuality_extractor.extract_from_parsed_result(parsed_result, 
-            output_format=output_format, in_order=in_order, **kw)
+        return self.eventuality_extractor.extract_from_parsed_result(
+            parsed_result, output_format=output_format, in_order=in_order, **kw
+        )
 
-    def extract_eventualities_from_text(self, text,
-                                        output_format="Eventuality", in_order=True, annotators=None, **kw):
-        """ This method extracts all eventualities for each sentence.
+    def extract_eventualities_from_text(self, text, output_format="Eventuality", in_order=True, annotators=None, **kw):
+        """ Extract eventualities from a raw text
+
+        :param text: a raw text
+        :type text: str
+        :param output_format: which format to return, "Eventuality" or "json"
+        :type output_format: str (default = "Eventuality")
+        :param in_order: whether the returned order follows the input token order
+        :type in_order: bool (default = True)
+        :param annotators: annotators for corenlp, please refer to https://stanfordnlp.github.io/CoreNLP/annotators.html
+        :type annotators: Union[List, None] (default = None)
+        :param kw: other parameters
+        :type kw: Dict[str, object]
+        :return: the extracted eventualities
+        :rtype: Union[List[aser.eventuality.Eventuality, Dict[str, object]], List[List[aser.eventuality.Eventuality, Dict[str, object]]]]
+
+        .. highlight:: python
+        .. code-block:: python
+
+            Input:
+
+            "My army will find your boat. In the meantime, I'm sure we could find you suitable accommodations."
+
+            Output:
+
+            [[my army will find you boat],
+             [i be sure, we could find you suitable accommodation]]
         """
+
         if output_format not in ["Eventuality", "json"]:
             raise NotImplementedError("Error: extract_eventualities_from_text only supports Eventuality or json.")
 
         parsed_result = self.parse_text(text, annotators=annotators)
-        return self.extract_eventualities_from_parsed_result(parsed_result, 
-            output_format=output_format, in_order=in_order, **kw)
+        return self.extract_eventualities_from_parsed_result(
+            parsed_result, output_format=output_format, in_order=in_order, **kw
+        )
 
-    def extract_relations_from_parsed_result(self, parsed_result, para_eventualities,
-                                             output_format="Relation", in_order=True, **kw):
-        """ This method extracts relations among extracted eventualities.
-        """
-        if output_format not in ["Relation", "triple"]:
-            raise NotImplementedError("Error: extract_relations_from_parsed_result only supports Relation or triple.")
-            
-        return self.relation_extractor.extract_from_parsed_result(parsed_result, para_eventualities, 
-            output_format=output_format, in_order=in_order, **kw)
+    def extract_relations_from_parsed_result(
+        self, parsed_result, para_eventualities, output_format="Relation", in_order=True, **kw
+    ):
+        """ Extract relations from a parsed result and extracted eventualities
 
-    def extract_relations_from_text(self, text,
-                                    output_format="Relation", in_order=True, annotators=None, **kw):
-        """ This method extracts relations from parsed_result of one paragraph.
+        :param parsed_result: the parsed result returned by corenlp
+        :type parsed_result: List[Dict[str, object]]
+        :param para_eventualities: eventualities in the paragraph
+        :type para_eventualities: List[aser.eventuality.Eventuality]
+        :param output_format: which format to return, "Relation" or "json"
+        :type output_format: str (default = "Relation")
+        :param in_order: whether the returned order follows the input token order
+        :type in_order: bool (default = True)
+        :param kw: other parameters
+        :type kw: Dict[str, object]
+        :return: the extracted relations
+        :rtype: Union[List[aser.relation.Relation, Dict[str, object]], List[List[aser.relation.Relation, Dict[str, object]]]]
+
+        .. highlight:: python
+        .. code-block:: python
+
+            Input:
+
+                [{'dependencies': [(1, 'nmod:poss', 0),
+                                   (3, 'nsubj', 1),
+                                   (3, 'aux', 2),
+                                   (3, 'dobj', 5),
+                                   (3, 'punct', 6),
+                                   (5, 'nmod:poss', 4)],
+                  'lemmas': ['my', 'army', 'will', 'find', 'you', 'boat', '.'],
+                  'mentions': [],
+                  'ners': ['O', 'O', 'O', 'O', 'O', 'O', 'O'],
+                  'parse': '(ROOT (S (NP (PRP$ My) (NN army)) (VP (MD will) (VP (VB find) (NP '
+                           '(PRP$ your) (NN boat)))) (. .)))',
+                  'pos_tags': ['PRP$', 'NN', 'MD', 'VB', 'PRP$', 'NN', '.'],
+                  'text': 'My army will find your boat.',
+                  'tokens': ['My', 'army', 'will', 'find', 'your', 'boat', '.']},
+                 {'dependencies': [(2, 'case', 0),
+                                   (2, 'det', 1),
+                                   (6, 'nmod:in', 2),
+                                   (6, 'punct', 3),
+                                   (6, 'nsubj', 4),
+                                   (6, 'cop', 5),
+                                   (6, 'ccomp', 9),
+                                   (6, 'punct', 13),
+                                   (9, 'nsubj', 7),
+                                   (9, 'aux', 8),
+                                   (9, 'iobj', 10),
+                                   (9, 'dobj', 12),
+                                   (12, 'amod', 11)],
+                  'lemmas': ['in',
+                             'the',
+                             'meantime',
+                             ',',
+                             'I',
+                             'be',
+                             'sure',
+                             'we',
+                             'could',
+                             'find',
+                             'you',
+                             'suitable',
+                             'accommodation',
+                             '.'],
+                  'mentions': [],
+                  'ners': ['O',
+                           'O',
+                           'O',
+                           'O',
+                           'O',
+                           'O',
+                           'O',
+                           'O',
+                           'O',
+                           'O',
+                           'O',
+                           'O',
+                           'O',
+                           'O'],
+                  'parse': '(ROOT (S (PP (IN In) (NP (DT the) (NN meantime))) (, ,) (NP (PRP '
+                           "I)) (VP (VBP 'm) (ADJP (JJ sure) (SBAR (S (NP (PRP we)) (VP (MD "
+                           'could) (VP (VB find) (NP (PRP you)) (NP (JJ suitable) (NNS '
+                           'accommodations)))))))) (. .)))',
+                  'pos_tags': ['IN',
+                               'DT',
+                               'NN',
+                               ',',
+                               'PRP',
+                               'VBP',
+                               'JJ',
+                               'PRP',
+                               'MD',
+                               'VB',
+                               'PRP',
+                               'JJ',
+                               'NNS',
+                               '.'],
+                  'text': "In the meantime, I'm sure we could find you suitable "
+                          'accommodations.',
+                  'tokens': ['In',
+                             'the',
+                             'meantime',
+                             ',',
+                             'I',
+                             "'m",
+                             'sure',
+                             'we',
+                             'could',
+                             'find',
+                             'you',
+                             'suitable',
+                             'accommodations',
+                             '.']}],
+                [[my army will find you boat],
+                 [i be sure, we could find you suitable accommodation]]
+
+                Output:
+
+                [[],
+                 [(7d9ea9023b66a0ebc167f0dbb6ea8cd75d7b46f9, 25edad6781577dcb3ba715c8230416fb0d4c45c4, {'Co_Occurrence': 1.0})],
+                 [(8540897b645962964fd644242d4cc0032f024e86, 25edad6781577dcb3ba715c8230416fb0d4c45c4, {'Synchronous': 1.0})]]
         """
-        if output_format not in ["Relation", "triple"]:
-            raise NotImplementedError("Error: extract_relations_from_text only supports Relation or triple.")
+
+        if output_format not in ["Relation", "triplet"]:
+            raise NotImplementedError("Error: extract_relations_from_parsed_result only supports Relation or triplet.")
+
+        return self.relation_extractor.extract_from_parsed_result(
+            parsed_result, para_eventualities, output_format=output_format, in_order=in_order, **kw
+        )
+
+    def extract_relations_from_text(self, text, output_format="Relation", in_order=True, annotators=None, **kw):
+        """
+
+        :param text: a raw text
+        :type text: str
+        :param output_format: which format to return, "Relation" or "json"
+        :type output_format: str (default = "Relation")
+        :param in_order: whether the returned order follows the input token order
+        :type in_order: bool (default = True)
+        :param annotators: annotators for corenlp, please refer to https://stanfordnlp.github.io/CoreNLP/annotators.html
+        :type annotators: Union[List, None] (default = None)
+        :param kw: other parameters
+        :type kw: Dict[str, object]
+        :return: the extracted relations
+        :rtype: Union[List[aser.relation.Relation, Dict[str, object]], List[List[aser.relation.Relation, Dict[str, object]]]]
+
+        .. highlight:: python
+        .. code-block:: python
+
+            Input:
+
+            "My army will find your boat. In the meantime, I'm sure we could find you suitable accommodations."
+
+            Output:
+
+            [[],
+             [(7d9ea9023b66a0ebc167f0dbb6ea8cd75d7b46f9, 25edad6781577dcb3ba715c8230416fb0d4c45c4, {'Co_Occurrence': 1.0})],
+             [(8540897b645962964fd644242d4cc0032f024e86, 25edad6781577dcb3ba715c8230416fb0d4c45c4, {'Synchronous': 1.0})]]
+        """
+
+        if output_format not in ["Relation", "triplet"]:
+            raise NotImplementedError("Error: extract_relations_from_text only supports Relation or triplet.")
 
         parsed_result = self.parse_text(text, annotators=annotators)
         para_eventualities = self.extract_eventualities_from_parsed_result(parsed_result)
-        return self.extract_relations_from_parsed_result(parsed_result, para_eventualities, 
-            output_format=output_format, in_order=in_order, **kw)
+        return self.extract_relations_from_parsed_result(
+            parsed_result, para_eventualities, output_format=output_format, in_order=in_order, **kw
+        )
 
-    def extract_from_parsed_result(self, parsed_result,
-                                   eventuality_output_format="Eventuality", relation_output_format="Relation",
-                                   in_order=True, **kw):
-        """ This method extracts eventualities and relations from parsed_result of one paragraph.
+    def extract_from_parsed_result(
+        self,
+        parsed_result,
+        eventuality_output_format="Eventuality",
+        relation_output_format="Relation",
+        in_order=True,
+        **kw
+    ):
+        """ Extract both eventualities and relations from a parsed result
+
+        :param parsed_result: the parsed result returned by corenlp
+        :type parsed_result: List[Dict[str, object]]
+        :param eventuality_output_format: which format to return eventualities, "Eventuality" or "json"
+        :type eventuality_output_format: str (default = "Eventuality")
+        :param relation_output_format: which format to return relations, "Relation" or "json"
+        :type relation_output_format: str (default = "Relation")
+        :param in_order: whether the returned order follows the input token order
+        :type in_order: bool (default = True)
+        :param kw: other parameters
+        :type kw: Dict[str, object]
+        :return: the extracted eventualities and relations
+        :rtype: Tuple[Union[List[aser.eventuality.Eventuality, Dict[str, object]], List[List[aser.eventuality.Eventuality, Dict[str, object]]]], Union[List[aser.relation.Relation, Dict[str, object]], List[List[aser.relation.Relation, Dict[str, object]]]]]
+
+        .. highlight:: python
+        .. code-block:: python
+
+            Input:
+
+            [{'dependencies': [(1, 'nmod:poss', 0),
+                               (3, 'nsubj', 1),
+                               (3, 'aux', 2),
+                               (3, 'dobj', 5),
+                               (3, 'punct', 6),
+                               (5, 'nmod:poss', 4)],
+              'lemmas': ['my', 'army', 'will', 'find', 'you', 'boat', '.'],
+              'mentions': [],
+              'ners': ['O', 'O', 'O', 'O', 'O', 'O', 'O'],
+              'parse': '(ROOT (S (NP (PRP$ My) (NN army)) (VP (MD will) (VP (VB find) (NP '
+                       '(PRP$ your) (NN boat)))) (. .)))',
+              'pos_tags': ['PRP$', 'NN', 'MD', 'VB', 'PRP$', 'NN', '.'],
+              'text': 'My army will find your boat.',
+              'tokens': ['My', 'army', 'will', 'find', 'your', 'boat', '.']},
+             {'dependencies': [(2, 'case', 0),
+                               (2, 'det', 1),
+                               (6, 'nmod:in', 2),
+                               (6, 'punct', 3),
+                               (6, 'nsubj', 4),
+                               (6, 'cop', 5),
+                               (6, 'ccomp', 9),
+                               (6, 'punct', 13),
+                               (9, 'nsubj', 7),
+                               (9, 'aux', 8),
+                               (9, 'iobj', 10),
+                               (9, 'dobj', 12),
+                               (12, 'amod', 11)],
+              'lemmas': ['in',
+                         'the',
+                         'meantime',
+                         ',',
+                         'I',
+                         'be',
+                         'sure',
+                         'we',
+                         'could',
+                         'find',
+                         'you',
+                         'suitable',
+                         'accommodation',
+                         '.'],
+              'mentions': [],
+              'ners': ['O',
+                       'O',
+                       'O',
+                       'O',
+                       'O',
+                       'O',
+                       'O',
+                       'O',
+                       'O',
+                       'O',
+                       'O',
+                       'O',
+                       'O',
+                       'O'],
+              'parse': '(ROOT (S (PP (IN In) (NP (DT the) (NN meantime))) (, ,) (NP (PRP '
+                       "I)) (VP (VBP 'm) (ADJP (JJ sure) (SBAR (S (NP (PRP we)) (VP (MD "
+                       'could) (VP (VB find) (NP (PRP you)) (NP (JJ suitable) (NNS '
+                       'accommodations)))))))) (. .)))',
+              'pos_tags': ['IN',
+                           'DT',
+                           'NN',
+                           ',',
+                           'PRP',
+                           'VBP',
+                           'JJ',
+                           'PRP',
+                           'MD',
+                           'VB',
+                           'PRP',
+                           'JJ',
+                           'NNS',
+                           '.'],
+              'text': "In the meantime, I'm sure we could find you suitable "
+                      'accommodations.',
+              'tokens': ['In',
+                         'the',
+                         'meantime',
+                         ',',
+                         'I',
+                         "'m",
+                         'sure',
+                         'we',
+                         'could',
+                         'find',
+                         'you',
+                         'suitable',
+                         'accommodations',
+                         '.']}],
+            [[my army will find you boat],
+             [i be sure, we could find you suitable accommodation]]
+
+            Output:
+
+            ([[my army will find you boat],
+              [i be sure, we could find you suitable accommodation]],
+             [[],
+              [(7d9ea9023b66a0ebc167f0dbb6ea8cd75d7b46f9, 25edad6781577dcb3ba715c8230416fb0d4c45c4, {'Co_Occurrence': 1.0})],
+              [(8540897b645962964fd644242d4cc0032f024e86, 25edad6781577dcb3ba715c8230416fb0d4c45c4, {'Synchronous': 1.0})]])
         """
+
         if eventuality_output_format not in ["Eventuality", "json"]:
             raise NotImplementedError("Error: extract_eventualities only supports Eventuality or json.")
-        if relation_output_format not in ["Relation", "triple"]:
-            raise NotImplementedError("Error: extract_relations only supports Relation or triple.")
-        
+        if relation_output_format not in ["Relation", "triplet"]:
+            raise NotImplementedError("Error: extract_relations only supports Relation or triplet.")
+
         if not isinstance(parsed_result, (list, tuple, dict)):
             raise NotImplementedError
         if isinstance(parsed_result, dict):
@@ -107,18 +639,20 @@ class BaseASERExtractor(object):
         else:
             is_single_sent = False
 
-        para_eventualities = self.extract_eventualities_from_parsed_result(parsed_result, 
-            output_format="Eventuality", in_order=True, **kw)
-        para_relations = self.extract_relations_from_parsed_result(parsed_result, para_eventualities, 
-            output_format="Relation", in_order=True, **kw)
+        para_eventualities = self.extract_eventualities_from_parsed_result(
+            parsed_result, output_format="Eventuality", in_order=True, **kw
+        )
+        para_relations = self.extract_relations_from_parsed_result(
+            parsed_result, para_eventualities, output_format="Relation", in_order=True, **kw
+        )
 
         if in_order:
             if eventuality_output_format == "json":
                 para_eventualities = [[eventuality.encode(encoding=None) for eventuality in sent_eventualities] \
-                    for sent_eventualities in para_eventualities]
-            if relation_output_format == "triple":
-                relations = [list(chain.from_iterable([relation.to_triple() for relation in sent_relations])) \
-                    for sent_relations in para_relations]
+                                      for sent_eventualities in para_eventualities]
+            if relation_output_format == "triplet":
+                relations = [list(chain.from_iterable([relation.to_triplet() for relation in sent_relations])) \
+                             for sent_relations in para_relations]
             if is_single_sent:
                 return para_eventualities[0], para_relations[0]
             else:
@@ -134,8 +668,11 @@ class BaseASERExtractor(object):
             if eventuality_output_format == "Eventuality":
                 eventualities = sorted(eid2eventuality.values(), key=lambda e: e.eid)
             elif eventuality_output_format == "json":
-                eventualities = sorted([eventuality.encode(encoding=None) for eventuality in eid2eventuality.values()], key=lambda e: e["eid"])
-            
+                eventualities = sorted(
+                    [eventuality.encode(encoding=None) for eventuality in eid2eventuality.values()],
+                    key=lambda e: e["eid"]
+                )
+
             rid2relation = dict()
             for relation in chain.from_iterable(para_relations):
                 if relation.rid not in rid2relation:
@@ -144,55 +681,140 @@ class BaseASERExtractor(object):
                     rid2relation[relation.rid].update(relation)
             if relation_output_format == "Relation":
                 relations = sorted(rid2relation.values(), key=lambda r: r.rid)
-            elif relation_output_format == "triple":
-                relations = sorted(chain.from_iterable([relation.to_triples() for relation in rid2relation.values()]))
+            elif relation_output_format == "triplet":
+                relations = sorted(chain.from_iterable([relation.to_triplets() for relation in rid2relation.values()]))
             return eventualities, relations
 
-    def extract_from_text(self, text,
-                          eventuality_output_format="Eventuality", relation_output_format="Relation",
-                        in_order=True, annotators=None, **kw):
-        """ This method extracts eventualities and relations for each sentence.
+    def extract_from_text(
+        self,
+        text,
+        eventuality_output_format="Eventuality",
+        relation_output_format="Relation",
+        in_order=True,
+        annotators=None,
+        **kw
+    ):
+        """ Extract both eventualities and relations from a raw text
+
+        :param text: a raw text
+        :type text: str
+        :param eventuality_output_format: which format to return eventualities, "Eventuality" or "json"
+        :type eventuality_output_format: str (default = "Eventuality")
+        :param relation_output_format: which format to return relations, "Relation" or "json"
+        :type relation_output_format: str (default = "Relation")
+        :param in_order: whether the returned order follows the input token order
+        :type in_order: bool (default = True)
+        :param annotators: annotators for corenlp, please refer to https://stanfordnlp.github.io/CoreNLP/annotators.html
+        :type annotators: Union[List, None] (default = None)
+        :param kw: other parameters
+        :type kw: Dict[str, object]
+        :return: the extracted eventualities and relations
+        :rtype: Tuple[Union[List[aser.eventuality.Eventuality, Dict[str, object]], List[List[aser.eventuality.Eventuality, Dict[str, object]]]], Union[List[aser.relation.Relation, Dict[str, object]], List[List[aser.relation.Relation, Dict[str, object]]]]]
+
+        .. highlight:: python
+        .. code-block:: python
+
+            Input:
+
+            "My army will find your boat. In the meantime, I'm sure we could find you suitable accommodations."
+
+            Output:
+
+            ([[my army will find you boat],
+              [i be sure, we could find you suitable accommodation]],
+             [[],
+              [(7d9ea9023b66a0ebc167f0dbb6ea8cd75d7b46f9, 25edad6781577dcb3ba715c8230416fb0d4c45c4, {'Co_Occurrence': 1.0})],
+              [(8540897b645962964fd644242d4cc0032f024e86, 25edad6781577dcb3ba715c8230416fb0d4c45c4, {'Synchronous': 1.0})]])
         """
         if eventuality_output_format not in ["Eventuality", "json"]:
             raise NotImplementedError("Error: extract_eventualities only supports Eventuality or json.")
-        if relation_output_format not in ["Relation", "triple"]:
-            raise NotImplementedError("Error: extract_relations only supports Relation or triple.")
+        if relation_output_format not in ["Relation", "triplet"]:
+            raise NotImplementedError("Error: extract_relations only supports Relation or triplet.")
 
         parsed_result = self.parse_text(text, annotators=annotators)
-        return self.extract_from_parsed_result(parsed_result, 
-                                               eventuality_output_format=eventuality_output_format,
-                                               relation_output_format=relation_output_format,
-                                               in_order=in_order, **kw)
+        return self.extract_from_parsed_result(
+            parsed_result,
+            eventuality_output_format=eventuality_output_format,
+            relation_output_format=relation_output_format,
+            in_order=in_order,
+            **kw
+        )
 
 
 class SeedRuleASERExtractor(BaseASERExtractor):
-    def __init__(self, **kw):
-        super().__init__(**kw)
+    """ ASER Extractor based on rules to extract both eventualities and relations
+
+    """
+    def __init__(self, corenlp_path="", corenlp_port=0, **kw):
+        if "annotators" not in kw:
+            kw["annotators"] = list(ANNOTATORS)
+            if "parse" in kw["annotators"]:
+                kw["annotators"].pop("parse")
+            if "depparse" not in kw["annotators"]:
+                kw["annotator"].append("depparse")
+        super().__init__(corenlp_path, corenlp_port, **kw)
         from aser.extract.rule import CLAUSE_WORDS
-        self.eventuality_extractor = SeedRuleEventualityExtractor(skip_words=CLAUSE_WORDS)
+        self.eventuality_extractor = SeedRuleEventualityExtractor(
+            corenlp_path=self.corenlp_path, corenlp_port=self.corenlp_port, skip_words=CLAUSE_WORDS, **kw
+        )
         self.relation_extractor = SeedRuleRelationExtractor(**kw)
 
 
 class DiscourseASERExtractor(BaseASERExtractor):
-    def __init__(self, **kw):
-        super().__init__(**kw)
-        self.eventuality_extractor = DiscourseEventualityExtractor(**kw)
+    """ ASER Extractor based on discourse parsing to extract both eventualities and relations
+
+    """
+    def __init__(self, corenlp_path="", corenlp_port=0, **kw):
+        if "annotators" not in kw:
+            kw["annotators"] = list(ANNOTATORS)
+            if "depparse" in kw["annotators"]:
+                kw["annotator"].pop("depparse")
+            if "parse" not in kw["annotators"]:
+                kw["annotators"].append("parse")
+        super().__init__(corenlp_path, corenlp_port, **kw)
+        self.eventuality_extractor = DiscourseEventualityExtractor(
+            corenlp_path=self.corenlp_path, corenlp_port=self.corenlp_port, **kw
+        )
         self.relation_extractor = DiscourseRelationExtractor(**kw)
-    
-    def extract_from_parsed_result(self, parsed_result,
-                                   eventuality_output_format="Eventuality", relation_output_format="Relation",
-                                   in_order=True, **kw):
+
+    def extract_from_parsed_result(
+        self,
+        parsed_result,
+        eventuality_output_format="Eventuality",
+        relation_output_format="Relation",
+        in_order=True,
+        **kw
+    ):
+        """ Extract both eventualities and relations from a parsed result
+
+        :param parsed_result: the parsed result returned by corenlp
+        :type parsed_result: List[Dict[str, object]]
+        :param eventuality_output_format: which format to return eventualities, "Eventuality" or "json"
+        :type eventuality_output_format: str (default = "Eventuality")
+        :param relation_output_format: which format to return relations, "Relation" or "json"
+        :type relation_output_format: str (default = "Relation")
+        :param in_order: whether the returned order follows the input token order
+        :type in_order: bool (default = True)
+        :param kw: other parameters (e.g., syntax_tree_cache)
+        :type kw: Dict[str, object]
+        :return: the extracted eventualities and relations
+        :rtype: Tuple[Union[List[aser.eventuality.Eventuality, Dict[str, object]], List[List[aser.eventuality.Eventuality, Dict[str, object]]]], Union[List[aser.relation.Relation, Dict[str, object]], List[List[aser.relation.Relation, Dict[str, object]]]]]
+        """
+
         if "syntax_tree_cache" not in kw:
             kw["syntax_tree_cache"] = dict()
-        return super().extract_from_parsed_result(parsed_result, 
-                                                  eventuality_output_format=eventuality_output_format,
-                                                  relation_output_format=relation_output_format,
-                                                  in_order=in_order, **kw)
+        return super().extract_from_parsed_result(
+            parsed_result,
+            eventuality_output_format=eventuality_output_format,
+            relation_output_format=relation_output_format,
+            in_order=in_order,
+            **kw
+        )
 
-
+# The following extractor can cover more eventualities but the semantic meaning may be incomplete.
 # class DiscourseASERExtractor(BaseASERExtractor):
-#     def __init__(self, **kw):
-#         super().__init__(**kw)
+#     def __init__(self, corenlp_path="", corenlp_port=0, **kw):
+#         super().__init__(corenlp_path, corenlp_port, **kw)
 #         self.eventuality_extractor = SeedRuleEventualityExtractor(**kw)
 #         self.conn_extractor = ConnectiveExtractor(**kw)
 #         self.argpos_classifier = ArgumentPositionClassifier(**kw)
@@ -250,7 +872,7 @@ class DiscourseASERExtractor(BaseASERExtractor):
 #                                                  output_format="Eventuality", in_order=True, **kw):
 #         if output_format not in ["Eventuality", "json"]:
 #             raise NotImplementedError("Error: extract_from_parsed_result only supports Eventuality or json.")
-        
+
 #         if not isinstance(parsed_result, (list, tuple, dict)):
 #             raise NotImplementedError
 #         if isinstance(parsed_result, dict):
@@ -260,13 +882,13 @@ class DiscourseASERExtractor(BaseASERExtractor):
 #             is_single_sent = False
 
 #         syntax_tree_cache = kw.get("syntax_tree_cache", dict())
-        
+
 #         para_eventualities = [list() for _ in range(len(parsed_result))]
 #         para_clauses = self._extract_clauses(parsed_result, syntax_tree_cache)
 #         for sent_parsed_result, sent_clauses, sent_eventualities in zip(parsed_result, para_clauses, para_eventualities):
 #             for clause in sent_clauses:
 #                 sent_eventualities.extend(self._extract_eventualities_from_clause(sent_parsed_result, clause))
-        
+
 #         if in_order:
 #             if output_format == "json":
 #                 para_eventualities = [[eventuality.encode(encoding=None) for eventuality in sent_eventualities] \
@@ -288,12 +910,12 @@ class DiscourseASERExtractor(BaseASERExtractor):
 #             elif output_format == "json":
 #                 eventualities = sorted([eventuality.encode(encoding=None) for eventuality in eid2eventuality.values()], key=lambda e: e["eid"])
 #             return eventualities
-    
+
 #     def extract_relations_from_parsed_result(self, parsed_result, para_eventualities,
 #                                              output_format="Relation",
 #                                              in_order=True, **kw):
-#         if output_format not in ["Relation", "triple"]:
-#             raise NotImplementedError("Error: extract_relations_from_parsed_result only supports Relation or triple.")
+#         if output_format not in ["Relation", "triplet"]:
+#             raise NotImplementedError("Error: extract_relations_from_parsed_result only supports Relation or triplet.")
 
 #         len_sentences = len(parsed_result)
 #         if len_sentences == 0:
@@ -376,8 +998,8 @@ class DiscourseASERExtractor(BaseASERExtractor):
 #         if in_order:
 #             if output_format == "Relation":
 #                 return para_relations
-#             elif output_format == "triple":
-#                 return [sorted(chain.from_iterable([r.to_triples() for r in relations])) \
+#             elif output_format == "triplet":
+#                 return [sorted(chain.from_iterable([r.to_triplets() for r in relations])) \
 #                     for relations in para_relations]
 #         else:
 #             if output_format == "Relation":
@@ -388,8 +1010,8 @@ class DiscourseASERExtractor(BaseASERExtractor):
 #                     else:
 #                         rid2relation[relation.rid].update(relation)
 #                 return sorted(rid2relation.values(), key=lambda r: r.rid)
-#             if output_format == "triple":
-#                 return sorted([r.to_triples() for relations in para_relations for r in relations])
+#             if output_format == "triplet":
+#                 return sorted([r.to_triplets() for relations in para_relations for r in relations])
 
 #     def extract_from_parsed_result(self, parsed_result,
 #                                    eventuality_output_format="Eventuality",
@@ -397,9 +1019,9 @@ class DiscourseASERExtractor(BaseASERExtractor):
 #                                    in_order=True, **kw):
 #         if eventuality_output_format not in ["Eventuality", "json"]:
 #             raise NotImplementedError("Error: extract_eventualities only supports Eventuality or json.")
-#         if relation_output_format not in ["Relation", "triple"]:
-#             raise NotImplementedError("Error: extract_relations only supports Relation or triple.")
-        
+#         if relation_output_format not in ["Relation", "triplet"]:
+#             raise NotImplementedError("Error: extract_relations only supports Relation or triplet.")
+
 #         if not isinstance(parsed_result, (list, tuple, dict)):
 #             raise NotImplementedError
 #         if isinstance(parsed_result, dict):
@@ -407,7 +1029,7 @@ class DiscourseASERExtractor(BaseASERExtractor):
 #             parsed_result = [parsed_result]
 #         else:
 #             is_single_sent = False
-        
+
 #         syntax_tree_cache = kw.get("syntax_tree_cache", dict())
 
 #         len_sentences = len(parsed_result)
@@ -465,8 +1087,8 @@ class DiscourseASERExtractor(BaseASERExtractor):
 #             if eventuality_output_format == "json":
 #                 para_eventualities = [[eventuality.encode(encoding=None) for eventuality in sent_eventualities] \
 #                     for sent_eventualities in para_eventualities]
-#             if relation_output_format == "triple":
-#                 relations = [list(chain.from_iterable([relation.to_triple() for relation in sent_relations])) \
+#             if relation_output_format == "triplet":
+#                 relations = [list(chain.from_iterable([relation.to_triplet() for relation in sent_relations])) \
 #                     for sent_relations in para_relations]
 #             if is_single_sent:
 #                 return para_eventualities[0], para_relations[0]
@@ -484,7 +1106,7 @@ class DiscourseASERExtractor(BaseASERExtractor):
 #                 eventualities = sorted(eid2eventuality.values(), key=lambda e: e.eid)
 #             elif eventuality_output_format == "json":
 #                 eventualities = sorted([eventuality.encode(encoding=None) for eventuality in eid2eventuality.values()], key=lambda e: e["eid"])
-            
+
 #             rid2relation = dict()
 #             for relation in chain.from_iterable(para_relations):
 #                 if relation.rid not in rid2relation:
@@ -493,8 +1115,8 @@ class DiscourseASERExtractor(BaseASERExtractor):
 #                     rid2relation[relation.rid].update(relation)
 #             if relation_output_format == "Relation":
 #                 relations = sorted(rid2relation.values(), key=lambda r: r.rid)
-#             elif relation_output_format == "triple":
-#                 relations = sorted(chain.from_iterable([relation.to_triples() for relation in rid2relation.values()]))
+#             elif relation_output_format == "triplet":
+#                 relations = sorted(chain.from_iterable([relation.to_triplets() for relation in rid2relation.values()]))
 #             return eventualities, relations
 
 #     def _extract_clauses(self, parsed_result, syntax_tree_cache):
@@ -512,10 +1134,10 @@ class DiscourseASERExtractor(BaseASERExtractor):
 #                 syntax_tree = syntax_tree_cache[sent_idx]
 #             else:
 #                 syntax_tree = syntax_tree_cache[sent_idx] = SyntaxTree(sent_parsed_result["parse"])
-            
+
 #             # more but slower
 #             # for indices in powerset(sent_connectives):
 #             #     indices = set(chain.from_iterable(indices))
-#             #     sent_arguments.update(get_clauses(sent_parsed_result, syntax_tree, index_seps=indices))
-#             sent_arguments.update(get_clauses(sent_parsed_result, syntax_tree, index_seps=set(chain.from_iterable(sent_connectives))))
+#             #     sent_arguments.update(get_clauses(sent_parsed_result, syntax_tree, sep_indices=indices))
+#             sent_arguments.update(get_clauses(sent_parsed_result, syntax_tree, sep_indices=set(chain.from_iterable(sent_connectives))))
 #         return para_arguments

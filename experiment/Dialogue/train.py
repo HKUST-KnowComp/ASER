@@ -66,12 +66,12 @@ def train_model(train_opt):
         model_size=model_opt.rnn_hidden_size)
 
     train_iter = DialogueDatasetIterator(
-        file_path=os.path.join(meta_opt.data_dir, "train.json"),
+        file_name=os.path.join(meta_opt.data_dir, "train.json"),
         file_cache_path=os.path.join(meta_opt.data_cache_dir, "train.pt"),
         vocabs=vocabs, epochs=meta_opt.epochs, batch_size=meta_opt.batch_size,
         is_train=True, n_workers=meta_opt.n_workers, use_cuda=meta_opt.use_cuda, opt=meta_opt)
     valid_iter = DialogueDatasetIterator(
-        file_path=os.path.join(meta_opt.data_dir, "valid.json"),
+        file_name=os.path.join(meta_opt.data_dir, "valid.json"),
         file_cache_path=os.path.join(meta_opt.data_cache_dir, "valid.pt"),
         vocabs=vocabs, epochs=meta_opt.epochs, batch_size=meta_opt.valid_batch_size,
         is_train=False, n_workers=meta_opt.n_workers, use_cuda=meta_opt.use_cuda, opt=meta_opt)

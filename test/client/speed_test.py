@@ -13,12 +13,12 @@ if __name__ == "__main__":
     s1 = 'I am hungry'
     s2 = 'I am in the kitchen'
 
-    event2 = client.extract_eventualities(s2, only_events=True)[0]
+    eventuality2 = client.extract_eventualities(s2, only_eventualities=True)[0]
     gc.collect()
 
     st = time.time()
     for i in range(1000):
-        event1 = client.extract_eventualities(s1, only_events=True)[0]
+        eventuality1 = client.extract_eventualities(s1, only_eventualities=True)[0]
     print("`extract_eventualities`: {:.2f}ms / call".format(
         (time.time() - st)))
     gc.collect()
@@ -26,13 +26,13 @@ if __name__ == "__main__":
 
     st = time.time()
     for i in range(1000):
-        rel = client.predict_relation(event1, event2)
+        rel = client.predict_relation(eventuality1, eventuality2)
     print("`get_exact_match_relation`: {:.2f}ms / call".format(
         (time.time() - st)))
     gc.collect()
 
     st = time.time()
     for i in range(1000):
-        related_events = client.fetch_related_events(event1)
+        related_events = client.fetch_related_eventualities(eventuality1)
     print("`get_related_events`: {:.2f}ms / call".format(
         (time.time() - st)))

@@ -3,6 +3,7 @@ import uuid
 import shlex
 import subprocess
 import requests
+from .utils import ANNOTATORS
 
 props_file_name = f"corenlp_server-{uuid.uuid4().hex[:16]}.props"
 
@@ -13,26 +14,28 @@ class ShouldRetryException(Exception):
 
 
 def write_corenlp_props(annotators):
-    props_dict = {'annotators': annotators, 'timeout': 60000, 'outputFormat': 'serialized',
-                  'serializer': 'edu.stanford.nlp.pipeline.ProtobufAnnotationSerializer'}
+    props_dict = {
+        'annotators': annotators,
+        'timeout': 60000,
+        'outputFormat': 'serialized',
+        'serializer': 'edu.stanford.nlp.pipeline.ProtobufAnnotationSerializer'
+    }
     """ Write a Stanford CoreNLP properties dict to a file """
-    file_path = props_file_name
-    with open(file_path, 'w') as props_file:
+    file_name = props_file_name
+    with open(file_name, 'w') as props_file:
         for k, v in props_dict.items():
             if isinstance(v, list):
                 writeable_v = ",".join(v)
             else:
                 writeable_v = v
             props_file.write(f'{k} = {writeable_v}\n\n')
-    return file_path
+    return file_name
 
 
 def start_service(start_cmd):
     stderr = open(os.devnull, 'w')
     print(f"Starting server with command: {' '.join(start_cmd)}")
-    server = subprocess.Popen(start_cmd,
-                              stderr=stderr,
-                              stdout=stderr)
+    server = subprocess.Popen(start_cmd, stderr=stderr, stdout=stderr)
     return server
 
 
@@ -51,8 +54,9 @@ def start_server(server_num, annotators, server_port=9101, corenlp_path=None):
         props_path = write_corenlp_props(annotators=anno)
 
         start_cmd = f"java -Djava.io.tmpdir={os.path.dirname(corenlp_path)}/.tmp -Xmx11G -cp {corenlp_path}/* " \
-                    f"edu.stanford.nlp.pipeline.StanfordCoreNLPServer -port {port} -timeout 60000 -threads 5 -maxCharLength 100000" \
-                    f" -quiet True -serverProperties {props_path} -preload {anno}"
+                    f"edu.stanford.nlp.pipeline.StanfordCoreNLPServer -port {port} " \
+                    f"-timeout 60000 -threads 5 -maxCharLength 100000 " \
+                    f"-quiet True -serverProperties {props_path} -preload {anno}"
 
         start_cmd = start_cmd and shlex.split(start_cmd)
         servers.append(start_service(start_cmd))
@@ -71,7 +75,6 @@ def start_server(server_num, annotators, server_port=9101, corenlp_path=None):
 
 
 if __name__ == '__main__':
-    corenlp_path = '/home/software/stanford-corenlp/stanford-corenlp-full-2018-02-27'
-    start_server(server_num=10, annotators=['tokenize', 'ssplit', 'pos', 'lemma', 'parse', 'ner'],
-                 corenlp_path=corenlp_path)
+    corenlp_path = "/home/xliucr/stanford-corenlp-3.9.2"
+    start_server(server_num=10, annotators=list(ANNOTATORS), corenlp_path=corenlp_path)
     # start_server(server_num=10, annotators=['tokenize', 'ssplit', 'parse'])

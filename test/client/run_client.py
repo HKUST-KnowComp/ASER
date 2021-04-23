@@ -10,18 +10,18 @@ if __name__ == "__main__":
     s1 = 'I am hungry'
     s2 = 'Evert said'
 
-    event1 = client.extract_eventualities(s1)
-    event2 = client.extract_eventualities(s2)
+    eventuality1 = client.extract_eventualities(s1)
+    eventuality2 = client.extract_eventualities(s2)
     print("Event 1: ")
-    print(event1)
-    # print(event1[0][0].to_dict())
+    print(eventuality1)
+    # print(eventuality1[0][0].to_dict())
     print("Event 2: ")
-    print(event2)
+    print(eventuality2)
     print("Relation: ")
-    rel = client.predict_relation(event1[0][0], event2[0][0])
+    rel = client.predict_relation(eventuality1[0][0], eventuality2[0][0])
     print(rel)
     #
     print("Related events: ")
-    related_events = client.fetch_related_events(event1[0][0])
+    related_events = client.fetch_related_eventualities(eventuality1[0][0])
     print(related_events)
 

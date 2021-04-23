@@ -395,9 +395,9 @@ class StucturedSelfAttention(nn.Module):
 
 
 class SortedLSTM(nn.Module):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, **kw):
         super(SortedLSTM, self).__init__()
-        self.lstm = nn.LSTM(*args, **kwargs)
+        self.lstm = nn.LSTM(**kw)
         self.reset_parameters()
 
     def reset_parameters(self):
@@ -436,9 +436,9 @@ class SortedLSTM(nn.Module):
 
 
 class SortedGRU(nn.Module):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, **kw):
         super(SortedGRU, self).__init__()
-        self.gru = nn.GRU(*args, **kwargs)
+        self.gru = nn.GRU(**kw)
 
     def forward(self, inputs, input_lens, last_hidden=None):
         if input_lens is None:

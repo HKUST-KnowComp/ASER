@@ -5,10 +5,7 @@ from typing import List, Set
 from collections import OrderedDict
 from nltk.tokenize import word_tokenize
 from multiprocessing import Manager
-try:
-    import ujson as json
-except:
-    import json
+import ujson as json
 
 stop_words = set(corpus.stopwords.words('english'))
 

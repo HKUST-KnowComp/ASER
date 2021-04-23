@@ -10,7 +10,7 @@ class MILCrossEntropyLoss(nn.Module):
         self.lambda_ = lambda_
         super(MILCrossEntropyLoss, self).__init__()
 
-    def forward(self, input_, target, bag, *args, **kwargs):
+    def forward(self, input_, target, bag, **kw):
         """
         :param input: list of Nk x C input matrix, length = M
         :param target: M LongTensor
@@ -35,11 +35,11 @@ class MILCrossEntropyLoss(nn.Module):
         if self.method == "max":
             bag_input = torch.cat(
                 [input_[bag == i].max(0)[0].unsqueeze(0) for i in range(k)], dim=0)
-            return F.cross_entropy(bag_input, target, *args, **kwargs)
+            return F.cross_entropy(bag_input, target, **kw)
         elif self.method == "mean":
             bag_input = torch.cat(
                 [input_[bag == i].mean(0).unsqueeze(0) for i in range(k)], dim=0)
-            return F.cross_entropy(bag_input, target, *args, **kwargs)
+            return F.cross_entropy(bag_input, target, **kw)
         elif self.method == "sum":
             input_ = torch.sigmoid(input_)
             flatten_target = target.index_select(-1, bag)

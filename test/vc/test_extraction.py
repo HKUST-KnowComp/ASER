@@ -1,4 +1,4 @@
-import json
+import ujson as json
 import traceback
 from pprint import pprint
 from tqdm import tqdm

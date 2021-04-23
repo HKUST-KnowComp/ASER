@@ -214,10 +214,10 @@ def collate_fn(data):
 
 
 class DialogueDatasetIterator(object):
-    def __init__(self, file_path, vocabs, file_cache_path=None, epochs=None, batch_size=16,
+    def __init__(self, file_name, vocabs, file_cache_path=None, epochs=None, batch_size=16,
                  is_train=True, n_workers=0,
                  use_cuda=True, opt=None):
-        self.dataset = DialogueDataset(file_path, vocabs, opt, file_cache_path)
+        self.dataset = DialogueDataset(file_name, vocabs, opt, file_cache_path)
         self.epochs = epochs
         self.batch_size = batch_size
         self.n_workers = n_workers

@@ -4,7 +4,14 @@ import logging
 import os
 
 
-def init_logger(log_file=None):
+def init_logger(log_file=""):
+    """ Initialize a logger
+
+    :param log_file: the file path to save logs
+    :type log_file: str
+    :return: a logger that binds the console and the file
+    :rtype: logging.RootLogger
+    """
     log_format = logging.Formatter("[%(asctime)s %(levelname)s] %(message)s")
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
@@ -22,6 +29,11 @@ def init_logger(log_file=None):
     return logger
 
 def close_logger(logger):
+    """ Close the logger safely
+
+    :param logger: a logger to close
+    :type logger: logging.RootLogger
+    """
     handlers = logger.handlers[:]
     for handler in handlers:
         handler.close()

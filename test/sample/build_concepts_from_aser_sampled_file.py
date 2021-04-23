@@ -1,22 +1,19 @@
 import sys
-import json
+import ujson as json
 from tqdm import tqdm
 from aser.eventuality import Eventuality
-from aser.concept.concept_extractor import ASERConceptExtractor
+from aser.conceptualize.aser_conceptualizer import ASERSeedConceptualizer, ASERProbaseConceptualizer
 
 
 if __name__ == "__main__":
-    in_event_file = sys.argv[1]
+    in_eventuality_file = sys.argv[1]
     out_concept_file = sys.argv[2]
     probase_path = sys.argv[3]
 
-    with open(in_event_file) as f:
+    with open(in_eventuality_file) as f:
         all_records = json.load(f)
 
-    concept_extractor = ASERConceptExtractor(
-        method="probase",
-        probase_path=probase_path,
-        probase_topk=5)
+    conceptualizer = ASERProbaseConceptualizer(probase_path=probase_path, probase_topk=5)
 
     for pattern, records in all_records.items():
         print("{}:\n".format(pattern))
@@ -24,8 +21,8 @@ if __name__ == "__main__":
             concept_list = list()
             for e_str in record["eventualities"]:
                 e = Eventuality().decode(json.loads(e_str), encoding=None)
-                concepts = concept_extractor.conceptualize(e)
-                c_strs = [(c.to_str(), score) for c, score in concepts]
+                concepts = conceptualizer.conceptualize(e)
+                c_strs = [(str(c), score) for c, score in concepts]
                 concept_list.append(c_strs)
             record["concepts"] = concept_list
 

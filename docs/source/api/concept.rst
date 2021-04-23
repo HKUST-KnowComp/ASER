@@ -4,7 +4,7 @@ Conceptualization
 eventuality_extractor API
 ------------------------
 
-.. automodule:: aser.concept.concept_extractor
+.. automodule:: aser.conceptualize.aser_conceptualizer
    :members:
    :undoc-members:
    :show-inheritance:
