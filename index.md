@@ -20,7 +20,7 @@ ASER (activities, states, events, and their relations) is a large-scale eventual
   <li><a href="https://github.com/HKUST-KnowComp/TransOMCS">Transfer to OMCS</a></li>  
   <li><a href="https://github.com/HKUST-KnowComp/DISCOS-commonsense">Transfer to ATOMIC</a></li>  
   <li><a href="https://github.com/HKUST-KnowComp/ASER-EEG">Eventuality Entailment Graph</a></li>
-  <li><a href="https://github.com/HKUST-KnowComp/SP-10K">SP-10K</a></li>
+  <li><a href="https://github.com/HKUST-KnowComp/SP-10K">Selectional Preference Annotation (SP-10K)</a></li>
   <li><a href="https://haixun.github.io/probase.html">Probase</a>, now known as <a href="https://concept.research.microsoft.com/">Microsoft Concept Graph</a></li>
 </ul>
 
