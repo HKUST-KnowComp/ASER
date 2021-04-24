@@ -14,12 +14,13 @@ ASER (activities, states, events, and their relations) is a large-scale eventual
   <li>ASER 1.0 [<a href="https://hkustconnect-my.sharepoint.com/:f:/g/personal/xliucr_connect_ust_hk/EoNC-hFNEsNLrZvg73i14e8BMAUDR20TmuLY0W-6tFhKEQ?e=BveOrc">data</a>] [<a href="https://arxiv.org/abs/1905.00270">pdf</a>] [<a href="https://github.com/HKUST-KnowComp/ASER/tree/release/1.0">code branch</a>] (2019)</li>  
 </ul>
 
-<strong>Related Code:</strong>
+<strong>Related Projects:</strong>
 <ul>
   <li><a href="https://github.com/HKUST-KnowComp/ASER">ASER Extraction, Usage, and APIs</a></li>  
   <li><a href="https://github.com/HKUST-KnowComp/TransOMCS">Transfer to OMCS</a></li>  
   <li><a href="https://github.com/HKUST-KnowComp/DISCOS-commonsense">Transfer to ATOMIC</a></li>  
   <li><a href="https://github.com/HKUST-KnowComp/ASER-EEG">Eventuality Entailment Graph</a></li>
+  <li><a href="https://haixun.github.io/probase.html">Probase</a> led by Haixun Wang, now known as <a href="https://concept.research.microsoft.com/">Microsoft Concept Graph</a></li>
 </ul>
 
 
