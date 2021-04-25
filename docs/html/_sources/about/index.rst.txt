@@ -1,7 +1,10 @@
 About
 ================================================================================
 
-ASER is from KnowComp@HKUST, led by `Prof. Yangqiu Song <https://www.cse.ust.hk/~yqsong/>`_.
+.. image:: ../_static/aser-logo.png
+   :height: 180
+
+ASER is from `KnowComp@HKUST <https://github.com/HKUST-KnowComp/>`_, led by `Prof. Yangqiu Song <https://www.cse.ust.hk/~yqsong/>`_.
 
 The main contributors are:
 
@@ -13,6 +16,6 @@ The main contributors are:
 
 * Haowen Ke, Mphil student, HKUST.
 
-* `Jiefu Ou <https://github.com/JefferyO>`_, undergraduate student, HKUST.
+* `Jiefu Ou <https://github.com/JefferyO>`_, Undergraduate student, HKUST.
 
 * `Tianqing Fang <http://fangtq.com/>`_, PhD student, HKUST.

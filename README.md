@@ -1,6 +1,6 @@
 # ASER (Activities, States, Events, and their Relations)
 
-![ASER](docs/source/_static/aser-demo.png)
+![demo](docs/source/_static/aser-demo.png)
 
 ASER is a large-scale weighted eventuality knowledge graph, including actions, states, events, and their relations.
 
@@ -25,7 +25,7 @@ The online [demo](http://songcpu1.cse.ust.hk/aser/demo) is coming soon.
 
 ### Quick Start
 
-Please refer to the [ASER.ipynb](ASER.ipynb) or [documentation](http://songcpu1.cse.ust.hk/aser/document) to become familiar with ASER and its construction pipeline.
+Please refer to the [get_started.ipynb](examples/get_started.ipynb) or [documentation](http://songcpu1.cse.ust.hk/aser/document) to become familiar with ASER and its construction pipeline.
 
 ### References
 ```
