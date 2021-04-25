@@ -4,7 +4,8 @@ import socket
 from collections import defaultdict
 from copy import copy, deepcopy
 from itertools import chain, combinations
-from stanfordnlp.server import CoreNLPClient, TimeoutException
+# from stanfordnlp.server import CoreNLPClient, TimeoutException
+from stanza.server import CoreNLPClient, TimeoutException
 
 ANNOTATORS = ("tokenize", "ssplit", "pos", "lemma", "parse", "ner")
 

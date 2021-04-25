@@ -1,6 +1,6 @@
 flask
 pandas
-stanfordnlp
+stanza
 tqdm
 zmq
 ete3
