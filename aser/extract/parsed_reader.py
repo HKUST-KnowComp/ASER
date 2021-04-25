@@ -3,7 +3,7 @@ from pprint import pprint
 
 
 class ParsedReader(object):
-    """ File Reader to read parsed results from Disk
+    """ File reader to read parsed results from Disk
 
     """
     def __init__(self):

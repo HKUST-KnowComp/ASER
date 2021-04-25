@@ -10,7 +10,7 @@ from aser.extract.discourse_parser import SyntaxTree
 
 
 class BaseEventualityExtractor(object):
-    """ Base ASER Eventuality Extractor to extract eventualities
+    """ Base ASER eventuality extractor to extract eventualities
 
     """
     def __init__(self, corenlp_path="", corenlp_port=0, **kw):
@@ -318,7 +318,7 @@ class BaseEventualityExtractor(object):
 
 
 class SeedRuleEventualityExtractor(BaseEventualityExtractor):
-    """ ASER Eventuality Extractor based on rules to extract eventualities
+    """ ASER eventuality extractor based on rules to extract eventualities  (for ASER v1.0)
 
     """
     def __init__(self, corenlp_path="", corenlp_port=0, **kw):
@@ -586,6 +586,9 @@ class SeedRuleEventualityExtractor(BaseEventualityExtractor):
 
 
 class DiscourseEventualityExtractor(BaseEventualityExtractor):
+    """ ASER eventuality extractor based on constituency analysis to extract eventualities  (for ASER v2.0)
+
+    """
     def __init__(self, corenlp_path="", corenlp_port=0, **kw):
         super().__init__(corenlp_path, corenlp_port, **kw)
         self.seed_rule_eventuality_extractor = SeedRuleEventualityExtractor(**kw)

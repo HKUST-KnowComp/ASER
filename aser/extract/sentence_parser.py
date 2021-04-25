@@ -5,7 +5,7 @@ from aser.extract.utils import ANNOTATORS, MAX_LEN
 
 
 class SentenceParser:
-    """ Sentence Parser to process files that contain raw texts
+    """ Sentence parser to process files that contain raw texts
 
     """
     def __init__(self, corenlp_path="", corenlp_port=0, **kw):

@@ -20,7 +20,15 @@ from aser.utils.config import ASERCmd, ASERError
 CACHESIZE = 512
 
 class ASERServer(object):
+    """ ASER server to provide extraction, conceptualization, and retrieval functions
+
+    """
     def __init__(self, opt):
+        """
+
+        :param opt: the namespace that includes parameters
+        :type opt: argparse.Namespace
+        """
         self.opt = opt
         self.port = opt.port
         self.n_concurrent_back_socks = opt.n_concurrent_back_socks
@@ -32,15 +40,21 @@ class ASERServer(object):
         self.run()
 
     def run(self):
+        """ Start the server
+
+        """
         self._run()
 
     def close(self):
-        for corenlp in self.corenlp_servers:
-            corenlp.close()
+        """ Clase the server safely
+
+        """
         self.aser_sink.close()
         self.aser_db.close()
         for worker in self.aser_workers:
             worker.close()
+        for corenlp in self.corenlp_servers:
+            corenlp.close()
 
     @zmqd.context()
     @zmqd.socket(zmq.PULL)
@@ -111,6 +125,9 @@ class ASERServer(object):
 
 
 class ASERDataBase(Process):
+    """ Process to provide DB retrieval functions
+
+    """
     def __init__(self, opt, db_sender_addr_list, sink_addr):
         super().__init__()
         self.db_sender_addr_list = db_sender_addr_list
@@ -274,6 +291,9 @@ class ASERDataBase(Process):
 
 
 class ASERWorker(Process):
+    """ Process to serve extraction and conceptualization functions
+
+    """
     def __init__(self, opt, id, worker_addr_list, sink_addr):
         super().__init__()
         self.worker_id = id
@@ -454,7 +474,11 @@ class ASERWorker(Process):
         # ret_data = json.dumps(ret_list).encode("utf-8")
         # return ret_data
 
+
 class ASERSink(Process):
+    """ Process to forward messages
+
+    """
     def __init__(self, args, sink_addr_receiver_addr):
         super().__init__()
         self.port_out = args.port_out

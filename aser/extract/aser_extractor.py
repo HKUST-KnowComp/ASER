@@ -7,7 +7,8 @@ from aser.extract.utils import ANNOTATORS
 
 
 class BaseASERExtractor(object):
-    """ Base ASER Extractor to extract both eventualities and relations
+    """ Base ASER Extractor to extract both eventualities and relations.
+    It includes an instance of `BaseEventualityExtractor` and an instance of `BaseRelationExtractor`.
 
     """
     def __init__(self, corenlp_path="", corenlp_port=0, **kw):
@@ -742,7 +743,7 @@ class BaseASERExtractor(object):
 
 
 class SeedRuleASERExtractor(BaseASERExtractor):
-    """ ASER Extractor based on rules to extract both eventualities and relations
+    """ ASER Extractor based on rules to extract both eventualities and relations (for ASER v1.0)
 
     """
     def __init__(self, corenlp_path="", corenlp_port=0, **kw):
@@ -761,7 +762,7 @@ class SeedRuleASERExtractor(BaseASERExtractor):
 
 
 class DiscourseASERExtractor(BaseASERExtractor):
-    """ ASER Extractor based on discourse parsing to extract both eventualities and relations
+    """ ASER Extractor based on discourse parsing to extract both eventualities and relations (for ASER v2.0)
 
     """
     def __init__(self, corenlp_path="", corenlp_port=0, **kw):
@@ -1006,7 +1007,7 @@ class DiscourseASERExtractor(BaseASERExtractor):
 #                 rid2relation = dict()
 #                 for relation in chain(*para_relations):
 #                     if relation.rid not in rid2relation:
-#                         rid2relation[relation.rid] = deeocopy(relation)
+#                         rid2relation[relation.rid] = deepcopy(relation)
 #                     else:
 #                         rid2relation[relation.rid].update(relation)
 #                 return sorted(rid2relation.values(), key=lambda r: r.rid)

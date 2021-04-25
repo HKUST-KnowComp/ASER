@@ -20,6 +20,12 @@ ASERError = "__ASERERROR__"
 
 
 def get_server_args_parser():
+    """ Parse the arguments for ASERServer
+
+    :return: parameters
+    :rtype: argparse.ArgumentParser
+    """
+
     parser = argparse.ArgumentParser()
 
     parser.add_argument("-n_workers", type=int, default=5,
@@ -63,6 +69,11 @@ def get_server_args_parser():
 
 
 def get_pipe_args_parser():
+    """ Parse the arguments for ASERPipe
+
+    :return: parameters
+    :rtype: argparse.ArgumentParser
+    """
     parser = argparse.ArgumentParser()
 
     parser.add_argument("-n_extractors", type=int, default=1,
@@ -115,6 +126,11 @@ def get_pipe_args_parser():
 
 
 def get_raw_process_parser():
+    """ Parse the arguments for ASERParser
+
+    :return: parameters
+    :rtype: argparse.ArgumentParser
+    """
     parser = argparse.ArgumentParser()
 
     # Dataset

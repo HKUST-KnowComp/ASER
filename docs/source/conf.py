@@ -19,11 +19,11 @@ import aser
 # -- Project information -----------------------------------------------------
 
 project = 'ASER'
-copyright = '2019, knowncomp'
-author = 'knowncomp'
+copyright = '2019, KnowComp'
+author = 'KnowComp, HKUST'
 
 # The full version, including alpha/beta/rc tags
-release = '0.1.1'
+release = '2.0'
 
 
 # -- General configuration ---------------------------------------------------

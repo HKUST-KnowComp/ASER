@@ -1,10 +1,10 @@
-KG Database
+Conceptualization
 ================================================================================
 
-kg_connection API
+eventuality_extractor API
 --------------------------------------------------------------------------------
 
-.. automodule:: aser.database.kg_connection
+.. automodule:: aser.conceptualize.aser_conceptualizer
    :members:
    :undoc-members:
    :show-inheritance:

@@ -39,15 +39,15 @@ class ASERKGConnection(object):
         :param db: the backend database, e.g., "sqlite" or "mongodb"
         :type db: str (default = "sqlite")
         :param mode: the mode to use the connection.
-        "insert": this connection is only used to insert/update rows;
-        "cache": this connection caches some contents that have been retrieved;
-        "memory": this connection loads all contents in memory;
+            "insert": this connection is only used to insert/update rows;
+            "cache": this connection caches some contents that have been retrieved;
+            "memory": this connection loads all contents in memory;
         :type mode: str (default = "cache")
         :param grain: the grain to build cache
-        "words": cache is built on "verbs", "skeleton_words", and "words"
-        "skeleton_words": cache is built on "verbs", and "skeleton_words"
-        "verbs": cache is built on "verbs"
-        None: no cache
+            "words": cache is built on "verbs", "skeleton_words", and "words"
+            "skeleton_words": cache is built on "verbs", and "skeleton_words"
+            "verbs": cache is built on "verbs"
+            None: no cache
         :type grain: Union[str, None] (default = None)
         :param chunksize: the chunksize to load/write database
         :type chunksize: int (default = 32768)
@@ -929,9 +929,9 @@ class ASERConceptConnection(object):
         :param db: the backend database, e.g., "sqlite" or "mongodb"
         :type db: str (default = sqlite)
         :param mode: the mode to use the connection.
-        "insert": this connection is only used to insert/update rows;
-        "cache": this connection caches some contents that have been retrieved;
-        "memory": this connection loads all contents in memory;
+            "insert": this connection is only used to insert/update rows;
+            "cache": this connection caches some contents that have been retrieved;
+            "memory": this connection loads all contents in memory;
         :type mode: str (default = "cache")
         :param chunksize: the chunksize to load/write database
         :type chunksize: int (default = 32768)

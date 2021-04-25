@@ -86,7 +86,9 @@ celerybeat-schedule
 
 # Environments
 .env
+.idea
 .venv
+.vscode
 env/
 venv/
 ENV/

@@ -1,5 +1,7 @@
 # ASER (Action, States, Events, and their Relations): a large-scale weighted eventuality knowledge graph
 
+![ASER](docs/source/_static/aser-demo.png)
+
 The eventualities (i.e., nodes of ASER) are extracted using selected dependency patterns.
 The edges are based on discourse relations (e.g., Result) in discourse analysis.
 
@@ -11,7 +13,8 @@ ASER (core) contains 53 million eventualities and 52 million edges between event
 With the help of [Probase](https://concept.research.microsoft.com/)  (now called Microsoft Concept Graph), ASER (concept) contains 15 million conceptualized eventualities and 224 million edges between conceptualied eventualities.
 
 The homepage of the project and data is [https://hkust-knowcomp.github.io/ASER](https://hkust-knowcomp.github.io/ASER/).
-[Demo](http://songcpu1.cse.ust.hk/aser/demo) and [documentation](http://songcpu1.cse.ust.hk/aser/document) will come soon.
+
+The online [demo](http://songcpu1.cse.ust.hk/aser/demo) is coming soon.
 
 
 * ASER 2.0 (arXiv:2104.02137): ASER: Towards Large-scale Commonsense Knowledge Acquisition via Higher-order Selectional Preference over Eventualities. [[pdf](https://arxiv.org/abs/2104.02137)] [[code branch](https://github.com/HKUST-KnowComp/ASER)]
@@ -20,7 +23,7 @@ The homepage of the project and data is [https://hkust-knowcomp.github.io/ASER](
 
 ### Quick Start
 
-Please refer to the [ASER.ipynb](ASER.ipynb) to become familar with ASER and its construction pipeline.
+Please refer to the [ASER.ipynb](ASER.ipynb) or [documentation](http://songcpu1.cse.ust.hk/aser/document) to become familiar with ASER and its construction pipeline.
 
 ### References
 ```

@@ -8,7 +8,7 @@ from aser.extract.utils import EMPTY_SENT_PARSED_RESULT
 
 
 class BaseRelationExtractor(object):
-    """ Base ASER Relation Extractor to extract relations
+    """ Base ASER relation rxtractor to extract relations
 
     """
     def __init__(self, **kw):
@@ -147,7 +147,7 @@ class BaseRelationExtractor(object):
 
 
 class SeedRuleRelationExtractor(BaseRelationExtractor):
-    """ ASER Relation Extractor based on rules to extract relations
+    """ ASER relation extractor based on rules to extract relations (for ASER v1.0)
 
     """
     def __init__(self, **kw):
@@ -346,7 +346,7 @@ class SeedRuleRelationExtractor(BaseRelationExtractor):
 
 
 class DiscourseRelationExtractor(BaseRelationExtractor):
-    """ ASER Relation Extractor based on discourse parsing to extract relations
+    """ ASER relation extractor based on discourse parsing to extract relations (for ASER v2.0)
 
     """
 
@@ -493,7 +493,7 @@ class DiscourseRelationExtractor(BaseRelationExtractor):
                 rid2relation = dict()
                 for relation in chain(*para_relations):
                     if relation.rid not in rid2relation:
-                        rid2relation[relation.rid] = deeocopy(relation)
+                        rid2relation[relation.rid] = deepcopy(relation)
                     else:
                         rid2relation[relation.rid].update(relation)
                 return sorted(rid2relation.values(), key=lambda r: r.rid)
