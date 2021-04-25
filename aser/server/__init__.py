@@ -1,23 +1,60 @@
-from collections import OrderedDict
-import ujson as json
+
 import multiprocessing
-from multiprocessing import Process
 import os
 import random
+import socket
 import time
 import traceback
+import ujson as json
+import uuid
 import zmq
 import zmq.decorators as zmqd
-from aser.conceptualize.aser_conceptualizer import SeedRuleASERConceptualizer, ProbaseASERConceptualizer
+from collections import OrderedDict
+from multiprocessing import Process
 from aser.eventuality import Eventuality
 from aser.relation import Relation
 from aser.concept import ASERConcept
 from aser.database.kg_connection import ASERKGConnection, ASERConceptConnection
-from aser.server.utils import *
 from aser.extract.aser_extractor import SeedRuleASERExtractor, DiscourseASERExtractor
+from aser.conceptualize.aser_conceptualizer import SeedRuleASERConceptualizer, ProbaseASERConceptualizer
 from aser.utils.config import ASERCmd, ASERError
 
 CACHESIZE = 512
+
+
+def is_port_occupied(ip="127.0.0.1", port=80):
+    """ Check whether the ip:port is occupied
+
+    :param ip: the ip address
+    :type ip: str (default = "127.0.0.1")
+    :param port: the port
+    :type port: int (default = 80)
+    :return: whether is occupied
+    :rtype: bool
+    """
+
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        s.connect((ip, int(port)))
+        s.shutdown(2)
+        return True
+    except:
+        return False
+
+
+def sockets_ipc_bind(socket):
+    """
+
+    :param socket: a socket
+    :type socket: zmq.sugar.socket.Socket
+    :return: the bound address
+    :rtype: str
+    """
+
+    tmp_dir = os.path.join("/tmp", str(uuid.uuid1())[:8])
+    socket.bind('ipc://{}'.format(tmp_dir))
+    return socket.getsockopt(zmq.LAST_ENDPOINT).decode('ascii')
+
 
 class ASERServer(object):
     """ ASER server to provide extraction, conceptualization, and retrieval functions
@@ -90,9 +127,7 @@ class ASERServer(object):
             worker_addr_list.append(addr)
 
         for i in range(self.n_workers):
-            self.aser_workers.append(
-                ASERWorker(self.opt, i, worker_addr_list, sink_receiver_addr)
-            )
+            self.aser_workers.append(ASERWorker(self.opt, i, worker_addr_list, sink_receiver_addr))
             self.aser_workers[i].start()
 
         print("Loading Server Finished in {:.4f} s".format(time.time() - total_st))
@@ -105,17 +140,20 @@ class ASERServer(object):
                 client_msg = client_msg_receiver.recv_multipart()
                 client_id, req_id, cmd, data = client_msg
                 if cmd in [
-                    ASERCmd.parse_text, ASERCmd.extract_eventualities, ASERCmd.extract_relations,
-                    ASERCmd.extract_eventualities_and_relations, ASERCmd.conceptualize_eventuality,
+                    ASERCmd.parse_text,
+                    ASERCmd.extract_eventualities,
+                    ASERCmd.extract_relations,
+                    ASERCmd.extract_eventualities_and_relations,
+                    ASERCmd.conceptualize_eventuality,
                 ]:
                     worker_sender_id, worker_sender = random.choice(
-                        [(i, sender) for i, sender in enumerate(worker_senders)
-                         if i != worker_sender_id])
+                        [(i, sender) for i, sender in enumerate(worker_senders) if i != worker_sender_id]
+                    )
                     worker_sender.send_multipart(client_msg)
                 else:
                     db_sender_id, db_sender = random.choice(
-                        [(i, sender) for i, sender in enumerate(db_senders)
-                         if i != db_sender_id])
+                        [(i, sender) for i, sender in enumerate(db_senders) if i != db_sender_id]
+                    )
                     db_sender.send_multipart(client_msg)
                 cnt += 1
                 # print("sender speed: {:.4f} / call".format((time.time() - st) / cnt))
@@ -145,7 +183,9 @@ class ASERDataBase(Process):
         if opt.concept_kg_dir:
             print("Connect to the ASER Concept KG...")
             st = time.time()
-            self.concept_conn = ASERConceptConnection(db_path=os.path.join(opt.concept_kg_dir, "concept.db"), mode="cache")
+            self.concept_conn = ASERConceptConnection(
+                db_path=os.path.join(opt.concept_kg_dir, "concept.db"), mode="cache"
+            )
             print("Connect to the ASER Concept KG finished in {:.4f} s".format(time.time() - st))
         else:
             print("Skip loading the ASER Concept KG")
@@ -182,10 +222,12 @@ class ASERDataBase(Process):
                 for sock_idx, sock in enumerate(receiver_sockets):
                     if sock in eventualities:
                         client_id, req_id, cmd, data = sock.recv_multipart()
-                        print("DB received msg ({}, {}, {}, {})".format(
-                            client_id.decode("utf-8"), req_id.decode("utf-8"),
-                            cmd.decode("utf-8"), data.decode("utf-8")
-                        ))
+                        print(
+                            "DB received msg ({}, {}, {}, {})".format(
+                                client_id.decode("utf-8"), req_id.decode("utf-8"), cmd.decode("utf-8"),
+                                data.decode("utf-8")
+                            )
+                        )
                         try:
                             if cmd == ASERCmd.exact_match_eventuality:
                                 ret_data = self.handle_exact_match_eventuality(data)
@@ -213,7 +255,7 @@ class ASERDataBase(Process):
 
     def handle_exact_match_eventuality(self, data):
         data = data.decode("utf-8")
-        if isinstance(data, str): # eid
+        if isinstance(data, str):  # eid
             matched_eventuality = self.kg_conn.get_exact_match_eventuality(data)
         else:
             data = Eventuality().decode(json.loads(data), encoding=None)
@@ -227,7 +269,7 @@ class ASERDataBase(Process):
 
     def handle_exact_match_eventuality_relation(self, data):
         data = data.decode("utf-8")
-        if isinstance(data, str): # rid
+        if isinstance(data, str):  # rid
             matched_relation = self.kg_conn.get_exact_match_relation(data)
         else:
             data = Relation().decode(json.loads(data), encoding=None)
@@ -241,18 +283,20 @@ class ASERDataBase(Process):
 
     def handle_fetch_related_eventualities(self, data):
         data = data.decode("utf-8")
-        if isinstance(data, str): # hid
+        if isinstance(data, str):  # hid
             related_eventualities = self.kg_conn.get_related_eventualities(data)
         else:
             data = Eventuality().decode(json.loads(data), encoding=None)
-        rst = [(eventuality.encode(encoding=None), relation.encode(encoding=None))
-               for eventuality, relation in related_eventualities]
+        rst = [
+            (eventuality.encode(encoding=None), relation.encode(encoding=None))
+            for eventuality, relation in related_eventualities
+        ]
         ret_data = json.dumps(rst).encode("utf-8")
         return ret_data
 
     def handle_exact_match_concept(self, data):
         data = data.decode("utf-8")
-        if isinstance(data, str): # eid
+        if isinstance(data, str):  # eid
             matched_concept = self.concept_conn.get_exact_match_concept(data)
         else:
             data = ASERConcept().decode(json.loads(data), encoding=None)
@@ -266,7 +310,7 @@ class ASERDataBase(Process):
 
     def handle_exact_match_concept_relation(self, data):
         data = data.decode("utf-8")
-        if isinstance(data, str): # rid
+        if isinstance(data, str):  # rid
             matched_relation = self.concept_conn.get_exact_match_relation(data)
         else:
             data = Relation().decode(json.loads(data), encoding=None)
@@ -280,12 +324,13 @@ class ASERDataBase(Process):
 
     def handle_fetch_related_concepts(self, data):
         data = data.decode("utf-8")
-        if isinstance(data, str): # hid
+        if isinstance(data, str):  # hid
             related_concepts = self.concept_conn.get_related_concepts(data)
         else:
             data = ASERConcept().decode(json.loads(data), encoding=None)
-        rst = [(concept.encode(encoding=None), relation.encode(encoding=None))
-               for concept, relation in related_concepts]
+        rst = [
+            (concept.encode(encoding=None), relation.encode(encoding=None)) for concept, relation in related_concepts
+        ]
         ret_data = json.dumps(rst).encode("utf-8")
         return ret_data
 
@@ -300,15 +345,16 @@ class ASERWorker(Process):
         self.worker_addr_list = worker_addr_list
         self.sink_addr = sink_addr
         self.aser_extractor = DiscourseASERExtractor(
-            corenlp_path=opt.corenlp_path,
-            corenlp_port=opt.base_corenlp_port + id
+            corenlp_path=opt.corenlp_path, corenlp_port=opt.base_corenlp_port + id
         )
         print("Eventuality Extractor init finished")
         if opt.concept_method == "seed":
             self.conceptualizer = SeedRuleASERConceptualizer()
         elif opt.probase_path:
             if opt.probase_path:
-                self.conceptualizer = ProbaseASERConceptualizer(probase_path=opt.probase_path, probase_topk=opt.concept_topk)
+                self.conceptualizer = ProbaseASERConceptualizer(
+                    probase_path=opt.probase_path, probase_topk=opt.concept_topk
+                )
             else:
                 self.conceptualizer = None
         else:
@@ -345,11 +391,12 @@ class ASERWorker(Process):
                 for sock_idx, sock in enumerate(receiver_sockets):
                     if sock in eventualities:
                         client_id, req_id, cmd, data = sock.recv_multipart()
-                        print("Worker {} received msg ({}, {}, {}, {})".format(
-                            self.worker_id,
-                            client_id.decode("utf-8"), req_id.decode("utf-8"),
-                            cmd.decode("utf-8"), data.decode("utf-8")
-                        ))
+                        print(
+                            "Worker {} received msg ({}, {}, {}, {})".format(
+                                self.worker_id, client_id.decode("utf-8"), req_id.decode("utf-8"), cmd.decode("utf-8"),
+                                data.decode("utf-8")
+                            )
+                        )
                         try:
                             if cmd == ASERCmd.parse_text:
                                 ret_data = self.handle_parse_text(data)
@@ -386,17 +433,19 @@ class ASERWorker(Process):
     def handle_extract_eventualities(self, data):
         data = data.decode("utf-8")
 
-        if isinstance(data, str): # text
+        if isinstance(data, str):  # text
             key = (ASERCmd.extract_eventualities, data)
             if key in self.worker_cache:
                 return self.worker_cache[key]
             para_eventualities = self.aser_extractor.extract_eventualities_from_text(data)
-        else: # parsed results
+        else:  # parsed results
             key = (ASERCmd.extract_eventualities, " ".join([sent_parsed_result["text"] for sent_parsed_result in data]))
             if key in self.worker_cache:
                 return self.worker_cache[key]
             para_eventualities = self.aser_extractor.extract_eventualities_from_parsed_result(data)
-        para_eventualities = [[e.encode(encoding=None) for e in sent_eventualities] for sent_eventualities in para_eventualities]
+        para_eventualities = [
+            [e.encode(encoding=None) for e in sent_eventualities] for sent_eventualities in para_eventualities
+        ]
         ret_data = json.dumps(para_eventualities).encode("utf-8")
         if len(self.worker_cache) >= CACHESIZE:
             self.worker_cache.popitem(last=False)
@@ -406,7 +455,7 @@ class ASERWorker(Process):
     def handle_extract_relations(self, data):
         data = data.decode("utf-8")
 
-        if isinstance(data, str): # text
+        if isinstance(data, str):  # text
             key = (ASERCmd.extract_relations, data)
             if key in self.worker_cache:
                 return self.worker_cache[key]
@@ -415,15 +464,20 @@ class ASERWorker(Process):
             data = json.loads(data)
             if len(data) == 2:
                 parsed_results = data[0]
-                para_eventualities = [[Eventuality().decode(e_encoded, encoding=None) for e_encoded in sent_eventualities] for sent_eventualities in data[1]]
+                para_eventualities = [
+                    [Eventuality().decode(e_encoded, encoding=None) for e_encoded in sent_eventualities]
+                    for sent_eventualities in data[1]
+                ]
                 key = (
-                    ASERCmd.extract_relations,
-                    " ".join([sent_parsed_result["text"] for sent_parsed_result in parsed_results]),
-                    str([[e.eid for e in sent_eventualities] for sent_eventualities in para_eventualities])
+                    ASERCmd.extract_relations, " ".join(
+                        [sent_parsed_result["text"] for sent_parsed_result in parsed_results]
+                    ), str([[e.eid for e in sent_eventualities] for sent_eventualities in para_eventualities])
                 )
                 if key in self.worker_cache:
                     return self.worker_cache[key]
-                para_relations = self.aser_extractor.extract_relations_from_parsed_result(parsed_results, para_eventualities)
+                para_relations = self.aser_extractor.extract_relations_from_parsed_result(
+                    parsed_results, para_eventualities
+                )
             else:
                 raise ValueError("Error: your message should be text or (parsed_results, para_eventualities).")
         para_relations = [[r.encode(encoding=None) for r in sent_relations] for sent_relations in para_relations]
@@ -436,17 +490,23 @@ class ASERWorker(Process):
     def handle_extract_eventualities_and_relations(self, data):
         data = data.decode("utf-8")
 
-        if isinstance(data, str): # text
+        if isinstance(data, str):  # text
             key = (ASERCmd.extract_eventualities_and_relations, data)
             if key in self.worker_cache:
                 return self.worker_cache[key]
             para_eventualities, para_relations = self.aser_extractor.extract_from_text(data)
-        else: # parsed results
-            key = (ASERCmd.extract_eventualities_and_relations, " ".join([sent_parsed_result["text"] for sent_parsed_result in data]))
+        else:  # parsed results
+            key = (
+                ASERCmd.extract_eventualities_and_relations, " ".join(
+                    [sent_parsed_result["text"] for sent_parsed_result in data]
+                )
+            )
             if key in self.worker_cache:
                 return self.worker_cache[key]
             para_eventualities, para_relations = self.aser_extractor.extract_from_parsed_result(data)
-        para_eventualities = [[e.encode(encoding=None) for e in sent_eventualities] for sent_eventualities in para_eventualities]
+        para_eventualities = [
+            [e.encode(encoding=None) for e in sent_eventualities] for sent_eventualities in para_eventualities
+        ]
         para_relations = [[r.encode(encoding=None) for r in sent_relations] for sent_relations in para_relations]
         ret_data = json.dumps((para_eventualities, para_relations)).encode("utf-8")
         if len(self.worker_cache) >= CACHESIZE:

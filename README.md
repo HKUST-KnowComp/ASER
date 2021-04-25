@@ -1,6 +1,8 @@
-# ASER (Action, States, Events, and their Relations): a large-scale weighted eventuality knowledge graph
+# ASER (Action, States, Events, and their Relations)
 
 ![ASER](docs/source/_static/aser-demo.png)
+
+ASER is a large-scale weighted eventuality knowledge graph, including actions, states, events, and their relations.
 
 The eventualities (i.e., nodes of ASER) are extracted using selected dependency patterns.
 The edges are based on discourse relations (e.g., Result) in discourse analysis.

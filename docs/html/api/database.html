@@ -1,0 +1,1526 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Database &mdash; ASER 2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Extractor" href="extractor.html" />
+    <link rel="prev" title="Get Started" href="../tutorial/get-started.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> ASER
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/get-started.html">Get Started</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Database</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-aser.database.db_connection">db_connection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-aser.database.kg_connection">kg_connection</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="extractor.html">Extractor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conceptualizer.html">Conceptualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aser-cs.html">Server/Client</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ASER</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Database</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/api/database.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="database">
+<h1>Database<a class="headerlink" href="#database" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-aser.database.db_connection">
+<span id="db-connection"></span><h2>db_connection<a class="headerlink" href="#module-aser.database.db_connection" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="aser.database.db_connection.BaseDBConnection">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">aser.database.db_connection.</span></code><code class="sig-name descname"><span class="pre">BaseDBConnection</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunksize</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#BaseDBConnection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.BaseDBConnection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base KG connection for database</p>
+<p>Create an connection to database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db_path</strong> (<em>str</em>) – database path</p></li>
+<li><p><strong>chunksize</strong> (<em>int</em>) – the chunksize to load/write database</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="aser.database.db_connection.BaseDBConnection.close">
+<code class="sig-name descname"><span class="pre">close</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#BaseDBConnection.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.BaseDBConnection.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the connection safely</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.db_connection.BaseDBConnection.create_table">
+<code class="sig-name descname"><span class="pre">create_table</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column_types</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#BaseDBConnection.create_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.BaseDBConnection.create_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a table with given columns and types</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_name</strong> (<em>str</em>) – the table name to create</p></li>
+<li><p><strong>columns</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the columns to create</p></li>
+<li><p><strong>column_types</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the corresponding column types</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.db_connection.BaseDBConnection.get_columns">
+<code class="sig-name descname"><span class="pre">get_columns</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#BaseDBConnection.get_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.BaseDBConnection.get_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get column information from a table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_name</strong> (<em>str</em>) – the table name to retrieve</p></li>
+<li><p><strong>columns</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the columns to retrieve</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a list of retrieved rows</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Dict[str, object]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.db_connection.BaseDBConnection.get_rows_by_keys">
+<code class="sig-name descname"><span class="pre">get_rows_by_keys</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order_bys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#BaseDBConnection.get_rows_by_keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.BaseDBConnection.get_rows_by_keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve rows by specific keys in some order</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_name</strong> (<em>str</em>) – the table name to retrieve</p></li>
+<li><p><strong>bys</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the given columns to match</p></li>
+<li><p><strong>keys</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the given values to match</p></li>
+<li><p><strong>columns</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the given columns to retrieve</p></li>
+<li><p><strong>order_bys</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the columns whose value are used to sort rows</p></li>
+<li><p><strong>reverse</strong> (<em>bool</em>) – whether to sort in a reversed order</p></li>
+<li><p><strong>top_n</strong> (<em>int</em>) – how many rows to return, default <cite>None</cite> for all rows</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>retrieved rows</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Dict[str, object]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.db_connection.BaseDBConnection.get_update_op">
+<code class="sig-name descname"><span class="pre">get_update_op</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">update_columns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#BaseDBConnection.get_update_op"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.BaseDBConnection.get_update_op" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get an update operator based on columns and a operator</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>update_columns</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – a list of columns to update</p></li>
+<li><p><strong>operator</strong> (<em>str</em>) – an operator that applies to the columns, including “+”, “-“, “*”, “/”, “=”</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>an operator that suits the backend database</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.db_connection.BaseDBConnection.insert_row">
+<code class="sig-name descname"><span class="pre">insert_row</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#BaseDBConnection.insert_row"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.BaseDBConnection.insert_row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert a row into a table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_name</strong> (<em>str</em>) – the table name to insert</p></li>
+<li><p><strong>row</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em>) – the row to insert</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.db_connection.BaseDBConnection.insert_rows">
+<code class="sig-name descname"><span class="pre">insert_rows</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rows</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#BaseDBConnection.insert_rows"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.BaseDBConnection.insert_rows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert several rows into a table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_name</strong> (<em>str</em>) – the table name to insert</p></li>
+<li><p><strong>rows</strong> (<em>List</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>]</em>) – the rows to insert</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.db_connection.BaseDBConnection.select_row">
+<code class="sig-name descname"><span class="pre">select_row</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#BaseDBConnection.select_row"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.BaseDBConnection.select_row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select a row from a table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_name</strong> (<em>str</em>) – the table name to retrieve</p></li>
+<li><p><strong>_id</strong> (<em>str</em>) – the row id</p></li>
+<li><p><strong>columns</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the columns to retrieve</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a retrieved row</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[str, object]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.db_connection.BaseDBConnection.select_rows">
+<code class="sig-name descname"><span class="pre">select_rows</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#BaseDBConnection.select_rows"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.BaseDBConnection.select_rows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select rows from a table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_name</strong> (<em>str</em>) – the table name to retrieve</p></li>
+<li><p><strong>_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the row ids</p></li>
+<li><p><strong>columns</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the columns to retrieve</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>retrieved rows</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Dict[str, object]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.db_connection.BaseDBConnection.update_row">
+<code class="sig-name descname"><span class="pre">update_row</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_op</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_columns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#BaseDBConnection.update_row"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.BaseDBConnection.update_row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update a row that exists in a table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_name</strong> (<em>str</em>) – the table name to update</p></li>
+<li><p><strong>row</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em>) – a new row</p></li>
+<li><p><strong>update_op</strong> (<em>object</em>) – an operator that returned by <cite>get_update_op</cite></p></li>
+<li><p><strong>update_columns</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the columns to update</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.db_connection.BaseDBConnection.update_rows">
+<code class="sig-name descname"><span class="pre">update_rows</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rows</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_ops</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_columns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#BaseDBConnection.update_rows"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.BaseDBConnection.update_rows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update rows that exist in a table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_name</strong> (<em>str</em>) – the table name to update</p></li>
+<li><p><strong>rows</strong> (<em>List</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>]</em>) – new rows</p></li>
+<li><p><strong>update_ops</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><em>object</em><em>]</em><em>, </em><em>object</em><em>]</em>) – operator(s) that returned by <cite>get_update_op</cite></p></li>
+<li><p><strong>update_columns</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the columns to update</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="aser.database.db_connection.MongoDBConnection">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">aser.database.db_connection.</span></code><code class="sig-name descname"><span class="pre">MongoDBConnection</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunksize</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#MongoDBConnection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.MongoDBConnection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#aser.database.db_connection.BaseDBConnection" title="aser.database.db_connection.BaseDBConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">aser.database.db_connection.BaseDBConnection</span></code></a></p>
+<p>KG connection for MongoDB</p>
+<p>Create an connection to SQLite database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db_path</strong> (<em>str</em>) – database path, e.g., mongodb://localhost:27017/ASER</p></li>
+<li><p><strong>chunksize</strong> (<em>int</em>) – the chunksize to load/write database</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="aser.database.db_connection.MongoDBConnection.close">
+<code class="sig-name descname"><span class="pre">close</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#MongoDBConnection.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.MongoDBConnection.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the connection safely</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.db_connection.MongoDBConnection.create_table">
+<code class="sig-name descname"><span class="pre">create_table</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#MongoDBConnection.create_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.MongoDBConnection.create_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a table without the necessary to provide column information</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>table_name</strong> (<em>str</em>) – the table name to create</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.db_connection.MongoDBConnection.get_columns">
+<code class="sig-name descname"><span class="pre">get_columns</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#MongoDBConnection.get_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.MongoDBConnection.get_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get column information from a table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_name</strong> (<em>str</em>) – the table name to retrieve</p></li>
+<li><p><strong>columns</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the columns to retrieve</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a list of retrieved rows</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Dict[str, object]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.db_connection.MongoDBConnection.get_rows_by_keys">
+<code class="sig-name descname"><span class="pre">get_rows_by_keys</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order_bys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#MongoDBConnection.get_rows_by_keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.MongoDBConnection.get_rows_by_keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve rows by specific keys in some order</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_name</strong> (<em>str</em>) – the table name to retrieve</p></li>
+<li><p><strong>bys</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the given columns to match</p></li>
+<li><p><strong>keys</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the given values to match</p></li>
+<li><p><strong>columns</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the given columns to retrieve</p></li>
+<li><p><strong>order_bys</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the columns whose value are used to sort rows</p></li>
+<li><p><strong>reverse</strong> (<em>bool</em>) – whether to sort in a reversed order</p></li>
+<li><p><strong>top_n</strong> (<em>int</em>) – how many rows to return, default <cite>None</cite> for all rows</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>retrieved rows</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Dict[str, object]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.db_connection.MongoDBConnection.get_update_op">
+<code class="sig-name descname"><span class="pre">get_update_op</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">update_columns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#MongoDBConnection.get_update_op"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.MongoDBConnection.get_update_op" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get an update operator based on columns and a operator</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>update_columns</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – a list of columns to update</p></li>
+<li><p><strong>operator</strong> (<em>str</em>) – an operator that applies to the columns, including “+”, “-“, “*”, “/”, “=”</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>an operator that suits the backend database</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[str, Dict[str, float]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.db_connection.MongoDBConnection.insert_row">
+<code class="sig-name descname"><span class="pre">insert_row</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#MongoDBConnection.insert_row"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.MongoDBConnection.insert_row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert a row into a table
+(suggestion: consider to use <cite>insert_rows</cite> if you want to insert multiple rows)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_name</strong> (<em>str</em>) – the table name to insert</p></li>
+<li><p><strong>row</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em>) – the row to insert</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.db_connection.MongoDBConnection.insert_rows">
+<code class="sig-name descname"><span class="pre">insert_rows</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rows</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#MongoDBConnection.insert_rows"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.MongoDBConnection.insert_rows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert several rows into a table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_name</strong> (<em>str</em>) – the table name to insert</p></li>
+<li><p><strong>rows</strong> (<em>List</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>]</em>) – the rows to insert</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.db_connection.MongoDBConnection.select_row">
+<code class="sig-name descname"><span class="pre">select_row</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#MongoDBConnection.select_row"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.MongoDBConnection.select_row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select a row from a table
+(suggestion: consider to use <cite>select_rows</cite> if you want to retrieve multiple rows)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_name</strong> (<em>str</em>) – the table name to retrieve</p></li>
+<li><p><strong>_id</strong> (<em>str</em>) – the row id</p></li>
+<li><p><strong>columns</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the columns to retrieve</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a retrieved row</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[str, object]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.db_connection.MongoDBConnection.select_rows">
+<code class="sig-name descname"><span class="pre">select_rows</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#MongoDBConnection.select_rows"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.MongoDBConnection.select_rows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select rows from a table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_name</strong> (<em>str</em>) – the table name to retrieve</p></li>
+<li><p><strong>_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the row ids</p></li>
+<li><p><strong>columns</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the columns to retrieve</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>retrieved rows</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Dict[str, object]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.db_connection.MongoDBConnection.update_row">
+<code class="sig-name descname"><span class="pre">update_row</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_op</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_columns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#MongoDBConnection.update_row"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.MongoDBConnection.update_row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update a row that exists in a table
+(suggestion: consider to use <cite>update_rows</cite> if you want to update multiple rows)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_name</strong> (<em>str</em>) – the table name to update</p></li>
+<li><p><strong>row</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em>) – a new row</p></li>
+<li><p><strong>update_op</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>float</em><em>]</em><em>]</em>) – an operator that returned by <cite>get_update_op</cite></p></li>
+<li><p><strong>update_columns</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the columns to update</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.db_connection.MongoDBConnection.update_rows">
+<code class="sig-name descname"><span class="pre">update_rows</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rows</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_ops</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_columns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#MongoDBConnection.update_rows"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.MongoDBConnection.update_rows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update rows that exist in a table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_name</strong> (<em>str</em>) – the table name to update</p></li>
+<li><p><strong>rows</strong> (<em>List</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>]</em>) – new rows</p></li>
+<li><p><strong>update_ops</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>float</em><em>]</em><em>]</em><em>]</em><em>, </em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>float</em><em>]</em><em>]</em><em>]</em>) – operator(s) that returned by <cite>get_update_op</cite></p></li>
+<li><p><strong>update_columns</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the columns to update</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="aser.database.db_connection.SqliteDBConnection">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">aser.database.db_connection.</span></code><code class="sig-name descname"><span class="pre">SqliteDBConnection</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunksize</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#SqliteDBConnection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.SqliteDBConnection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#aser.database.db_connection.BaseDBConnection" title="aser.database.db_connection.BaseDBConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">aser.database.db_connection.BaseDBConnection</span></code></a></p>
+<p>KG connection for SQLite database</p>
+<p>Create an connection to SQLite database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db_path</strong> (<em>str</em>) – database path, e.g., /home/xliucr/ASER/KG.db</p></li>
+<li><p><strong>chunksize</strong> (<em>int</em>) – the chunksize to load/write database</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="aser.database.db_connection.SqliteDBConnection.close">
+<code class="sig-name descname"><span class="pre">close</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#SqliteDBConnection.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.SqliteDBConnection.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the connection safely</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.db_connection.SqliteDBConnection.create_table">
+<code class="sig-name descname"><span class="pre">create_table</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column_types</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#SqliteDBConnection.create_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.SqliteDBConnection.create_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a table with given columns and types</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_name</strong> (<em>str</em>) – the table name to create</p></li>
+<li><p><strong>columns</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the columns to create</p></li>
+<li><p><strong>column_types</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the corresponding column types, please refer to <a class="reference external" href="https://www.sqlite.org/datatype3.html">https://www.sqlite.org/datatype3.html</a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.db_connection.SqliteDBConnection.get_columns">
+<code class="sig-name descname"><span class="pre">get_columns</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#SqliteDBConnection.get_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.SqliteDBConnection.get_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get column information from a table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_name</strong> (<em>str</em>) – the table name to retrieve</p></li>
+<li><p><strong>columns</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the columns to retrieve</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a list of retrieved rows</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Dict[str, object]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.db_connection.SqliteDBConnection.get_rows_by_keys">
+<code class="sig-name descname"><span class="pre">get_rows_by_keys</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order_bys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#SqliteDBConnection.get_rows_by_keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.SqliteDBConnection.get_rows_by_keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve rows by specific keys in some order</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_name</strong> (<em>str</em>) – the table name to retrieve</p></li>
+<li><p><strong>bys</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the given columns to match</p></li>
+<li><p><strong>keys</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the given values to match</p></li>
+<li><p><strong>columns</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the given columns to retrieve</p></li>
+<li><p><strong>order_bys</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the columns whose value are used to sort rows</p></li>
+<li><p><strong>reverse</strong> (<em>bool</em>) – whether to sort in a reversed order</p></li>
+<li><p><strong>top_n</strong> (<em>int</em>) – how many rows to return, default <cite>None</cite> for all rows</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>retrieved rows</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Dict[str, object]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.db_connection.SqliteDBConnection.get_update_op">
+<code class="sig-name descname"><span class="pre">get_update_op</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">update_columns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#SqliteDBConnection.get_update_op"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.SqliteDBConnection.get_update_op" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get an update operator based on columns and a operator</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>update_columns</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – a list of columns to update</p></li>
+<li><p><strong>operator</strong> (<em>str</em>) – an operator that applies to the columns, including “+”, “-“, “*”, “/”, “=”</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>an operator that suits the backend database</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.db_connection.SqliteDBConnection.insert_row">
+<code class="sig-name descname"><span class="pre">insert_row</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#SqliteDBConnection.insert_row"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.SqliteDBConnection.insert_row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert a row into a table
+(suggestion: consider to use <cite>insert_rows</cite> if you want to insert multiple rows)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_name</strong> (<em>str</em>) – the table name to insert</p></li>
+<li><p><strong>row</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em>) – the row to insert</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.db_connection.SqliteDBConnection.insert_rows">
+<code class="sig-name descname"><span class="pre">insert_rows</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rows</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#SqliteDBConnection.insert_rows"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.SqliteDBConnection.insert_rows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert several rows into a table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_name</strong> (<em>str</em>) – the table name to insert</p></li>
+<li><p><strong>rows</strong> (<em>List</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>]</em>) – the rows to insert</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.db_connection.SqliteDBConnection.select_row">
+<code class="sig-name descname"><span class="pre">select_row</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#SqliteDBConnection.select_row"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.SqliteDBConnection.select_row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select a row from a table
+(suggestion: consider to use <cite>select_rows</cite> if you want to retrieve multiple rows)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_name</strong> (<em>str</em>) – the table name to retrieve</p></li>
+<li><p><strong>_id</strong> (<em>str</em>) – the row id</p></li>
+<li><p><strong>columns</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the columns to retrieve</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a retrieved row</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[str, object]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.db_connection.SqliteDBConnection.select_rows">
+<code class="sig-name descname"><span class="pre">select_rows</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#SqliteDBConnection.select_rows"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.SqliteDBConnection.select_rows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select rows from a table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_name</strong> (<em>str</em>) – the table name to retrieve</p></li>
+<li><p><strong>_ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the row ids</p></li>
+<li><p><strong>columns</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the columns to retrieve</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>retrieved rows</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Dict[str, object]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.db_connection.SqliteDBConnection.update_row">
+<code class="sig-name descname"><span class="pre">update_row</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_op</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_columns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#SqliteDBConnection.update_row"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.SqliteDBConnection.update_row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update a row that exists in a table
+(suggestion: consider to use <cite>update_rows</cite> if you want to update multiple rows)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_name</strong> (<em>str</em>) – the table name to update</p></li>
+<li><p><strong>row</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em>) – a new row</p></li>
+<li><p><strong>update_op</strong> (<em>str</em>) – an operator that returned by <cite>get_update_op</cite></p></li>
+<li><p><strong>update_columns</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the columns to update</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.db_connection.SqliteDBConnection.update_rows">
+<code class="sig-name descname"><span class="pre">update_rows</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rows</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_ops</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_columns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/db_connection.html#SqliteDBConnection.update_rows"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.db_connection.SqliteDBConnection.update_rows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update rows that exist in a table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_name</strong> (<em>str</em>) – the table name to update</p></li>
+<li><p><strong>rows</strong> (<em>List</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>]</em>) – new rows</p></li>
+<li><p><strong>update_ops</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>str</em><em>]</em>) – operator(s) that returned by <cite>get_update_op</cite></p></li>
+<li><p><strong>update_columns</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the columns to update</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-aser.database.kg_connection">
+<span id="kg-connection"></span><h2>kg_connection<a class="headerlink" href="#module-aser.database.kg_connection" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="aser.database.kg_connection.ASERConceptConnection">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">aser.database.kg_connection.</span></code><code class="sig-name descname"><span class="pre">ASERConceptConnection</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sqlite'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cache'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunksize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32768</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERConceptConnection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERConceptConnection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Concept connection for ASER (including concepts, concept_instance_pairs, and relations)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db_path</strong> (<em>str</em>) – database path</p></li>
+<li><p><strong>db</strong> (<em>str</em><em> (</em><em>default = sqlite</em><em>)</em>) – the backend database, e.g., “sqlite” or “mongodb”</p></li>
+<li><p><strong>mode</strong> (<em>str</em><em> (</em><em>default = &quot;cache&quot;</em><em>)</em>) – the mode to use the connection.
+“insert”: this connection is only used to insert/update rows;
+“cache”: this connection caches some contents that have been retrieved;
+“memory”: this connection loads all contents in memory;</p></li>
+<li><p><strong>chunksize</strong> (<em>int</em><em> (</em><em>default = 32768</em><em>)</em>) – the chunksize to load/write database</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERConceptConnection.close">
+<code class="sig-name descname"><span class="pre">close</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERConceptConnection.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERConceptConnection.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the ASERConceptConnection safely</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERConceptConnection.get_concept_columns">
+<code class="sig-name descname"><span class="pre">get_concept_columns</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">columns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERConceptConnection.get_concept_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERConceptConnection.get_concept_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get column information from concepts</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>columns</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the columns to retrieve</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a list of retrieved rows</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Dict[str, object]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERConceptConnection.get_concept_given_str">
+<code class="sig-name descname"><span class="pre">get_concept_given_str</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">concept_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERConceptConnection.get_concept_given_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERConceptConnection.get_concept_given_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the exact matched concept given a string from ASER</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>concept_str</strong> (<em>str</em>) – a string representation of a concept</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the exact matched concept</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>aser.concept.ASERConcept</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERConceptConnection.get_concept_instance_pair_columns">
+<code class="sig-name descname"><span class="pre">get_concept_instance_pair_columns</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">columns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERConceptConnection.get_concept_instance_pair_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERConceptConnection.get_concept_instance_pair_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get column information from concepts</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>columns</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the columns to retrieve</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a list of retrieved rows</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Dict[str, object]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERConceptConnection.get_concepts_by_keys">
+<code class="sig-name descname"><span class="pre">get_concepts_by_keys</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order_bys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERConceptConnection.get_concepts_by_keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERConceptConnection.get_concepts_by_keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve multiple partial matched concepts by keys and values from ASER</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bys</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the given columns to match</p></li>
+<li><p><strong>keys</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the given values to match</p></li>
+<li><p><strong>order_bys</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the columns whose value are used to sort rows</p></li>
+<li><p><strong>reverse</strong> (<em>bool</em>) – whether to sort in a reversed order</p></li>
+<li><p><strong>top_n</strong> (<em>int</em>) – how many concepts to return, default <cite>None</cite> for all concepts</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the partial matched concepts</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[aser.concept.Concepts]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERConceptConnection.get_concepts_given_eventuality">
+<code class="sig-name descname"><span class="pre">get_concepts_given_eventuality</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eventuality</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERConceptConnection.get_concepts_given_eventuality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERConceptConnection.get_concepts_given_eventuality" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve concepts given an eventuality from ASER</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>eventuality</strong> (<em>Union</em><em>[</em><em>aser.eventuality.Eventuality</em><em>, </em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>, </em><em>str</em><em>]</em>) – eventuality that conceptualizes to the given concept</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the linked concepts</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[aser.concept.ASERConcepts]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERConceptConnection.get_concepts_given_strs">
+<code class="sig-name descname"><span class="pre">get_concepts_given_strs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">concept_strs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERConceptConnection.get_concepts_given_strs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERConceptConnection.get_concepts_given_strs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the exact matched concepts given strings from ASER</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>concept_str</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – string representations of concepts</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the exact matched concepts</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[aser.concept.ASERConcept]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERConceptConnection.get_eventualities_given_concept">
+<code class="sig-name descname"><span class="pre">get_eventualities_given_concept</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">concept</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERConceptConnection.get_eventualities_given_concept"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERConceptConnection.get_eventualities_given_concept" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve original eventualities given a concept from ASER</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>concept</strong> (<em>Union</em><em>[</em><em>aser.concept.ASERConcpet</em><em>, </em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>, </em><em>str</em><em>]</em>) – concept that corresponds to some eventualities</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the linked eventualities</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[aser.eventuality.Eventuality]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERConceptConnection.get_exact_match_concept">
+<code class="sig-name descname"><span class="pre">get_exact_match_concept</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">concept</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERConceptConnection.get_exact_match_concept"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERConceptConnection.get_exact_match_concept" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a exact matched concept from ASER
+(suggestion: consider to use <cite>get_exact_match_concepts</cite> if you want to retrieve multiple concepts)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>concept</strong> (<em>Union</em><em>[</em><em>aser.concept.ASERConcept</em><em>, </em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>, </em><em>str</em><em>]</em>) – a concept that contains the cid</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the exact matched concept</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>aser.concept.ASERConcept</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERConceptConnection.get_exact_match_concepts">
+<code class="sig-name descname"><span class="pre">get_exact_match_concepts</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">concepts</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERConceptConnection.get_exact_match_concepts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERConceptConnection.get_exact_match_concepts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve multiple exact matched concepts from ASER</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>concepts</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><em>aser.concept.ASERConcept</em><em>]</em><em>, </em><em>List</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>]</em><em>, </em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em>) – concepts</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the exact matched concepts</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[aser.concept.ASERConcept]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERConceptConnection.get_exact_match_relation">
+<code class="sig-name descname"><span class="pre">get_exact_match_relation</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">relation</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERConceptConnection.get_exact_match_relation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERConceptConnection.get_exact_match_relation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve an exact matched relation from ASER
+(suggestion: consider to use <cite>get_exact_match_relations</cite> if you want to retrieve multiple relations)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>relation</strong> (<em>Union</em><em>[</em><em>aser.relation.Relation</em><em>, </em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>, </em><em>str</em><em>, </em><em>Tuple</em><em>[</em><em>aser.concept.ASERConcept</em><em>, </em><em>aser.concept.ASERConcept</em><em>]</em><em>, </em><em>Tuple</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em><em>]</em>) – a relation that contains the rid or a concept pair that contains two cids</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the exact matched relation</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>aser.relation.Relation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERConceptConnection.get_exact_match_relations">
+<code class="sig-name descname"><span class="pre">get_exact_match_relations</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">relations</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERConceptConnection.get_exact_match_relations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERConceptConnection.get_exact_match_relations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve exact matched relations from ASER</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>relations</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><em>aser.relation.Relation</em><em>]</em><em>, </em><em>List</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>]</em><em>, </em><em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>List</em><em>[</em><em>Tuple</em><em>[</em><em>aser.concept.ASERConcept</em><em>, </em><em>aser.concept.ASERConcept</em><em>]</em><em>]</em><em>, </em><em>List</em><em>[</em><em>Tuple</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em><em>]</em><em>]</em>) – a relations that contain the rids or concept pairs each of which contains two cids</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the exact matched relations</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[aser.relation.Relation]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERConceptConnection.get_related_concepts">
+<code class="sig-name descname"><span class="pre">get_related_concepts</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">concept</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERConceptConnection.get_related_concepts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERConceptConnection.get_related_concepts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve related (connected) concepts from ASER</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>eventuality</strong> – an concept that contains the eid</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the related concepts</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Tuple[aser.concept.ASERConcept, aser.relation.Relation]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERConceptConnection.get_relation_columns">
+<code class="sig-name descname"><span class="pre">get_relation_columns</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">columns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERConceptConnection.get_relation_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERConceptConnection.get_relation_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get column information from relations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>columns</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the columns to retrieve</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a list of retrieved rows</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Dict[str, object]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERConceptConnection.get_relations_by_keys">
+<code class="sig-name descname"><span class="pre">get_relations_by_keys</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order_bys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERConceptConnection.get_relations_by_keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERConceptConnection.get_relations_by_keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve multiple partial matched relations by keys and values from ASER</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bys</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the given columns to match</p></li>
+<li><p><strong>keys</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the given values to match</p></li>
+<li><p><strong>order_bys</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>None</em><em>] </em><em>(</em><em>default = None</em><em>)</em>) – the columns whose value are used to sort rows</p></li>
+<li><p><strong>reverse</strong> (<em>bool</em><em> (</em><em>default = False</em><em>)</em>) – whether to sort in a reversed order</p></li>
+<li><p><strong>top_n</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>None</em><em>] </em><em>(</em><em>default = None</em><em>)</em>) – how many relations to return, default <cite>None</cite> for all relations</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the partial matched relations</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[aser.relation.Relation]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERConceptConnection.init">
+<code class="sig-name descname"><span class="pre">init</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERConceptConnection.init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERConceptConnection.init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the ASERConceptConnection, including creating tables, loading cids, eids, rids, and building cache</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERConceptConnection.insert_concept">
+<code class="sig-name descname"><span class="pre">insert_concept</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">concept</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERConceptConnection.insert_concept"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERConceptConnection.insert_concept" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert/Update a concept into ASER
+(suggestion: consider to use <cite>insert_concepts</cite> if you want to insert multiple concepts)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>concept</strong> (<em>aser.concept.ASERConcept</em>) – a concept to insert/update</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the inserted/updated concept</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>aser.concept.ASERConcept</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERConceptConnection.insert_concept_instance_pair">
+<code class="sig-name descname"><span class="pre">insert_concept_instance_pair</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">concept_instance_pair</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERConceptConnection.insert_concept_instance_pair"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERConceptConnection.insert_concept_instance_pair" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert/Update a concept_instance_pair into ASER
+(suggestion: consider to use <cite>insert_concept_instance_pairs</cite> if you want to insert multiple pairs)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>concept_instance_pair</strong> (<em>Union</em><em>[</em><em>aser.concept.ASERConceptInstancePair</em><em>, </em><em>Tuple</em><em>[</em><em>aser.concept.ASERConcpet</em><em>, </em><em>aser.event.Eventuality</em><em>, </em><em>float</em><em>]</em><em>]</em>) – a concept-instance pair to insert/update</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the inserted/updated concept-instance pair</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>aser.concept.ASERConceptInstancePair</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERConceptConnection.insert_concept_instance_pairs">
+<code class="sig-name descname"><span class="pre">insert_concept_instance_pairs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">concept_instance_pairs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERConceptConnection.insert_concept_instance_pairs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERConceptConnection.insert_concept_instance_pairs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert/Update concept_instance_pairs into ASER</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>concept_instance_pairs</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><em>aser.concept.ASERConceptInstancePair</em><em>]</em><em>, </em><em>List</em><em>[</em><em>Tuple</em><em>[</em><em>aser.concept.ASERConcpet</em><em>, </em><em>aser.event.Eventuality</em><em>, </em><em>float</em><em>]</em><em>]</em><em>]</em>) – concept-instance pairs to insert/update</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the inserted/updated concept-instance pairs</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[aser.concept.ASERConceptInstancePair]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERConceptConnection.insert_concepts">
+<code class="sig-name descname"><span class="pre">insert_concepts</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">concepts</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERConceptConnection.insert_concepts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERConceptConnection.insert_concepts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert/Update concepts into ASER</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>concepts</strong> (<em>List</em><em>[</em><em>aser.concept.ASERConcept</em><em>]</em>) – concepts to insert/update</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the inserted/updated concepts</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[aser.concept.ASERConcept]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERConceptConnection.insert_relation">
+<code class="sig-name descname"><span class="pre">insert_relation</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">relation</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERConceptConnection.insert_relation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERConceptConnection.insert_relation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert/Update a relation into ASER
+(suggestion: consider to use <cite>insert_relations</cite> if you want to insert multiple relations)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>relation</strong> (<em>aser.relation.Relation</em>) – an relation to insert/update</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the inserted/updated relation</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>aser.relation.Relation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERConceptConnection.insert_relations">
+<code class="sig-name descname"><span class="pre">insert_relations</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">relations</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERConceptConnection.insert_relations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERConceptConnection.insert_relations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert/Update relations into ASER</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>relations</strong> (<em>List</em><em>[</em><em>aser.relation.Relation</em><em>]</em>) – relations to insert/update</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the inserted/updated relations</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[aser.relation.Relation]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="aser.database.kg_connection.ASERKGConnection">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">aser.database.kg_connection.</span></code><code class="sig-name descname"><span class="pre">ASERKGConnection</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sqlite'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cache'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunksize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32768</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERKGConnection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERKGConnection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>KG connection for ASER (including eventualities and relations)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db_path</strong> (<em>str</em>) – database path</p></li>
+<li><p><strong>db</strong> (<em>str</em><em> (</em><em>default = &quot;sqlite&quot;</em><em>)</em>) – the backend database, e.g., “sqlite” or “mongodb”</p></li>
+<li><p><strong>mode</strong> (<em>str</em><em> (</em><em>default = &quot;cache&quot;</em><em>)</em>) – the mode to use the connection.
+“insert”: this connection is only used to insert/update rows;
+“cache”: this connection caches some contents that have been retrieved;
+“memory”: this connection loads all contents in memory;</p></li>
+<li><p><strong>grain</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>None</em><em>] </em><em>(</em><em>default = None</em><em>)</em>) – the grain to build cache
+“words”: cache is built on “verbs”, “skeleton_words”, and “words”
+“skeleton_words”: cache is built on “verbs”, and “skeleton_words”
+“verbs”: cache is built on “verbs”
+None: no cache</p></li>
+<li><p><strong>chunksize</strong> (<em>int</em><em> (</em><em>default = 32768</em><em>)</em>) – the chunksize to load/write database</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERKGConnection.close">
+<code class="sig-name descname"><span class="pre">close</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERKGConnection.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERKGConnection.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the ASERKGConnection safely</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERKGConnection.get_eventualities_by_keys">
+<code class="sig-name descname"><span class="pre">get_eventualities_by_keys</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order_bys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERKGConnection.get_eventualities_by_keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERKGConnection.get_eventualities_by_keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve multiple partial matched eventualities by keys and values from ASER</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bys</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the given columns to match</p></li>
+<li><p><strong>keys</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the given values to match</p></li>
+<li><p><strong>order_bys</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the columns whose value are used to sort rows</p></li>
+<li><p><strong>reverse</strong> (<em>bool</em>) – whether to sort in a reversed order</p></li>
+<li><p><strong>top_n</strong> (<em>int</em>) – how many eventualities to return, default <cite>None</cite> for all eventualities</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the partial matched eventualities</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[aser.eventuality.Eventuality]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERKGConnection.get_eventuality_columns">
+<code class="sig-name descname"><span class="pre">get_eventuality_columns</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">columns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERKGConnection.get_eventuality_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERKGConnection.get_eventuality_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get column information from eventualities</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>columns</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the columns to retrieve</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a list of retrieved rows</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Dict[str, object]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERKGConnection.get_exact_match_eventualities">
+<code class="sig-name descname"><span class="pre">get_exact_match_eventualities</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eventualities</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERKGConnection.get_exact_match_eventualities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERKGConnection.get_exact_match_eventualities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve multiple exact matched eventualities from ASER</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>eventualities</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><em>aser.eventuality.Eventuality</em><em>]</em><em>, </em><em>List</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>]</em><em>, </em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em>) – eventualities</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the exact matched eventualities</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[aser.eventuality.Eventuality]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERKGConnection.get_exact_match_eventuality">
+<code class="sig-name descname"><span class="pre">get_exact_match_eventuality</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eventuality</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERKGConnection.get_exact_match_eventuality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERKGConnection.get_exact_match_eventuality" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve an exact matched eventuality from ASER
+(suggestion: consider to use <cite>get_exact_match_eventualities</cite> if you want to retrieve multiple eventualities)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>eventuality</strong> (<em>Union</em><em>[</em><em>aser.eventuality.Eventuality</em><em>, </em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>, </em><em>str</em><em>]</em>) – an eventuality that contains the eid</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the exact matched eventuality</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>aser.eventuality.Eventuality</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERKGConnection.get_exact_match_relation">
+<code class="sig-name descname"><span class="pre">get_exact_match_relation</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">relation</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERKGConnection.get_exact_match_relation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERKGConnection.get_exact_match_relation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve an exact matched relation from ASER
+(suggestion: consider to use <cite>get_exact_match_relations</cite> if you want to retrieve multiple relations)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>relation</strong> (<em>Union</em><em>[</em><em>aser.relation.Relation</em><em>, </em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>, </em><em>str</em><em>, </em><em>Tuple</em><em>[</em><em>aser.eventuality.Eventuality</em><em>, </em><em>aser.eventuality.Eventuality</em><em>]</em><em>, </em><em>Tuple</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em><em>]</em>) – a relation that contains the rid or a eventuality pair that contains two eids</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the exact matched relation</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>aser.relation.Relation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERKGConnection.get_exact_match_relations">
+<code class="sig-name descname"><span class="pre">get_exact_match_relations</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">relations</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERKGConnection.get_exact_match_relations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERKGConnection.get_exact_match_relations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve exact matched relations from ASER</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>relations</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><em>aser.relation.Relation</em><em>]</em><em>, </em><em>List</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>]</em><em>, </em><em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>List</em><em>[</em><em>Tuple</em><em>[</em><em>aser.eventuality.Eventuality</em><em>, </em><em>aser.eventuality.Eventuality</em><em>]</em><em>]</em><em>, </em><em>List</em><em>[</em><em>Tuple</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em><em>]</em><em>]</em>) – a relations that contain the rids or eventuality pairs each of which contains two eids</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the exact matched relations</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[aser.relation.Relation]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERKGConnection.get_partial_match_eventualities">
+<code class="sig-name descname"><span class="pre">get_partial_match_eventualities</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eventuality</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERKGConnection.get_partial_match_eventualities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERKGConnection.get_partial_match_eventualities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve multiple partial matched eventualities by a given eventuality and properties from ASER</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>eventuality</strong> (<em>aser.eventuality.Eventuality</em>) – the given eventuality to match</p></li>
+<li><p><strong>bys</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the given properties to match</p></li>
+<li><p><strong>top_n</strong> (<em>int</em>) – how many rows to return, default <cite>None</cite> for all rows</p></li>
+<li><p><strong>threshold</strong> (<em>float</em><em> (</em><em>default = 0.8</em><em>)</em>) – the minimum similarity</p></li>
+<li><p><strong>sort</strong> (<em>bool</em><em> (</em><em>default = True</em><em>)</em>) – whether to sort</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the partial matched eventualities</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[aser.eventuality.Eventuality]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERKGConnection.get_related_eventualities">
+<code class="sig-name descname"><span class="pre">get_related_eventualities</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eventuality</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERKGConnection.get_related_eventualities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERKGConnection.get_related_eventualities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve related (connected) eventualities from ASER</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>eventuality</strong> (<em>Union</em><em>[</em><em>aser.eventuality.Eventuality</em><em>, </em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>, </em><em>str</em><em>]</em>) – an eventuality that contains the eid</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the related eventualities</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Tuple[aser.eventuality.Eventuality, aser.relation.Relation]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERKGConnection.get_relation_columns">
+<code class="sig-name descname"><span class="pre">get_relation_columns</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">columns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERKGConnection.get_relation_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERKGConnection.get_relation_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get column information from relations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>columns</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the columns to retrieve</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a list of retrieved rows</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Dict[str, object]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERKGConnection.get_relations_by_keys">
+<code class="sig-name descname"><span class="pre">get_relations_by_keys</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order_bys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERKGConnection.get_relations_by_keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERKGConnection.get_relations_by_keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve multiple partial matched relations by keys and values from ASER</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bys</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the given columns to match</p></li>
+<li><p><strong>keys</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the given values to match</p></li>
+<li><p><strong>order_bys</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>None</em><em>] </em><em>(</em><em>default = None</em><em>)</em>) – the columns whose value are used to sort rows</p></li>
+<li><p><strong>reverse</strong> (<em>bool</em><em> (</em><em>default = False</em><em>)</em>) – whether to sort in a reversed order</p></li>
+<li><p><strong>top_n</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>None</em><em>]  </em><em>(</em><em>default = None</em><em>)</em>) – how many relations to return, default <cite>None</cite> for all relations</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the partial matched relations</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[aser.relation.Relation]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERKGConnection.init">
+<code class="sig-name descname"><span class="pre">init</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERKGConnection.init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERKGConnection.init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the ASERKGConnection, including creating tables, loading eids and rids, and building cache</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERKGConnection.insert_eventualities">
+<code class="sig-name descname"><span class="pre">insert_eventualities</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eventualities</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERKGConnection.insert_eventualities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERKGConnection.insert_eventualities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert/Update eventualities into ASER</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>eventualities</strong> (<em>List</em><em>[</em><em>aser.eventuality.Eventuality</em><em>]</em>) – eventualities to insert/update</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the inserted/updated eventualities</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[aser.eventuality.Eventuality]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERKGConnection.insert_eventuality">
+<code class="sig-name descname"><span class="pre">insert_eventuality</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eventuality</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERKGConnection.insert_eventuality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERKGConnection.insert_eventuality" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert/Update an eventuality into ASER
+(suggestion: consider to use <cite>insert_eventualities</cite> if you want to insert multiple eventualities)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>eventuality</strong> (<em>aser.eventuality.Eventuality</em>) – an eventuality to insert/update</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the inserted/updated eventuality</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>aser.eventuality.Eventuality</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERKGConnection.insert_relation">
+<code class="sig-name descname"><span class="pre">insert_relation</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">relation</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERKGConnection.insert_relation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERKGConnection.insert_relation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert/Update a relation into ASER
+(suggestion: consider to use <cite>insert_relations</cite> if you want to insert multiple relations)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>relation</strong> (<em>aser.relation.Relation</em>) – an relation to insert/update</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the inserted/updated relation</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>aser.relation.Relation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aser.database.kg_connection.ASERKGConnection.insert_relations">
+<code class="sig-name descname"><span class="pre">insert_relations</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">relations</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/database/kg_connection.html#ASERKGConnection.insert_relations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.database.kg_connection.ASERKGConnection.insert_relations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert/Update relations into ASER</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>relations</strong> (<em>List</em><em>[</em><em>aser.relation.Relation</em><em>]</em>) – relations to insert/update</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the inserted/updated relations</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[aser.relation.Relation]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="extractor.html" class="btn btn-neutral float-right" title="Extractor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../tutorial/get-started.html" class="btn btn-neutral float-left" title="Get Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, KnowComp.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

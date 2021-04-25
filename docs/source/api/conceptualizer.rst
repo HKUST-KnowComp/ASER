@@ -1,7 +1,7 @@
 Conceptualization
 ================================================================================
 
-eventuality_extractor API
+eventuality_conceptualizer
 --------------------------------------------------------------------------------
 
 .. automodule:: aser.conceptualize.aser_conceptualizer

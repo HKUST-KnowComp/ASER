@@ -1,0 +1,929 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>aser.database.db_connection &mdash; ASER 2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> ASER
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/get-started.html">Get Started</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/database.html">Database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/extractor.html">Extractor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/conceptualizer.html">Conceptualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/aser-cs.html">Server/Client</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ASER</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>aser.database.db_connection</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for aser.database.db_connection</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">ujson</span> <span class="k">as</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">OrderedDict</span>
+
+
+<div class="viewcode-block" id="BaseDBConnection"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.BaseDBConnection">[docs]</a><span class="k">class</span> <span class="nc">BaseDBConnection</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Base KG connection for database</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_path</span><span class="p">,</span> <span class="n">chunksize</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Create an connection to database</span>
+
+<span class="sd">        :param db_path: database path</span>
+<span class="sd">        :type db_path: str</span>
+<span class="sd">        :param chunksize: the chunksize to load/write database</span>
+<span class="sd">        :type chunksize: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span> <span class="o">=</span> <span class="n">chunksize</span>
+
+<div class="viewcode-block" id="BaseDBConnection.close"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.BaseDBConnection.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Close the connection safely</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<div class="viewcode-block" id="BaseDBConnection.create_table"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.BaseDBConnection.create_table">[docs]</a>    <span class="k">def</span> <span class="nf">create_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">column_types</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Create a table with given columns and types</span>
+
+<span class="sd">        :param table_name: the table name to create</span>
+<span class="sd">        :type table_name: str</span>
+<span class="sd">        :param columns: the columns to create</span>
+<span class="sd">        :type columns: List[str]</span>
+<span class="sd">        :param column_types: the corresponding column types</span>
+<span class="sd">        :type column_types: List[str]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="BaseDBConnection.get_columns"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.BaseDBConnection.get_columns">[docs]</a>    <span class="k">def</span> <span class="nf">get_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">columns</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get column information from a table</span>
+
+<span class="sd">        :param table_name: the table name to retrieve</span>
+<span class="sd">        :type table_name: str</span>
+<span class="sd">        :param columns: the columns to retrieve</span>
+<span class="sd">        :type columns: List[str]</span>
+<span class="sd">        :return: a list of retrieved rows</span>
+<span class="sd">        :rtype: List[Dict[str, object]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="BaseDBConnection.select_row"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.BaseDBConnection.select_row">[docs]</a>    <span class="k">def</span> <span class="nf">select_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">columns</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Select a row from a table</span>
+
+<span class="sd">        :param table_name: the table name to retrieve</span>
+<span class="sd">        :type table_name: str</span>
+<span class="sd">        :param _id: the row id</span>
+<span class="sd">        :type _id: str</span>
+<span class="sd">        :param columns: the columns to retrieve</span>
+<span class="sd">        :type columns: List[str]</span>
+<span class="sd">        :return: a retrieved row</span>
+<span class="sd">        :rtype: Dict[str, object]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="BaseDBConnection.select_rows"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.BaseDBConnection.select_rows">[docs]</a>    <span class="k">def</span> <span class="nf">select_rows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">_ids</span><span class="p">,</span> <span class="n">columns</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Select rows from a table</span>
+
+<span class="sd">        :param table_name: the table name to retrieve</span>
+<span class="sd">        :type table_name: str</span>
+<span class="sd">        :param _ids: the row ids</span>
+<span class="sd">        :type _ids: List[str]</span>
+<span class="sd">        :param columns: the columns to retrieve</span>
+<span class="sd">        :type columns: List[str]</span>
+<span class="sd">        :return: retrieved rows</span>
+<span class="sd">        :rtype: List[Dict[str, object]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="BaseDBConnection.insert_row"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.BaseDBConnection.insert_row">[docs]</a>    <span class="k">def</span> <span class="nf">insert_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">row</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Insert a row into a table</span>
+
+<span class="sd">        :param table_name: the table name to insert</span>
+<span class="sd">        :type table_name: str</span>
+<span class="sd">        :param row: the row to insert</span>
+<span class="sd">        :type row: Dict[str, object]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="BaseDBConnection.insert_rows"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.BaseDBConnection.insert_rows">[docs]</a>    <span class="k">def</span> <span class="nf">insert_rows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">rows</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Insert several rows into a table</span>
+
+<span class="sd">        :param table_name: the table name to insert</span>
+<span class="sd">        :type table_name: str</span>
+<span class="sd">        :param rows: the rows to insert</span>
+<span class="sd">        :type rows: List[Dict[str, object]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="BaseDBConnection.get_update_op"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.BaseDBConnection.get_update_op">[docs]</a>    <span class="k">def</span> <span class="nf">get_update_op</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_columns</span><span class="p">,</span> <span class="n">operator</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get an update operator based on columns and a operator</span>
+
+<span class="sd">        :param update_columns: a list of columns to update</span>
+<span class="sd">        :type update_columns: List[str]</span>
+<span class="sd">        :param operator: an operator that applies to the columns, including &quot;+&quot;, &quot;-&quot;, &quot;*&quot;, &quot;/&quot;, &quot;=&quot;</span>
+<span class="sd">        :type operator: str</span>
+<span class="sd">        :return: an operator that suits the backend database</span>
+<span class="sd">        :rtype: object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="BaseDBConnection.update_row"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.BaseDBConnection.update_row">[docs]</a>    <span class="k">def</span> <span class="nf">update_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">update_op</span><span class="p">,</span> <span class="n">update_columns</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Update a row that exists in a table</span>
+
+<span class="sd">        :param table_name: the table name to update</span>
+<span class="sd">        :type table_name: str</span>
+<span class="sd">        :param row: a new row</span>
+<span class="sd">        :type row: Dict[str, object]</span>
+<span class="sd">        :param update_op: an operator that returned by `get_update_op`</span>
+<span class="sd">        :type update_op: object</span>
+<span class="sd">        :param update_columns: the columns to update</span>
+<span class="sd">        :type update_columns: List[str]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="BaseDBConnection.update_rows"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.BaseDBConnection.update_rows">[docs]</a>    <span class="k">def</span> <span class="nf">update_rows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">update_ops</span><span class="p">,</span> <span class="n">update_columns</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Update rows that exist in a table</span>
+
+<span class="sd">        :param table_name: the table name to update</span>
+<span class="sd">        :type table_name: str</span>
+<span class="sd">        :param rows: new rows</span>
+<span class="sd">        :type rows: List[Dict[str, object]]</span>
+<span class="sd">        :param update_ops: operator(s) that returned by `get_update_op`</span>
+<span class="sd">        :type update_ops: Union[List[object], object]</span>
+<span class="sd">        :param update_columns: the columns to update</span>
+<span class="sd">        :type update_columns: List[str]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="BaseDBConnection.get_rows_by_keys"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.BaseDBConnection.get_rows_by_keys">[docs]</a>    <span class="k">def</span> <span class="nf">get_rows_by_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">bys</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">order_bys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">top_n</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Retrieve rows by specific keys in some order</span>
+
+<span class="sd">        :param table_name: the table name to retrieve</span>
+<span class="sd">        :type table_name: str</span>
+<span class="sd">        :param bys: the given columns to match</span>
+<span class="sd">        :type bys: List[str]</span>
+<span class="sd">        :param keys: the given values to match</span>
+<span class="sd">        :type keys: List[str]</span>
+<span class="sd">        :param columns: the given columns to retrieve</span>
+<span class="sd">        :type columns: List[str]</span>
+<span class="sd">        :param order_bys: the columns whose value are used to sort rows</span>
+<span class="sd">        :type order_bys: List[str]</span>
+<span class="sd">        :param reverse: whether to sort in a reversed order</span>
+<span class="sd">        :type reverse: bool</span>
+<span class="sd">        :param top_n: how many rows to return, default `None` for all rows</span>
+<span class="sd">        :type top_n: int</span>
+<span class="sd">        :return: retrieved rows</span>
+<span class="sd">        :rtype: List[Dict[str, object]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+
+
+<div class="viewcode-block" id="SqliteDBConnection"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.SqliteDBConnection">[docs]</a><span class="k">class</span> <span class="nc">SqliteDBConnection</span><span class="p">(</span><span class="n">BaseDBConnection</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; KG connection for SQLite database</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_path</span><span class="p">,</span> <span class="n">chunksize</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Create an connection to SQLite database</span>
+
+<span class="sd">        :param db_path: database path, e.g., /home/xliucr/ASER/KG.db</span>
+<span class="sd">        :type db_path: str</span>
+<span class="sd">        :param chunksize: the chunksize to load/write database</span>
+<span class="sd">        :type chunksize: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="kn">import</span> <span class="nn">sqlite3</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SqliteDBConnection</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">db_path</span><span class="p">,</span> <span class="n">chunksize</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_path</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SqliteDBConnection.close"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.SqliteDBConnection.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Close the connection safely</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SqliteDBConnection.create_table"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.SqliteDBConnection.create_table">[docs]</a>    <span class="k">def</span> <span class="nf">create_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">column_types</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Create a table with given columns and types</span>
+
+<span class="sd">        :param table_name: the table name to create</span>
+<span class="sd">        :type table_name: str</span>
+<span class="sd">        :param columns: the columns to create</span>
+<span class="sd">        :type columns: List[str]</span>
+<span class="sd">        :param column_types: the corresponding column types, please refer to https://www.sqlite.org/datatype3.html</span>
+<span class="sd">        :type column_types: List[str]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">create_table</span> <span class="o">=</span> <span class="s2">&quot;CREATE TABLE </span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">);&quot;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">table_name</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">column_types</span><span class="p">)])</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">create_table</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SqliteDBConnection.get_columns"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.SqliteDBConnection.get_columns">[docs]</a>    <span class="k">def</span> <span class="nf">get_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">columns</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get column information from a table</span>
+
+<span class="sd">        :param table_name: the table name to retrieve</span>
+<span class="sd">        :type table_name: str</span>
+<span class="sd">        :param columns: the columns to retrieve</span>
+<span class="sd">        :type columns: List[str]</span>
+<span class="sd">        :return: a list of retrieved rows</span>
+<span class="sd">        :rtype: List[Dict[str, object]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">select_table</span> <span class="o">=</span> <span class="s2">&quot;SELECT </span><span class="si">%s</span><span class="s2"> FROM </span><span class="si">%s</span><span class="s2">;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">columns</span><span class="p">),</span> <span class="n">table_name</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">x</span><span class="p">)),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select_table</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="SqliteDBConnection.select_row"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.SqliteDBConnection.select_row">[docs]</a>    <span class="k">def</span> <span class="nf">select_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">columns</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Select a row from a table</span>
+<span class="sd">        (suggestion: consider to use `select_rows` if you want to retrieve multiple rows)</span>
+
+<span class="sd">        :param table_name: the table name to retrieve</span>
+<span class="sd">        :type table_name: str</span>
+<span class="sd">        :param _id: the row id</span>
+<span class="sd">        :type _id: str</span>
+<span class="sd">        :param columns: the columns to retrieve</span>
+<span class="sd">        :type columns: List[str]</span>
+<span class="sd">        :return: a retrieved row</span>
+<span class="sd">        :rtype: Dict[str, object]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">select_table</span> <span class="o">=</span> <span class="s2">&quot;SELECT </span><span class="si">%s</span><span class="s2"> FROM </span><span class="si">%s</span><span class="s2"> WHERE _id=?;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">columns</span><span class="p">),</span> <span class="n">table_name</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select_table</span><span class="p">,</span> <span class="p">[</span><span class="n">_id</span><span class="p">]))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span></div>
+
+<div class="viewcode-block" id="SqliteDBConnection.select_rows"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.SqliteDBConnection.select_rows">[docs]</a>    <span class="k">def</span> <span class="nf">select_rows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">_ids</span><span class="p">,</span> <span class="n">columns</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Select rows from a table</span>
+
+<span class="sd">        :param table_name: the table name to retrieve</span>
+<span class="sd">        :type table_name: str</span>
+<span class="sd">        :param _ids: the row ids</span>
+<span class="sd">        :type _ids: List[str]</span>
+<span class="sd">        :param columns: the columns to retrieve</span>
+<span class="sd">        :type columns: List[str]</span>
+<span class="sd">        :return: retrieved rows</span>
+<span class="sd">        :rtype: List[Dict[str, object]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_ids</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">row_cache</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">_ids</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span><span class="p">):</span>
+                <span class="n">select_table</span> <span class="o">=</span> <span class="s2">&quot;SELECT </span><span class="si">%s</span><span class="s2"> FROM </span><span class="si">%s</span><span class="s2"> WHERE _id IN (&#39;</span><span class="si">%s</span><span class="s2">&#39;);&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                    <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">columns</span><span class="p">),</span> <span class="n">table_name</span><span class="p">,</span> <span class="s2">&quot;&#39;,&#39;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_ids</span><span class="p">[</span><span class="n">idx</span><span class="p">:</span><span class="n">idx</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span><span class="p">])</span>
+                <span class="p">)</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select_table</span><span class="p">)))</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+                <span class="n">exact_match_row</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
+                <span class="n">row_cache</span><span class="p">[</span><span class="n">exact_match_row</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">exact_match_row</span>
+            <span class="n">exact_match_rows</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">_id</span> <span class="ow">in</span> <span class="n">_ids</span><span class="p">:</span>
+                <span class="n">exact_match_rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row_cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">_id</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">exact_match_rows</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="SqliteDBConnection.insert_row"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.SqliteDBConnection.insert_row">[docs]</a>    <span class="k">def</span> <span class="nf">insert_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">row</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Insert a row into a table</span>
+<span class="sd">        (suggestion: consider to use `insert_rows` if you want to insert multiple rows)</span>
+
+<span class="sd">        :param table_name: the table name to insert</span>
+<span class="sd">        :type table_name: str</span>
+<span class="sd">        :param row: the row to insert</span>
+<span class="sd">        :type row: Dict[str, object]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">insert_table</span> <span class="o">=</span> <span class="s2">&quot;INSERT INTO </span><span class="si">%s</span><span class="s2"> VALUES (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;?&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">))))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">insert_table</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SqliteDBConnection.insert_rows"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.SqliteDBConnection.insert_rows">[docs]</a>    <span class="k">def</span> <span class="nf">insert_rows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">rows</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Insert several rows into a table</span>
+
+<span class="sd">        :param table_name: the table name to insert</span>
+<span class="sd">        :type table_name: str</span>
+<span class="sd">        :param rows: the rows to insert</span>
+<span class="sd">        :type rows: List[Dict[str, object]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">insert_table</span> <span class="o">=</span> <span class="s2">&quot;INSERT INTO </span><span class="si">%s</span><span class="s2"> VALUES (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;?&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">rows</span><span class="p">))))))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">executemany</span><span class="p">(</span><span class="n">insert_table</span><span class="p">,</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SqliteDBConnection.get_update_op"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.SqliteDBConnection.get_update_op">[docs]</a>    <span class="k">def</span> <span class="nf">get_update_op</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_columns</span><span class="p">,</span> <span class="n">operator</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get an update operator based on columns and a operator</span>
+
+<span class="sd">        :param update_columns: a list of columns to update</span>
+<span class="sd">        :type update_columns: List[str]</span>
+<span class="sd">        :param operator: an operator that applies to the columns, including &quot;+&quot;, &quot;-&quot;, &quot;*&quot;, &quot;/&quot;, &quot;=&quot;</span>
+<span class="sd">        :type operator: str</span>
+<span class="sd">        :return: an operator that suits the backend database</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">operator</span> <span class="ow">in</span> <span class="s2">&quot;+-*/&quot;</span><span class="p">:</span>
+            <span class="n">update_ops</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">update_column</span> <span class="ow">in</span> <span class="n">update_columns</span><span class="p">:</span>
+                <span class="n">update_ops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">update_column</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">+</span> <span class="n">update_column</span> <span class="o">+</span> <span class="n">operator</span> <span class="o">+</span> <span class="s2">&quot;?&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">update_ops</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">operator</span> <span class="o">==</span> <span class="s2">&quot;=&quot;</span><span class="p">:</span>
+            <span class="n">update_ops</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">update_column</span> <span class="ow">in</span> <span class="n">update_columns</span><span class="p">:</span>
+                <span class="n">update_ops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">update_column</span> <span class="o">+</span> <span class="s2">&quot;=?&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">update_ops</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+    <span class="k">def</span> <span class="nf">_update_update_op</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">update_op</span><span class="p">,</span> <span class="n">update_columns</span><span class="p">):</span>
+        <span class="n">update_op_sp</span> <span class="o">=</span> <span class="n">update_op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;?&#39;</span><span class="p">)</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">update_op_sp</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">update_op_sp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">update_op_sp</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">update_op_sp</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">update_columns</span><span class="p">)</span>
+        <span class="n">new_update_op</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">update_op_sp</span><span class="p">)):</span>
+            <span class="n">new_update_op</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">update_op_sp</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">update_columns</span><span class="p">[</span><span class="n">i</span><span class="p">]],</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">new_update_op</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="n">row</span><span class="p">[</span><span class="n">update_columns</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;&#39;&#39;&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">new_update_op</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">update_columns</span><span class="p">[</span><span class="n">i</span><span class="p">]]))</span>
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">new_update_op</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SqliteDBConnection.update_row"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.SqliteDBConnection.update_row">[docs]</a>    <span class="k">def</span> <span class="nf">update_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">update_op</span><span class="p">,</span> <span class="n">update_columns</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Update a row that exists in a table</span>
+<span class="sd">        (suggestion: consider to use `update_rows` if you want to update multiple rows)</span>
+
+<span class="sd">        :param table_name: the table name to update</span>
+<span class="sd">        :type table_name: str</span>
+<span class="sd">        :param row: a new row</span>
+<span class="sd">        :type row: Dict[str, object]</span>
+<span class="sd">        :param update_op: an operator that returned by `get_update_op`</span>
+<span class="sd">        :type update_op: str</span>
+<span class="sd">        :param update_columns: the columns to update</span>
+<span class="sd">        :type update_columns: List[str]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">update_table</span> <span class="o">=</span> <span class="s2">&quot;UPDATE </span><span class="si">%s</span><span class="s2"> SET </span><span class="si">%s</span><span class="s2"> WHERE _id=?&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="n">update_op</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">update_table</span><span class="p">,</span> <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">update_columns</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SqliteDBConnection.update_rows"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.SqliteDBConnection.update_rows">[docs]</a>    <span class="k">def</span> <span class="nf">update_rows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">update_ops</span><span class="p">,</span> <span class="n">update_columns</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Update rows that exist in a table</span>
+
+<span class="sd">        :param table_name: the table name to update</span>
+<span class="sd">        :type table_name: str</span>
+<span class="sd">        :param rows: new rows</span>
+<span class="sd">        :type rows: List[Dict[str, object]]</span>
+<span class="sd">        :param update_ops: operator(s) that returned by `get_update_op`</span>
+<span class="sd">        :type update_ops: Union[List[str], str]</span>
+<span class="sd">        :param update_columns: the columns to update</span>
+<span class="sd">        :type update_columns: List[str]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">update_ops</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>  <span class="c1"># +-*/</span>
+                <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">update_ops</span><span class="p">)</span>
+                <span class="c1"># group rows by op to speed up</span>
+                <span class="n">update_op_collections</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>  <span class="c1"># key: _update_update_op</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
+                    <span class="c1"># self.update_row(row, table_name, update_ops[i], update_columns)</span>
+                    <span class="n">new_update_op</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_update_op</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">update_ops</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">update_columns</span><span class="p">)</span>
+                    <span class="n">update_op_collections</span><span class="p">[</span><span class="n">new_update_op</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">new_update_op</span><span class="p">,</span> <span class="n">op_rows</span> <span class="ow">in</span> <span class="n">update_op_collections</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">op_rows</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">_ids</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span><span class="p">):</span>
+                        <span class="n">update_table</span> <span class="o">=</span> <span class="s2">&quot;UPDATE </span><span class="si">%s</span><span class="s2"> SET </span><span class="si">%s</span><span class="s2"> WHERE _id IN (&#39;</span><span class="si">%s</span><span class="s2">&#39;);&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                            <span class="n">table_name</span><span class="p">,</span> <span class="n">new_update_op</span><span class="p">,</span> <span class="s2">&quot;&#39;,&#39;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_ids</span><span class="p">[</span><span class="n">idx</span><span class="p">:</span><span class="n">idx</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span><span class="p">])</span>
+                        <span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">update_table</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># =</span>
+                <span class="n">update_op</span> <span class="o">=</span> <span class="n">update_ops</span>
+                <span class="c1"># group rows by new values to speed up</span>
+                <span class="n">value_collections</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>  <span class="c1"># key: values of new values</span>
+                <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+                    <span class="c1"># self.update_row(row, table_name, update_op, update_columns)</span>
+                    <span class="n">value_collections</span><span class="p">[</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">([</span><span class="n">row</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">update_columns</span><span class="p">])]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">new_update_op</span><span class="p">,</span> <span class="n">op_rows</span> <span class="ow">in</span> <span class="n">value_collections</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">new_update_op</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_update_op</span><span class="p">(</span><span class="n">op_rows</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">update_op</span><span class="p">,</span> <span class="n">update_columns</span><span class="p">)</span>
+                    <span class="n">_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">op_rows</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">_ids</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span><span class="p">):</span>
+                        <span class="n">update_table</span> <span class="o">=</span> <span class="s2">&quot;UPDATE </span><span class="si">%s</span><span class="s2"> SET </span><span class="si">%s</span><span class="s2"> WHERE _id IN (&#39;</span><span class="si">%s</span><span class="s2">&#39;);&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                            <span class="n">table_name</span><span class="p">,</span> <span class="n">new_update_op</span><span class="p">,</span> <span class="s2">&quot;&#39;,&#39;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_ids</span><span class="p">[</span><span class="n">idx</span><span class="p">:</span><span class="n">idx</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span><span class="p">])</span>
+                        <span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">update_table</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SqliteDBConnection.get_rows_by_keys"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.SqliteDBConnection.get_rows_by_keys">[docs]</a>    <span class="k">def</span> <span class="nf">get_rows_by_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">bys</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">order_bys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">top_n</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Retrieve rows by specific keys in some order</span>
+
+<span class="sd">        :param table_name: the table name to retrieve</span>
+<span class="sd">        :type table_name: str</span>
+<span class="sd">        :param bys: the given columns to match</span>
+<span class="sd">        :type bys: List[str]</span>
+<span class="sd">        :param keys: the given values to match</span>
+<span class="sd">        :type keys: List[str]</span>
+<span class="sd">        :param columns: the given columns to retrieve</span>
+<span class="sd">        :type columns: List[str]</span>
+<span class="sd">        :param order_bys: the columns whose value are used to sort rows</span>
+<span class="sd">        :type order_bys: List[str]</span>
+<span class="sd">        :param reverse: whether to sort in a reversed order</span>
+<span class="sd">        :type reverse: bool</span>
+<span class="sd">        :param top_n: how many rows to return, default `None` for all rows</span>
+<span class="sd">        :type top_n: int</span>
+<span class="sd">        :return: retrieved rows</span>
+<span class="sd">        :rtype: List[Dict[str, object]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">key_match_events</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">select_table</span> <span class="o">=</span> <span class="s2">&quot;SELECT </span><span class="si">%s</span><span class="s2"> FROM </span><span class="si">%s</span><span class="s2"> WHERE </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">columns</span><span class="p">),</span> <span class="n">table_name</span><span class="p">,</span> <span class="s2">&quot; AND &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">=?&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">by</span><span class="p">)</span> <span class="k">for</span> <span class="n">by</span> <span class="ow">in</span> <span class="n">bys</span><span class="p">])</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">order_bys</span><span class="p">:</span>
+            <span class="n">select_table</span> <span class="o">+=</span> <span class="s2">&quot; ORDER BY </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">order_bys</span><span class="p">),</span> <span class="s2">&quot;DESC&quot;</span> <span class="k">if</span> <span class="n">reverse</span> <span class="k">else</span> <span class="s2">&quot;ASC&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">top_n</span><span class="p">:</span>
+            <span class="n">select_table</span> <span class="o">+=</span> <span class="s2">&quot; LIMIT </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">top_n</span><span class="p">)</span>
+        <span class="n">select_table</span> <span class="o">+=</span> <span class="s2">&quot;;&quot;</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select_table</span><span class="p">,</span> <span class="n">keys</span><span class="p">):</span>
+            <span class="n">key_match_event</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
+            <span class="n">key_match_events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key_match_event</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">key_match_events</span></div></div>
+
+
+<div class="viewcode-block" id="MongoDBConnection"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.MongoDBConnection">[docs]</a><span class="k">class</span> <span class="nc">MongoDBConnection</span><span class="p">(</span><span class="n">BaseDBConnection</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; KG connection for MongoDB</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_path</span><span class="p">,</span> <span class="n">chunksize</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Create an connection to SQLite database</span>
+
+<span class="sd">        :param db_path: database path, e.g., mongodb://localhost:27017/ASER</span>
+<span class="sd">        :type db_path: str</span>
+<span class="sd">        :param chunksize: the chunksize to load/write database</span>
+<span class="sd">        :type chunksize: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">pymongo</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MongoDBConnection</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">db_path</span><span class="p">,</span> <span class="n">chunksize</span><span class="p">)</span>
+
+        <span class="n">host_port</span><span class="p">,</span> <span class="n">db_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">db_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">MongoClient</span><span class="p">(</span><span class="n">host_port</span><span class="p">,</span> <span class="n">document_class</span><span class="o">=</span><span class="n">OrderedDict</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">[</span><span class="n">db_name</span><span class="p">]</span>
+
+<div class="viewcode-block" id="MongoDBConnection.close"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.MongoDBConnection.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Close the connection safely</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MongoDBConnection.create_table"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.MongoDBConnection.create_table">[docs]</a>    <span class="k">def</span> <span class="nf">create_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Create a table without the necessary to provide column information</span>
+
+<span class="sd">        :param table_name: the table name to create</span>
+<span class="sd">        :type table_name: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span></div>
+
+    <span class="k">def</span> <span class="nf">__get_projection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">columns</span><span class="p">):</span>
+        <span class="n">projection</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">:</span>
+            <span class="n">projection</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">projection</span>
+
+<div class="viewcode-block" id="MongoDBConnection.get_columns"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.MongoDBConnection.get_columns">[docs]</a>    <span class="k">def</span> <span class="nf">get_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">columns</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get column information from a table</span>
+
+<span class="sd">        :param table_name: the table name to retrieve</span>
+<span class="sd">        :type table_name: str</span>
+<span class="sd">        :param columns: the columns to retrieve</span>
+<span class="sd">        :type columns: List[str]</span>
+<span class="sd">        :return: a list of retrieved rows</span>
+<span class="sd">        :rtype: List[Dict[str, object]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">projection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_projection</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">({},</span> <span class="n">projection</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">results</span></div>
+
+<div class="viewcode-block" id="MongoDBConnection.select_row"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.MongoDBConnection.select_row">[docs]</a>    <span class="k">def</span> <span class="nf">select_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">columns</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Select a row from a table</span>
+<span class="sd">        (suggestion: consider to use `select_rows` if you want to retrieve multiple rows)</span>
+
+<span class="sd">        :param table_name: the table name to retrieve</span>
+<span class="sd">        :type table_name: str</span>
+<span class="sd">        :param _id: the row id</span>
+<span class="sd">        :type _id: str</span>
+<span class="sd">        :param columns: the columns to retrieve</span>
+<span class="sd">        :type columns: List[str]</span>
+<span class="sd">        :return: a retrieved row</span>
+<span class="sd">        :rtype: Dict[str, object]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">projection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_projection</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">_id</span><span class="p">},</span> <span class="n">projection</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MongoDBConnection.select_rows"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.MongoDBConnection.select_rows">[docs]</a>    <span class="k">def</span> <span class="nf">select_rows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">_ids</span><span class="p">,</span> <span class="n">columns</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Select rows from a table</span>
+
+<span class="sd">        :param table_name: the table name to retrieve</span>
+<span class="sd">        :type table_name: str</span>
+<span class="sd">        :param _ids: the row ids</span>
+<span class="sd">        :type _ids: List[str]</span>
+<span class="sd">        :param columns: the columns to retrieve</span>
+<span class="sd">        :type columns: List[str]</span>
+<span class="sd">        :return: retrieved rows</span>
+<span class="sd">        :rtype: List[Dict[str, object]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span>
+        <span class="n">exact_match_rows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">projection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_projection</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">_ids</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span><span class="p">):</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$in&#39;</span><span class="p">:</span> <span class="n">_ids</span><span class="p">[</span><span class="n">idx</span><span class="p">:</span><span class="n">idx</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span><span class="p">]}}</span>
+            <span class="n">exact_match_rows</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">table</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">projection</span><span class="p">))</span>
+        <span class="n">row_cache</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]:</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">exact_match_rows</span><span class="p">}</span>
+        <span class="n">exact_match_rows</span> <span class="o">=</span> <span class="p">[</span><span class="n">row_cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">_id</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">_id</span> <span class="ow">in</span> <span class="n">_ids</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">exact_match_rows</span></div>
+
+<div class="viewcode-block" id="MongoDBConnection.insert_row"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.MongoDBConnection.insert_row">[docs]</a>    <span class="k">def</span> <span class="nf">insert_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">row</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Insert a row into a table</span>
+<span class="sd">        (suggestion: consider to use `insert_rows` if you want to insert multiple rows)</span>
+
+<span class="sd">        :param table_name: the table name to insert</span>
+<span class="sd">        :type table_name: str</span>
+<span class="sd">        :param row: the row to insert</span>
+<span class="sd">        :type row: Dict[str, object]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">row</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MongoDBConnection.insert_rows"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.MongoDBConnection.insert_rows">[docs]</a>    <span class="k">def</span> <span class="nf">insert_rows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">rows</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Insert several rows into a table</span>
+
+<span class="sd">        :param table_name: the table name to insert</span>
+<span class="sd">        :type table_name: str</span>
+<span class="sd">        :param rows: the rows to insert</span>
+<span class="sd">        :type rows: List[Dict[str, object]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">insert_many</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MongoDBConnection.get_update_op"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.MongoDBConnection.get_update_op">[docs]</a>    <span class="k">def</span> <span class="nf">get_update_op</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_columns</span><span class="p">,</span> <span class="n">operator</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get an update operator based on columns and a operator</span>
+
+<span class="sd">        :param update_columns: a list of columns to update</span>
+<span class="sd">        :type update_columns: List[str]</span>
+<span class="sd">        :param operator: an operator that applies to the columns, including &quot;+&quot;, &quot;-&quot;, &quot;*&quot;, &quot;/&quot;, &quot;=&quot;</span>
+<span class="sd">        :type operator: str</span>
+<span class="sd">        :return: an operator that suits the backend database</span>
+<span class="sd">        :rtype: Dict[str, Dict[str, float]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">operator</span> <span class="o">==</span> <span class="s2">&quot;+&quot;</span><span class="p">:</span>
+            <span class="n">update_ops</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">update_column</span> <span class="ow">in</span> <span class="n">update_columns</span><span class="p">:</span>
+                <span class="n">update_ops</span><span class="p">[</span><span class="n">update_column</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># placeholder</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;$inc&quot;</span><span class="p">:</span> <span class="n">update_ops</span><span class="p">}</span>
+        <span class="k">elif</span> <span class="n">operator</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span><span class="p">:</span>
+            <span class="n">update_ops</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">update_column</span> <span class="ow">in</span> <span class="n">update_columns</span><span class="p">:</span>
+                <span class="n">update_ops</span><span class="p">[</span><span class="n">update_column</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># placeholder</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;$inc&quot;</span><span class="p">:</span> <span class="n">update_ops</span><span class="p">}</span>
+        <span class="k">elif</span> <span class="n">operator</span> <span class="o">==</span> <span class="s2">&quot;*&quot;</span><span class="p">:</span>
+            <span class="n">update_ops</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">update_column</span> <span class="ow">in</span> <span class="n">update_columns</span><span class="p">:</span>
+                <span class="n">update_ops</span><span class="p">[</span><span class="n">update_column</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># placeholder</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;$mul&quot;</span><span class="p">:</span> <span class="n">update_ops</span><span class="p">}</span>
+        <span class="k">elif</span> <span class="n">operator</span> <span class="o">==</span> <span class="s2">&quot;/&quot;</span><span class="p">:</span>
+            <span class="n">update_ops</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">update_column</span> <span class="ow">in</span> <span class="n">update_columns</span><span class="p">:</span>
+                <span class="n">update_ops</span><span class="p">[</span><span class="n">update_column</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span>  <span class="c1"># placeholder</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;$mul&quot;</span><span class="p">:</span> <span class="n">update_ops</span><span class="p">}</span>
+        <span class="k">elif</span> <span class="n">operator</span> <span class="o">==</span> <span class="s2">&quot;=&quot;</span><span class="p">:</span>
+            <span class="n">update_ops</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">update_column</span> <span class="ow">in</span> <span class="n">update_columns</span><span class="p">:</span>
+                <span class="n">update_ops</span><span class="p">[</span><span class="n">update_column</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># placeholder</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="n">update_ops</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+    <span class="k">def</span> <span class="nf">_update_update_op</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">update_op</span><span class="p">,</span> <span class="n">update_columns</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Update the operator for a single row</span>
+
+<span class="sd">        :param row: a new row</span>
+<span class="sd">        :type row: Dict[str, object]</span>
+<span class="sd">        :param update_op: an operator that returned by `get_update_op`</span>
+<span class="sd">        :type update_op: Dict[str, Dict[str, float]]</span>
+<span class="sd">        :param update_columns: the columns to update</span>
+<span class="sd">        :type update_columns: List[str]</span>
+<span class="sd">        :return: Dict[str, Dict[str, float]]</span>
+<span class="sd">        :rtype: Dict[str, Dict[str, float]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">new_update_op</span> <span class="o">=</span> <span class="n">update_op</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">new_update_op</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;$inc&quot;</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">update_column</span> <span class="ow">in</span> <span class="n">update_columns</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="n">update_column</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">v</span><span class="p">[</span><span class="n">update_column</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">update_column</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">v</span><span class="p">[</span><span class="n">update_column</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">row</span><span class="p">[</span><span class="n">update_column</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;$mul&quot;</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">update_column</span> <span class="ow">in</span> <span class="n">update_columns</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="n">update_column</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                        <span class="n">v</span><span class="p">[</span><span class="n">update_column</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">update_column</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">v</span><span class="p">[</span><span class="n">update_column</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">row</span><span class="p">[</span><span class="n">update_column</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;$set&quot;</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">update_column</span> <span class="ow">in</span> <span class="n">update_columns</span><span class="p">:</span>
+                    <span class="n">v</span><span class="p">[</span><span class="n">update_column</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">update_column</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">new_update_op</span>
+
+<div class="viewcode-block" id="MongoDBConnection.update_row"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.MongoDBConnection.update_row">[docs]</a>    <span class="k">def</span> <span class="nf">update_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">update_op</span><span class="p">,</span> <span class="n">update_columns</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Update a row that exists in a table</span>
+<span class="sd">        (suggestion: consider to use `update_rows` if you want to update multiple rows)</span>
+
+<span class="sd">        :param table_name: the table name to update</span>
+<span class="sd">        :type table_name: str</span>
+<span class="sd">        :param row: a new row</span>
+<span class="sd">        :type row: Dict[str, object]</span>
+<span class="sd">        :param update_op: an operator that returned by `get_update_op`</span>
+<span class="sd">        :type update_op: Dict[str, Dict[str, float]]</span>
+<span class="sd">        :param update_columns: the columns to update</span>
+<span class="sd">        :type update_columns: List[str]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]},</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_update_op</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">update_op</span><span class="p">,</span> <span class="n">update_columns</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="MongoDBConnection.update_rows"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.MongoDBConnection.update_rows">[docs]</a>    <span class="k">def</span> <span class="nf">update_rows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">update_ops</span><span class="p">,</span> <span class="n">update_columns</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Update rows that exist in a table</span>
+
+<span class="sd">        :param table_name: the table name to update</span>
+<span class="sd">        :type table_name: str</span>
+<span class="sd">        :param rows: new rows</span>
+<span class="sd">        :type rows: List[Dict[str, object]]</span>
+<span class="sd">        :param update_ops: operator(s) that returned by `get_update_op`</span>
+<span class="sd">        :type update_ops: Union[List[Dict[str, Dict[str, float]]], Dict[str, Dict[str, float]]]</span>
+<span class="sd">        :param update_columns: the columns to update</span>
+<span class="sd">        :type update_columns: List[str]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">update_ops</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>  <span class="c1"># +-*/</span>
+                <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">update_ops</span><span class="p">)</span>
+                <span class="n">update_op_collections</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
+                    <span class="c1"># self.update_row(row, table_name, update_ops[i], update_columns)</span>
+                    <span class="n">new_update_op</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_update_op</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">update_ops</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">update_columns</span><span class="p">)</span>
+                    <span class="n">update_op_collections</span><span class="p">[</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">new_update_op</span><span class="p">)]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">new_update_op</span><span class="p">,</span> <span class="n">op_rows</span> <span class="ow">in</span> <span class="n">update_op_collections</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">new_update_op</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">new_update_op</span><span class="p">)</span>
+                    <span class="n">_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">op_rows</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">_ids</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span><span class="p">):</span>
+                        <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$in&#39;</span><span class="p">:</span> <span class="n">_ids</span><span class="p">[</span><span class="n">idx</span><span class="p">:</span><span class="n">idx</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span><span class="p">]}}</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">update_many</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">new_update_op</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># =</span>
+                <span class="n">update_op</span> <span class="o">=</span> <span class="n">update_ops</span>
+                <span class="n">value_collections</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+                    <span class="n">value_collections</span><span class="p">[</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">([</span><span class="n">row</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">update_columns</span><span class="p">])]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">new_update_op</span><span class="p">,</span> <span class="n">op_rows</span> <span class="ow">in</span> <span class="n">value_collections</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">new_update_op</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_update_op</span><span class="p">(</span><span class="n">op_rows</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">update_op</span><span class="p">,</span> <span class="n">update_columns</span><span class="p">)</span>
+                    <span class="n">_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">op_rows</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">_ids</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span><span class="p">):</span>
+                        <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$in&#39;</span><span class="p">:</span> <span class="n">_ids</span><span class="p">[</span><span class="n">idx</span><span class="p">:</span><span class="n">idx</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span><span class="p">]}}</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">update_many</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">new_update_op</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MongoDBConnection.get_rows_by_keys"><a class="viewcode-back" href="../../../api/database.html#aser.database.db_connection.MongoDBConnection.get_rows_by_keys">[docs]</a>    <span class="k">def</span> <span class="nf">get_rows_by_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">bys</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">order_bys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">top_n</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Retrieve rows by specific keys in some order</span>
+
+<span class="sd">        :param table_name: the table name to retrieve</span>
+<span class="sd">        :type table_name: str</span>
+<span class="sd">        :param bys: the given columns to match</span>
+<span class="sd">        :type bys: List[str]</span>
+<span class="sd">        :param keys: the given values to match</span>
+<span class="sd">        :type keys: List[str]</span>
+<span class="sd">        :param columns: the given columns to retrieve</span>
+<span class="sd">        :type columns: List[str]</span>
+<span class="sd">        :param order_bys: the columns whose value are used to sort rows</span>
+<span class="sd">        :type order_bys: List[str]</span>
+<span class="sd">        :param reverse: whether to sort in a reversed order</span>
+<span class="sd">        :type reverse: bool</span>
+<span class="sd">        :param top_n: how many rows to return, default `None` for all rows</span>
+<span class="sd">        :type top_n: int</span>
+<span class="sd">        :return: retrieved rows</span>
+<span class="sd">        :rtype: List[Dict[str, object]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">bys</span><span class="p">,</span> <span class="n">keys</span><span class="p">))</span>
+        <span class="n">projection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_projection</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span>
+        <span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">projection</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">order_bys</span><span class="p">:</span>
+            <span class="n">direction</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">reverse</span> <span class="k">else</span> <span class="mi">1</span>
+            <span class="n">cursor</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">sort</span><span class="p">([(</span><span class="n">k</span><span class="p">,</span> <span class="n">direction</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">order_bys</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">top_n</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">top_n</span><span class="p">:</span>
+                    <span class="k">break</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">cursor</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, KnowComp.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -3,8 +3,8 @@ import shutil
 import pickle
 import multiprocessing
 import math
-from tqdm import tqdm
 from collections import Counter, defaultdict
+from tqdm import tqdm
 from aser.extract.sentence_parser import SentenceParser
 from aser.extract.parsed_reader import ParsedReader
 from aser.extract.aser_extractor import BaseASERExtractor, SeedRuleASERExtractor, DiscourseASERExtractor
@@ -14,9 +14,67 @@ from aser.extract.utils import iter_files
 from aser.utils.logging import init_logger, close_logger
 from aser.database.kg_connection import ASERKGConnection, ASERConceptConnection
 from aser.conceptualize.utils import conceptualize_eventualities, build_concept_relations
-from aser.extract.utils import extract_files
+from aser.extract.utils import extract_file
 
 MAX_THREADS = 1024
+
+
+def extract_files(
+    raw_paths=None,
+    processed_paths=None,
+    prefix_to_be_removed="",
+    sentence_parser=None,
+    parsed_reader=None,
+    aser_extractor=None
+):
+    """ Extract eventualities and relations from files (which contain raw texts or parsed results)
+
+    :param raw_paths: the file paths each of which contains raw texts
+    :type raw_paths: Tuple[List[str], None]
+    :param processed_paths: the file paths  each of which stores the parsed result
+    :type processed_paths: List[str]
+    :param prefix_to_be_removed: the prefix in sids to remove
+    :type prefix_to_be_removed: str
+    :param sentence_parser: the sentence parser to parse raw text
+    :type sentence_parser: SentenceParser
+    :param parsed_reader: the parsed reader to load parsed results
+    :type parsed_reader: ParsedReader
+    :param aser_extractor: the ASER extractor to extract both eventualities and relations
+    :type aser_extractor: BaseASERExtractor
+    :return: a dictionary from eid to sids, a dictionary from rid to sids, a dictionary from eid to eventuality, and a dictionary from rid to relation
+    :rtype: Tuple[Dict[str, List[str]], Dict[str, List[str]], Dict[str, aser.eventuality.Eventuality], Dict[str, aser.relation.Relation]]
+    """
+
+    eid2sids = defaultdict(list)
+    rid2sids = defaultdict(list)
+    eid2eventuality = dict()
+    rid2relation = dict()
+
+    if raw_paths is None or len(raw_paths) == 0:
+        raw_paths = [""] * len(processed_paths)
+
+    for raw_path, processed_path in zip(raw_paths, processed_paths):
+        x_eid2sids, x_rid2sids, x_eid2eventuality, x_rid2relation = extract_file(
+            raw_path, processed_path, prefix_to_be_removed, sentence_parser, parsed_reader, aser_extractor
+        )
+        for eid, sids in x_eid2sids.items():
+            eid2sids[eid].extend(sids)
+        for rid, sids in x_rid2sids.items():
+            rid2sids[rid].extend(sids)
+        for eid, eventuality in x_eid2eventuality.items():
+            if eid not in eid2eventuality:
+                eid2eventuality[eid] = eventuality
+            else:
+                eid2eventuality[eid].update(eventuality)
+        for rid, relation in x_rid2relation.items():
+            if rid not in rid2relation:
+                rid2relation[rid] = relation
+            else:
+                rid2relation[rid].update(relation)
+    del x_eid2sids, x_rid2sids, x_eid2eventuality, x_rid2relation
+    return eid2sids, rid2sids, eid2eventuality, rid2relation
+
+
 
 class ASERPipe(object):
     def __init__(self, opt):
@@ -118,7 +176,10 @@ class ASERPipe(object):
                 for x in tqdm(results):
                     x_eid2sids, x_rid2sids, x_eid2eventuality, x_rid2relation = x.get()
                     if len(eid2eventuality) == 0 and len(rid2relation) == 0:
-                        eid2sids, rid2sids, eid2eventuality, rid2relation = x_eid2sids, x_rid2sids, x_eid2eventuality, x_rid2relation
+                        eid2sids = x_eid2sids
+                        rid2sids = x_rid2sids
+                        eid2eventuality = x_eid2eventuality
+                        rid2relation = x_rid2relation
                         for eid, eventuality in x_eid2eventuality.items():
                             eventuality_counter[eid] += eventuality.frequency
                         for rid, relation in x_rid2relation.items():

@@ -5,7 +5,6 @@ import bisect
 from collections import Counter
 from copy import copy
 from aser.object import JsonSerializedObject
-from aser.extract.utils import sort_dependencies_position, extract_indices_from_dependencies
 
 
 class Eventuality(JsonSerializedObject):
@@ -239,7 +238,7 @@ class Eventuality(JsonSerializedObject):
         return self.skeleton_ners
 
     def _construct(self, dependencies, skeleton_dependencies, parsed_result):
-        word_indices = extract_indices_from_dependencies(dependencies)
+        word_indices = Eventuality.extract_indices_from_dependencies(dependencies)
         if parsed_result["pos_tags"][word_indices[0]] == "IN":
             poped_idx = word_indices[0]
             for i in range(len(dependencies) - 1, -1, -1):
@@ -270,14 +269,18 @@ class Eventuality(JsonSerializedObject):
                 mention["end"] = end_idx + 1
                 mention["text"] = " ".join(self.words[mention["start"]:mention["end"]])
                 self._mentions[(mention["start"], mention["end"])] = mention
-        dependencies, raw2reset_idx, reset2raw_idx = sort_dependencies_position(dependencies, reset_position=True)
+        dependencies, raw2reset_idx, reset2raw_idx = Eventuality.sort_dependencies_position(
+            dependencies, reset_position=True
+        )
         self._dependencies = dependencies
         self.raw_sent_mapping = reset2raw_idx
 
-        skeleton_word_indices = extract_indices_from_dependencies(skeleton_dependencies)
+        skeleton_word_indices = Eventuality.extract_indices_from_dependencies(skeleton_dependencies)
         self._skeleton_indices = [raw2reset_idx[idx] for idx in skeleton_word_indices]
 
-        _skeleton_dependencies, _, _ = sort_dependencies_position(skeleton_dependencies, reset_position=False)
+        _skeleton_dependencies, _, _ = Eventuality.sort_dependencies_position(
+            skeleton_dependencies, reset_position=False
+        )
         skeleton_dependency_indices = list()
         ptr = 0
         for i, dep in enumerate(dependencies):
@@ -459,3 +462,74 @@ class Eventuality(JsonSerializedObject):
 
     def _phrase_segment(self):
         return self._pos_compound_segment()
+
+    @staticmethod
+    def sort_dependencies_position(dependencies, reset_position=True):
+        """ Fix absolute positions into relevant positions and sort them
+
+        :param dependencies: the input dependencies
+        :type dependencies: List[Tuple[int, str, int]]
+        :param reset_position: whether to reset positions
+        :type reset_position: bool (default = True)
+        :return: the new dependencies, the position mapping, and the inversed mapping
+        :rtype: Tuple[List[Tuple[int, str, int], Union[Dict[int, int], None], Union[Dict[int, int], None]]
+
+        .. highlight:: python
+        .. code-block:: python
+
+            Input:
+
+                [(8, "cop", 7), (8, "nsubj", 6)]
+
+            Output:
+
+                [(2, 'nsubj', 0), (2, 'cop', 1)], {6: 0, 7: 1, 8: 2}, {0: 6, 1: 7, 2: 8}
+        """
+
+        tmp_dependencies = set()
+        for triplet in dependencies:
+            tmp_dependencies.add(tuple(triplet))
+        new_dependencies = list()
+        if reset_position:
+            positions = set()
+            for governor, _, dependent in tmp_dependencies:
+                positions.add(governor)
+                positions.add(dependent)
+            positions = sorted(positions)
+            position_map = dict(zip(positions, range(len(positions))))
+
+            for governor, dep, dependent in tmp_dependencies:
+                new_dependencies.append((position_map[governor], dep, position_map[dependent]))
+            new_dependencies.sort(key=lambda x: (x[0], x[2]))
+            return new_dependencies, position_map, {val: key for key, val in position_map.items()}
+        else:
+            new_dependencies = list([t for t in sorted(tmp_dependencies, key=lambda x: (x[0], x[2]))])
+            return new_dependencies, None, None
+
+    @staticmethod
+    def extract_indices_from_dependencies(dependencies):
+        """ Extract indices from dependencies
+
+        :param dependencies: the input dependencies
+        :type dependencies: List[Tuple[int, str, int]]
+        :return: the involved indices
+        :rtype: List[int]
+
+        .. highlight:: python
+        .. code-block:: python
+
+            Input:
+
+                [(8, "cop", 7), (8, "nsubj", 6)]
+
+            Output:
+
+                [6, 7, 8]
+        """
+
+        word_positions = set()
+        for governor_pos, _, dependent_pos in dependencies:
+            word_positions.add(governor_pos)
+            word_positions.add(dependent_pos)
+
+        return list(sorted(word_positions))

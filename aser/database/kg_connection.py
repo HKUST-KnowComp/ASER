@@ -5,7 +5,7 @@ from collections import OrderedDict
 from ..concept import ASERConcept, ASERConceptInstancePair
 from ..eventuality import Eventuality
 from ..relation import Relation, relation_senses
-from ..database import SqliteConnection, MongoDBConnection
+from ..database.db_connection import SqliteDBConnection, MongoDBConnection
 from ..database.utils import compute_overlap
 
 CHUNKSIZE = 32768
@@ -54,7 +54,7 @@ class ASERKGConnection(object):
         """
 
         if db == "sqlite":
-            self._conn = SqliteConnection(db_path, chunksize)
+            self._conn = SqliteDBConnection(db_path, chunksize)
         elif db == "mongodb":
             self._conn = MongoDBConnection(db_path, chunksize)
         else:
@@ -938,7 +938,7 @@ class ASERConceptConnection(object):
         """
 
         if db == "sqlite":
-            self._conn = SqliteConnection(db_path, chunksize)
+            self._conn = SqliteDBConnection(db_path, chunksize)
         elif db == "mongodb":
             self._conn = MongoDBConnection(db_path, chunksize)
         else:
