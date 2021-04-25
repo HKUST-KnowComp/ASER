@@ -38,6 +38,9 @@ class ASERClient(object):
         time.sleep(1)
 
     def close(self):
+        """ Close the client safely
+
+        """
         self.sender.close()
         self.receiver.close()
 
@@ -87,9 +90,9 @@ class ASERClient(object):
                             msg = msg[len(ASERError):-1]
                             start_idx = msg.index("(")
                             if msg[:start_idx] == "ValueError":
-                                raise ValueError(msg[start_idx+1:])
+                                raise ValueError(msg[start_idx + 1:])
                             elif msg[:start_idx] == "TimeoutError":
-                                raise TimeoutError(msg[start_idx+1:])
+                                raise TimeoutError(msg[start_idx + 1:])
                             elif msg[:start_idx] == "AttributeError":
                                 raise AttributeError(msg[start_idx + 1:])
                         return msg
@@ -98,7 +101,35 @@ class ASERClient(object):
         except BaseException as e:
             raise e
 
+    def parse_text(self, text):
+        """ Parse a raw text by sending a request to ASERServer
+
+        :param text: a raw text
+        :type text: str
+        :return: the parsed result
+        :rtype: List[Dict[str, object]]
+        """
+
+        if not isinstance(text, str):
+            raise ValueError("Error: the input of parse_text should be a raw text.")
+        text = text.encode("utf-8")
+
+        request_id = self._send(ASERCmd.parse_text, text)
+        msg = self._recv(request_id)
+        if not msg:
+            return None
+
+        return msg
+
     def extract_eventualities(self, data):
+        """ Extract eventualities by sending a request to ASERServer
+
+        :param data: a raw text or a parsed result of a paragraph
+        :type data: Union[str, List[Dict[str, object]]]
+        :return: the extracted eventualities
+        :rtype: List[List[aser.eventuality.Eventuality]]
+        """
+
         if isinstance(data, str):
             data = data.encode("utf-8")
         else:
@@ -118,17 +149,24 @@ class ASERClient(object):
         return ret_data
 
     def extract_relations(self, data):
+        """ Extract relations by sending a request to ASERServer
+
+        :param data: a raw text or a parsed result of a paragraph associated with extracted eventualities
+        :type data: Union[str, Tuple[List[Dict[str, object]], List[List[aser.eventuality.Eventuality]]]]
+        :return: the extracted relations
+        :rtype: List[List[aser.relation.Relation]]
+        """
+
         if isinstance(data, str):
             data = data.encode("utf-8")
         else:
             if len(data) == 2:
                 data = [
-                    data[0],
-                    [[e.encode(encoding=None) for e in sent_eventualities] for sent_eventualities in data[1]]
+                    data[0], [[e.encode(encoding=None) for e in sent_eventualities] for sent_eventualities in data[1]]
                 ]
                 data = json.dumps(data).encode("utf-8")
             else:
-                raise ValueError("Error: your message should be text or (parsed_results, para_eventualities).")
+                raise ValueError("Error: your message should be text or (para_parsed_result, para_eventualities).")
         request_id = self._send(ASERCmd.extract_relations, data)
         msg = self._recv(request_id)
         if not msg:
@@ -144,11 +182,19 @@ class ASERClient(object):
         return ret_data
 
     def extract_eventualities_and_relations(self, data):
+        """ Extract both eventualities and relations by sending a request to ASERServer
+
+        :param data: a raw text or the parsed result returned by corenlp
+        :type data: List[Dict[str, object]]
+        :return: the extracted eventualities and relations
+        :rtype: Tuple[Union[List[List[aser.eventuality.Eventuality]], List[List[Dict[str, object]]], List[aser.eventuality.Eventuality], List[Dict[str, object]]], Union[List[List[aser.relation.Relation]], List[List[Dict[str, object]]], List[aser.relation.Relation], List[Dict[str, object]]]]
+        """
+
         if isinstance(data, str):
             data = data.encode("utf-8")
         else:
             data = json.dumps(data).encode("utf-8")
-        request_id = self._send(ASERCmd.extract_eventualities, data)
+        request_id = self._send(ASERCmd.extract_eventualities_and_relations, data)
         msg = self._recv(request_id)
         if not msg:
             return None
@@ -166,8 +212,16 @@ class ASERClient(object):
             ret_relations.append(rst_relations)
         return ret_eventualities, ret_relations
 
-    def conceptualize_eventuality(self, data):
-        request_id = self._send(ASERCmd.conceptualize_eventuality, data.encode("utf-8"))
+    def conceptualize_eventuality(self, eventuality):
+        """ Conceptualize an eventuality by sending a request to ASERServer
+
+        :param eventuality: an eventuality
+        :type eventuality: aser.eventuality.Eventuality
+        :return: a list of (conceptualized eventuality, score) pair
+        :rtype: List[Tuple[aser.concept.ASERConcept, float]]
+        """
+
+        request_id = self._send(ASERCmd.conceptualize_eventuality, eventuality.encode("utf-8"))
         msg = self._recv(request_id)
         if not msg:
             return None
@@ -178,7 +232,37 @@ class ASERClient(object):
             ret_data.append((concept, score))
         return ret_data
 
+    def exact_match_eventuality(self, data):
+        """ Retrieve the extract match eventuality by sending a DB retrieval request
+
+        :param data: an eventuality or eid
+        :type data: Union[aser.eventuality.Eventuality, str]
+        :return: the exact matched eventuality or None
+        :rtype: Union[aser.eventuality.Eventuality, None]
+        """
+
+        if isinstance(data, str):  # eid
+            data = data.encode("utf-8")
+        else:
+            data = data.eid.encode("utf-8")
+        request_id = self._send(ASERCmd.exact_match_eventuality, data)
+        msg = self._recv(request_id)
+        if msg == ASERCmd.none:
+            return None
+        else:
+            return Eventuality().decode(msg, encoding=None)
+
     def predict_eventuality_relation(self, eventuality1, eventuality2):
+        """ Predict the relation between two eventualities by sending a DB retrieval request
+
+        :param eventuality1: one eventuality or eid as the head
+        :type eventuality1: Union[str, aser.eventuality.Eventuality]
+        :param eventuality2: the other eventuality or eid as the tail
+        :type eventuality2: Union[str, aser.eventuality.Eventuality]
+        :return: the relation stored in KG
+        :rtype: aser.relation.Relation
+        """
+
         if isinstance(eventuality1, str):
             hid = eventuality1
         else:
@@ -196,17 +280,56 @@ class ASERClient(object):
             return Relation().decode(msg, encoding=None)
 
     def fetch_related_eventualities(self, data):
-        if isinstance(data, str): # eid
+        """ Fetch all related eventualities of the given eventuality
+
+        :param data: the given eventuality or eid
+        :type data: Union[str, aser.eventuality.Eventuality]
+        :return: all related eventualities associated with corresponding relations
+        :rtype: List[Tuple[aser.eventuality.Eventuality, aser.relation.Relation]]
+        """
+
+        if isinstance(data, str):  # eid
             data = data.encode("utf-8")
         else:
             data = data.eid.encode("utf-8")
         request_id = self._send(ASERCmd.fetch_related_eventualities, data)
         msg = self._recv(request_id)
         return [
-            (Eventuality().decode(e_encoded, encoding=None), Relation().decode(r_encoded, encoding=None)) for e_encoded, r_encoded in msg
+            (Eventuality().decode(e_encoded, encoding=None), Relation().decode(r_encoded, encoding=None))
+            for e_encoded, r_encoded in msg
         ]
 
+    def exact_match_concept(self, data):
+        """ Retrieve the extract match concept by sending a DB retrieval request
+
+        :param data: a concept or cid
+        :type data: Union[aser.concept.ASERConcept, str]
+        :return: the exact matched concept or None
+        :rtype: Union[aser.concept.ASERConcept, None]
+        """
+
+        if isinstance(data, str):  # cid
+            data = data.encode("utf-8")
+        else:
+            data = data.eid.encode("utf-8")
+        request_id = self._send(ASERCmd.exact_match_concept, data)
+        msg = self._recv(request_id)
+        if msg == ASERCmd.none:
+            return None
+        else:
+            return ASERConcept().decode(msg, encoding=None)
+
     def predict_concept_relation(self, concept1, concept2):
+        """ Predict the relation between two conceptualized eventualities by sending a DB retrieval request
+
+        :param concept1: one concept or cid as the head
+        :type concept1: Union[str, aser.concept.ASERConcept]
+        :param concept2: the other concept or cid as the head
+        :type concept2: Union[str, aser.concept.ASERConcept]
+        :return: the relation stored in concept KG
+        :rtype: aser.relation.Relation
+        """
+
         if isinstance(concept1, str):
             hid = concept1
         else:
@@ -224,13 +347,21 @@ class ASERClient(object):
             return Relation().decode(msg, encoding=None)
 
     def fetch_related_concepts(self, data):
-        if isinstance(data, str): # eid
+        """ Fetch all related concepts of the given concept
+
+        :param data: the given concept or cid
+        :type data: Union[str, aser.concept.ASERConcept]
+        :return: all related concepts associated with corresponding relations
+        :rtype: List[Tuple[aser.concept.ASERConcept, aser.relation.Relation]]
+        """
+
+        if isinstance(data, str):  # cid
             data = data.encode("utf-8")
         else:
             data = data.cid.encode("utf-8")
         request_id = self._send(ASERCmd.fetch_related_concepts, data)
         msg = self._recv(request_id)
         return [
-            (ASERConcept().decode(c_encoded, encoding=None), Relation().decode(r_encoded, encoding=None)) for c_encoded, r_encoded in msg
+            (ASERConcept().decode(c_encoded, encoding=None), Relation().decode(r_encoded, encoding=None))
+            for c_encoded, r_encoded in msg
         ]
-

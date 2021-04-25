@@ -99,7 +99,7 @@ Now, you can check the core, full, and concept directories.
 Step-by-step extraction
 --------------------------------------------------------------------------------
 
-Let's see how to utilize an ASER extractor and an conceptualizer.
+Let's see how to utilize an ASER extractor and a conceptualizer.
 We provide two kinds of ASERExtractors: the SeedRuleASERExtractor corresponding to the WWW"2020and a new DiscourseASERExtractor which is implemented based on a discourse parsing system.
 
 .. highlight:: python

@@ -177,7 +177,7 @@ class BaseASERExtractor(object):
         :param kw: other parameters
         :type kw: Dict[str, object]
         :return: the extracted eventualities
-        :rtype: Union[List[aser.eventuality.Eventuality, Dict[str, object]], List[List[aser.eventuality.Eventuality, Dict[str, object]]]]
+        :rtype: Union[List[List[aser.eventuality.Eventuality]], List[List[Dict[str, object]]], List[aser.eventuality.Eventuality], List[Dict[str, object]]]
 
         .. highlight:: python
         .. code-block:: python
@@ -305,7 +305,7 @@ class BaseASERExtractor(object):
         :param kw: other parameters
         :type kw: Dict[str, object]
         :return: the extracted eventualities
-        :rtype: Union[List[aser.eventuality.Eventuality, Dict[str, object]], List[List[aser.eventuality.Eventuality, Dict[str, object]]]]
+        :rtype: Union[List[List[aser.eventuality.Eventuality]], List[List[Dict[str, object]]], List[aser.eventuality.Eventuality], List[Dict[str, object]]]
 
         .. highlight:: python
         .. code-block:: python
@@ -331,20 +331,20 @@ class BaseASERExtractor(object):
     def extract_relations_from_parsed_result(
         self, parsed_result, para_eventualities, output_format="Relation", in_order=True, **kw
     ):
-        """ Extract relations from a parsed result and extracted eventualities
+        """ Extract relations from a parsed result (of a paragraph) and extracted eventualities
 
         :param parsed_result: the parsed result returned by corenlp
         :type parsed_result: List[Dict[str, object]]
         :param para_eventualities: eventualities in the paragraph
         :type para_eventualities: List[aser.eventuality.Eventuality]
-        :param output_format: which format to return, "Relation" or "json"
+        :param output_format: which format to return, "Relation" or "triplet"
         :type output_format: str (default = "Relation")
         :param in_order: whether the returned order follows the input token order
         :type in_order: bool (default = True)
         :param kw: other parameters
         :type kw: Dict[str, object]
         :return: the extracted relations
-        :rtype: Union[List[aser.relation.Relation, Dict[str, object]], List[List[aser.relation.Relation, Dict[str, object]]]]
+        :rtype: Union[List[List[aser.relation.Relation]], List[List[Dict[str, object]]], List[aser.relation.Relation], List[Dict[str, object]]]
 
         .. highlight:: python
         .. code-block:: python
@@ -459,11 +459,11 @@ class BaseASERExtractor(object):
         )
 
     def extract_relations_from_text(self, text, output_format="Relation", in_order=True, annotators=None, **kw):
-        """
+        """ Extract relations from a raw text and extracted eventualities
 
         :param text: a raw text
         :type text: str
-        :param output_format: which format to return, "Relation" or "json"
+        :param output_format: which format to return, "Relation" or "triplet"
         :type output_format: str (default = "Relation")
         :param in_order: whether the returned order follows the input token order
         :type in_order: bool (default = True)
@@ -472,7 +472,7 @@ class BaseASERExtractor(object):
         :param kw: other parameters
         :type kw: Dict[str, object]
         :return: the extracted relations
-        :rtype: Union[List[aser.relation.Relation, Dict[str, object]], List[List[aser.relation.Relation, Dict[str, object]]]]
+        :rtype: Union[List[List[aser.relation.Relation]], List[List[Dict[str, object]]], List[aser.relation.Relation], List[Dict[str, object]]]
 
         .. highlight:: python
         .. code-block:: python
@@ -511,14 +511,14 @@ class BaseASERExtractor(object):
         :type parsed_result: List[Dict[str, object]]
         :param eventuality_output_format: which format to return eventualities, "Eventuality" or "json"
         :type eventuality_output_format: str (default = "Eventuality")
-        :param relation_output_format: which format to return relations, "Relation" or "json"
+        :param relation_output_format: which format to return relations, "Relation" or "triplet"
         :type relation_output_format: str (default = "Relation")
         :param in_order: whether the returned order follows the input token order
         :type in_order: bool (default = True)
         :param kw: other parameters
         :type kw: Dict[str, object]
         :return: the extracted eventualities and relations
-        :rtype: Tuple[Union[List[aser.eventuality.Eventuality, Dict[str, object]], List[List[aser.eventuality.Eventuality, Dict[str, object]]]], Union[List[aser.relation.Relation, Dict[str, object]], List[List[aser.relation.Relation, Dict[str, object]]]]]
+        :rtype: Tuple[Union[List[List[aser.eventuality.Eventuality]], List[List[Dict[str, object]]], List[aser.eventuality.Eventuality], List[Dict[str, object]]], Union[List[List[aser.relation.Relation]], List[List[Dict[str, object]]], List[aser.relation.Relation], List[Dict[str, object]]]]
 
         .. highlight:: python
         .. code-block:: python
@@ -652,7 +652,7 @@ class BaseASERExtractor(object):
                 para_eventualities = [[eventuality.encode(encoding=None) for eventuality in sent_eventualities] \
                                       for sent_eventualities in para_eventualities]
             if relation_output_format == "triplet":
-                relations = [list(chain.from_iterable([relation.to_triplet() for relation in sent_relations])) \
+                para_relations = [list(chain.from_iterable([relation.to_triplet() for relation in sent_relations])) \
                              for sent_relations in para_relations]
             if is_single_sent:
                 return para_eventualities[0], para_relations[0]
@@ -681,10 +681,10 @@ class BaseASERExtractor(object):
                 else:
                     rid2relation[relation.rid].update(relation)
             if relation_output_format == "Relation":
-                relations = sorted(rid2relation.values(), key=lambda r: r.rid)
+                para_relations = sorted(rid2relation.values(), key=lambda r: r.rid)
             elif relation_output_format == "triplet":
-                relations = sorted(chain.from_iterable([relation.to_triplets() for relation in rid2relation.values()]))
-            return eventualities, relations
+                para_relations = sorted(chain.from_iterable([relation.to_triplets() for relation in rid2relation.values()]))
+            return eventualities, para_relations
 
     def extract_from_text(
         self,
@@ -701,7 +701,7 @@ class BaseASERExtractor(object):
         :type text: str
         :param eventuality_output_format: which format to return eventualities, "Eventuality" or "json"
         :type eventuality_output_format: str (default = "Eventuality")
-        :param relation_output_format: which format to return relations, "Relation" or "json"
+        :param relation_output_format: which format to return relations, "Relation" or "triplet"
         :type relation_output_format: str (default = "Relation")
         :param in_order: whether the returned order follows the input token order
         :type in_order: bool (default = True)
@@ -710,7 +710,7 @@ class BaseASERExtractor(object):
         :param kw: other parameters
         :type kw: Dict[str, object]
         :return: the extracted eventualities and relations
-        :rtype: Tuple[Union[List[aser.eventuality.Eventuality, Dict[str, object]], List[List[aser.eventuality.Eventuality, Dict[str, object]]]], Union[List[aser.relation.Relation, Dict[str, object]], List[List[aser.relation.Relation, Dict[str, object]]]]]
+        :rtype: :rtype: Tuple[Union[List[List[aser.eventuality.Eventuality]], List[List[Dict[str, object]]], List[aser.eventuality.Eventuality], List[Dict[str, object]]], Union[List[List[aser.relation.Relation]], List[List[Dict[str, object]]], List[aser.relation.Relation], List[Dict[str, object]]]]
 
         .. highlight:: python
         .. code-block:: python
@@ -792,14 +792,14 @@ class DiscourseASERExtractor(BaseASERExtractor):
         :type parsed_result: List[Dict[str, object]]
         :param eventuality_output_format: which format to return eventualities, "Eventuality" or "json"
         :type eventuality_output_format: str (default = "Eventuality")
-        :param relation_output_format: which format to return relations, "Relation" or "json"
+        :param relation_output_format: which format to return relations, "Relation" or "triplet"
         :type relation_output_format: str (default = "Relation")
         :param in_order: whether the returned order follows the input token order
         :type in_order: bool (default = True)
         :param kw: other parameters (e.g., syntax_tree_cache)
         :type kw: Dict[str, object]
         :return: the extracted eventualities and relations
-        :rtype: Tuple[Union[List[aser.eventuality.Eventuality, Dict[str, object]], List[List[aser.eventuality.Eventuality, Dict[str, object]]]], Union[List[aser.relation.Relation, Dict[str, object]], List[List[aser.relation.Relation, Dict[str, object]]]]]
+        :rtype: :rtype: Tuple[Union[List[List[aser.eventuality.Eventuality]], List[List[Dict[str, object]]], List[aser.eventuality.Eventuality], List[Dict[str, object]]], Union[List[List[aser.relation.Relation]], List[List[Dict[str, object]]], List[aser.relation.Relation], List[Dict[str, object]]]]
         """
 
         if "syntax_tree_cache" not in kw:

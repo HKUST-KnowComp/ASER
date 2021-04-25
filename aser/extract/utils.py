@@ -517,7 +517,7 @@ def process_raw_file(raw_path, processed_path, sentence_parser):
     :type processed_path: str
     :param sentence_parser: the sentence parser to parse raw text
     :type sentence_parser: SentenceParser
-    :return: the parsed results
+    :return: the parsed results of the given file
     :rtype: List[List[Dict[str, object]]]
     """
 
@@ -531,7 +531,7 @@ def load_processed_data(processed_path, parsed_reader):
     :type processed_path: str
     :param parsed_reader: the parsed reader to load parsed results
     :type parsed_reader: ParsedReader
-    :return: the parsed results
+    :return: the parsed result
     :rtype: List[List[Dict[str, object]]]
     """
 

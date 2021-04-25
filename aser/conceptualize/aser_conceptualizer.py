@@ -3,6 +3,9 @@ from ..concept import ASERConcept, ProbaseConcept
 
 
 class BaseASERConceptualizer(object):
+    """ Base ASER eventuality conceptualizer to conceptualize eventualities
+
+    """
     def __init__(self):
         pass
 
@@ -13,7 +16,7 @@ class BaseASERConceptualizer(object):
         pass
 
     def conceptualize(self, eventuality):
-        """ Conceptualization given a eventuality
+        """ Conceptualize an eventuality
 
         :param eventuality: an eventuality
         :type eventuality: aser.eventuality.Eventuality
@@ -25,7 +28,8 @@ class BaseASERConceptualizer(object):
 
 
 class SeedRuleASERConceptualizer(BaseASERConceptualizer):
-    """ Conceptualization based on rules and NERs
+    """ ASER eventuality conceptualizer based on rules and NERs
+
     """
     def __init__(self, **kw):
         super().__init__()
@@ -43,7 +47,7 @@ class SeedRuleASERConceptualizer(BaseASERConceptualizer):
         self.pronouns = self.person_pronoun_set | frozenset(['it'])
 
     def conceptualize(self, eventuality):
-        """ Conceptualization based on rules and NERs given a eventuality
+        """ Conceptualization based on rules and NERs given an eventuality
 
         :param eventuality: an eventuality
         :type eventuality: aser.eventuality.Eventuality
@@ -91,6 +95,9 @@ class SeedRuleASERConceptualizer(BaseASERConceptualizer):
 
 
 class ProbaseASERConceptualizer(BaseASERConceptualizer):
+    """ ASER eventuality conceptualizer based on Probase and NERs
+
+    """
     def __init__(self, probase_path=None, probase_topk=None):
         super().__init__()
         self.seed_conceptualizer = SeedRuleASERConceptualizer()
@@ -105,7 +112,7 @@ class ProbaseASERConceptualizer(BaseASERConceptualizer):
         self.probase = None
 
     def conceptualize(self, eventuality):
-        """ Conceptualization use probase given a eventuality
+        """ Conceptualization use probase given an eventuality
 
         :param eventuality: an eventuality
         :type eventuality:  aser.eventuality.Eventuality

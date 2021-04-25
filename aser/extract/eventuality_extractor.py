@@ -175,7 +175,7 @@ class BaseEventualityExtractor(object):
         :param kw: other parameters
         :type kw: Dict[str, object]
         :return: the extracted eventualities
-        :rtype: Union[List[aser.eventuality.Eventuality, Dict[str, object]], List[List[aser.eventuality.Eventuality, Dict[str, object]]]]
+        :rtype: Union[List[List[aser.eventuality.Eventuality]], List[List[Dict[str, object]]], List[aser.eventuality.Eventuality], List[Dict[str, object]]]
 
         .. highlight:: python
         .. code-block:: python
@@ -207,7 +207,7 @@ class BaseEventualityExtractor(object):
         :param kw: other parameters
         :type kw: Dict[str, object]
         :return: the extracted eventualities
-        :rtype: Union[List[aser.eventuality.Eventuality, Dict[str, object]], List[List[aser.eventuality.Eventuality, Dict[str, object]]]]
+        :rtype: Union[List[List[aser.eventuality.Eventuality]], List[List[Dict[str, object]]], List[aser.eventuality.Eventuality], List[Dict[str, object]]]
 
         .. highlight:: python
         .. code-block:: python

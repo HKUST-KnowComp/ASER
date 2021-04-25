@@ -666,7 +666,7 @@ class ASERKGConnection(object):
         """ Insert/Update a relation into ASER
         (suggestion: consider to use `insert_relations` if you want to insert multiple relations)
 
-        :param relation: an relation to insert/update
+        :param relation: a relation to insert/update
         :type relation: aser.relation.Relation
         :return: the inserted/updated relation
         :rtype: aser.relation.Relation
@@ -709,7 +709,7 @@ class ASERKGConnection(object):
         """ Retrieve an exact matched relation from ASER
         (suggestion: consider to use `get_exact_match_relations` if you want to retrieve multiple relations)
 
-        :param relation: a relation that contains the rid or a eventuality pair that contains two eids
+        :param relation: a relation that contains the rid or an eventuality pair that contains two eids
         :type relation: Union[aser.relation.Relation, Dict[str, object], str, Tuple[aser.eventuality.Eventuality, aser.eventuality.Eventuality], Tuple[str, str]]
         :return: the exact matched relation
         :rtype: aser.relation.Relation
@@ -1533,7 +1533,7 @@ class ASERConceptConnection(object):
         """ Insert/Update a relation into ASER
         (suggestion: consider to use `insert_relations` if you want to insert multiple relations)
 
-        :param relation: an relation to insert/update
+        :param relation: a relation to insert/update
         :type relation: aser.relation.Relation
         :return: the inserted/updated relation
         :rtype: aser.relation.Relation
@@ -2045,7 +2045,7 @@ class ASERConceptConnection(object):
     def get_related_concepts(self, concept):
         """ Retrieve related (connected) concepts from ASER
 
-        :param eventuality: an concept that contains the eid
+        :param eventuality: a concept that contains the eid
         :type concept: Union[aser.concept.ASERConcept, Dict[str, object], str]
         :return: the related concepts
         :rtype: List[Tuple[aser.concept.ASERConcept, aser.relation.Relation]]

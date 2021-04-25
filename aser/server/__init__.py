@@ -1,4 +1,3 @@
-
 import multiprocessing
 import os
 import random
@@ -20,6 +19,11 @@ from aser.conceptualize.aser_conceptualizer import SeedRuleASERConceptualizer, P
 from aser.utils.config import ASERCmd, ASERError
 
 CACHESIZE = 512
+DECODINGERROR = None
+try:
+    json.loads("str")
+except ValueError as e:
+    DECODINGERROR = e.__repr__()
 
 
 def is_port_occupied(ip="127.0.0.1", port=80):
@@ -195,6 +199,9 @@ class ASERDataBase(Process):
         self._run()
 
     def close(self):
+        """ Close the process safely
+
+        """
         if self.kg_conn:
             self.kg_conn.close()
         if self.concept_conn:
@@ -231,14 +238,14 @@ class ASERDataBase(Process):
                         try:
                             if cmd == ASERCmd.exact_match_eventuality:
                                 ret_data = self.handle_exact_match_eventuality(data)
-                            elif cmd == ASERCmd.exact_match_eventuality_relation:
-                                ret_data = self.handle_exact_match_eventuality_relation(data)
-                            elif cmd == ASERCmd.fetch_related_eventualities:
-                                ret_data = self.handle_fetch_related_eventualities(data)
                             elif cmd == ASERCmd.exact_match_concept:
                                 ret_data = self.handle_exact_match_concept(data)
+                            elif cmd == ASERCmd.exact_match_eventuality_relation:
+                                ret_data = self.handle_exact_match_eventuality_relation(data)
                             elif cmd == ASERCmd.exact_match_concept_relation:
                                 ret_data = self.handle_exact_match_concept_relation(data)
+                            elif cmd == ASERCmd.fetch_related_eventualities:
+                                ret_data = self.handle_fetch_related_eventualities(data)
                             elif cmd == ASERCmd.fetch_related_concepts:
                                 ret_data = self.handle_fetch_related_concepts(data)
                             else:
@@ -253,13 +260,17 @@ class ASERDataBase(Process):
             except Exception:
                 print(traceback.format_exc())
 
-    def handle_exact_match_eventuality(self, data):
-        data = data.decode("utf-8")
-        if isinstance(data, str):  # eid
-            matched_eventuality = self.kg_conn.get_exact_match_eventuality(data)
-        else:
-            data = Eventuality().decode(json.loads(data), encoding=None)
-            matched_eventuality = self.kg_conn.get_exact_match_eventuality(data)
+    def handle_exact_match_eventuality(self, eid):
+        """ Retrieve the extract match eventuality from DB
+
+        :param eid: eid
+        :type eid: str
+        :return: the exact matched eventuality or None
+        :rtype: Union[aser.eventuality.Eventuality, None]
+        """
+
+        eid = eid.decode("utf-8")
+        matched_eventuality = self.kg_conn.get_exact_match_eventuality(eid)
 
         if matched_eventuality:
             ret_data = json.dumps(matched_eventuality.encode(encoding=None)).encode("utf-8")
@@ -267,13 +278,17 @@ class ASERDataBase(Process):
             ret_data = json.dumps(ASERCmd.none).encode(encoding="utf-8")
         return ret_data
 
-    def handle_exact_match_eventuality_relation(self, data):
-        data = data.decode("utf-8")
-        if isinstance(data, str):  # rid
-            matched_relation = self.kg_conn.get_exact_match_relation(data)
-        else:
-            data = Relation().decode(json.loads(data), encoding=None)
-            matched_relation = self.kg_conn.get_exact_match_relation(data)
+    def handle_exact_match_eventuality_relation(self, rid):
+        """ Retrieve the extract match relation between eventualities from DB
+
+        :param rid: rid
+        :type rid: str
+        :return: the exact matched relation or None
+        :rtype: Union[aser.relation.Relation, None]
+        """
+
+        rid = rid.decode("utf-8")
+        matched_relation = self.kg_conn.get_exact_match_relation(rid)
 
         if matched_relation:
             ret_data = json.dumps(matched_relation.encode(encoding=None)).encode("utf-8")
@@ -281,12 +296,18 @@ class ASERDataBase(Process):
             ret_data = json.dumps(ASERCmd.none).encode(encoding="utf-8")
         return ret_data
 
-    def handle_fetch_related_eventualities(self, data):
-        data = data.decode("utf-8")
-        if isinstance(data, str):  # hid
-            related_eventualities = self.kg_conn.get_related_eventualities(data)
-        else:
-            data = Eventuality().decode(json.loads(data), encoding=None)
+    def handle_fetch_related_eventualities(self, eid):
+        """ Fetch all related eventualities of the given eventuality
+
+        :param eid: eid
+        :type eid: str
+        :return: all related eventualities associated with corresponding relations
+        :rtype: List[Tuple[aser.eventuality.Eventuality, aser.relation.Relation]]
+        """
+
+        eid = eid.decode("utf-8")
+        related_eventualities = self.kg_conn.get_related_eventualities(eid)
+
         rst = [
             (eventuality.encode(encoding=None), relation.encode(encoding=None))
             for eventuality, relation in related_eventualities
@@ -294,13 +315,17 @@ class ASERDataBase(Process):
         ret_data = json.dumps(rst).encode("utf-8")
         return ret_data
 
-    def handle_exact_match_concept(self, data):
-        data = data.decode("utf-8")
-        if isinstance(data, str):  # eid
-            matched_concept = self.concept_conn.get_exact_match_concept(data)
-        else:
-            data = ASERConcept().decode(json.loads(data), encoding=None)
-            matched_concept = self.concept_conn.get_exact_match_concept(data)
+    def handle_exact_match_concept(self, cid):
+        """ Retrieve the extract match concept from DB
+
+        :param cid: cid
+        :type cid: str
+        :return: the exact matched concept or None
+        :rtype: Union[aser.concept.ASERConcept, None]
+        """
+
+        cid = cid.decode("utf-8")
+        matched_concept = self.concept_conn.get_exact_match_concept(cid)
 
         if matched_concept:
             ret_data = json.dumps(matched_concept.encode(encoding=None)).encode("utf-8")
@@ -308,13 +333,17 @@ class ASERDataBase(Process):
             ret_data = json.dumps(ASERCmd.none).encode(encoding="utf-8")
         return ret_data
 
-    def handle_exact_match_concept_relation(self, data):
-        data = data.decode("utf-8")
-        if isinstance(data, str):  # rid
-            matched_relation = self.concept_conn.get_exact_match_relation(data)
-        else:
-            data = Relation().decode(json.loads(data), encoding=None)
-            matched_relation = self.concept_conn.get_exact_match_relation(data)
+    def handle_exact_match_concept_relation(self, rid):
+        """ Retrieve the extract match relation between concepts from DB
+
+        :param rid: rid
+        :type rid: str
+        :return: the exact matched relation or None
+        :rtype: Union[aser.relation.Relation, None]
+        """
+
+        rid = rid.decode("utf-8")
+        matched_relation = self.concept_conn.get_exact_match_relation(rid)
 
         if matched_relation:
             ret_data = json.dumps(matched_relation.encode(encoding=None)).encode("utf-8")
@@ -322,12 +351,18 @@ class ASERDataBase(Process):
             ret_data = json.dumps(ASERCmd.none).encode(encoding="utf-8")
         return ret_data
 
-    def handle_fetch_related_concepts(self, data):
-        data = data.decode("utf-8")
-        if isinstance(data, str):  # hid
-            related_concepts = self.concept_conn.get_related_concepts(data)
-        else:
-            data = ASERConcept().decode(json.loads(data), encoding=None)
+    def handle_fetch_related_concepts(self, cid):
+        """ Fetch all related concepts of the given concept
+
+        :param cid: cid
+        :type cid: str
+        :return: all related concepts associated with corresponding relations
+        :rtype: List[Tuple[aser.concept.ASERConcept, aser.relation.Relation]]
+        """
+
+        cid = cid.decode("utf-8")
+        related_concepts = self.concept_conn.get_related_concepts(cid)
+
         rst = [
             (concept.encode(encoding=None), relation.encode(encoding=None)) for concept, relation in related_concepts
         ]
@@ -367,6 +402,9 @@ class ASERWorker(Process):
         self._run()
 
     def close(self):
+        """ Close the process safely
+
+        """
         self.is_ready.clear()
         self.aser_extractor.close()
         self.terminate()
@@ -417,14 +455,14 @@ class ASERWorker(Process):
             except Exception:
                 print(traceback.format_exc())
 
-    def handle_parse_text(self, data):
-        data = data.decode("utf-8")
-        key = (ASERCmd.parse_text, data)
+    def handle_parse_text(self, text):
+        text = text.decode("utf-8")
+        key = (ASERCmd.parse_text, text)
         if key in self.worker_cache:
             return self.worker_cache[key]
 
-        parser_results = self.aser_extractor.parse_text(data)
-        ret_data = json.dumps(parser_results).encode("utf-8")
+        para_parsed_result = self.aser_extractor.parse_text(text)
+        ret_data = json.dumps(para_parsed_result).encode("utf-8")
         if len(self.worker_cache) >= CACHESIZE:
             self.worker_cache.popitem(last=False)
         self.worker_cache[key] = ret_data
@@ -433,16 +471,20 @@ class ASERWorker(Process):
     def handle_extract_eventualities(self, data):
         data = data.decode("utf-8")
 
-        if isinstance(data, str):  # text
-            key = (ASERCmd.extract_eventualities, data)
-            if key in self.worker_cache:
-                return self.worker_cache[key]
-            para_eventualities = self.aser_extractor.extract_eventualities_from_text(data)
-        else:  # parsed results
+        try:  # paragraph parsed result
+            data = json.loads(data)
             key = (ASERCmd.extract_eventualities, " ".join([sent_parsed_result["text"] for sent_parsed_result in data]))
             if key in self.worker_cache:
                 return self.worker_cache[key]
             para_eventualities = self.aser_extractor.extract_eventualities_from_parsed_result(data)
+        except ValueError as e:  # text
+            if DECODINGERROR != e.__repr__():
+                raise e
+            key = (ASERCmd.extract_eventualities, data)
+            if key in self.worker_cache:
+                return self.worker_cache[key]
+            para_eventualities = self.aser_extractor.extract_eventualities_from_text(data)
+
         para_eventualities = [
             [e.encode(encoding=None) for e in sent_eventualities] for sent_eventualities in para_eventualities
         ]
@@ -455,31 +497,34 @@ class ASERWorker(Process):
     def handle_extract_relations(self, data):
         data = data.decode("utf-8")
 
-        if isinstance(data, str):  # text
-            key = (ASERCmd.extract_relations, data)
-            if key in self.worker_cache:
-                return self.worker_cache[key]
-            para_relations = self.aser_extractor.extract_relations_from_text(data)
-        else:
+        try:  # paragraph parsed result, eventualities in the paragraph
             data = json.loads(data)
             if len(data) == 2:
-                parsed_results = data[0]
+                para_parsed_result = data[0]
                 para_eventualities = [
                     [Eventuality().decode(e_encoded, encoding=None) for e_encoded in sent_eventualities]
                     for sent_eventualities in data[1]
                 ]
                 key = (
                     ASERCmd.extract_relations, " ".join(
-                        [sent_parsed_result["text"] for sent_parsed_result in parsed_results]
+                        [sent_parsed_result["text"] for sent_parsed_result in para_parsed_result]
                     ), str([[e.eid for e in sent_eventualities] for sent_eventualities in para_eventualities])
                 )
                 if key in self.worker_cache:
                     return self.worker_cache[key]
                 para_relations = self.aser_extractor.extract_relations_from_parsed_result(
-                    parsed_results, para_eventualities
+                    para_parsed_result, para_eventualities
                 )
             else:
-                raise ValueError("Error: your message should be text or (parsed_results, para_eventualities).")
+                raise ValueError("Error: your message should be text or (para_parsed_result, para_eventualities).")
+        except ValueError as e:  # text
+            if DECODINGERROR != e.__repr__():
+                raise e
+            key = (ASERCmd.extract_relations, data)
+            if key in self.worker_cache:
+                return self.worker_cache[key]
+            para_relations = self.aser_extractor.extract_relations_from_text(data)
+
         para_relations = [[r.encode(encoding=None) for r in sent_relations] for sent_relations in para_relations]
         ret_data = json.dumps(para_relations).encode("utf-8")
         if len(self.worker_cache) >= CACHESIZE:
@@ -490,12 +535,8 @@ class ASERWorker(Process):
     def handle_extract_eventualities_and_relations(self, data):
         data = data.decode("utf-8")
 
-        if isinstance(data, str):  # text
-            key = (ASERCmd.extract_eventualities_and_relations, data)
-            if key in self.worker_cache:
-                return self.worker_cache[key]
-            para_eventualities, para_relations = self.aser_extractor.extract_from_text(data)
-        else:  # parsed results
+        try:  # paragraph parsed result
+            data = json.loads(data)
             key = (
                 ASERCmd.extract_eventualities_and_relations, " ".join(
                     [sent_parsed_result["text"] for sent_parsed_result in data]
@@ -504,6 +545,14 @@ class ASERWorker(Process):
             if key in self.worker_cache:
                 return self.worker_cache[key]
             para_eventualities, para_relations = self.aser_extractor.extract_from_parsed_result(data)
+        except ValueError as e:  # text
+            if DECODINGERROR != e.__repr__():
+                raise e
+            key = (ASERCmd.extract_eventualities_and_relations, data)
+            if key in self.worker_cache:
+                return self.worker_cache[key]
+            para_eventualities, para_relations = self.aser_extractor.extract_from_text(data)
+
         para_eventualities = [
             [e.encode(encoding=None) for e in sent_eventualities] for sent_eventualities in para_eventualities
         ]
@@ -514,8 +563,8 @@ class ASERWorker(Process):
         self.worker_cache[key] = ret_data
         return ret_data
 
-    def handle_conceptualize_eventuality(self, data):
-        eventuality = Eventuality().decode(data, encoding="utf-8")
+    def handle_conceptualize_eventuality(self, eventuality):
+        eventuality = Eventuality().decode(eventuality, encoding="utf-8")
         key = (ASERCmd.conceptualize_eventuality, eventuality.eid)
         if key in self.worker_cache:
             return self.worker_cache[key]

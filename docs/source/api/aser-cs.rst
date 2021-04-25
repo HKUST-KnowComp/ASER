@@ -1,6 +1,16 @@
 Server/Client
 ================================================================================
 
+
+ASER server
+--------------------------------------------------------------------------------
+
+.. automodule:: aser.server
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
 You can get the aser-server usage via:
 
 .. code:: bash
@@ -10,15 +20,6 @@ You can get the aser-server usage via:
 .. argparse::
    :ref: aser.utils.config.get_server_args_parser
    :prog: aser-server
-
-
-ASER server
---------------------------------------------------------------------------------
-
-.. automodule:: aser.server
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 
 ASER client

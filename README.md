@@ -1,4 +1,4 @@
-# ASER (Action, States, Events, and their Relations)
+# ASER (Activities, States, Events, and their Relations)
 
 ![ASER](docs/source/_static/aser-demo.png)
 

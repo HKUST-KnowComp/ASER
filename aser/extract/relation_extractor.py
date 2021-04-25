@@ -29,14 +29,14 @@ class BaseRelationExtractor(object):
         :type parsed_result: List[Dict[str, object]]
         :param para_eventualities: eventualities in the paragraph
         :type para_eventualities: List[aser.eventuality.Eventuality]
-        :param output_format: which format to return, "Relation" or "json"
+        :param output_format: which format to return, "Relation" or "triplet"
         :type output_format: str (default = "Relation")
         :param in_order: whether the returned order follows the input token order
         :type in_order: bool (default = True)
         :param kw: other parameters
         :type kw: Dict[str, object]
         :return: the extracted relations
-        :rtype: Union[List[aser.relation.Relation, Dict[str, object]], List[List[aser.relation.Relation, Dict[str, object]]]]
+        :rtype: Union[List[List[aser.relation.Relation]], List[List[Dict[str, object]]], List[aser.relation.Relation], List[Dict[str, object]]]
 
         .. highlight:: python
         .. code-block:: python
@@ -192,11 +192,10 @@ class SeedRuleRelationExtractor(BaseRelationExtractor):
             para_relations.append(relations_between_sents)
 
         if in_order:
-            if output_format == "Relation":
-                return para_relations
-            elif output_format == "triplet":
-                return [sorted(chain.from_iterable([r.to_triplets() for r in relations])) \
-                    for relations in para_relations]
+            if output_format == "triplet":
+                para_relations = [sorted(chain.from_iterable([r.to_triplets() for r in relations]))
+                                  for relations in para_relations]
+            return para_relations
         else:
             if output_format == "Relation":
                 rid2relation = dict()
@@ -205,9 +204,10 @@ class SeedRuleRelationExtractor(BaseRelationExtractor):
                         rid2relation[relation.rid] = deepcopy(relation)
                     else:
                         rid2relation[relation.rid].update(relation)
-                return sorted(rid2relation.values(), key=lambda r: r.rid)
-            if output_format == "triplet":
-                return sorted([r.to_triplets() for relations in para_relations for r in relations])
+                relations = sorted(rid2relation.values(), key=lambda r: r.rid)
+            elif output_format == "triplet":
+                relations = sorted([r.to_triplets() for relations in para_relations for r in relations])
+            return relations
 
     def _extract_from_eventuality_pair_in_one_sentence(
         self, connective_dict, sent_parsed_result, head_eventuality, tail_eventuality
@@ -416,37 +416,6 @@ class DiscourseRelationExtractor(BaseRelationExtractor):
         )
         connectives.sort(key=lambda x: (x["sent_idx"], x["indices"][0] if len(x["indices"]) > 0 else -1))
 
-        # For CoNLL share task 2015
-        # sent_offset = 0
-        # for sent_parsed_result in parsed_result:
-        #     sent_parsed_result["sentence_offset"] = sent_offset
-        #     sent_offset += len(sent_parsed_result["tokens"])
-        # with open("aser.json", "a") as f:
-        #     for conn_idx, connective in enumerate(connectives):
-        #         sense = connective.get("sense", None)
-        #         arg1 = connective.get("arg1", None)
-        #         arg2 = connective.get("arg2", None)
-        #         if arg1 and arg2 and sense and sense != "None":
-        #             x = {
-        #                 "DocID": parsed_result[0]["doc"],
-        #                 "ID": conn_idx,
-        #                 "Connective": {
-        #                     "RawText": connective["connective"],
-        #                     "TokenList": [i+parsed_result[connective["sent_idx"]]["sentence_offset"] for i in connective["indices"]],
-        #                     "Tokens": [parsed_result[connective["sent_idx"]]["tokens"][i] for i in connective["indices"]]},
-        #                 "Arg1": {
-        #                     "RawText": " ".join([parsed_result[arg1["sent_idx"]]["tokens"][i] for i in arg1["indices"]]),
-        #                     "TokenList": [i+parsed_result[arg1["sent_idx"]]["sentence_offset"] for i in arg1["indices"]],
-        #                     "Tokens": [parsed_result[arg1["sent_idx"]]["tokens"][i] for i in arg1["indices"]]},
-        #                 "Arg2": {
-        #                     "RawText": " ".join([parsed_result[arg2["sent_idx"]]["tokens"][i] for i in arg2["indices"]]),
-        #                     "TokenList": [i+parsed_result[arg2["sent_idx"]]["sentence_offset"] for i in arg2["indices"]],
-        #                     "Tokens": [parsed_result[arg2["sent_idx"]]["tokens"][i] for i in arg2["indices"]]},
-        #                 "Type": "Explicit",
-        #                 "Sense": [connective["sense"]]}
-        #             f.write(json.dumps(x))
-        #             f.write("\n")
-
         for connective in connectives:
             conn_indices = connective.get("indices", None)
             arg1 = connective.get("arg1", None)
@@ -482,12 +451,10 @@ class DiscourseRelationExtractor(BaseRelationExtractor):
                             relations.append(Relation(heid, teid, {sense: cnt}))
 
         if in_order:
-            if output_format == "Relation":
-                return para_relations
-            elif output_format == "triplet":
-                return [
-                    sorted(chain.from_iterable([r.to_triplets() for r in relations])) for relations in para_relations
-                ]
+            if output_format == "triplet":
+                para_relations = [sorted(chain.from_iterable([r.to_triplets() for r in relations]))
+                                  for relations in para_relations]
+            return para_relations
         else:
             if output_format == "Relation":
                 rid2relation = dict()
@@ -496,9 +463,11 @@ class DiscourseRelationExtractor(BaseRelationExtractor):
                         rid2relation[relation.rid] = deepcopy(relation)
                     else:
                         rid2relation[relation.rid].update(relation)
-                return sorted(rid2relation.values(), key=lambda r: r.rid)
-            if output_format == "triplet":
-                return sorted([r.to_triplets() for relations in para_relations for r in relations])
+                relations = sorted(rid2relation.values(), key=lambda r: r.rid)
+            elif output_format == "triplet":
+                relations = sorted([r.to_triplets() for relations in para_relations for r in relations])
+            return relations
+
 
     @staticmethod
     def _match_argument_eventuality_by_Simpson(sent_parsed_result, argument, eventuality, **kw):

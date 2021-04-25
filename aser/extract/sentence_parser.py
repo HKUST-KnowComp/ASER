@@ -62,7 +62,7 @@ class SentenceParser:
         :type annotators: Union[List, None] (default = None)
         :param max_len: the max length of a paragraph (constituency parsing cannot handle super-long sentences)
         :type max_len: int (default = 1024)
-        :return: the parsed results
+        :return: the parsed result
         :rtype: List[List[Dict[str, object]]]
         """
 
@@ -116,7 +116,7 @@ class SentenceParser:
         :type annotators: Union[List, None] (default = None)
         :param max_len: the max length of a paragraph (constituency parsing cannot handle super-long sentences)
         :type max_len: int (default = 1024)
-        :return: the parsed results
+        :return: the parsed result
         :rtype: List[Dict[str, object]]
         """
         if annotators is None:
