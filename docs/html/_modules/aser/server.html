@@ -1,0 +1,823 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>aser.server &mdash; ASER 2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> ASER
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/get-started.html">Get Started</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/database.html">Database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/extractor.html">Extractor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/conceptualizer.html">Conceptualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/aser-cs.html">Server/Client</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">ASER</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>aser.server</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for aser.server</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">multiprocessing</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">import</span> <span class="nn">ujson</span> <span class="k">as</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">import</span> <span class="nn">zmq</span>
+<span class="kn">import</span> <span class="nn">zmq.decorators</span> <span class="k">as</span> <span class="nn">zmqd</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Process</span>
+<span class="kn">from</span> <span class="nn">aser.eventuality</span> <span class="kn">import</span> <span class="n">Eventuality</span>
+<span class="kn">from</span> <span class="nn">aser.relation</span> <span class="kn">import</span> <span class="n">Relation</span>
+<span class="kn">from</span> <span class="nn">aser.concept</span> <span class="kn">import</span> <span class="n">ASERConcept</span>
+<span class="kn">from</span> <span class="nn">aser.database.kg_connection</span> <span class="kn">import</span> <span class="n">ASERKGConnection</span><span class="p">,</span> <span class="n">ASERConceptConnection</span>
+<span class="kn">from</span> <span class="nn">aser.extract.aser_extractor</span> <span class="kn">import</span> <span class="n">SeedRuleASERExtractor</span><span class="p">,</span> <span class="n">DiscourseASERExtractor</span>
+<span class="kn">from</span> <span class="nn">aser.conceptualize.aser_conceptualizer</span> <span class="kn">import</span> <span class="n">SeedRuleASERConceptualizer</span><span class="p">,</span> <span class="n">ProbaseASERConceptualizer</span>
+<span class="kn">from</span> <span class="nn">aser.utils.config</span> <span class="kn">import</span> <span class="n">ASERCmd</span><span class="p">,</span> <span class="n">ASERError</span>
+
+<span class="n">CACHESIZE</span> <span class="o">=</span> <span class="mi">512</span>
+<span class="n">DECODINGERROR</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="s2">&quot;str&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="n">DECODINGERROR</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="is_port_occupied"><a class="viewcode-back" href="../../api/aser-cs.html#aser.server.is_port_occupied">[docs]</a><span class="k">def</span> <span class="nf">is_port_occupied</span><span class="p">(</span><span class="n">ip</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">80</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Check whether the ip:port is occupied</span>
+
+<span class="sd">    :param ip: the ip address</span>
+<span class="sd">    :type ip: str (default = &quot;127.0.0.1&quot;)</span>
+<span class="sd">    :param port: the port</span>
+<span class="sd">    :type port: int (default = 80)</span>
+<span class="sd">    :return: whether is occupied</span>
+<span class="sd">    :rtype: bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="n">ip</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">port</span><span class="p">)))</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="sockets_ipc_bind"><a class="viewcode-back" href="../../api/aser-cs.html#aser.server.sockets_ipc_bind">[docs]</a><span class="k">def</span> <span class="nf">sockets_ipc_bind</span><span class="p">(</span><span class="n">socket</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    :param socket: a socket</span>
+<span class="sd">    :type socket: zmq.sugar.socket.Socket</span>
+<span class="sd">    :return: the bound address</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">tmp_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;/tmp&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid1</span><span class="p">())[:</span><span class="mi">8</span><span class="p">])</span>
+    <span class="n">socket</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s1">&#39;ipc://</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tmp_dir</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">socket</span><span class="o">.</span><span class="n">getsockopt</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">LAST_ENDPOINT</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ASERServer"><a class="viewcode-back" href="../../api/aser-cs.html#aser.server.ASERServer">[docs]</a><span class="k">class</span> <span class="nc">ASERServer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; ASER server to provide extraction, conceptualization, and retrieval functions</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opt</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param opt: the namespace that includes parameters</span>
+<span class="sd">        :type opt: argparse.Namespace</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">opt</span> <span class="o">=</span> <span class="n">opt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">port</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_concurrent_back_socks</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">n_concurrent_back_socks</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_workers</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">n_workers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aser_sink</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aser_db</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aser_workers</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ASERServer.run"><a class="viewcode-back" href="../../api/aser-cs.html#aser.server.ASERServer.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Start the server</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_run</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ASERServer.close"><a class="viewcode-back" href="../../api/aser-cs.html#aser.server.ASERServer.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Clase the server safely</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aser_sink</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aser_db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">worker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">aser_workers</span><span class="p">:</span>
+            <span class="n">worker</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">corenlp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">corenlp_servers</span><span class="p">:</span>
+            <span class="n">corenlp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+    <span class="nd">@zmqd</span><span class="o">.</span><span class="n">context</span><span class="p">()</span>
+    <span class="nd">@zmqd</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">PULL</span><span class="p">)</span>
+    <span class="nd">@zmqd</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">PAIR</span><span class="p">)</span>
+    <span class="nd">@zmqd</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">PUSH</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">client_msg_receiver</span><span class="p">,</span> <span class="n">sink_addr_receiver</span><span class="p">,</span> <span class="n">db_sender</span><span class="p">):</span>
+        <span class="n">total_st</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="n">client_msg_receiver</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;tcp://*:</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
+
+        <span class="n">sink_addr_receiver_addr</span> <span class="o">=</span> <span class="n">sockets_ipc_bind</span><span class="p">(</span><span class="n">sink_addr_receiver</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aser_sink</span> <span class="o">=</span> <span class="n">ASERSink</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">opt</span><span class="p">,</span> <span class="n">sink_addr_receiver_addr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aser_sink</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="n">sink_receiver_addr</span> <span class="o">=</span> <span class="n">sink_addr_receiver</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+
+        <span class="n">db_senders</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">db_addr_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_concurrent_back_socks</span><span class="p">):</span>
+            <span class="n">_socket</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">PUSH</span><span class="p">)</span>
+            <span class="n">addr</span> <span class="o">=</span> <span class="n">sockets_ipc_bind</span><span class="p">(</span><span class="n">_socket</span><span class="p">)</span>
+            <span class="n">db_senders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_socket</span><span class="p">)</span>
+            <span class="n">db_addr_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">aser_db</span> <span class="o">=</span> <span class="n">ASERDataBase</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">opt</span><span class="p">,</span> <span class="n">db_addr_list</span><span class="p">,</span> <span class="n">sink_receiver_addr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aser_db</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+        <span class="n">worker_senders</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">worker_addr_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_concurrent_back_socks</span><span class="p">):</span>
+            <span class="n">_socket</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">PUSH</span><span class="p">)</span>
+            <span class="n">addr</span> <span class="o">=</span> <span class="n">sockets_ipc_bind</span><span class="p">(</span><span class="n">_socket</span><span class="p">)</span>
+            <span class="n">worker_senders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_socket</span><span class="p">)</span>
+            <span class="n">worker_addr_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_workers</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">aser_workers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ASERWorker</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">opt</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">worker_addr_list</span><span class="p">,</span> <span class="n">sink_receiver_addr</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">aser_workers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Loading Server Finished in </span><span class="si">{:.4f}</span><span class="s2"> s&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">total_st</span><span class="p">))</span>
+        <span class="n">worker_sender_id</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">db_sender_id</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">cnt</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">st</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">client_msg</span> <span class="o">=</span> <span class="n">client_msg_receiver</span><span class="o">.</span><span class="n">recv_multipart</span><span class="p">()</span>
+                <span class="n">client_id</span><span class="p">,</span> <span class="n">req_id</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">client_msg</span>
+                <span class="k">if</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="p">[</span>
+                    <span class="n">ASERCmd</span><span class="o">.</span><span class="n">parse_text</span><span class="p">,</span>
+                    <span class="n">ASERCmd</span><span class="o">.</span><span class="n">extract_eventualities</span><span class="p">,</span>
+                    <span class="n">ASERCmd</span><span class="o">.</span><span class="n">extract_relations</span><span class="p">,</span>
+                    <span class="n">ASERCmd</span><span class="o">.</span><span class="n">extract_eventualities_and_relations</span><span class="p">,</span>
+                    <span class="n">ASERCmd</span><span class="o">.</span><span class="n">conceptualize_eventuality</span><span class="p">,</span>
+                <span class="p">]:</span>
+                    <span class="n">worker_sender_id</span><span class="p">,</span> <span class="n">worker_sender</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span>
+                        <span class="p">[(</span><span class="n">i</span><span class="p">,</span> <span class="n">sender</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sender</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">worker_senders</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">worker_sender_id</span><span class="p">]</span>
+                    <span class="p">)</span>
+                    <span class="n">worker_sender</span><span class="o">.</span><span class="n">send_multipart</span><span class="p">(</span><span class="n">client_msg</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">db_sender_id</span><span class="p">,</span> <span class="n">db_sender</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span>
+                        <span class="p">[(</span><span class="n">i</span><span class="p">,</span> <span class="n">sender</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sender</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">db_senders</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">db_sender_id</span><span class="p">]</span>
+                    <span class="p">)</span>
+                    <span class="n">db_sender</span><span class="o">.</span><span class="n">send_multipart</span><span class="p">(</span><span class="n">client_msg</span><span class="p">)</span>
+                <span class="n">cnt</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="c1"># print(&quot;sender speed: {:.4f} / call&quot;.format((time.time() - st) / cnt))</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sender cnt </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cnt</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="ASERDataBase"><a class="viewcode-back" href="../../api/aser-cs.html#aser.server.ASERDataBase">[docs]</a><span class="k">class</span> <span class="nc">ASERDataBase</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Process to provide DB retrieval functions</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="n">db_sender_addr_list</span><span class="p">,</span> <span class="n">sink_addr</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_sender_addr_list</span> <span class="o">=</span> <span class="n">db_sender_addr_list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sink_addr</span> <span class="o">=</span> <span class="n">sink_addr</span>
+
+        <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">aser_kg_dir</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Connect to the ASER KG...&quot;</span><span class="p">)</span>
+            <span class="n">st</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">kg_conn</span> <span class="o">=</span> <span class="n">ASERKGConnection</span><span class="p">(</span><span class="n">db_path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">aser_kg_dir</span><span class="p">,</span> <span class="s2">&quot;KG.db&quot;</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;cache&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Connect to the ASER KG finished in </span><span class="si">{:.4f}</span><span class="s2"> s&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">st</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Skip loading the ASER KG&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">kg_conn</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">concept_kg_dir</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Connect to the ASER Concept KG...&quot;</span><span class="p">)</span>
+            <span class="n">st</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">concept_conn</span> <span class="o">=</span> <span class="n">ASERConceptConnection</span><span class="p">(</span>
+                <span class="n">db_path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">concept_kg_dir</span><span class="p">,</span> <span class="s2">&quot;concept.db&quot;</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;cache&quot;</span>
+            <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Connect to the ASER Concept KG finished in </span><span class="si">{:.4f}</span><span class="s2"> s&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">st</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Skip loading the ASER Concept KG&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">concept_conn</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="ASERDataBase.run"><a class="viewcode-back" href="../../api/aser-cs.html#aser.server.ASERDataBase.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_run</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ASERDataBase.close"><a class="viewcode-back" href="../../api/aser-cs.html#aser.server.ASERDataBase.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Close the process safely</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kg_conn</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">kg_conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">concept_conn</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">concept_conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">join</span><span class="p">()</span></div>
+
+    <span class="nd">@zmqd</span><span class="o">.</span><span class="n">context</span><span class="p">()</span>
+    <span class="nd">@zmqd</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">PUSH</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">sink</span><span class="p">):</span>
+        <span class="n">receiver_sockets</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">poller</span> <span class="o">=</span> <span class="n">zmq</span><span class="o">.</span><span class="n">Poller</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">db_sender_addr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_sender_addr_list</span><span class="p">:</span>
+            <span class="n">_socket</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">PULL</span><span class="p">)</span>
+            <span class="n">_socket</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_sender_addr</span><span class="p">)</span>
+            <span class="n">receiver_sockets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_socket</span><span class="p">)</span>
+            <span class="n">poller</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">_socket</span><span class="p">)</span>
+        <span class="n">sink</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sink_addr</span><span class="p">)</span>
+
+        <span class="n">cnt</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">st</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">eventualities</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">poller</span><span class="o">.</span><span class="n">poll</span><span class="p">())</span>
+                <span class="k">for</span> <span class="n">sock_idx</span><span class="p">,</span> <span class="n">sock</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">receiver_sockets</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">sock</span> <span class="ow">in</span> <span class="n">eventualities</span><span class="p">:</span>
+                        <span class="n">client_id</span><span class="p">,</span> <span class="n">req_id</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">recv_multipart</span><span class="p">()</span>
+                        <span class="nb">print</span><span class="p">(</span>
+                            <span class="s2">&quot;DB received msg (</span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="n">client_id</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span> <span class="n">req_id</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span> <span class="n">cmd</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span>
+                                <span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">cmd</span> <span class="o">==</span> <span class="n">ASERCmd</span><span class="o">.</span><span class="n">exact_match_eventuality</span><span class="p">:</span>
+                                <span class="n">ret_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_exact_match_eventuality</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                            <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="n">ASERCmd</span><span class="o">.</span><span class="n">exact_match_concept</span><span class="p">:</span>
+                                <span class="n">ret_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_exact_match_concept</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                            <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="n">ASERCmd</span><span class="o">.</span><span class="n">exact_match_eventuality_relation</span><span class="p">:</span>
+                                <span class="n">ret_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_exact_match_eventuality_relation</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                            <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="n">ASERCmd</span><span class="o">.</span><span class="n">exact_match_concept_relation</span><span class="p">:</span>
+                                <span class="n">ret_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_exact_match_concept_relation</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                            <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="n">ASERCmd</span><span class="o">.</span><span class="n">fetch_related_eventualities</span><span class="p">:</span>
+                                <span class="n">ret_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_fetch_related_eventualities</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                            <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="n">ASERCmd</span><span class="o">.</span><span class="n">fetch_related_concepts</span><span class="p">:</span>
+                                <span class="n">ret_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_fetch_related_concepts</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Error: </span><span class="si">%s</span><span class="s2"> cmd is invalid&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cmd</span><span class="p">))</span>
+                        <span class="k">except</span> <span class="ne">BaseException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                            <span class="n">ret_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">ASERError</span> <span class="o">+</span> <span class="n">e</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">())</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+                        <span class="n">sink</span><span class="o">.</span><span class="n">send_multipart</span><span class="p">([</span><span class="n">client_id</span><span class="p">,</span> <span class="n">req_id</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">ret_data</span><span class="p">])</span>
+                        <span class="n">cnt</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DB cnt </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cnt</span><span class="p">))</span>
+                <span class="c1"># print(&quot;DB speed: {:.4f} / call&quot;.format((time.time() - st) / cnt))</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">())</span>
+
+<div class="viewcode-block" id="ASERDataBase.handle_exact_match_eventuality"><a class="viewcode-back" href="../../api/aser-cs.html#aser.server.ASERDataBase.handle_exact_match_eventuality">[docs]</a>    <span class="k">def</span> <span class="nf">handle_exact_match_eventuality</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Retrieve the extract match eventuality from DB</span>
+
+<span class="sd">        :param eid: eid</span>
+<span class="sd">        :type eid: str</span>
+<span class="sd">        :return: the exact matched eventuality or None</span>
+<span class="sd">        :rtype: Union[aser.eventuality.Eventuality, None]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">eid</span> <span class="o">=</span> <span class="n">eid</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="n">matched_eventuality</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kg_conn</span><span class="o">.</span><span class="n">get_exact_match_eventuality</span><span class="p">(</span><span class="n">eid</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">matched_eventuality</span><span class="p">:</span>
+            <span class="n">ret_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">matched_eventuality</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">))</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ret_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">ASERCmd</span><span class="o">.</span><span class="n">none</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret_data</span></div>
+
+<div class="viewcode-block" id="ASERDataBase.handle_exact_match_eventuality_relation"><a class="viewcode-back" href="../../api/aser-cs.html#aser.server.ASERDataBase.handle_exact_match_eventuality_relation">[docs]</a>    <span class="k">def</span> <span class="nf">handle_exact_match_eventuality_relation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Retrieve the extract match relation between eventualities from DB</span>
+
+<span class="sd">        :param rid: rid</span>
+<span class="sd">        :type rid: str</span>
+<span class="sd">        :return: the exact matched relation or None</span>
+<span class="sd">        :rtype: Union[aser.relation.Relation, None]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">rid</span> <span class="o">=</span> <span class="n">rid</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="n">matched_relation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kg_conn</span><span class="o">.</span><span class="n">get_exact_match_relation</span><span class="p">(</span><span class="n">rid</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">matched_relation</span><span class="p">:</span>
+            <span class="n">ret_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">matched_relation</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">))</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ret_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">ASERCmd</span><span class="o">.</span><span class="n">none</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret_data</span></div>
+
+<div class="viewcode-block" id="ASERDataBase.handle_fetch_related_eventualities"><a class="viewcode-back" href="../../api/aser-cs.html#aser.server.ASERDataBase.handle_fetch_related_eventualities">[docs]</a>    <span class="k">def</span> <span class="nf">handle_fetch_related_eventualities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Fetch all related eventualities of the given eventuality</span>
+
+<span class="sd">        :param eid: eid</span>
+<span class="sd">        :type eid: str</span>
+<span class="sd">        :return: all related eventualities associated with corresponding relations</span>
+<span class="sd">        :rtype: List[Tuple[aser.eventuality.Eventuality, aser.relation.Relation]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">eid</span> <span class="o">=</span> <span class="n">eid</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="n">related_eventualities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kg_conn</span><span class="o">.</span><span class="n">get_related_eventualities</span><span class="p">(</span><span class="n">eid</span><span class="p">)</span>
+
+        <span class="n">rst</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">eventuality</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">relation</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">eventuality</span><span class="p">,</span> <span class="n">relation</span> <span class="ow">in</span> <span class="n">related_eventualities</span>
+        <span class="p">]</span>
+        <span class="n">ret_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">rst</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret_data</span></div>
+
+<div class="viewcode-block" id="ASERDataBase.handle_exact_match_concept"><a class="viewcode-back" href="../../api/aser-cs.html#aser.server.ASERDataBase.handle_exact_match_concept">[docs]</a>    <span class="k">def</span> <span class="nf">handle_exact_match_concept</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Retrieve the extract match concept from DB</span>
+
+<span class="sd">        :param cid: cid</span>
+<span class="sd">        :type cid: str</span>
+<span class="sd">        :return: the exact matched concept or None</span>
+<span class="sd">        :rtype: Union[aser.concept.ASERConcept, None]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">cid</span> <span class="o">=</span> <span class="n">cid</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="n">matched_concept</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">concept_conn</span><span class="o">.</span><span class="n">get_exact_match_concept</span><span class="p">(</span><span class="n">cid</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">matched_concept</span><span class="p">:</span>
+            <span class="n">ret_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">matched_concept</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">))</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ret_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">ASERCmd</span><span class="o">.</span><span class="n">none</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret_data</span></div>
+
+<div class="viewcode-block" id="ASERDataBase.handle_exact_match_concept_relation"><a class="viewcode-back" href="../../api/aser-cs.html#aser.server.ASERDataBase.handle_exact_match_concept_relation">[docs]</a>    <span class="k">def</span> <span class="nf">handle_exact_match_concept_relation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Retrieve the extract match relation between concepts from DB</span>
+
+<span class="sd">        :param rid: rid</span>
+<span class="sd">        :type rid: str</span>
+<span class="sd">        :return: the exact matched relation or None</span>
+<span class="sd">        :rtype: Union[aser.relation.Relation, None]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">rid</span> <span class="o">=</span> <span class="n">rid</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="n">matched_relation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">concept_conn</span><span class="o">.</span><span class="n">get_exact_match_relation</span><span class="p">(</span><span class="n">rid</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">matched_relation</span><span class="p">:</span>
+            <span class="n">ret_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">matched_relation</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">))</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ret_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">ASERCmd</span><span class="o">.</span><span class="n">none</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret_data</span></div>
+
+<div class="viewcode-block" id="ASERDataBase.handle_fetch_related_concepts"><a class="viewcode-back" href="../../api/aser-cs.html#aser.server.ASERDataBase.handle_fetch_related_concepts">[docs]</a>    <span class="k">def</span> <span class="nf">handle_fetch_related_concepts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Fetch all related concepts of the given concept</span>
+
+<span class="sd">        :param cid: cid</span>
+<span class="sd">        :type cid: str</span>
+<span class="sd">        :return: all related concepts associated with corresponding relations</span>
+<span class="sd">        :rtype: List[Tuple[aser.concept.ASERConcept, aser.relation.Relation]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">cid</span> <span class="o">=</span> <span class="n">cid</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="n">related_concepts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">concept_conn</span><span class="o">.</span><span class="n">get_related_concepts</span><span class="p">(</span><span class="n">cid</span><span class="p">)</span>
+
+        <span class="n">rst</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">concept</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">relation</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">))</span> <span class="k">for</span> <span class="n">concept</span><span class="p">,</span> <span class="n">relation</span> <span class="ow">in</span> <span class="n">related_concepts</span>
+        <span class="p">]</span>
+        <span class="n">ret_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">rst</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret_data</span></div></div>
+
+
+<div class="viewcode-block" id="ASERWorker"><a class="viewcode-back" href="../../api/aser-cs.html#aser.server.ASERWorker">[docs]</a><span class="k">class</span> <span class="nc">ASERWorker</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Process to serve extraction and conceptualization functions</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">worker_addr_list</span><span class="p">,</span> <span class="n">sink_addr</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">worker_id</span> <span class="o">=</span> <span class="nb">id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">worker_addr_list</span> <span class="o">=</span> <span class="n">worker_addr_list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sink_addr</span> <span class="o">=</span> <span class="n">sink_addr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aser_extractor</span> <span class="o">=</span> <span class="n">DiscourseASERExtractor</span><span class="p">(</span>
+            <span class="n">corenlp_path</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">corenlp_path</span><span class="p">,</span> <span class="n">corenlp_port</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">base_corenlp_port</span> <span class="o">+</span> <span class="nb">id</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Eventuality Extractor init finished&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">concept_method</span> <span class="o">==</span> <span class="s2">&quot;seed&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">conceptualizer</span> <span class="o">=</span> <span class="n">SeedRuleASERConceptualizer</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">opt</span><span class="o">.</span><span class="n">probase_path</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">probase_path</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">conceptualizer</span> <span class="o">=</span> <span class="n">ProbaseASERConceptualizer</span><span class="p">(</span>
+                    <span class="n">probase_path</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">probase_path</span><span class="p">,</span> <span class="n">probase_topk</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">concept_topk</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">conceptualizer</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">conceptualizer</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Concept Extractor init finished&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_ready</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">worker_cache</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ASERWorker.run"><a class="viewcode-back" href="../../api/aser-cs.html#aser.server.ASERWorker.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_run</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ASERWorker.close"><a class="viewcode-back" href="../../api/aser-cs.html#aser.server.ASERWorker.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Close the process safely</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_ready</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aser_extractor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">join</span><span class="p">()</span></div>
+
+    <span class="nd">@zmqd</span><span class="o">.</span><span class="n">context</span><span class="p">()</span>
+    <span class="nd">@zmqd</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">PUSH</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">sink</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ASER Worker </span><span class="si">%d</span><span class="s2"> started&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_id</span><span class="p">)</span>
+        <span class="n">receiver_sockets</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">poller</span> <span class="o">=</span> <span class="n">zmq</span><span class="o">.</span><span class="n">Poller</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">worker_addr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_addr_list</span><span class="p">:</span>
+            <span class="n">_socket</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">PULL</span><span class="p">)</span>
+            <span class="n">_socket</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">worker_addr</span><span class="p">)</span>
+            <span class="n">receiver_sockets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_socket</span><span class="p">)</span>
+            <span class="n">poller</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">_socket</span><span class="p">)</span>
+        <span class="n">sink</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sink_addr</span><span class="p">)</span>
+
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">eventualities</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">poller</span><span class="o">.</span><span class="n">poll</span><span class="p">())</span>
+                <span class="k">for</span> <span class="n">sock_idx</span><span class="p">,</span> <span class="n">sock</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">receiver_sockets</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">sock</span> <span class="ow">in</span> <span class="n">eventualities</span><span class="p">:</span>
+                        <span class="n">client_id</span><span class="p">,</span> <span class="n">req_id</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">recv_multipart</span><span class="p">()</span>
+                        <span class="nb">print</span><span class="p">(</span>
+                            <span class="s2">&quot;Worker </span><span class="si">{}</span><span class="s2"> received msg (</span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">worker_id</span><span class="p">,</span> <span class="n">client_id</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span> <span class="n">req_id</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span> <span class="n">cmd</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span>
+                                <span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">cmd</span> <span class="o">==</span> <span class="n">ASERCmd</span><span class="o">.</span><span class="n">parse_text</span><span class="p">:</span>
+                                <span class="n">ret_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_parse_text</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                            <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="n">ASERCmd</span><span class="o">.</span><span class="n">extract_eventualities</span><span class="p">:</span>
+                                <span class="n">ret_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_extract_eventualities</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                            <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="n">ASERCmd</span><span class="o">.</span><span class="n">extract_relations</span><span class="p">:</span>
+                                <span class="n">ret_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_extract_relations</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                            <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="n">ASERCmd</span><span class="o">.</span><span class="n">extract_eventualities_and_relations</span><span class="p">:</span>
+                                <span class="n">ret_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_eventualities_and_relations</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                            <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="n">ASERCmd</span><span class="o">.</span><span class="n">conceptualize_eventuality</span><span class="p">:</span>
+                                <span class="n">ret_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_conceptualize_eventuality</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Error: </span><span class="si">%s</span><span class="s2"> cmd is invalid&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cmd</span><span class="p">))</span>
+                        <span class="k">except</span> <span class="ne">BaseException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                            <span class="n">ret_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">ASERError</span> <span class="o">+</span> <span class="n">e</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">())</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+                        <span class="n">sink</span><span class="o">.</span><span class="n">send_multipart</span><span class="p">([</span><span class="n">client_id</span><span class="p">,</span> <span class="n">req_id</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">ret_data</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">())</span>
+
+<div class="viewcode-block" id="ASERWorker.handle_parse_text"><a class="viewcode-back" href="../../api/aser-cs.html#aser.server.ASERWorker.handle_parse_text">[docs]</a>    <span class="k">def</span> <span class="nf">handle_parse_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">ASERCmd</span><span class="o">.</span><span class="n">parse_text</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_cache</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="n">para_parsed_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aser_extractor</span><span class="o">.</span><span class="n">parse_text</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="n">ret_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">para_parsed_result</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">worker_cache</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">CACHESIZE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">worker_cache</span><span class="o">.</span><span class="n">popitem</span><span class="p">(</span><span class="n">last</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">worker_cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ret_data</span>
+        <span class="k">return</span> <span class="n">ret_data</span></div>
+
+<div class="viewcode-block" id="ASERWorker.handle_extract_eventualities"><a class="viewcode-back" href="../../api/aser-cs.html#aser.server.ASERWorker.handle_extract_eventualities">[docs]</a>    <span class="k">def</span> <span class="nf">handle_extract_eventualities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>  <span class="c1"># paragraph parsed result</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">ASERCmd</span><span class="o">.</span><span class="n">extract_eventualities</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">sent_parsed_result</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">sent_parsed_result</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]))</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_cache</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="n">para_eventualities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aser_extractor</span><span class="o">.</span><span class="n">extract_eventualities_from_parsed_result</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># text</span>
+            <span class="k">if</span> <span class="n">DECODINGERROR</span> <span class="o">!=</span> <span class="n">e</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="n">e</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">ASERCmd</span><span class="o">.</span><span class="n">extract_eventualities</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_cache</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="n">para_eventualities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aser_extractor</span><span class="o">.</span><span class="n">extract_eventualities_from_text</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="n">para_eventualities</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">sent_eventualities</span><span class="p">]</span> <span class="k">for</span> <span class="n">sent_eventualities</span> <span class="ow">in</span> <span class="n">para_eventualities</span>
+        <span class="p">]</span>
+        <span class="n">ret_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">para_eventualities</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">worker_cache</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">CACHESIZE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">worker_cache</span><span class="o">.</span><span class="n">popitem</span><span class="p">(</span><span class="n">last</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">worker_cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ret_data</span>
+        <span class="k">return</span> <span class="n">ret_data</span></div>
+
+<div class="viewcode-block" id="ASERWorker.handle_extract_relations"><a class="viewcode-back" href="../../api/aser-cs.html#aser.server.ASERWorker.handle_extract_relations">[docs]</a>    <span class="k">def</span> <span class="nf">handle_extract_relations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>  <span class="c1"># paragraph parsed result, eventualities in the paragraph</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">para_parsed_result</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">para_eventualities</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="p">[</span><span class="n">Eventuality</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">e_encoded</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">e_encoded</span> <span class="ow">in</span> <span class="n">sent_eventualities</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">sent_eventualities</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="p">]</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">ASERCmd</span><span class="o">.</span><span class="n">extract_relations</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                        <span class="p">[</span><span class="n">sent_parsed_result</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">sent_parsed_result</span> <span class="ow">in</span> <span class="n">para_parsed_result</span><span class="p">]</span>
+                    <span class="p">),</span> <span class="nb">str</span><span class="p">([[</span><span class="n">e</span><span class="o">.</span><span class="n">eid</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">sent_eventualities</span><span class="p">]</span> <span class="k">for</span> <span class="n">sent_eventualities</span> <span class="ow">in</span> <span class="n">para_eventualities</span><span class="p">])</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_cache</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                <span class="n">para_relations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aser_extractor</span><span class="o">.</span><span class="n">extract_relations_from_parsed_result</span><span class="p">(</span>
+                    <span class="n">para_parsed_result</span><span class="p">,</span> <span class="n">para_eventualities</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Error: your message should be text or (para_parsed_result, para_eventualities).&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># text</span>
+            <span class="k">if</span> <span class="n">DECODINGERROR</span> <span class="o">!=</span> <span class="n">e</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="n">e</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">ASERCmd</span><span class="o">.</span><span class="n">extract_relations</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_cache</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="n">para_relations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aser_extractor</span><span class="o">.</span><span class="n">extract_relations_from_text</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="n">para_relations</span> <span class="o">=</span> <span class="p">[[</span><span class="n">r</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">sent_relations</span><span class="p">]</span> <span class="k">for</span> <span class="n">sent_relations</span> <span class="ow">in</span> <span class="n">para_relations</span><span class="p">]</span>
+        <span class="n">ret_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">para_relations</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">worker_cache</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">CACHESIZE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">worker_cache</span><span class="o">.</span><span class="n">popitem</span><span class="p">(</span><span class="n">last</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">worker_cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ret_data</span>
+        <span class="k">return</span> <span class="n">ret_data</span></div>
+
+<div class="viewcode-block" id="ASERWorker.handle_extract_eventualities_and_relations"><a class="viewcode-back" href="../../api/aser-cs.html#aser.server.ASERWorker.handle_extract_eventualities_and_relations">[docs]</a>    <span class="k">def</span> <span class="nf">handle_extract_eventualities_and_relations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>  <span class="c1"># paragraph parsed result</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">ASERCmd</span><span class="o">.</span><span class="n">extract_eventualities_and_relations</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">sent_parsed_result</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">sent_parsed_result</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_cache</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="n">para_eventualities</span><span class="p">,</span> <span class="n">para_relations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aser_extractor</span><span class="o">.</span><span class="n">extract_from_parsed_result</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># text</span>
+            <span class="k">if</span> <span class="n">DECODINGERROR</span> <span class="o">!=</span> <span class="n">e</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="n">e</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">ASERCmd</span><span class="o">.</span><span class="n">extract_eventualities_and_relations</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_cache</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="n">para_eventualities</span><span class="p">,</span> <span class="n">para_relations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aser_extractor</span><span class="o">.</span><span class="n">extract_from_text</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="n">para_eventualities</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">sent_eventualities</span><span class="p">]</span> <span class="k">for</span> <span class="n">sent_eventualities</span> <span class="ow">in</span> <span class="n">para_eventualities</span>
+        <span class="p">]</span>
+        <span class="n">para_relations</span> <span class="o">=</span> <span class="p">[[</span><span class="n">r</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">sent_relations</span><span class="p">]</span> <span class="k">for</span> <span class="n">sent_relations</span> <span class="ow">in</span> <span class="n">para_relations</span><span class="p">]</span>
+        <span class="n">ret_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">((</span><span class="n">para_eventualities</span><span class="p">,</span> <span class="n">para_relations</span><span class="p">))</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">worker_cache</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">CACHESIZE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">worker_cache</span><span class="o">.</span><span class="n">popitem</span><span class="p">(</span><span class="n">last</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">worker_cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ret_data</span>
+        <span class="k">return</span> <span class="n">ret_data</span></div>
+
+<div class="viewcode-block" id="ASERWorker.handle_conceptualize_eventuality"><a class="viewcode-back" href="../../api/aser-cs.html#aser.server.ASERWorker.handle_conceptualize_eventuality">[docs]</a>    <span class="k">def</span> <span class="nf">handle_conceptualize_eventuality</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eventuality</span><span class="p">):</span>
+        <span class="n">eventuality</span> <span class="o">=</span> <span class="n">Eventuality</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">eventuality</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">ASERCmd</span><span class="o">.</span><span class="n">conceptualize_eventuality</span><span class="p">,</span> <span class="n">eventuality</span><span class="o">.</span><span class="n">eid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_cache</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="n">concepts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conceptualizer</span><span class="o">.</span><span class="n">conceptualize</span><span class="p">(</span><span class="n">eventuality</span><span class="p">)</span>
+        <span class="n">concepts</span> <span class="o">=</span> <span class="p">[(</span><span class="n">concept</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">score</span><span class="p">)</span> <span class="k">for</span> <span class="n">concept</span><span class="p">,</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">concepts</span><span class="p">]</span>
+        <span class="n">ret_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">concepts</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">worker_cache</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">CACHESIZE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">worker_cache</span><span class="o">.</span><span class="n">popitem</span><span class="p">(</span><span class="n">last</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">worker_cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ret_data</span>
+        <span class="k">return</span> <span class="n">ret_data</span></div></div>
+        <span class="c1"># rst = []</span>
+        <span class="c1"># ret_list = list()</span>
+        <span class="c1"># for concept, score in concepts:</span>
+        <span class="c1">#     ret_list.append((concept.words, score))</span>
+        <span class="c1"># ret_data = json.dumps(ret_list).encode(&quot;utf-8&quot;)</span>
+        <span class="c1"># return ret_data</span>
+
+
+<div class="viewcode-block" id="ASERSink"><a class="viewcode-back" href="../../api/aser-cs.html#aser.server.ASERSink">[docs]</a><span class="k">class</span> <span class="nc">ASERSink</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Process to forward messages</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">sink_addr_receiver_addr</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">port_out</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">port_out</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sink_addr_receiver_addr</span> <span class="o">=</span> <span class="n">sink_addr_receiver_addr</span>
+
+<div class="viewcode-block" id="ASERSink.run"><a class="viewcode-back" href="../../api/aser-cs.html#aser.server.ASERSink.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_run</span><span class="p">()</span></div>
+
+    <span class="nd">@zmqd</span><span class="o">.</span><span class="n">context</span><span class="p">()</span>
+    <span class="nd">@zmqd</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">PAIR</span><span class="p">)</span>
+    <span class="nd">@zmqd</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">PULL</span><span class="p">)</span>
+    <span class="nd">@zmqd</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">PUB</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">addr_sender</span><span class="p">,</span> <span class="n">receiver</span><span class="p">,</span> <span class="n">sender</span><span class="p">):</span>
+        <span class="n">addr_sender</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sink_addr_receiver_addr</span><span class="p">)</span>
+        <span class="n">receiver_addr</span> <span class="o">=</span> <span class="n">sockets_ipc_bind</span><span class="p">(</span><span class="n">receiver</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="n">addr_sender</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">receiver_addr</span><span class="p">)</span>
+        <span class="n">sender</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;tcp://*:</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">port_out</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ASER Sink started&quot;</span><span class="p">)</span>
+        <span class="n">cnt</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="n">receiver</span><span class="o">.</span><span class="n">recv_multipart</span><span class="p">()</span>
+                <span class="n">sender</span><span class="o">.</span><span class="n">send_multipart</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                <span class="n">cnt</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sink cnt </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cnt</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">())</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, KnowComp.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

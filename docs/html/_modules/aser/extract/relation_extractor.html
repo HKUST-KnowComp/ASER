@@ -1,0 +1,761 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>aser.extract.relation_extractor &mdash; ASER 2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> ASER
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/get-started.html">Get Started</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/database.html">Database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/extractor.html">Extractor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/conceptualizer.html">Conceptualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/aser-cs.html">Server/Client</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ASER</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>aser.extract.relation_extractor</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for aser.extract.relation_extractor</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">aser.extract.discourse_parser</span> <span class="kn">import</span> <span class="n">ConnectiveExtractor</span><span class="p">,</span> <span class="n">ArgumentPositionClassifier</span><span class="p">,</span> \
+    <span class="n">SSArgumentExtractor</span><span class="p">,</span> <span class="n">PSArgumentExtractor</span><span class="p">,</span> <span class="n">ExplicitSenseClassifier</span>
+<span class="kn">from</span> <span class="nn">aser.relation</span> <span class="kn">import</span> <span class="n">Relation</span><span class="p">,</span> <span class="n">relation_senses</span>
+<span class="kn">from</span> <span class="nn">aser.extract.rule</span> <span class="kn">import</span> <span class="n">SEED_CONNECTIVE_DICT</span>
+<span class="kn">from</span> <span class="nn">aser.extract.utils</span> <span class="kn">import</span> <span class="n">EMPTY_SENT_PARSED_RESULT</span>
+
+
+<div class="viewcode-block" id="BaseRelationExtractor"><a class="viewcode-back" href="../../../api/extractor.html#aser.extract.relation_extractor.BaseRelationExtractor">[docs]</a><span class="k">class</span> <span class="nc">BaseRelationExtractor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Base ASER relation rxtractor to extract relations</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="BaseRelationExtractor.close"><a class="viewcode-back" href="../../../api/extractor.html#aser.extract.relation_extractor.BaseRelationExtractor.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<div class="viewcode-block" id="BaseRelationExtractor.extract_from_parsed_result"><a class="viewcode-back" href="../../../api/extractor.html#aser.extract.relation_extractor.BaseRelationExtractor.extract_from_parsed_result">[docs]</a>    <span class="k">def</span> <span class="nf">extract_from_parsed_result</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">parsed_result</span><span class="p">,</span> <span class="n">para_eventualities</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="s2">&quot;Relation&quot;</span><span class="p">,</span> <span class="n">in_order</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Extract relations from the parsed result</span>
+
+<span class="sd">        :param parsed_result: the parsed result returned by corenlp</span>
+<span class="sd">        :type parsed_result: List[Dict[str, object]]</span>
+<span class="sd">        :param para_eventualities: eventualities in the paragraph</span>
+<span class="sd">        :type para_eventualities: List[aser.eventuality.Eventuality]</span>
+<span class="sd">        :param output_format: which format to return, &quot;Relation&quot; or &quot;triplet&quot;</span>
+<span class="sd">        :type output_format: str (default = &quot;Relation&quot;)</span>
+<span class="sd">        :param in_order: whether the returned order follows the input token order</span>
+<span class="sd">        :type in_order: bool (default = True)</span>
+<span class="sd">        :param kw: other parameters</span>
+<span class="sd">        :type kw: Dict[str, object]</span>
+<span class="sd">        :return: the extracted relations</span>
+<span class="sd">        :rtype: Union[List[List[aser.relation.Relation]], List[List[Dict[str, object]]], List[aser.relation.Relation], List[Dict[str, object]]]</span>
+
+<span class="sd">        .. highlight:: python</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            Input:</span>
+
+<span class="sd">                [{&#39;dependencies&#39;: [(1, &#39;nmod:poss&#39;, 0),</span>
+<span class="sd">                                   (3, &#39;nsubj&#39;, 1),</span>
+<span class="sd">                                   (3, &#39;aux&#39;, 2),</span>
+<span class="sd">                                   (3, &#39;dobj&#39;, 5),</span>
+<span class="sd">                                   (3, &#39;punct&#39;, 6),</span>
+<span class="sd">                                   (5, &#39;nmod:poss&#39;, 4)],</span>
+<span class="sd">                  &#39;lemmas&#39;: [&#39;my&#39;, &#39;army&#39;, &#39;will&#39;, &#39;find&#39;, &#39;you&#39;, &#39;boat&#39;, &#39;.&#39;],</span>
+<span class="sd">                  &#39;mentions&#39;: [],</span>
+<span class="sd">                  &#39;ners&#39;: [&#39;O&#39;, &#39;O&#39;, &#39;O&#39;, &#39;O&#39;, &#39;O&#39;, &#39;O&#39;, &#39;O&#39;],</span>
+<span class="sd">                  &#39;parse&#39;: &#39;(ROOT (S (NP (PRP$ My) (NN army)) (VP (MD will) (VP (VB find) (NP &#39;</span>
+<span class="sd">                           &#39;(PRP$ your) (NN boat)))) (. .)))&#39;,</span>
+<span class="sd">                  &#39;pos_tags&#39;: [&#39;PRP$&#39;, &#39;NN&#39;, &#39;MD&#39;, &#39;VB&#39;, &#39;PRP$&#39;, &#39;NN&#39;, &#39;.&#39;],</span>
+<span class="sd">                  &#39;text&#39;: &#39;My army will find your boat.&#39;,</span>
+<span class="sd">                  &#39;tokens&#39;: [&#39;My&#39;, &#39;army&#39;, &#39;will&#39;, &#39;find&#39;, &#39;your&#39;, &#39;boat&#39;, &#39;.&#39;]},</span>
+<span class="sd">                 {&#39;dependencies&#39;: [(2, &#39;case&#39;, 0),</span>
+<span class="sd">                                   (2, &#39;det&#39;, 1),</span>
+<span class="sd">                                   (6, &#39;nmod:in&#39;, 2),</span>
+<span class="sd">                                   (6, &#39;punct&#39;, 3),</span>
+<span class="sd">                                   (6, &#39;nsubj&#39;, 4),</span>
+<span class="sd">                                   (6, &#39;cop&#39;, 5),</span>
+<span class="sd">                                   (6, &#39;ccomp&#39;, 9),</span>
+<span class="sd">                                   (6, &#39;punct&#39;, 13),</span>
+<span class="sd">                                   (9, &#39;nsubj&#39;, 7),</span>
+<span class="sd">                                   (9, &#39;aux&#39;, 8),</span>
+<span class="sd">                                   (9, &#39;iobj&#39;, 10),</span>
+<span class="sd">                                   (9, &#39;dobj&#39;, 12),</span>
+<span class="sd">                                   (12, &#39;amod&#39;, 11)],</span>
+<span class="sd">                  &#39;lemmas&#39;: [&#39;in&#39;,</span>
+<span class="sd">                             &#39;the&#39;,</span>
+<span class="sd">                             &#39;meantime&#39;,</span>
+<span class="sd">                             &#39;,&#39;,</span>
+<span class="sd">                             &#39;I&#39;,</span>
+<span class="sd">                             &#39;be&#39;,</span>
+<span class="sd">                             &#39;sure&#39;,</span>
+<span class="sd">                             &#39;we&#39;,</span>
+<span class="sd">                             &#39;could&#39;,</span>
+<span class="sd">                             &#39;find&#39;,</span>
+<span class="sd">                             &#39;you&#39;,</span>
+<span class="sd">                             &#39;suitable&#39;,</span>
+<span class="sd">                             &#39;accommodation&#39;,</span>
+<span class="sd">                             &#39;.&#39;],</span>
+<span class="sd">                  &#39;mentions&#39;: [],</span>
+<span class="sd">                  &#39;ners&#39;: [&#39;O&#39;,</span>
+<span class="sd">                           &#39;O&#39;,</span>
+<span class="sd">                           &#39;O&#39;,</span>
+<span class="sd">                           &#39;O&#39;,</span>
+<span class="sd">                           &#39;O&#39;,</span>
+<span class="sd">                           &#39;O&#39;,</span>
+<span class="sd">                           &#39;O&#39;,</span>
+<span class="sd">                           &#39;O&#39;,</span>
+<span class="sd">                           &#39;O&#39;,</span>
+<span class="sd">                           &#39;O&#39;,</span>
+<span class="sd">                           &#39;O&#39;,</span>
+<span class="sd">                           &#39;O&#39;,</span>
+<span class="sd">                           &#39;O&#39;,</span>
+<span class="sd">                           &#39;O&#39;],</span>
+<span class="sd">                  &#39;parse&#39;: &#39;(ROOT (S (PP (IN In) (NP (DT the) (NN meantime))) (, ,) (NP (PRP &#39;</span>
+<span class="sd">                           &quot;I)) (VP (VBP &#39;m) (ADJP (JJ sure) (SBAR (S (NP (PRP we)) (VP (MD &quot;</span>
+<span class="sd">                           &#39;could) (VP (VB find) (NP (PRP you)) (NP (JJ suitable) (NNS &#39;</span>
+<span class="sd">                           &#39;accommodations)))))))) (. .)))&#39;,</span>
+<span class="sd">                  &#39;pos_tags&#39;: [&#39;IN&#39;,</span>
+<span class="sd">                               &#39;DT&#39;,</span>
+<span class="sd">                               &#39;NN&#39;,</span>
+<span class="sd">                               &#39;,&#39;,</span>
+<span class="sd">                               &#39;PRP&#39;,</span>
+<span class="sd">                               &#39;VBP&#39;,</span>
+<span class="sd">                               &#39;JJ&#39;,</span>
+<span class="sd">                               &#39;PRP&#39;,</span>
+<span class="sd">                               &#39;MD&#39;,</span>
+<span class="sd">                               &#39;VB&#39;,</span>
+<span class="sd">                               &#39;PRP&#39;,</span>
+<span class="sd">                               &#39;JJ&#39;,</span>
+<span class="sd">                               &#39;NNS&#39;,</span>
+<span class="sd">                               &#39;.&#39;],</span>
+<span class="sd">                  &#39;text&#39;: &quot;In the meantime, I&#39;m sure we could find you suitable &quot;</span>
+<span class="sd">                          &#39;accommodations.&#39;,</span>
+<span class="sd">                  &#39;tokens&#39;: [&#39;In&#39;,</span>
+<span class="sd">                             &#39;the&#39;,</span>
+<span class="sd">                             &#39;meantime&#39;,</span>
+<span class="sd">                             &#39;,&#39;,</span>
+<span class="sd">                             &#39;I&#39;,</span>
+<span class="sd">                             &quot;&#39;m&quot;,</span>
+<span class="sd">                             &#39;sure&#39;,</span>
+<span class="sd">                             &#39;we&#39;,</span>
+<span class="sd">                             &#39;could&#39;,</span>
+<span class="sd">                             &#39;find&#39;,</span>
+<span class="sd">                             &#39;you&#39;,</span>
+<span class="sd">                             &#39;suitable&#39;,</span>
+<span class="sd">                             &#39;accommodations&#39;,</span>
+<span class="sd">                             &#39;.&#39;]}],</span>
+<span class="sd">                [[my army will find you boat],</span>
+<span class="sd">                 [i be sure, we could find you suitable accommodation]]</span>
+
+<span class="sd">                Output:</span>
+
+<span class="sd">                [[],</span>
+<span class="sd">                 [(7d9ea9023b66a0ebc167f0dbb6ea8cd75d7b46f9, 25edad6781577dcb3ba715c8230416fb0d4c45c4, {&#39;Co_Occurrence&#39;: 1.0})],</span>
+<span class="sd">                 [(8540897b645962964fd644242d4cc0032f024e86, 25edad6781577dcb3ba715c8230416fb0d4c45c4, {&#39;Synchronous&#39;: 1.0})]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+
+
+<div class="viewcode-block" id="SeedRuleRelationExtractor"><a class="viewcode-back" href="../../../api/extractor.html#aser.extract.relation_extractor.SeedRuleRelationExtractor">[docs]</a><span class="k">class</span> <span class="nc">SeedRuleRelationExtractor</span><span class="p">(</span><span class="n">BaseRelationExtractor</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; ASER relation extractor based on rules to extract relations (for ASER v1.0)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SeedRuleRelationExtractor.extract_from_parsed_result"><a class="viewcode-back" href="../../../api/extractor.html#aser.extract.relation_extractor.SeedRuleRelationExtractor.extract_from_parsed_result">[docs]</a>    <span class="k">def</span> <span class="nf">extract_from_parsed_result</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">parsed_result</span><span class="p">,</span> <span class="n">para_eventualities</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="s2">&quot;Relation&quot;</span><span class="p">,</span> <span class="n">in_order</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="n">output_format</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Relation&quot;</span><span class="p">,</span> <span class="s2">&quot;triplet&quot;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Error: extract_from_parsed_result only supports Relation or triplet.&quot;</span><span class="p">)</span>
+
+        <span class="n">connective_dict</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;connective_dict&quot;</span><span class="p">,</span> <span class="n">SEED_CONNECTIVE_DICT</span><span class="p">)</span>
+
+        <span class="n">para_relations</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">sent_parsed_result</span><span class="p">,</span> <span class="n">eventualities</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">parsed_result</span><span class="p">,</span> <span class="n">para_eventualities</span><span class="p">):</span>
+            <span class="n">relations_in_sent</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">head_eventuality</span> <span class="ow">in</span> <span class="n">eventualities</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">tail_eventuality</span> <span class="ow">in</span> <span class="n">eventualities</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">head_eventuality</span><span class="o">.</span><span class="n">position</span> <span class="o">&lt;</span> <span class="n">tail_eventuality</span><span class="o">.</span><span class="n">position</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="n">heid</span> <span class="o">=</span> <span class="n">head_eventuality</span><span class="o">.</span><span class="n">eid</span>
+                    <span class="n">teid</span> <span class="o">=</span> <span class="n">tail_eventuality</span><span class="o">.</span><span class="n">eid</span>
+                    <span class="n">extracted_senses</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_from_eventuality_pair_in_one_sentence</span><span class="p">(</span>
+                        <span class="n">connective_dict</span><span class="p">,</span> <span class="n">sent_parsed_result</span><span class="p">,</span> <span class="n">head_eventuality</span><span class="p">,</span> <span class="n">tail_eventuality</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">extracted_senses</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">relations_in_sent</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Relation</span><span class="p">(</span><span class="n">heid</span><span class="p">,</span> <span class="n">teid</span><span class="p">,</span> <span class="n">extracted_senses</span><span class="p">))</span>
+            <span class="n">para_relations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">relations_in_sent</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">parsed_result</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">eventualities1</span><span class="p">,</span> <span class="n">eventualities2</span> <span class="o">=</span> <span class="n">para_eventualities</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">para_eventualities</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">relations_between_sents</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">eventualities1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">eventualities2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">s1_tokens</span><span class="p">,</span> <span class="n">s2_tokens</span> <span class="o">=</span> <span class="n">parsed_result</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;tokens&quot;</span><span class="p">],</span> <span class="n">parsed_result</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="s2">&quot;tokens&quot;</span><span class="p">]</span>
+                <span class="n">s1_eventuality</span><span class="p">,</span> <span class="n">s2_eventuality</span> <span class="o">=</span> <span class="n">eventualities1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">eventualities2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">heid</span><span class="p">,</span> <span class="n">teid</span> <span class="o">=</span> <span class="n">s1_eventuality</span><span class="o">.</span><span class="n">eid</span><span class="p">,</span> <span class="n">s2_eventuality</span><span class="o">.</span><span class="n">eid</span>
+                <span class="n">extracted_senses</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_from_eventuality_pair_in_two_sentence</span><span class="p">(</span>
+                    <span class="n">connective_dict</span><span class="p">,</span> <span class="n">s1_eventuality</span><span class="p">,</span> <span class="n">s2_eventuality</span><span class="p">,</span> <span class="n">s1_tokens</span><span class="p">,</span> <span class="n">s2_tokens</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">extracted_senses</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">relations_between_sents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Relation</span><span class="p">(</span><span class="n">heid</span><span class="p">,</span> <span class="n">teid</span><span class="p">,</span> <span class="n">extracted_senses</span><span class="p">))</span>
+            <span class="n">para_relations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">relations_between_sents</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">in_order</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">output_format</span> <span class="o">==</span> <span class="s2">&quot;triplet&quot;</span><span class="p">:</span>
+                <span class="n">para_relations</span> <span class="o">=</span> <span class="p">[</span><span class="nb">sorted</span><span class="p">(</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">([</span><span class="n">r</span><span class="o">.</span><span class="n">to_triplets</span><span class="p">()</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">relations</span><span class="p">]))</span>
+                                  <span class="k">for</span> <span class="n">relations</span> <span class="ow">in</span> <span class="n">para_relations</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">para_relations</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">output_format</span> <span class="o">==</span> <span class="s2">&quot;Relation&quot;</span><span class="p">:</span>
+                <span class="n">rid2relation</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">relation</span> <span class="ow">in</span> <span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="n">para_relations</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">relation</span><span class="o">.</span><span class="n">rid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">rid2relation</span><span class="p">:</span>
+                        <span class="n">rid2relation</span><span class="p">[</span><span class="n">relation</span><span class="o">.</span><span class="n">rid</span><span class="p">]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">relation</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">rid2relation</span><span class="p">[</span><span class="n">relation</span><span class="o">.</span><span class="n">rid</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">relation</span><span class="p">)</span>
+                <span class="n">relations</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">rid2relation</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">r</span><span class="o">.</span><span class="n">rid</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">output_format</span> <span class="o">==</span> <span class="s2">&quot;triplet&quot;</span><span class="p">:</span>
+                <span class="n">relations</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">r</span><span class="o">.</span><span class="n">to_triplets</span><span class="p">()</span> <span class="k">for</span> <span class="n">relations</span> <span class="ow">in</span> <span class="n">para_relations</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">relations</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">relations</span></div>
+
+    <span class="k">def</span> <span class="nf">_extract_from_eventuality_pair_in_one_sentence</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">connective_dict</span><span class="p">,</span> <span class="n">sent_parsed_result</span><span class="p">,</span> <span class="n">head_eventuality</span><span class="p">,</span> <span class="n">tail_eventuality</span>
+    <span class="p">):</span>
+        <span class="n">extracted_senses</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Co_Occurrence&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">sense</span> <span class="ow">in</span> <span class="n">relation_senses</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">connective_words</span> <span class="ow">in</span> <span class="n">connective_dict</span><span class="p">[</span><span class="n">sense</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_verify_connective_in_one_sentence</span><span class="p">(</span>
+                    <span class="n">connective_words</span><span class="p">,</span> <span class="n">head_eventuality</span><span class="p">,</span> <span class="n">tail_eventuality</span><span class="p">,</span> <span class="n">sent_parsed_result</span><span class="p">[</span><span class="s2">&quot;dependencies&quot;</span><span class="p">],</span>
+                    <span class="n">sent_parsed_result</span><span class="p">[</span><span class="s2">&quot;tokens&quot;</span><span class="p">]</span>
+                <span class="p">):</span>
+                    <span class="n">extracted_senses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sense</span><span class="p">)</span>
+                    <span class="k">break</span>
+        <span class="k">return</span> <span class="n">extracted_senses</span>
+
+    <span class="k">def</span> <span class="nf">_extract_from_eventuality_pair_in_two_sentence</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">connective_dict</span><span class="p">,</span> <span class="n">s1_eventuality</span><span class="p">,</span> <span class="n">s2_eventuality</span><span class="p">,</span> <span class="n">s1_tokens</span><span class="p">,</span> <span class="n">s2_tokens</span>
+    <span class="p">):</span>
+        <span class="n">extracted_senses</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">sense</span> <span class="ow">in</span> <span class="n">relation_senses</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">connective_words</span> <span class="ow">in</span> <span class="n">connective_dict</span><span class="p">[</span><span class="n">sense</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_verify_connective_in_two_sentence</span><span class="p">(</span>
+                    <span class="n">connective_words</span><span class="p">,</span> <span class="n">s1_eventuality</span><span class="p">,</span> <span class="n">s2_eventuality</span><span class="p">,</span> <span class="n">s1_tokens</span><span class="p">,</span> <span class="n">s2_tokens</span>
+                <span class="p">):</span>
+                    <span class="n">extracted_senses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sense</span><span class="p">)</span>
+                    <span class="k">break</span>
+
+        <span class="k">return</span> <span class="n">extracted_senses</span>
+
+    <span class="k">def</span> <span class="nf">_verify_connective_in_one_sentence</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">connective_words</span><span class="p">,</span> <span class="n">head_eventuality</span><span class="p">,</span> <span class="n">tail_eventuality</span><span class="p">,</span> <span class="n">sentence_dependencies</span><span class="p">,</span> <span class="n">sentence_tokens</span>
+    <span class="p">):</span>
+        <span class="k">def</span> <span class="nf">get_connective_position</span><span class="p">(</span><span class="n">connective_words</span><span class="p">):</span>
+            <span class="n">tmp_positions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">connective_words</span><span class="p">:</span>
+                <span class="n">tmp_positions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sentence_tokens</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">w</span><span class="p">))</span>
+            <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">tmp_positions</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmp_positions</span><span class="p">)</span> <span class="k">if</span> <span class="n">tmp_positions</span> <span class="k">else</span> <span class="mf">0.0</span>
+
+        <span class="c1"># Connective Words need to be presented in sentence</span>
+        <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">connective_words</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">sentence_tokens</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="c1"># Connective phrase need to be presented in sentence</span>
+        <span class="n">connective_string</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">connective_words</span><span class="p">)</span>
+        <span class="n">sentence_string</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sentence_tokens</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">connective_string</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sentence_string</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">shrinked_dependencies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shrink_sentence_dependencies</span><span class="p">(</span>
+            <span class="n">head_eventuality</span><span class="o">.</span><span class="n">_raw_dependencies</span><span class="p">,</span> <span class="n">tail_eventuality</span><span class="o">.</span><span class="n">_raw_dependencies</span><span class="p">,</span> <span class="n">sentence_dependencies</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">shrinked_dependencies</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">found_advcl</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">governor</span><span class="p">,</span> <span class="n">dep</span><span class="p">,</span> <span class="n">dependent</span><span class="p">)</span> <span class="ow">in</span> <span class="n">shrinked_dependencies</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">governor</span> <span class="o">==</span> <span class="s1">&#39;_H_&#39;</span> <span class="ow">and</span> <span class="n">dependent</span> <span class="o">==</span> <span class="s1">&#39;_T_&#39;</span> <span class="ow">and</span> <span class="s1">&#39;advcl&#39;</span> <span class="ow">in</span> <span class="n">dep</span><span class="p">:</span>
+                <span class="n">found_advcl</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">break</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">found_advcl</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">connective_position</span> <span class="o">=</span> <span class="n">get_connective_position</span><span class="p">(</span><span class="n">connective_words</span><span class="p">)</span>
+        <span class="n">e1_position</span><span class="p">,</span> <span class="n">e2_position</span> <span class="o">=</span> <span class="n">head_eventuality</span><span class="o">.</span><span class="n">position</span><span class="p">,</span> <span class="n">tail_eventuality</span><span class="o">.</span><span class="n">position</span>
+        <span class="k">if</span> <span class="s1">&#39;instead&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">connective_words</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">e1_position</span> <span class="o">&lt;</span> <span class="n">connective_position</span> <span class="o">&lt;</span> <span class="n">e2_position</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">e1_position</span> <span class="o">&lt;</span> <span class="n">e2_position</span> <span class="o">&lt;</span> <span class="n">connective_position</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_verify_connective_in_two_sentence</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">connective_words</span><span class="p">,</span> <span class="n">s1_eventuality</span><span class="p">,</span> <span class="n">s2_eventuality</span><span class="p">,</span> <span class="n">s1_tokens</span><span class="p">,</span> <span class="n">s2_tokens</span>
+    <span class="p">):</span>
+        <span class="k">def</span> <span class="nf">get_connective_position</span><span class="p">():</span>
+            <span class="n">tmp_positions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">connective_words</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">s1_tokens</span><span class="p">:</span>
+                    <span class="n">tmp_positions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s1_tokens</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">w</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">s2_tokens</span><span class="p">:</span>
+                    <span class="n">tmp_positions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s2_tokens</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">s1_tokens</span><span class="p">))</span>
+            <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">tmp_positions</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmp_positions</span><span class="p">)</span> <span class="k">if</span> <span class="n">tmp_positions</span> <span class="k">else</span> <span class="mf">0.0</span>
+
+        <span class="n">sentence_tokens</span> <span class="o">=</span> <span class="n">s1_tokens</span> <span class="o">+</span> <span class="n">s2_tokens</span>
+        <span class="c1"># Connective Words need to be presented in sentence</span>
+        <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">connective_words</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">sentence_tokens</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="c1"># Connective phrase need to be presented in sentence</span>
+        <span class="n">connective_string</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">connective_words</span><span class="p">)</span>
+        <span class="n">sentence_string</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sentence_tokens</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">connective_string</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sentence_string</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">connective_position</span> <span class="o">=</span> <span class="n">get_connective_position</span><span class="p">()</span>
+        <span class="n">e1_position</span><span class="p">,</span> <span class="n">e2_position</span> <span class="o">=</span> <span class="n">s1_eventuality</span><span class="o">.</span><span class="n">position</span><span class="p">,</span> \
+                                   <span class="n">s2_eventuality</span><span class="o">.</span><span class="n">position</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">s1_tokens</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;instead&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">connective_words</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">e1_position</span> <span class="o">&lt;</span> <span class="n">connective_position</span> <span class="o">&lt;</span> <span class="n">e2_position</span> <span class="ow">and</span> <span class="n">e2_position</span> <span class="o">-</span> <span class="n">e1_position</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">e1_position</span> <span class="o">&lt;</span> <span class="n">e2_position</span> <span class="o">&lt;</span> <span class="n">connective_position</span> <span class="ow">and</span> <span class="n">e2_position</span> <span class="o">-</span> <span class="n">e1_position</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_shrink_sentence_dependencies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">head_dependencies</span><span class="p">,</span> <span class="n">tail_dependencies</span><span class="p">,</span> <span class="n">sentence_dependencies</span><span class="p">):</span>
+        <span class="n">head_nodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">governor</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">dependent</span> <span class="ow">in</span> <span class="n">head_dependencies</span><span class="p">:</span>
+            <span class="n">head_nodes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">governor</span><span class="p">)</span>
+            <span class="n">head_nodes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">dependent</span><span class="p">)</span>
+        <span class="n">tail_nodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">governor</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">dependent</span> <span class="ow">in</span> <span class="n">tail_dependencies</span><span class="p">:</span>
+            <span class="n">tail_nodes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">governor</span><span class="p">)</span>
+            <span class="n">tail_nodes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">dependent</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">head_nodes</span> <span class="o">&amp;</span> <span class="n">tail_nodes</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">new_dependencies</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">governor</span><span class="p">,</span> <span class="n">dep</span><span class="p">,</span> <span class="n">dependent</span> <span class="ow">in</span> <span class="n">sentence_dependencies</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">governor</span> <span class="ow">in</span> <span class="n">head_nodes</span><span class="p">:</span>
+                <span class="n">new_governor</span> <span class="o">=</span> <span class="s1">&#39;_H_&#39;</span>
+            <span class="k">elif</span> <span class="n">governor</span> <span class="ow">in</span> <span class="n">tail_nodes</span><span class="p">:</span>
+                <span class="n">new_governor</span> <span class="o">=</span> <span class="s1">&#39;_T_&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">new_governor</span> <span class="o">=</span> <span class="n">governor</span>
+            <span class="k">if</span> <span class="n">dependent</span> <span class="ow">in</span> <span class="n">head_nodes</span><span class="p">:</span>
+                <span class="n">new_dependent</span> <span class="o">=</span> <span class="s1">&#39;_H_&#39;</span>
+            <span class="k">elif</span> <span class="n">dependent</span> <span class="ow">in</span> <span class="n">tail_nodes</span><span class="p">:</span>
+                <span class="n">new_dependent</span> <span class="o">=</span> <span class="s1">&#39;_T_&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">new_dependent</span> <span class="o">=</span> <span class="n">dependent</span>
+            <span class="k">if</span> <span class="n">new_governor</span> <span class="o">!=</span> <span class="n">new_dependent</span><span class="p">:</span>
+                <span class="n">new_dependencies</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">new_governor</span><span class="p">,</span> <span class="n">dep</span><span class="p">,</span> <span class="n">new_dependent</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">new_dependencies</span></div>
+
+
+<div class="viewcode-block" id="DiscourseRelationExtractor"><a class="viewcode-back" href="../../../api/extractor.html#aser.extract.relation_extractor.DiscourseRelationExtractor">[docs]</a><span class="k">class</span> <span class="nc">DiscourseRelationExtractor</span><span class="p">(</span><span class="n">BaseRelationExtractor</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; ASER relation extractor based on discourse parsing to extract relations (for ASER v2.0)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conn_extractor</span> <span class="o">=</span> <span class="n">ConnectiveExtractor</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">argpos_classifier</span> <span class="o">=</span> <span class="n">ArgumentPositionClassifier</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ss_extractor</span> <span class="o">=</span> <span class="n">SSArgumentExtractor</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ps_extractor</span> <span class="o">=</span> <span class="n">PSArgumentExtractor</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">explicit_classifier</span> <span class="o">=</span> <span class="n">ExplicitSenseClassifier</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DiscourseRelationExtractor.extract_from_parsed_result"><a class="viewcode-back" href="../../../api/extractor.html#aser.extract.relation_extractor.DiscourseRelationExtractor.extract_from_parsed_result">[docs]</a>    <span class="k">def</span> <span class="nf">extract_from_parsed_result</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">parsed_result</span><span class="p">,</span> <span class="n">para_eventualities</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="s2">&quot;triplet&quot;</span><span class="p">,</span> <span class="n">in_order</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="n">output_format</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Relation&quot;</span><span class="p">,</span> <span class="s2">&quot;triplet&quot;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Error: extract_from_parsed_result only supports Relation or triplet.&quot;</span><span class="p">)</span>
+
+        <span class="n">similarity</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;similarity&quot;</span><span class="p">,</span> <span class="s2">&quot;simpson&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">threshold</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;threshold&quot;</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">threshold</span> <span class="o">&lt;</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="n">threshold</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Error: threshold should be between 0.0 and 1.0.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">similarity</span> <span class="o">==</span> <span class="s2">&quot;simpson&quot;</span><span class="p">:</span>
+            <span class="n">similarity_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match_argument_eventuality_by_Simpson</span>
+        <span class="k">elif</span> <span class="n">similarity</span> <span class="o">==</span> <span class="s2">&quot;jaccard&quot;</span><span class="p">:</span>
+            <span class="n">similarity_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match_argument_eventuality_by_Jaccard</span>
+        <span class="k">elif</span> <span class="n">similarity</span> <span class="o">==</span> <span class="s2">&quot;discourse&quot;</span><span class="p">:</span>
+            <span class="n">similarity_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match_argument_eventuality_by_dependencies</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Error: extract_from_parsed_result only supports Simpson or Jaccard.&quot;</span><span class="p">)</span>
+
+        <span class="n">syntax_tree_cache</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;syntax_tree_cache&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span>
+
+        <span class="n">len_sentences</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">parsed_result</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">len_sentences</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">in_order</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="nb">list</span><span class="p">()]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">list</span><span class="p">()</span>
+
+        <span class="n">para_relations</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">len_sentences</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+
+        <span class="c1"># replace sentences that contains no eventuality with empty sentences</span>
+        <span class="n">filtered_parsed_result</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">sent_idx</span><span class="p">,</span> <span class="p">(</span><span class="n">sent_parsed_result</span><span class="p">,</span> <span class="n">sent_eventualities</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">parsed_result</span><span class="p">,</span> <span class="n">para_eventualities</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sent_eventualities</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">filtered_parsed_result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sent_parsed_result</span><span class="p">)</span>
+                <span class="n">relations_in_sent</span> <span class="o">=</span> <span class="n">para_relations</span><span class="p">[</span><span class="n">sent_idx</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">head_e</span> <span class="ow">in</span> <span class="n">sent_eventualities</span><span class="p">:</span>
+                    <span class="n">heid</span> <span class="o">=</span> <span class="n">head_e</span><span class="o">.</span><span class="n">eid</span>
+                    <span class="k">for</span> <span class="n">tail_e</span> <span class="ow">in</span> <span class="n">sent_eventualities</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">head_e</span><span class="o">.</span><span class="n">position</span> <span class="o">&lt;</span> <span class="n">tail_e</span><span class="o">.</span><span class="n">position</span><span class="p">:</span>
+                            <span class="k">continue</span>
+                        <span class="n">teid</span> <span class="o">=</span> <span class="n">tail_e</span><span class="o">.</span><span class="n">eid</span>
+                        <span class="n">relations_in_sent</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Relation</span><span class="p">(</span><span class="n">heid</span><span class="p">,</span> <span class="n">teid</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;Co_Occurrence&quot;</span><span class="p">]))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">filtered_parsed_result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">EMPTY_SENT_PARSED_RESULT</span><span class="p">)</span>  <span class="c1"># empty sentence</span>
+                <span class="c1"># filtered_parsed_result.append(sent_parsed_result)</span>
+
+        <span class="n">connectives</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn_extractor</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">filtered_parsed_result</span><span class="p">,</span> <span class="n">syntax_tree_cache</span><span class="p">)</span>
+        <span class="n">SS_connectives</span><span class="p">,</span> <span class="n">PS_connectives</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">argpos_classifier</span><span class="o">.</span><span class="n">classify</span><span class="p">(</span>
+            <span class="n">filtered_parsed_result</span><span class="p">,</span> <span class="n">connectives</span><span class="p">,</span> <span class="n">syntax_tree_cache</span>
+        <span class="p">)</span>
+        <span class="n">SS_connectives</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ss_extractor</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">filtered_parsed_result</span><span class="p">,</span> <span class="n">SS_connectives</span><span class="p">,</span> <span class="n">syntax_tree_cache</span><span class="p">)</span>
+        <span class="n">PS_connectives</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ps_extractor</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">filtered_parsed_result</span><span class="p">,</span> <span class="n">PS_connectives</span><span class="p">,</span> <span class="n">syntax_tree_cache</span><span class="p">)</span>
+        <span class="n">connectives</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">explicit_classifier</span><span class="o">.</span><span class="n">classify</span><span class="p">(</span>
+            <span class="n">filtered_parsed_result</span><span class="p">,</span> <span class="n">SS_connectives</span> <span class="o">+</span> <span class="n">PS_connectives</span><span class="p">,</span> <span class="n">syntax_tree_cache</span>
+        <span class="p">)</span>
+        <span class="n">connectives</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;sent_idx&quot;</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;indices&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;indices&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">connective</span> <span class="ow">in</span> <span class="n">connectives</span><span class="p">:</span>
+            <span class="n">conn_indices</span> <span class="o">=</span> <span class="n">connective</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;indices&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">arg1</span> <span class="o">=</span> <span class="n">connective</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;arg1&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">arg2</span> <span class="o">=</span> <span class="n">connective</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;arg2&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">sense</span> <span class="o">=</span> <span class="n">connective</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sense&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">conn_indices</span> <span class="ow">and</span> <span class="n">arg1</span> <span class="ow">and</span> <span class="n">arg2</span> <span class="ow">and</span> <span class="p">(</span><span class="n">sense</span> <span class="ow">and</span> <span class="n">sense</span> <span class="o">!=</span> <span class="s2">&quot;None&quot;</span><span class="p">):</span>
+                <span class="n">arg1_sent_idx</span> <span class="o">=</span> <span class="n">arg1</span><span class="p">[</span><span class="s2">&quot;sent_idx&quot;</span><span class="p">]</span>
+                <span class="n">arg2_sent_idx</span> <span class="o">=</span> <span class="n">arg2</span><span class="p">[</span><span class="s2">&quot;sent_idx&quot;</span><span class="p">]</span>
+                <span class="n">relation_list_idx</span> <span class="o">=</span> <span class="n">arg1_sent_idx</span> <span class="k">if</span> <span class="n">arg1_sent_idx</span> <span class="o">==</span> <span class="n">arg2_sent_idx</span> <span class="k">else</span> <span class="n">arg1_sent_idx</span> <span class="o">+</span> <span class="n">len_sentences</span>
+                <span class="n">relations</span> <span class="o">=</span> <span class="n">para_relations</span><span class="p">[</span><span class="n">relation_list_idx</span><span class="p">]</span>
+                <span class="n">sent_parsed_result1</span><span class="p">,</span> <span class="n">sent_eventualities1</span> <span class="o">=</span> <span class="n">parsed_result</span><span class="p">[</span><span class="n">arg1_sent_idx</span><span class="p">],</span> <span class="n">para_eventualities</span><span class="p">[</span>
+                    <span class="n">arg1_sent_idx</span><span class="p">]</span>
+                <span class="n">sent_parsed_result2</span><span class="p">,</span> <span class="n">sent_eventualities2</span> <span class="o">=</span> <span class="n">parsed_result</span><span class="p">[</span><span class="n">arg2_sent_idx</span><span class="p">],</span> <span class="n">para_eventualities</span><span class="p">[</span>
+                    <span class="n">arg2_sent_idx</span><span class="p">]</span>
+                <span class="n">arg1_eventualities</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">sent_eventualities1</span> <span class="k">if</span> \
+                    <span class="n">similarity_func</span><span class="p">(</span><span class="n">sent_parsed_result1</span><span class="p">,</span> <span class="n">arg1</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span> <span class="n">conn_indices</span><span class="o">=</span><span class="n">conn_indices</span><span class="p">)]</span>
+                <span class="n">arg2_eventualities</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">sent_eventualities2</span> <span class="k">if</span> \
+                    <span class="n">similarity_func</span><span class="p">(</span><span class="n">sent_parsed_result2</span><span class="p">,</span> <span class="n">arg2</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span> <span class="n">conn_indices</span><span class="o">=</span><span class="n">conn_indices</span><span class="p">)]</span>
+                <span class="n">cnt</span> <span class="o">=</span> <span class="mf">0.0</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">arg1_eventualities</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">arg2_eventualities</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">cnt</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">arg1_eventualities</span><span class="p">)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">arg2_eventualities</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">e1</span> <span class="ow">in</span> <span class="n">arg1_eventualities</span><span class="p">:</span>
+                    <span class="n">heid</span> <span class="o">=</span> <span class="n">e1</span><span class="o">.</span><span class="n">eid</span>
+                    <span class="k">for</span> <span class="n">e2</span> <span class="ow">in</span> <span class="n">arg2_eventualities</span><span class="p">:</span>
+                        <span class="n">teid</span> <span class="o">=</span> <span class="n">e2</span><span class="o">.</span><span class="n">eid</span>
+                        <span class="n">is_existed</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="k">for</span> <span class="n">relation</span> <span class="ow">in</span> <span class="n">relations</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">relation</span><span class="o">.</span><span class="n">hid</span> <span class="o">==</span> <span class="n">heid</span> <span class="ow">and</span> <span class="n">relation</span><span class="o">.</span><span class="n">tid</span> <span class="o">==</span> <span class="n">teid</span><span class="p">:</span>
+                                <span class="n">relation</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">sense</span><span class="p">:</span> <span class="n">cnt</span><span class="p">})</span>
+                                <span class="n">is_existed</span> <span class="o">=</span> <span class="kc">True</span>
+                                <span class="k">break</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_existed</span><span class="p">:</span>
+                            <span class="n">relations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Relation</span><span class="p">(</span><span class="n">heid</span><span class="p">,</span> <span class="n">teid</span><span class="p">,</span> <span class="p">{</span><span class="n">sense</span><span class="p">:</span> <span class="n">cnt</span><span class="p">}))</span>
+
+        <span class="k">if</span> <span class="n">in_order</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">output_format</span> <span class="o">==</span> <span class="s2">&quot;triplet&quot;</span><span class="p">:</span>
+                <span class="n">para_relations</span> <span class="o">=</span> <span class="p">[</span><span class="nb">sorted</span><span class="p">(</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">([</span><span class="n">r</span><span class="o">.</span><span class="n">to_triplets</span><span class="p">()</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">relations</span><span class="p">]))</span>
+                                  <span class="k">for</span> <span class="n">relations</span> <span class="ow">in</span> <span class="n">para_relations</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">para_relations</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">output_format</span> <span class="o">==</span> <span class="s2">&quot;Relation&quot;</span><span class="p">:</span>
+                <span class="n">rid2relation</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">relation</span> <span class="ow">in</span> <span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="n">para_relations</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">relation</span><span class="o">.</span><span class="n">rid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">rid2relation</span><span class="p">:</span>
+                        <span class="n">rid2relation</span><span class="p">[</span><span class="n">relation</span><span class="o">.</span><span class="n">rid</span><span class="p">]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">relation</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">rid2relation</span><span class="p">[</span><span class="n">relation</span><span class="o">.</span><span class="n">rid</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">relation</span><span class="p">)</span>
+                <span class="n">relations</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">rid2relation</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">r</span><span class="o">.</span><span class="n">rid</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">output_format</span> <span class="o">==</span> <span class="s2">&quot;triplet&quot;</span><span class="p">:</span>
+                <span class="n">relations</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">r</span><span class="o">.</span><span class="n">to_triplets</span><span class="p">()</span> <span class="k">for</span> <span class="n">relations</span> <span class="ow">in</span> <span class="n">para_relations</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">relations</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">relations</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_match_argument_eventuality_by_Simpson</span><span class="p">(</span><span class="n">sent_parsed_result</span><span class="p">,</span> <span class="n">argument</span><span class="p">,</span> <span class="n">eventuality</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="n">threshold</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;threshold&quot;</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">)</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">eventuality</span><span class="o">.</span><span class="n">raw_sent_mapping</span><span class="p">:</span>
+            <span class="n">argument_indices</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">argument</span><span class="p">[</span><span class="s2">&quot;indices&quot;</span><span class="p">])</span>
+            <span class="n">eventuality_indices</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">eventuality</span><span class="o">.</span><span class="n">raw_sent_mapping</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">Simpson</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">argument_indices</span> <span class="o">&amp;</span>
+                              <span class="n">eventuality_indices</span><span class="p">)</span> <span class="o">/</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">argument_indices</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">eventuality_indices</span><span class="p">))</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="n">Simpson</span> <span class="o">&gt;=</span> <span class="n">threshold</span>
+            <span class="k">except</span> <span class="ne">ZeroDivisionError</span><span class="p">:</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">argument_tokens</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">sent_parsed_result</span><span class="p">[</span><span class="s2">&quot;lemmas&quot;</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">argument</span><span class="p">[</span><span class="s2">&quot;indices&quot;</span><span class="p">]])</span>
+            <span class="n">eventuality_tokens</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">eventuality</span><span class="o">.</span><span class="n">words</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">Simpson</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">argument_tokens</span> <span class="o">&amp;</span> <span class="n">eventuality_tokens</span><span class="p">)</span> <span class="o">/</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">argument_tokens</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">eventuality_tokens</span><span class="p">))</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="n">Simpson</span> <span class="o">&gt;=</span> <span class="n">threshold</span>
+            <span class="k">except</span> <span class="ne">ZeroDivisionError</span><span class="p">:</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="n">match</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_match_argument_eventuality_by_Jaccard</span><span class="p">(</span><span class="n">sent_parsed_result</span><span class="p">,</span> <span class="n">argument</span><span class="p">,</span> <span class="n">eventuality</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="n">threshold</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;threshold&quot;</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">)</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">eventuality</span><span class="o">.</span><span class="n">raw_sent_mapping</span><span class="p">:</span>
+            <span class="n">argument_indices</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">argument</span><span class="p">[</span><span class="s2">&quot;indices&quot;</span><span class="p">])</span>
+            <span class="n">eventuality_indices</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">eventuality</span><span class="o">.</span><span class="n">raw_sent_mapping</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">Jaccard</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">argument_indices</span> <span class="o">&amp;</span> <span class="n">eventuality_indices</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">argument_indices</span> <span class="o">|</span> <span class="n">eventuality_indices</span><span class="p">)</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="n">Jaccard</span> <span class="o">&gt;=</span> <span class="n">threshold</span>
+            <span class="k">except</span> <span class="ne">ZeroDivisionError</span><span class="p">:</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">argument_tokens</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">sent_parsed_result</span><span class="p">[</span><span class="s2">&quot;lemmas&quot;</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">argument</span><span class="p">[</span><span class="s2">&quot;indices&quot;</span><span class="p">]])</span>
+            <span class="n">eventuality_tokens</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">eventuality</span><span class="o">.</span><span class="n">words</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">Jaccard</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">argument_tokens</span> <span class="o">&amp;</span> <span class="n">eventuality_tokens</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">argument_tokens</span> <span class="o">|</span> <span class="n">eventuality_tokens</span><span class="p">)</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="n">Jaccard</span> <span class="o">&gt;=</span> <span class="n">threshold</span>
+            <span class="k">except</span> <span class="ne">ZeroDivisionError</span><span class="p">:</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="n">match</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_match_argument_eventuality_by_dependencies</span><span class="p">(</span><span class="n">sent_parsed_result</span><span class="p">,</span> <span class="n">argument</span><span class="p">,</span> <span class="n">eventuality</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="n">conn_indices</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;conn_indices&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">())</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">conn_indices</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">conn_indices</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">eventuality</span><span class="o">.</span><span class="n">raw_sent_mapping</span><span class="p">:</span>
+            <span class="n">argument_indices</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">argument</span><span class="p">[</span><span class="s2">&quot;indices&quot;</span><span class="p">])</span>
+            <span class="n">eventuality_indices</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">eventuality</span><span class="o">.</span><span class="n">raw_sent_mapping</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+            <span class="k">for</span> <span class="p">(</span><span class="n">governor</span><span class="p">,</span> <span class="n">dep</span><span class="p">,</span> <span class="n">dependent</span><span class="p">)</span> <span class="ow">in</span> <span class="n">sent_parsed_result</span><span class="p">[</span><span class="s2">&quot;dependencies&quot;</span><span class="p">]:</span>
+                <span class="c1"># find the word linked to the connective</span>
+                <span class="k">if</span> <span class="n">dependent</span> <span class="ow">in</span> <span class="n">conn_indices</span> <span class="ow">and</span> <span class="n">governor</span> <span class="ow">in</span> <span class="n">argument_indices</span> <span class="ow">and</span> <span class="n">governor</span> <span class="ow">in</span> <span class="n">eventuality_indices</span><span class="p">:</span>
+                    <span class="n">match</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">break</span>
+                <span class="k">elif</span> <span class="n">governor</span> <span class="ow">in</span> <span class="n">conn_indices</span> <span class="ow">and</span> <span class="n">dependent</span> <span class="ow">in</span> <span class="n">argument_indices</span> <span class="ow">and</span> <span class="n">dependent</span> <span class="ow">in</span> <span class="n">eventuality_indices</span><span class="p">:</span>
+                    <span class="n">match</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">argument_tokens</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">sent_parsed_result</span><span class="p">[</span><span class="s2">&quot;lemmas&quot;</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">argument</span><span class="p">[</span><span class="s2">&quot;indices&quot;</span><span class="p">]])</span>
+            <span class="n">eventuality_token_pos_tags</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">eventuality</span><span class="o">.</span><span class="n">words</span><span class="p">,</span> <span class="n">eventuality</span><span class="o">.</span><span class="n">pos_tags</span><span class="p">))</span>
+
+            <span class="n">argument_indices</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">argument</span><span class="p">[</span><span class="s2">&quot;indices&quot;</span><span class="p">])</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">governor</span><span class="p">,</span> <span class="n">dep</span><span class="p">,</span> <span class="n">dependent</span><span class="p">)</span> <span class="ow">in</span> <span class="n">sent_parsed_result</span><span class="p">[</span><span class="s2">&quot;dependencies&quot;</span><span class="p">]:</span>
+                <span class="c1"># find the word linked to the connective</span>
+                <span class="k">if</span> <span class="n">dependent</span> <span class="ow">in</span> <span class="n">conn_indices</span> <span class="ow">and</span> <span class="n">governor</span> <span class="ow">in</span> <span class="n">argument_indices</span><span class="p">:</span>
+                    <span class="n">token_pos_tag</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">sent_parsed_result</span><span class="p">[</span><span class="s2">&quot;lemmas&quot;</span><span class="p">][</span><span class="n">governor</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">sent_parsed_result</span><span class="p">[</span><span class="s2">&quot;pos_tags&quot;</span><span class="p">][</span><span class="n">governor</span><span class="p">]</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">token_pos_tag</span> <span class="ow">in</span> <span class="n">eventuality_token_pos_tags</span><span class="p">:</span>
+                        <span class="n">match</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="k">break</span>
+                <span class="k">elif</span> <span class="n">governor</span> <span class="ow">in</span> <span class="n">conn_indices</span> <span class="ow">and</span> <span class="n">dependent</span> <span class="ow">in</span> <span class="n">argument_indices</span><span class="p">:</span>
+                    <span class="n">token_pos_tag</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">sent_parsed_result</span><span class="p">[</span><span class="s2">&quot;lemmas&quot;</span><span class="p">][</span><span class="n">dependent</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">sent_parsed_result</span><span class="p">[</span><span class="s2">&quot;pos_tags&quot;</span><span class="p">][</span><span class="n">dependent</span><span class="p">]</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">token_pos_tag</span> <span class="ow">in</span> <span class="n">eventuality_token_pos_tags</span><span class="p">:</span>
+                        <span class="n">match</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="k">break</span>
+        <span class="k">return</span> <span class="n">match</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, KnowComp.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,310 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>ASER (Activities, States, Events, and their Relations) &mdash; ASER 2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Get Started" href="tutorial/get-started.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="#" class="icon icon-home"> ASER
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/get-started.html">Get Started</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/database.html">Database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/extractor.html">Extractor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/conceptualizer.html">Conceptualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/aser-cs.html">Server/Client</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">ASER</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>ASER (Activities, States, Events, and their Relations)</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="aser-activities-states-events-and-their-relations">
+<h1>ASER (Activities, States, Events, and their Relations)<a class="headerlink" href="#aser-activities-states-events-and-their-relations" title="Permalink to this headline">¶</a></h1>
+<img alt="_images/aser-demo.png" src="_images/aser-demo.png" />
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>ASER is a large-scale weighted eventuality knowledge graph, including actions, states, events, and their relations.</p>
+<p>The eventualities (i.e., nodes of ASER) are extracted using selected dependency patterns. The edges are based on discourse relations (e.g., Result) in discourse analysis.
+Besides, conceptualized eventualities in a more abstract level and their relations are also conducted to generalize the knowledge.</p>
+<p>In total, ASER (full) contains 438 million eventualities and 648 million edges between eventualities; ASER (core) contains 53 million eventualities and 52 million edges between eventualities.
+With the help of Probase (now called Microsoft Concept Graph), ASER (concept) contains 15 million conceptualized eventualities and 224 million edges between conceptualied eventualities.</p>
+</div>
+<div class="section" id="data">
+<h2>Data<a class="headerlink" href="#data" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://arxiv.org/abs/2104.02137">ASER 2.0</a> [<a class="reference external" href="https://hkustconnect-my.sharepoint.com/:f:/g/personal/xliucr_connect_ust_hk/EnlOIunfqNRKsCQIBSXe9pQBL0KhLxTNMSNSJ3Mzt0bmhA?e=xm86PF">data</a>] [<a class="reference external" href="https://github.com/HKUST-KnowComp/ASER/tree/master">code</a>]</p></li>
+<li><p><a class="reference external" href="https://arxiv.org/abs/1905.00270">ASER 1.0</a> [<a class="reference external" href="https://hkustconnect-my.sharepoint.com/:f:/g/personal/xliucr_connect_ust_hk/EoNC-hFNEsNLrZvg73i14e8BMAUDR20TmuLY0W-6tFhKEQ?e=BveOrc">data</a>] [<a class="reference external" href="https://github.com/HKUST-KnowComp/ASER/tree/release/1.0">code</a>]</p></li>
+</ul>
+</div>
+<div class="section" id="related-projects">
+<h2>Related Projects<a class="headerlink" href="#related-projects" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/HKUST-KnowComp/ASER">ASER Extraction, Conceptualization, Usage, and APIs</a></p></li>
+<li><p><a class="reference external" href="https://github.com/HKUST-KnowComp/TransOMCS">Transfer to OMCS</a></p></li>
+<li><p><a class="reference external" href="https://github.com/HKUST-KnowComp/DISCOS-commonsense">Transfer to ATOMIC</a></p></li>
+<li><p><a class="reference external" href="https://github.com/HKUST-KnowComp/ASER-EEG">Eventuality Entailment Graph</a></p></li>
+<li><p><a class="reference external" href="https://github.com/HKUST-KnowComp/SP-10K">Selectional Preference Annotation (SP-10K)</a></p></li>
+<li><p><a class="reference external" href="https://haixun.github.io/probase.html">Probase</a>, now known as <a class="reference external" href="https://haixun.github.io/probase.html">Microsoft Concept Graph</a></p></li>
+</ul>
+</div>
+<div class="section" id="talks">
+<h2>Talks<a class="headerlink" href="#talks" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>2021 April: An Overview of Commonsense Knowledge Graph Construction and Reasoning at HKUST. Presented by Yangqiu Song. [<a class="reference external" href="http://home.cse.ust.hk/~yqsong/papers/ASER-2021.04-ReminUniversity.pdf">pdf</a>] [<a class="reference external" href="http://home.cse.ust.hk/~yqsong/papers/ASER-2021.04-ReminUniversity.pptx">ppt</a>]</p></li>
+<li><p>2020 September: NLP with Friends. Commonsense Reasoning from the Angle of Eventualities. Presented by Hongming Zhang. [<a class="reference external" href="https://hkustconnect-my.sharepoint.com/:p:/g/personal/hzhangal_connect_ust_hk/EbZn6BSgoENIhvuiKWxaZTABh3KfB0IqOqRUI83xgahBvA?e=rlKGvJ">ppt</a>] [<a class="reference external" href="https://www.youtube.com/watch?v=pI-SiaKsR8w">video</a>]</p></li>
+<li><p>2020 Summer: Knowledge Works at Fudan. ASER: Building a Commonsense Knowledge Graph by Higher-order Selectional Preference. Presented by Yangqiu Song. [<a class="reference external" href="http://home.cse.ust.hk/~yqsong/papers/ASER-202007-KnowledgeWorks.pdf">pdf</a>] [<a class="reference external" href="http://home.cse.ust.hk/~yqsong/papers/ASER-202007-KnowledgeWorks.pptx">ppt</a>]</p></li>
+<li><p>2019 October: Microsoft Research Asia (MSRA). Event-centric Commonsense Reasoning with Structured Knowledge. Presented by Hongming Zhang. [<a class="reference external" href="https://hkustconnect-my.sharepoint.com/:b:/g/personal/hzhangal_connect_ust_hk/ETe0bW0XPTBBs62-xDi3Qi8B0gqdzQMPZa5VFCEtwEky1Q?e=a3yXjiJ">pdf</a>]</p></li>
+<li><p>2019 Summer: ASER: A Large scale Eventuality Knowledge Graph. Presented by Yangqiu Song. [<a class="reference external" href="http://home.cse.ust.hk/~yqsong/papers/ASER-YangqiuSong.pdf">pdf</a>] [<a class="reference external" href="http://home.cse.ust.hk/~yqsong/papers/ASER-YangqiuSong.pptx">ppt</a>]</p></li>
+</ul>
+</div>
+<div class="section" id="publications">
+<h2>Publications<a class="headerlink" href="#publications" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Hongming Zhang*, Xin Liu*, Haojie Pan*, Haowen Ke, Jiefu Ou, Tianqing Fang, and Yangqiu Song. ASER: Towards Large-scale Commonsense Knowledge Acquisition via Higher-order Selectional Preference over Eventualities. HKUST Technical Report, April 5th, 2021. [<a class="reference external" href="https://arxiv.org/abs/2104.02137">pdf</a>]</p></li>
+<li><p>Changlong Yu, Hongming Zhang, Yangqiu Song, and Wilfred Ng. CoCoLM: COmplex COmmonsense Enhanced Language Model. HKUST Technical Report, 2021. [<a class="reference external" href="https://arxiv.org/abs/2012.15643">pdf</a>]</p></li>
+<li><p>Tianqing Fang, Hongming Zhang, Weiqi Wang, Yangqiu Song, and Bin He. DISCOS: Bridging the Gap between Discourse Knowledge and Commonsense Knowledge. The Web Conference (WWW), 2021. [<a class="reference external" href="https://arxiv.org/abs/2101.00154">pdf</a>]</p></li>
+<li><p>Hongming Zhang, Muhao Chen, Haoyu Wang, Yangqiu Song, and Dan Roth. Analogous Process Structure Induction for Sub-event Sequence Prediction. Conference on Empirical Methods in Natural Language Processing (EMNLP). 2020. [<a class="reference external" href="https://arxiv.org/abs/2010.08525">pdf</a>]</p></li>
+<li><p>Changlong Yu, Hongming Zhang, Yangqiu Song, Wilfred Ng, and Lifeng Shang . Enriching Large-Scale Eventuality Knowledge Graph with Entailment Relations. Conference on Automated Knowledge Base Construction (AKBC). 2020. [<a class="reference external" href="https://openreview.net/forum?id=-oXaOxy6up">pdf</a>]</p></li>
+<li><p>Hongming Zhang, Daniel Khashabi, Yangqiu Song, and Dan Roth. TransOMCS: From Linguistic Graphs to Commonsense Knowledge. International Joint Conference on Artificial Intelligence (IJCAI). 2020. [<a class="reference external" href="https://arxiv.org/abs/2005.00206">pdf</a>]</p></li>
+<li><p>Mutian He, Yangqiu Song, Kun Xu, and Yu Dong. On the Role of Conceptualization in Commonsense Knowledge Graph Construction. HKUST Technical Report, March 6th, 2020. [<a class="reference external" href="https://arxiv.org/abs/2003.03239">pdf</a>]</p></li>
+<li><p>Hongming Zhang*, Xin Liu*, Haojie Pan*, Yangqiu Song, and Cane Wing-Ki Leung. ASER: A Large-scale Eventuality Knowledge Graph. The Web Conference (WWW), 2020. (Previously a Technical Report at HKUST, May 2019) [<a class="reference external" href="https://arxiv.org/abs/1905.00270">pdf</a>] [<a class="reference external" href="http://home.cse.ust.hk/~yqsong/papers/ASER-WWW20.pptx">ppt</a>]</p></li>
+<li><p>Hongming Zhang, Hantian Ding, and Yangqiu Song. SP-10K: A Large-Scale Evaluation Set for Selectional Preference Acquisition. Annual Meeting of the Association for Computational Linguistics (ACL). 2019. [<a class="reference external" href="https://arxiv.org/abs/1906.02123">pdf</a>]</p></li>
+</ul>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/get-started.html">Get Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/get-started.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/get-started.html#local-pipeline-aser-pipe">Local Pipeline: aser-pipe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/get-started.html#step-by-step-extraction">Step-by-step extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/get-started.html#client-server-mode">Client/Server Mode</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/database.html">Database</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/database.html#module-aser.database.db_connection">db_connection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/database.html#module-aser.database.kg_connection">kg_connection</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/extractor.html">Extractor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/extractor.html#module-aser.extract.aser_extractor">aser_extractor API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/extractor.html#module-aser.extract.eventuality_extractor">eventuality_extractor API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/extractor.html#module-aser.extract.relation_extractor">relation_extractor API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/extractor.html#module-aser.extract.parsed_reader">parsed_reader API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/extractor.html#module-aser.extract.sentence_parser">sentence_reader API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/conceptualizer.html">Conceptualization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/conceptualizer.html#module-aser.conceptualize.aser_conceptualizer">eventuality_conceptualizer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/aser-cs.html">Server/Client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/aser-cs.html#module-aser.server">ASER server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/aser-cs.html#module-aser.client">ASER client</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="api-index">
+<h2>API Index<a class="headerlink" href="#api-index" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="tutorial/get-started.html" class="btn btn-neutral float-right" title="Get Started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, KnowComp.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

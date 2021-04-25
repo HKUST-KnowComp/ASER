@@ -1,0 +1,346 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>aser.extract.sentence_parser &mdash; ASER 2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> ASER
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/get-started.html">Get Started</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/database.html">Database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/extractor.html">Extractor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/conceptualizer.html">Conceptualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/aser-cs.html">Server/Client</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ASER</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>aser.extract.sentence_parser</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for aser.extract.sentence_parser</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">ujson</span> <span class="k">as</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">aser.extract.utils</span> <span class="kn">import</span> <span class="n">get_corenlp_client</span><span class="p">,</span> <span class="n">parse_sentense_with_stanford</span>
+<span class="kn">from</span> <span class="nn">aser.extract.utils</span> <span class="kn">import</span> <span class="n">ANNOTATORS</span><span class="p">,</span> <span class="n">MAX_LEN</span>
+
+
+<div class="viewcode-block" id="SentenceParser"><a class="viewcode-back" href="../../../api/extractor.html#aser.extract.sentence_parser.SentenceParser">[docs]</a><span class="k">class</span> <span class="nc">SentenceParser</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Sentence parser to process files that contain raw texts</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">corenlp_path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">corenlp_port</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param corenlp_path: corenlp path, e.g., /home/xliucr/stanford-corenlp-3.9.2</span>
+<span class="sd">        :type corenlp_path: str (default = &quot;&quot;)</span>
+<span class="sd">        :param corenlp_port: corenlp port, e.g., 9000</span>
+<span class="sd">        :type corenlp_port: int (default = 0)</span>
+<span class="sd">        :param kw: other parameters</span>
+<span class="sd">        :type kw: Dict[str, object]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">corenlp_path</span> <span class="o">=</span> <span class="n">corenlp_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">corenlp_port</span> <span class="o">=</span> <span class="n">corenlp_port</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">annotators</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;annotators&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">ANNOTATORS</span><span class="p">))</span>
+        
+        <span class="n">_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_externel_corenlp</span> <span class="o">=</span> <span class="n">get_corenlp_client</span><span class="p">(</span><span class="n">corenlp_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">corenlp_path</span><span class="p">,</span> <span class="n">corenlp_port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">corenlp_port</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SentenceParser.close"><a class="viewcode-back" href="../../../api/extractor.html#aser.extract.sentence_parser.SentenceParser.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Close the parser safely</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_externel_corenlp</span><span class="p">:</span>
+            <span class="n">corenlp_client</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">get_corenlp_client</span><span class="p">(</span><span class="n">corenlp_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">corenlp_path</span><span class="p">,</span> <span class="n">corenlp_port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">corenlp_port</span><span class="p">)</span>
+            <span class="n">corenlp_client</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<div class="viewcode-block" id="SentenceParser.generate_sid"><a class="viewcode-back" href="../../../api/extractor.html#aser.extract.sentence_parser.SentenceParser.generate_sid">[docs]</a>    <span class="k">def</span> <span class="nf">generate_sid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sentence</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">sid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param sentence: the raw text</span>
+<span class="sd">        :type sentence: str</span>
+<span class="sd">        :param file_name: the file name</span>
+<span class="sd">        :type file_name: str</span>
+<span class="sd">        :param line_no: the line number</span>
+<span class="sd">        :type line_no: int</span>
+<span class="sd">        :return: the corresponding sentence id</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">file_name</span> <span class="o">+</span> <span class="s2">&quot;|&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">sid</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SentenceParser.parse_raw_file"><a class="viewcode-back" href="../../../api/extractor.html#aser.extract.sentence_parser.SentenceParser.parse_raw_file">[docs]</a>    <span class="k">def</span> <span class="nf">parse_raw_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_path</span><span class="p">,</span> <span class="n">processed_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">annotators</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_len</span><span class="o">=</span><span class="n">MAX_LEN</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Parse all raw texts in the given file</span>
+
+<span class="sd">        :param raw_path: the file path that contains raw texts</span>
+<span class="sd">        :type raw_path: str</span>
+<span class="sd">        :param processed_path: the file path that stores the parsed result</span>
+<span class="sd">        :type processed_path: str</span>
+<span class="sd">        :param annotators: annotators for corenlp, please refer to https://stanfordnlp.github.io/CoreNLP/annotators.html</span>
+<span class="sd">        :type annotators: Union[List, None] (default = None)</span>
+<span class="sd">        :param max_len: the max length of a paragraph (constituency parsing cannot handle super-long sentences)</span>
+<span class="sd">        :type max_len: int (default = 1024)</span>
+<span class="sd">        :return: the parsed result</span>
+<span class="sd">        :rtype: List[List[Dict[str, object]]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">annotators</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">annotators</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">annotators</span>
+
+        <span class="n">paragraphs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">raw_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">paragraphs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;.START&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">line</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">paragraphs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">paragraphs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">paragraphs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">line</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">paragraphs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">paragraphs</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">BaseException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">raw_path</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">e</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">paragraphs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">paragraphs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">max_len</span><span class="p">:</span>
+            <span class="n">paragraphs</span> <span class="o">=</span> <span class="n">paragraphs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">sid</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">para_lens</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">paragraphs</span><span class="p">)):</span>
+            <span class="n">paragraphs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">paragraphs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">annotators</span><span class="o">=</span><span class="n">annotators</span><span class="p">,</span> <span class="n">max_len</span><span class="o">=</span><span class="n">max_len</span><span class="p">)</span>
+            <span class="n">para_lens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">paragraphs</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="n">sid</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">processed_path</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">sent</span> <span class="ow">in</span> <span class="n">paragraphs</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                    <span class="n">sent</span><span class="p">[</span><span class="s2">&quot;sid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_sid</span><span class="p">(</span><span class="n">sent</span><span class="p">,</span> <span class="n">processed_path</span><span class="p">,</span> <span class="n">sid</span><span class="p">)</span>
+                    <span class="n">sid</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">processed_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;sentence_lens&quot;</span><span class="p">:</span> <span class="n">para_lens</span><span class="p">}))</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">para</span> <span class="ow">in</span> <span class="n">paragraphs</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">sent</span> <span class="ow">in</span> <span class="n">para</span><span class="p">:</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">sent</span><span class="p">))</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">paragraphs</span></div>
+
+<div class="viewcode-block" id="SentenceParser.parse"><a class="viewcode-back" href="../../../api/extractor.html#aser.extract.sentence_parser.SentenceParser.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">paragraph</span><span class="p">,</span> <span class="n">annotators</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_len</span><span class="o">=</span><span class="n">MAX_LEN</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param paragraph: a raw text</span>
+<span class="sd">        :type paragraph: str</span>
+<span class="sd">        :param annotators: annotators for corenlp, please refer to https://stanfordnlp.github.io/CoreNLP/annotators.html</span>
+<span class="sd">        :type annotators: Union[List, None] (default = None)</span>
+<span class="sd">        :param max_len: the max length of a paragraph (constituency parsing cannot handle super-long sentences)</span>
+<span class="sd">        :type max_len: int (default = 1024)</span>
+<span class="sd">        :return: the parsed result</span>
+<span class="sd">        :rtype: List[Dict[str, object]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">annotators</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">annotators</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">annotators</span>
+
+        <span class="n">corenlp_client</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">get_corenlp_client</span><span class="p">(</span><span class="n">corenlp_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">corenlp_path</span><span class="p">,</span> <span class="n">corenlp_port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">corenlp_port</span><span class="p">,</span> <span class="n">annotators</span><span class="o">=</span><span class="n">annotators</span><span class="p">)</span>
+        <span class="n">parsed_para</span> <span class="o">=</span> <span class="n">parse_sentense_with_stanford</span><span class="p">(</span><span class="n">paragraph</span><span class="p">,</span> <span class="n">corenlp_client</span><span class="p">,</span> <span class="n">annotators</span><span class="p">,</span> <span class="n">max_len</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">sent_idx</span><span class="p">,</span> <span class="n">sent</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">parsed_para</span><span class="p">):</span>
+            <span class="n">sent</span><span class="p">[</span><span class="s2">&quot;sid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_sid</span><span class="p">(</span><span class="n">sent</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">sent_idx</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">parsed_para</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">raw_path</span> <span class="o">=</span> <span class="s2">&quot;/Users/sean/OneDrive - HKUST Connect/Documents/HKUST/Research/ASER/example_data/raw/yelp.txt&quot;</span>
+    <span class="n">processed_path</span> <span class="o">=</span> <span class="s2">&quot;/Users/sean/OneDrive - HKUST Connect/Documents/HKUST/Research/ASER/example_data/processed/yelp.jsonl&quot;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">SentenceParser</span><span class="p">(</span><span class="n">corenlp_path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">corenlp_port</span><span class="o">=</span><span class="mi">9000</span><span class="p">,</span> <span class="n">annotators</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">ANNOTATORS</span><span class="p">))</span>
+    <span class="n">start_st</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">pared_para</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_raw_file</span><span class="p">(</span><span class="n">raw_path</span><span class="p">,</span> <span class="n">processed_path</span><span class="p">)</span>
+    <span class="n">end_st</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;# Tokens: </span><span class="si">%d</span><span class="se">\t</span><span class="s2">Time: </span><span class="si">%.4f</span><span class="s2">s&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">sum</span><span class="p">([</span><span class="nb">sum</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">sent</span><span class="p">[</span><span class="s2">&quot;tokens&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">sent</span> <span class="ow">in</span> <span class="n">para</span><span class="p">])</span> <span class="k">for</span> <span class="n">para</span> <span class="ow">in</span> <span class="n">pared_para</span><span class="p">]),</span> <span class="n">end_st</span><span class="o">-</span><span class="n">start_st</span><span class="p">))</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, KnowComp.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

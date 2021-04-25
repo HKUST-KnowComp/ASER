@@ -1,0 +1,322 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>aser.extract.parsed_reader &mdash; ASER 2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> ASER
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/get-started.html">Get Started</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/database.html">Database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/extractor.html">Extractor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/conceptualizer.html">Conceptualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/aser-cs.html">Server/Client</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ASER</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>aser.extract.parsed_reader</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for aser.extract.parsed_reader</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">ujson</span> <span class="k">as</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
+
+
+<div class="viewcode-block" id="ParsedReader"><a class="viewcode-back" href="../../../api/extractor.html#aser.extract.parsed_reader.ParsedReader">[docs]</a><span class="k">class</span> <span class="nc">ParsedReader</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; File reader to read parsed results from Disk</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ParsedReader.close"><a class="viewcode-back" href="../../../api/extractor.html#aser.extract.parsed_reader.ParsedReader.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="ParsedReader.generate_sid"><a class="viewcode-back" href="../../../api/extractor.html#aser.extract.parsed_reader.ParsedReader.generate_sid">[docs]</a>    <span class="k">def</span> <span class="nf">generate_sid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sentence</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">line_no</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param sentence: the raw text</span>
+<span class="sd">        :type sentence: str</span>
+<span class="sd">        :param file_name: the file name</span>
+<span class="sd">        :type file_name: str</span>
+<span class="sd">        :param line_no: the line number</span>
+<span class="sd">        :type line_no: int</span>
+<span class="sd">        :return: the corresponding sentence id</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">file_name</span> <span class="o">+</span> <span class="s2">&quot;|&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">line_no</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ParsedReader.get_parsed_paragraphs_from_file"><a class="viewcode-back" href="../../../api/extractor.html#aser.extract.parsed_reader.ParsedReader.get_parsed_paragraphs_from_file">[docs]</a>    <span class="k">def</span> <span class="nf">get_parsed_paragraphs_from_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">processed_path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; This method retrieves all paragraphs from a processed file</span>
+
+<span class="sd">        :type processed_path: str or None</span>
+<span class="sd">        :param processed_path: the file path of the processed file</span>
+<span class="sd">        :return: a list of lists of dicts</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">processed_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">sent_len</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">())[</span><span class="s2">&quot;sentence_lens&quot;</span><span class="p">]</span>
+            <span class="n">paragraphs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="n">line_no</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">para_idx</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">while</span> <span class="n">para_idx</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">sent_len</span><span class="p">):</span>
+                <span class="n">paragraph</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+                <span class="n">end_no</span> <span class="o">=</span> <span class="n">sent_len</span><span class="p">[</span><span class="n">para_idx</span><span class="p">]</span>
+                <span class="k">while</span> <span class="n">line_no</span> <span class="o">&lt;</span> <span class="n">end_no</span><span class="p">:</span>
+                    <span class="n">sent</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">())</span>
+                    <span class="n">sent</span><span class="p">[</span><span class="s2">&quot;sid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_sid</span><span class="p">(</span><span class="n">sent</span><span class="p">,</span> <span class="n">processed_path</span><span class="p">,</span> <span class="n">line_no</span><span class="p">)</span>
+                    <span class="n">paragraph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sent</span><span class="p">)</span>
+                    <span class="n">line_no</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">para_idx</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">paragraphs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">paragraph</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">paragraphs</span></div>
+
+<div class="viewcode-block" id="ParsedReader.get_parsed_sentence_and_context"><a class="viewcode-back" href="../../../api/extractor.html#aser.extract.parsed_reader.ParsedReader.get_parsed_sentence_and_context">[docs]</a>    <span class="k">def</span> <span class="nf">get_parsed_sentence_and_context</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span> <span class="n">context_window_size</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Retrieve the parsed results of the corresponding sentence and its context</span>
+
+<span class="sd">        :param sid: the sentence id</span>
+<span class="sd">        :type sid: str</span>
+<span class="sd">        :param context_window_size: the context window size</span>
+<span class="sd">        :type context_window_size: int (default = 0)</span>
+<span class="sd">        :return: a dictionary that contains the &quot;sentence&quot;, &quot;left_context&quot;, and &quot;right_context&quot;</span>
+<span class="sd">        :rtype: Dict[str, object]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">file_name</span><span class="p">,</span> <span class="n">line_no</span> <span class="o">=</span> <span class="n">sid</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">line_no</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line_no</span><span class="p">)</span>
+        <span class="n">sent</span><span class="p">,</span> <span class="n">lctx</span><span class="p">,</span> <span class="n">rctx</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">list</span><span class="p">(),</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">sent_len</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">())[</span><span class="s2">&quot;sentence_lens&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sent_len</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;id:</span><span class="si">{}</span><span class="s2"> exceeds file limit.. file:</span><span class="si">{}</span><span class="s2"> is empty&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sid</span><span class="p">,</span> <span class="n">file_name</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="n">line_no</span> <span class="o">&gt;=</span> <span class="n">sent_len</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;id:</span><span class="si">{}</span><span class="s2"> exceeds file limit.. file:</span><span class="si">{}</span><span class="s2"> only have </span><span class="si">{}</span><span class="s2"> lines&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sid</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">sent_len</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">line_no</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">context_window_size</span><span class="p">):</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+
+                <span class="c1"># left context</span>
+                <span class="n">lctx_num</span> <span class="o">=</span> <span class="n">line_no</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">line_no</span> <span class="o">-</span> <span class="n">context_window_size</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">context_window_size</span>
+                <span class="k">for</span> <span class="n">l_line_no</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">line_no</span> <span class="o">-</span> <span class="n">lctx_num</span><span class="p">,</span> <span class="n">line_no</span><span class="p">):</span>
+                    <span class="n">l_sent</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">())</span>
+                    <span class="n">l_sent</span><span class="p">[</span><span class="s2">&quot;sid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_sid</span><span class="p">(</span><span class="n">l_sent</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">l_line_no</span><span class="p">)</span>
+                    <span class="n">lctx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l_sent</span><span class="p">)</span>
+
+                <span class="c1"># sentence</span>
+                <span class="n">sent</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">())</span>
+                <span class="n">sent</span><span class="p">[</span><span class="s2">&quot;sid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_sid</span><span class="p">(</span><span class="n">sent</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">line_no</span><span class="p">)</span>
+
+                <span class="c1"># right context</span>
+                <span class="n">rctx_num</span> <span class="o">=</span> <span class="n">sent_len</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">line_no</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">line_no</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">context_window_size</span> <span class="o">&gt;</span> <span class="n">sent_len</span><span class="p">[</span>
+                    <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">else</span> <span class="n">context_window_size</span>
+                <span class="k">for</span> <span class="n">r_line_no</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">line_no</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">line_no</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">rctx_num</span><span class="p">):</span>
+                    <span class="n">r_sent</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">())</span>
+                    <span class="n">r_sent</span><span class="p">[</span><span class="s2">&quot;sid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_sid</span><span class="p">(</span><span class="n">r_sent</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">r_line_no</span><span class="p">)</span>
+                    <span class="n">rctx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r_sent</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;sentence&quot;</span><span class="p">:</span> <span class="n">sent</span><span class="p">,</span> <span class="s2">&quot;left_context&quot;</span><span class="p">:</span> <span class="n">lctx</span><span class="p">,</span> <span class="s2">&quot;right_context&quot;</span><span class="p">:</span> <span class="n">rctx</span><span class="p">}</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">sid</span> <span class="o">=</span> <span class="s2">&quot;/Users/sean/OneDrive - HKUST Connect/Documents/HKUST/Research/ASER/example_data/processed/yelp.jsonl|1&quot;</span>
+    <span class="n">parse_reader</span> <span class="o">=</span> <span class="n">ParsedReader</span><span class="p">()</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">parse_reader</span><span class="o">.</span><span class="n">get_parsed_sentence_and_context</span><span class="p">(</span><span class="n">sid</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;sentence&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">pprint</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="p">})</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">pprint</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]})</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">pprint</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="p">})</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">pprint</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">v</span><span class="p">]})</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, KnowComp.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

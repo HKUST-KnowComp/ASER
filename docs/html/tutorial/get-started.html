@@ -1,0 +1,817 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Get Started &mdash; ASER 2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Database" href="../api/database.html" />
+    <link rel="prev" title="ASER (Activities, States, Events, and their Relations)" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> ASER
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Get Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#local-pipeline-aser-pipe">Local Pipeline: aser-pipe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-by-step-extraction">Step-by-step extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#client-server-mode">Client/Server Mode</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/database.html">Database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/extractor.html">Extractor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/conceptualizer.html">Conceptualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/aser-cs.html">Server/Client</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ASER</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Get Started</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/tutorial/get-started.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="get-started">
+<h1>Get Started<a class="headerlink" href="#get-started" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#installation" id="id1">Installation</a></p></li>
+<li><p><a class="reference internal" href="#local-pipeline-aser-pipe" id="id2">Local Pipeline: aser-pipe</a></p></li>
+<li><p><a class="reference internal" href="#step-by-step-extraction" id="id3">Step-by-step extraction</a></p></li>
+<li><p><a class="reference internal" href="#client-server-mode" id="id4">Client/Server Mode</a></p></li>
+</ul>
+</div>
+<div class="section" id="installation">
+<h2><a class="toc-backref" href="#id1">Installation</a><a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>Currently we only support setup from source. So the first step download this repo</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/HKUST-KnowComp/ASER.git
+</pre></div>
+</div>
+<p>Then install ASER requirements</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install -r requirements.txt
+</pre></div>
+</div>
+<p>Finally install ASER as a python package</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python setup.py install
+</pre></div>
+</div>
+<p>To run ASER extraction, you need to download corenlp 3.9.2 (2018-10-05) from <a class="reference external" href="https://stanfordnlp.github.io/CoreNLP/download.html">https://stanfordnlp.github.io/CoreNLP/download.html</a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">urllib</span>
+<span class="kn">import</span> <span class="nn">zipfile</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+
+<span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlretrieve</span><span class="p">(</span><span class="s2">&quot;http://nlp.stanford.edu/software/stanford-corenlp-full-2018-10-05.zip&quot;</span><span class="p">,</span> <span class="s2">&quot;stanford-corenlp-3.9.2.zip&quot;</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="s2">&quot;stanford-corenlp-3.9.2.zip&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">zip_ref</span><span class="p">:</span>
+    <span class="n">zip_ref</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="s2">&quot;./&quot;</span><span class="p">)</span>
+<span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="s2">&quot;stanford-corenlp-full-2018-10-05&quot;</span><span class="p">,</span> <span class="s2">&quot;stanford-corenlp-3.9.2&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To run ASER conceptualizatoin, you need to download Probase from <a class="reference external" href="https://concept.research.microsoft.com/Home/Download">https://concept.research.microsoft.com/Home/Download</a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">urllib</span>
+<span class="kn">import</span> <span class="nn">zipfile</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+
+<span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlretrieve</span><span class="p">(</span><span class="s2">&quot;https://concept.research.microsoft.com/Home/DownloadData?key=t9RdYhnkv94TFcd8tkVdzF9cEwNFdaFe&amp;h=602979237&quot;</span><span class="p">,</span> <span class="s2">&quot;probase.zip&quot;</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="s2">&quot;probase.zip&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">zip_ref</span><span class="p">:</span>
+    <span class="n">zip_ref</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="s2">&quot;./&quot;</span><span class="p">)</span>
+<span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="s2">&quot;data-concept/data-concept-instance-relations.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;probase.txt&quot;</span><span class="p">)</span>
+<span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="s2">&quot;data-concept&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="local-pipeline-aser-pipe">
+<h2><a class="toc-backref" href="#id2">Local Pipeline: aser-pipe</a><a class="headerlink" href="#local-pipeline-aser-pipe" title="Permalink to this headline">¶</a></h2>
+<p>Before getting started, We write three reviews from yelp into a file and want to run the pipepline to build KG.db and concept.db.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s2">&quot;raw&quot;</span><span class="p">)</span>
+<span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s2">&quot;processed&quot;</span><span class="p">)</span>
+<span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s2">&quot;core&quot;</span><span class="p">)</span>
+<span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s2">&quot;full&quot;</span><span class="p">)</span>
+<span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s2">&quot;concept&quot;</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;raw/yelp.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;I went there based on reviews on yelp. I was not let down! I got the wild mushroom personal pie and added spinach and fresh jalapenos on the ancient grains crust. It was amazing. The crust was perfectly cooked and all the toppings meshed well together. They have many vegan options(daiya cheese). The owner and the other employee there were very nice and friendly. I will definitely be going back next time I am in town.&quot;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;My experience at this kneaders location was great! I wasn&#39;t there during a busy time, about 3:45, but they were very attentive. I placed my to go order and it was ready within 10 minutes. I will definitely be back!&quot;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;I came here for breakfast before a conference, I was excited to try some local breakfast places. I think the highlight of my breakfast was the freshly squeezed orange juice: it was very sweet, natural, and definitely the champion of the day. I ordered the local fresh eggs on ciabatta with the house made sausage. I would have given a four if the bread had been toasted, but it wasnt. The sausage had good flavor, but I would have liked a little salt on my eggs. All in all a good breakfast. If I am back in town I would try the pastries, they looked and smelled amazing.&quot;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then, we can start aser-pipe from command line.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ aser-pipe -n_extractors <span class="m">1</span> -n_workers <span class="m">1</span> <span class="se">\</span>
+    -corenlp_path <span class="s2">&quot;stanford-corenlp-3.9.2&quot;</span> -base_corenlp_port <span class="m">9000</span> <span class="se">\</span>
+    -raw_dir <span class="s2">&quot;raw&quot;</span> -processed_dir <span class="s2">&quot;processed&quot;</span> <span class="se">\</span>
+    -core_kg_dir <span class="s2">&quot;core&quot;</span> -full_kg_dir <span class="s2">&quot;full&quot;</span> <span class="se">\</span>
+    -eventuality_frequency_threshold <span class="m">0</span> -relation_weight_threshold <span class="m">0</span> <span class="se">\</span>
+    -concept_kg_dir <span class="s2">&quot;concept&quot;</span> -concept_method probase -probase_path <span class="s2">&quot;probase.txt&quot;</span> <span class="se">\</span>
+    -eventuality_threshold_to_conceptualize <span class="m">0</span> -concept_weight_threshold <span class="m">0</span> -concept_topk <span class="m">5</span> <span class="se">\</span>
+    -log_path <span class="s2">&quot;core/aser_pipe.log&quot;</span>
+</pre></div>
+</div>
+<p>Now, you can check the core, full, and concept directories.</p>
+</div>
+<div class="section" id="step-by-step-extraction">
+<h2><a class="toc-backref" href="#id3">Step-by-step extraction</a><a class="headerlink" href="#step-by-step-extraction" title="Permalink to this headline">¶</a></h2>
+<p>Let’s see how to utilize an ASER extractor and a conceptualizer.
+We provide two kinds of ASERExtractors: the SeedRuleASERExtractor corresponding to the WWW”2020and a new DiscourseASERExtractor which is implemented based on a discourse parsing system.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
+<span class="kn">from</span> <span class="nn">aser.extract.aser_extractor</span> <span class="kn">import</span> <span class="n">SeedRuleASERExtractor</span><span class="p">,</span> <span class="n">DiscourseASERExtractor</span>
+
+<span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;I came here for breakfast before a conference, I was excited to try some local breakfast places. I think the highlight of my breakfast was the freshly squeezed orange juice: it was very sweet, natural, and definitely the champion of the day. I ordered the local fresh eggs on ciabatta with the house made sausage. I would have given a four if the bread had been toasted, but it wasnt. The sausage had good flavor, but I would have liked a little salt on my eggs. All in all a good breakfast. If I am back in town I would try the pastries, they looked and smelled amazing.&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Text:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+<span class="n">aser_extractor</span> <span class="o">=</span> <span class="n">DiscourseASERExtractor</span><span class="p">(</span>
+  <span class="n">corenlp_path</span><span class="o">=</span><span class="s2">&quot;stanford-corenlp-3.9.2&quot;</span><span class="p">,</span> <span class="n">corenlp_port</span><span class="o">=</span><span class="mi">9000</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;In-order:&quot;</span><span class="p">)</span>
+<span class="n">pprint</span><span class="p">(</span><span class="n">aser_extractor</span><span class="o">.</span><span class="n">extract_from_text</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">in_order</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Out-of-Order:&quot;</span><span class="p">)</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">aser_extractor</span><span class="o">.</span><span class="n">extract_from_text</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">in_order</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">pprint</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+
+<span class="n">eventualities</span><span class="p">,</span> <span class="n">relations</span> <span class="o">=</span> <span class="n">results</span>
+</pre></div>
+</div>
+<p>If succeed, you can see the following outputs:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Text</span><span class="p">:</span>
+<span class="n">I</span> <span class="n">came</span> <span class="n">here</span> <span class="k">for</span> <span class="n">breakfast</span> <span class="n">before</span> <span class="n">a</span> <span class="n">conference</span><span class="p">,</span> <span class="n">I</span> <span class="n">was</span> <span class="n">excited</span> <span class="n">to</span> <span class="k">try</span> <span class="n">some</span> <span class="n">local</span> <span class="n">breakfast</span> <span class="n">places</span><span class="o">.</span> <span class="n">I</span> <span class="n">think</span> <span class="n">the</span> <span class="n">highlight</span> <span class="n">of</span> <span class="n">my</span> <span class="n">breakfast</span> <span class="n">was</span> <span class="n">the</span> <span class="n">freshly</span> <span class="n">squeezed</span> <span class="n">orange</span> <span class="n">juice</span><span class="p">:</span> <span class="n">it</span> <span class="n">was</span> <span class="n">very</span> <span class="n">sweet</span><span class="p">,</span> <span class="n">natural</span><span class="p">,</span> <span class="ow">and</span> <span class="n">definitely</span> <span class="n">the</span> <span class="n">champion</span> <span class="n">of</span> <span class="n">the</span> <span class="n">day</span><span class="o">.</span> <span class="n">I</span> <span class="n">ordered</span> <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">eggs</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="k">with</span> <span class="n">the</span> <span class="n">house</span> <span class="n">made</span> <span class="n">sausage</span><span class="o">.</span> <span class="n">I</span> <span class="n">would</span> <span class="n">have</span> <span class="n">given</span> <span class="n">a</span> <span class="n">four</span> <span class="k">if</span> <span class="n">the</span> <span class="n">bread</span> <span class="n">had</span> <span class="n">been</span> <span class="n">toasted</span><span class="p">,</span> <span class="n">but</span> <span class="n">it</span> <span class="n">wasnt</span><span class="o">.</span> <span class="n">The</span> <span class="n">sausage</span> <span class="n">had</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span> <span class="n">but</span> <span class="n">I</span> <span class="n">would</span> <span class="n">have</span> <span class="n">liked</span> <span class="n">a</span> <span class="n">little</span> <span class="n">salt</span> <span class="n">on</span> <span class="n">my</span> <span class="n">eggs</span><span class="o">.</span> <span class="n">All</span> <span class="ow">in</span> <span class="nb">all</span> <span class="n">a</span> <span class="n">good</span> <span class="n">breakfast</span><span class="o">.</span> <span class="n">If</span> <span class="n">I</span> <span class="n">am</span> <span class="n">back</span> <span class="ow">in</span> <span class="n">town</span> <span class="n">I</span> <span class="n">would</span> <span class="k">try</span> <span class="n">the</span> <span class="n">pastries</span><span class="p">,</span> <span class="n">they</span> <span class="n">looked</span> <span class="ow">and</span> <span class="n">smelled</span> <span class="n">amazing</span><span class="o">.</span>
+<span class="o">--------------------------------------------------------------------------------</span>
+<span class="n">In</span><span class="o">-</span><span class="n">order</span><span class="p">:</span>
+<span class="p">([[],</span>
+  <span class="p">[</span><span class="n">i</span> <span class="n">think</span><span class="p">,</span> <span class="n">it</span> <span class="n">be</span> <span class="n">very</span> <span class="n">sweet</span><span class="p">],</span>
+  <span class="p">[</span><span class="n">i</span> <span class="n">order</span><span class="p">,</span> <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">],</span>
+  <span class="p">[</span><span class="n">i</span> <span class="n">would</span> <span class="n">have</span> <span class="n">give</span> <span class="n">a</span> <span class="n">four</span><span class="p">,</span> <span class="n">the</span> <span class="n">bread</span> <span class="n">have</span> <span class="n">be</span> <span class="n">toast</span><span class="p">],</span>
+  <span class="p">[</span><span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span> <span class="n">i</span> <span class="n">would</span> <span class="n">have</span> <span class="n">like</span> <span class="n">a</span> <span class="n">little</span> <span class="n">salt</span> <span class="n">on</span> <span class="n">egg</span><span class="p">],</span>
+  <span class="p">[],</span>
+  <span class="p">[</span><span class="n">i</span> <span class="n">be</span> <span class="n">back</span> <span class="ow">in</span> <span class="n">town</span><span class="p">,</span> <span class="n">i</span> <span class="n">would</span> <span class="k">try</span> <span class="n">the</span> <span class="n">pastry</span><span class="p">,</span> <span class="n">they</span> <span class="n">look</span><span class="p">,</span> <span class="n">they</span> <span class="n">smell</span> <span class="n">amazing</span><span class="p">]],</span>
+ <span class="p">[[],</span>
+  <span class="p">[(</span><span class="mi">010</span><span class="n">ec054737a144cb77e99954ff032bc5dff472c</span><span class="p">,</span> <span class="mi">55704</span><span class="n">c606666f41a73ac5ae0eabe582892aa163c</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Co_Occurrence&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">})],</span>
+  <span class="p">[(</span><span class="n">b875a4b94675e057fa643beb334e071e4ddf3760</span><span class="p">,</span> <span class="mi">41876</span><span class="n">cb7188cb3398572af71ff9d98d61f46c20b</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Co_Occurrence&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">})],</span>
+  <span class="p">[(</span><span class="mi">766</span><span class="n">f00c08dcac14353629c12125f05697eb58a2e</span><span class="p">,</span> <span class="mi">13</span><span class="n">bb4ed9f70c37253246c2051ef05fe4795f4fee</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Co_Occurrence&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;Condition&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">})],</span>
+  <span class="p">[(</span><span class="mf">253e8</span><span class="n">b127b833c3aa7d79e2b91ce030299a646d6</span><span class="p">,</span> <span class="mi">8</span><span class="n">dd8fbc06d2810add7b2cfd637a78f90fa2e5e9e</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Co_Occurrence&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;Contrast&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">})],</span>
+  <span class="p">[],</span>
+  <span class="p">[(</span><span class="n">dac82e8bc75bd0221e86194e6e3cd607a72aba7e</span><span class="p">,</span> <span class="mi">2</span><span class="n">dd66bdf5849fe8d4a28d3355f0fc0a50b7f61e2</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Co_Occurrence&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">}),</span>
+   <span class="p">(</span><span class="n">dac82e8bc75bd0221e86194e6e3cd607a72aba7e</span><span class="p">,</span> <span class="n">a8eec375e86e467cf868a03f64ecd1f9d1fe5fee</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Co_Occurrence&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">}),</span>
+   <span class="p">(</span><span class="n">dac82e8bc75bd0221e86194e6e3cd607a72aba7e</span><span class="p">,</span> <span class="mi">1</span><span class="n">a18ae76468276b651c178926b380e4e9d607f5e</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Co_Occurrence&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">}),</span>
+   <span class="p">(</span><span class="mi">2</span><span class="n">dd66bdf5849fe8d4a28d3355f0fc0a50b7f61e2</span><span class="p">,</span> <span class="n">a8eec375e86e467cf868a03f64ecd1f9d1fe5fee</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Co_Occurrence&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">}),</span>
+   <span class="p">(</span><span class="mi">2</span><span class="n">dd66bdf5849fe8d4a28d3355f0fc0a50b7f61e2</span><span class="p">,</span> <span class="mi">1</span><span class="n">a18ae76468276b651c178926b380e4e9d607f5e</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Co_Occurrence&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">}),</span>
+   <span class="p">(</span><span class="n">a8eec375e86e467cf868a03f64ecd1f9d1fe5fee</span><span class="p">,</span> <span class="mi">1</span><span class="n">a18ae76468276b651c178926b380e4e9d607f5e</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Co_Occurrence&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">}),</span>
+   <span class="p">(</span><span class="n">a8eec375e86e467cf868a03f64ecd1f9d1fe5fee</span><span class="p">,</span> <span class="n">dac82e8bc75bd0221e86194e6e3cd607a72aba7e</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Condition&#39;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">}),</span>
+   <span class="p">(</span><span class="n">a8eec375e86e467cf868a03f64ecd1f9d1fe5fee</span><span class="p">,</span> <span class="mi">2</span><span class="n">dd66bdf5849fe8d4a28d3355f0fc0a50b7f61e2</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Condition&#39;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">}),</span>
+   <span class="p">(</span><span class="mi">1</span><span class="n">a18ae76468276b651c178926b380e4e9d607f5e</span><span class="p">,</span> <span class="n">dac82e8bc75bd0221e86194e6e3cd607a72aba7e</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Condition&#39;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">}),</span>
+   <span class="p">(</span><span class="mi">1</span><span class="n">a18ae76468276b651c178926b380e4e9d607f5e</span><span class="p">,</span> <span class="mi">2</span><span class="n">dd66bdf5849fe8d4a28d3355f0fc0a50b7f61e2</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Condition&#39;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">})],</span>
+  <span class="p">[],</span>
+  <span class="p">[],</span>
+  <span class="p">[],</span>
+  <span class="p">[],</span>
+  <span class="p">[],</span>
+  <span class="p">[]])</span>
+<span class="o">--------------------------------------------------------------------------------</span>
+<span class="n">Out</span><span class="o">-</span><span class="n">of</span><span class="o">-</span><span class="n">Order</span><span class="p">:</span>
+<span class="p">([</span><span class="n">i</span> <span class="n">think</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">bread</span> <span class="n">have</span> <span class="n">be</span> <span class="n">toast</span><span class="p">,</span>
+  <span class="n">they</span> <span class="n">smell</span> <span class="n">amazing</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span>
+  <span class="n">i</span> <span class="n">would</span> <span class="k">try</span> <span class="n">the</span> <span class="n">pastry</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="n">it</span> <span class="n">be</span> <span class="n">very</span> <span class="n">sweet</span><span class="p">,</span>
+  <span class="n">i</span> <span class="n">would</span> <span class="n">have</span> <span class="n">give</span> <span class="n">a</span> <span class="n">four</span><span class="p">,</span>
+  <span class="n">i</span> <span class="n">would</span> <span class="n">have</span> <span class="n">like</span> <span class="n">a</span> <span class="n">little</span> <span class="n">salt</span> <span class="n">on</span> <span class="n">egg</span><span class="p">,</span>
+  <span class="n">they</span> <span class="n">look</span><span class="p">,</span>
+  <span class="n">i</span> <span class="n">order</span><span class="p">,</span>
+  <span class="n">i</span> <span class="n">be</span> <span class="n">back</span> <span class="ow">in</span> <span class="n">town</span><span class="p">],</span>
+ <span class="p">[(</span><span class="mi">2</span><span class="n">dd66bdf5849fe8d4a28d3355f0fc0a50b7f61e2</span><span class="p">,</span> <span class="mi">1</span><span class="n">a18ae76468276b651c178926b380e4e9d607f5e</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Co_Occurrence&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">}),</span>
+  <span class="p">(</span><span class="mi">1</span><span class="n">a18ae76468276b651c178926b380e4e9d607f5e</span><span class="p">,</span> <span class="n">dac82e8bc75bd0221e86194e6e3cd607a72aba7e</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Condition&#39;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">}),</span>
+  <span class="p">(</span><span class="mf">253e8</span><span class="n">b127b833c3aa7d79e2b91ce030299a646d6</span><span class="p">,</span> <span class="mi">8</span><span class="n">dd8fbc06d2810add7b2cfd637a78f90fa2e5e9e</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Co_Occurrence&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;Contrast&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">}),</span>
+  <span class="p">(</span><span class="n">dac82e8bc75bd0221e86194e6e3cd607a72aba7e</span><span class="p">,</span> <span class="mi">2</span><span class="n">dd66bdf5849fe8d4a28d3355f0fc0a50b7f61e2</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Co_Occurrence&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">}),</span>
+  <span class="p">(</span><span class="n">dac82e8bc75bd0221e86194e6e3cd607a72aba7e</span><span class="p">,</span> <span class="mi">1</span><span class="n">a18ae76468276b651c178926b380e4e9d607f5e</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Co_Occurrence&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">}),</span>
+  <span class="p">(</span><span class="n">b875a4b94675e057fa643beb334e071e4ddf3760</span><span class="p">,</span> <span class="mi">41876</span><span class="n">cb7188cb3398572af71ff9d98d61f46c20b</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Co_Occurrence&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">}),</span>
+  <span class="p">(</span><span class="mi">1</span><span class="n">a18ae76468276b651c178926b380e4e9d607f5e</span><span class="p">,</span> <span class="mi">2</span><span class="n">dd66bdf5849fe8d4a28d3355f0fc0a50b7f61e2</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Condition&#39;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">}),</span>
+  <span class="p">(</span><span class="n">a8eec375e86e467cf868a03f64ecd1f9d1fe5fee</span><span class="p">,</span> <span class="mi">2</span><span class="n">dd66bdf5849fe8d4a28d3355f0fc0a50b7f61e2</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Condition&#39;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">}),</span>
+  <span class="p">(</span><span class="n">dac82e8bc75bd0221e86194e6e3cd607a72aba7e</span><span class="p">,</span> <span class="n">a8eec375e86e467cf868a03f64ecd1f9d1fe5fee</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Co_Occurrence&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">}),</span>
+  <span class="p">(</span><span class="mi">766</span><span class="n">f00c08dcac14353629c12125f05697eb58a2e</span><span class="p">,</span> <span class="mi">13</span><span class="n">bb4ed9f70c37253246c2051ef05fe4795f4fee</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Co_Occurrence&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;Condition&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">}),</span>
+  <span class="p">(</span><span class="n">a8eec375e86e467cf868a03f64ecd1f9d1fe5fee</span><span class="p">,</span> <span class="mi">1</span><span class="n">a18ae76468276b651c178926b380e4e9d607f5e</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Co_Occurrence&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">}),</span>
+  <span class="p">(</span><span class="mi">010</span><span class="n">ec054737a144cb77e99954ff032bc5dff472c</span><span class="p">,</span> <span class="mi">55704</span><span class="n">c606666f41a73ac5ae0eabe582892aa163c</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Co_Occurrence&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">}),</span>
+  <span class="p">(</span><span class="n">a8eec375e86e467cf868a03f64ecd1f9d1fe5fee</span><span class="p">,</span> <span class="n">dac82e8bc75bd0221e86194e6e3cd607a72aba7e</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Condition&#39;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">}),</span>
+  <span class="p">(</span><span class="mi">2</span><span class="n">dd66bdf5849fe8d4a28d3355f0fc0a50b7f61e2</span><span class="p">,</span> <span class="n">a8eec375e86e467cf868a03f64ecd1f9d1fe5fee</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Co_Occurrence&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">})])</span>
+</pre></div>
+</div>
+<p>As shown above, the in-order will keep the sentence order and token order so that it is a nested list. On the contrary, the out-of-order will return a set of eventualities and a set of relations.</p>
+<p>Then, we use the conceptualizer based on probase to conceptualize eventualities.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">aser.conceptualize.aser_conceptualizer</span> <span class="kn">import</span> <span class="n">SeedRuleASERConceptualizer</span><span class="p">,</span> <span class="n">ProbaseASERConceptualizer</span>
+<span class="kn">from</span> <span class="nn">aser.conceptualize.utils</span> <span class="kn">import</span> <span class="n">conceptualize_eventualities</span><span class="p">,</span> <span class="n">build_concept_relations</span>
+
+<span class="n">aser_conceptualizer</span> <span class="o">=</span> <span class="n">ProbaseASERConceptualizer</span><span class="p">(</span>
+  <span class="n">probase_path</span><span class="o">=</span><span class="s2">&quot;probase.txt&quot;</span><span class="p">,</span> <span class="n">probase_topk</span><span class="o">=</span><span class="mi">5</span>
+<span class="p">)</span>
+
+<span class="n">cid2concept</span><span class="p">,</span> <span class="n">concept_instance_pairs</span><span class="p">,</span> <span class="n">cid_to_filter_score</span> <span class="o">=</span> <span class="n">conceptualize_eventualities</span><span class="p">(</span>
+  <span class="n">aser_conceptualizer</span><span class="p">,</span> <span class="n">eventualities</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;concepts:&quot;</span><span class="p">)</span>
+<span class="n">pprint</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">cid2concept</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;concept_instance_pairs:&quot;</span><span class="p">)</span>
+<span class="n">pprint</span><span class="p">(</span><span class="n">concept_instance_pairs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If succeed, you can see the following outputs:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">--------------------------------------------------------------------------------</span>
+<span class="n">concepts</span><span class="p">:</span>
+<span class="p">[</span><span class="n">__PERSON__0</span> <span class="n">think</span><span class="p">,</span>
+ <span class="n">food</span> <span class="n">toast</span><span class="p">,</span>
+ <span class="n">carbohydrate</span> <span class="n">toast</span><span class="p">,</span>
+ <span class="n">item</span> <span class="n">toast</span><span class="p">,</span>
+ <span class="n">starchy</span><span class="o">-</span><span class="n">food</span> <span class="n">toast</span><span class="p">,</span>
+ <span class="n">product</span> <span class="n">toast</span><span class="p">,</span>
+ <span class="n">__PERSON__0</span> <span class="n">smell</span> <span class="n">amazing</span><span class="p">,</span>
+ <span class="n">meat</span> <span class="n">have</span> <span class="n">flavor</span><span class="p">,</span>
+ <span class="n">sausage</span> <span class="n">have</span> <span class="n">ingredient</span><span class="p">,</span>
+ <span class="n">processed</span><span class="o">-</span><span class="n">meat</span> <span class="n">have</span> <span class="n">flavor</span><span class="p">,</span>
+ <span class="n">food</span> <span class="n">have</span> <span class="n">flavor</span><span class="p">,</span>
+ <span class="n">sausage</span> <span class="n">have</span> <span class="n">additive</span><span class="p">,</span>
+ <span class="n">sausage</span> <span class="n">have</span> <span class="n">excipients</span><span class="p">,</span>
+ <span class="n">sausage</span> <span class="n">have</span> <span class="n">factor</span><span class="p">,</span>
+ <span class="n">sausage</span> <span class="n">have</span> <span class="n">characteristic</span><span class="p">,</span>
+ <span class="n">meat</span><span class="o">-</span><span class="n">product</span> <span class="n">have</span> <span class="n">flavor</span><span class="p">,</span>
+ <span class="n">item</span> <span class="n">have</span> <span class="n">flavor</span><span class="p">,</span>
+ <span class="n">meat</span> <span class="n">have</span> <span class="n">ingredient</span><span class="p">,</span>
+ <span class="n">processed</span><span class="o">-</span><span class="n">meat</span> <span class="n">have</span> <span class="n">ingredient</span><span class="p">,</span>
+ <span class="n">food</span> <span class="n">have</span> <span class="n">ingredient</span><span class="p">,</span>
+ <span class="n">meat</span> <span class="n">have</span> <span class="n">additive</span><span class="p">,</span>
+ <span class="n">meat</span> <span class="n">have</span> <span class="n">excipients</span><span class="p">,</span>
+ <span class="n">meat</span> <span class="n">have</span> <span class="n">factor</span><span class="p">,</span>
+ <span class="n">processed</span><span class="o">-</span><span class="n">meat</span> <span class="n">have</span> <span class="n">additive</span><span class="p">,</span>
+ <span class="n">meat</span> <span class="n">have</span> <span class="n">characteristic</span><span class="p">,</span>
+ <span class="n">food</span> <span class="n">have</span> <span class="n">additive</span><span class="p">,</span>
+ <span class="n">processed</span><span class="o">-</span><span class="n">meat</span> <span class="n">have</span> <span class="n">excipients</span><span class="p">,</span>
+ <span class="n">processed</span><span class="o">-</span><span class="n">meat</span> <span class="n">have</span> <span class="n">factor</span><span class="p">,</span>
+ <span class="n">meat</span><span class="o">-</span><span class="n">product</span> <span class="n">have</span> <span class="n">ingredient</span><span class="p">,</span>
+ <span class="n">food</span> <span class="n">have</span> <span class="n">excipients</span><span class="p">,</span>
+ <span class="n">item</span> <span class="n">have</span> <span class="n">ingredient</span><span class="p">,</span>
+ <span class="n">food</span> <span class="n">have</span> <span class="n">factor</span><span class="p">,</span>
+ <span class="n">processed</span><span class="o">-</span><span class="n">meat</span> <span class="n">have</span> <span class="n">characteristic</span><span class="p">,</span>
+ <span class="n">food</span> <span class="n">have</span> <span class="n">characteristic</span><span class="p">,</span>
+ <span class="n">meat</span><span class="o">-</span><span class="n">product</span> <span class="n">have</span> <span class="n">additive</span><span class="p">,</span>
+ <span class="n">item</span> <span class="n">have</span> <span class="n">additive</span><span class="p">,</span>
+ <span class="n">meat</span><span class="o">-</span><span class="n">product</span> <span class="n">have</span> <span class="n">excipients</span><span class="p">,</span>
+ <span class="n">meat</span><span class="o">-</span><span class="n">product</span> <span class="n">have</span> <span class="n">factor</span><span class="p">,</span>
+ <span class="n">item</span> <span class="n">have</span> <span class="n">excipients</span><span class="p">,</span>
+ <span class="n">item</span> <span class="n">have</span> <span class="n">factor</span><span class="p">,</span>
+ <span class="n">meat</span><span class="o">-</span><span class="n">product</span> <span class="n">have</span> <span class="n">characteristic</span><span class="p">,</span>
+ <span class="n">item</span> <span class="n">have</span> <span class="n">characteristic</span><span class="p">,</span>
+ <span class="n">__PERSON__0</span> <span class="k">try</span> <span class="n">baked</span><span class="o">-</span><span class="n">good</span><span class="p">,</span>
+ <span class="n">__PERSON__0</span> <span class="k">try</span> <span class="n">food</span><span class="p">,</span>
+ <span class="n">__PERSON__0</span> <span class="k">try</span> <span class="n">item</span><span class="p">,</span>
+ <span class="n">__PERSON__0</span> <span class="k">try</span> <span class="n">sweet</span><span class="p">,</span>
+ <span class="n">__PERSON__0</span> <span class="k">try</span> <span class="n">product</span><span class="p">,</span>
+ <span class="n">food</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+ <span class="n">egg</span> <span class="n">make</span> <span class="n">meat</span><span class="p">,</span>
+ <span class="n">egg</span> <span class="n">make</span> <span class="n">processed</span><span class="o">-</span><span class="n">meat</span><span class="p">,</span>
+ <span class="n">egg</span> <span class="n">make</span> <span class="n">food</span><span class="p">,</span>
+ <span class="n">animal</span><span class="o">-</span><span class="n">product</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+ <span class="n">egg</span> <span class="n">make</span> <span class="n">meat</span><span class="o">-</span><span class="n">product</span><span class="p">,</span>
+ <span class="n">ingredient</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+ <span class="n">food</span> <span class="n">make</span> <span class="n">meat</span><span class="p">,</span>
+ <span class="n">egg</span> <span class="n">make</span> <span class="n">item</span><span class="p">,</span>
+ <span class="n">item</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+ <span class="n">protein</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+ <span class="n">food</span> <span class="n">make</span> <span class="n">processed</span><span class="o">-</span><span class="n">meat</span><span class="p">,</span>
+ <span class="n">food</span> <span class="n">make</span> <span class="n">food</span><span class="p">,</span>
+ <span class="n">food</span> <span class="n">make</span> <span class="n">meat</span><span class="o">-</span><span class="n">product</span><span class="p">,</span>
+ <span class="n">food</span> <span class="n">make</span> <span class="n">item</span><span class="p">,</span>
+ <span class="n">animal</span><span class="o">-</span><span class="n">product</span> <span class="n">make</span> <span class="n">meat</span><span class="p">,</span>
+ <span class="n">ingredient</span> <span class="n">make</span> <span class="n">meat</span><span class="p">,</span>
+ <span class="n">animal</span><span class="o">-</span><span class="n">product</span> <span class="n">make</span> <span class="n">processed</span><span class="o">-</span><span class="n">meat</span><span class="p">,</span>
+ <span class="n">item</span> <span class="n">make</span> <span class="n">meat</span><span class="p">,</span>
+ <span class="n">protein</span> <span class="n">make</span> <span class="n">meat</span><span class="p">,</span>
+ <span class="n">animal</span><span class="o">-</span><span class="n">product</span> <span class="n">make</span> <span class="n">food</span><span class="p">,</span>
+ <span class="n">ingredient</span> <span class="n">make</span> <span class="n">processed</span><span class="o">-</span><span class="n">meat</span><span class="p">,</span>
+ <span class="n">ingredient</span> <span class="n">make</span> <span class="n">food</span><span class="p">,</span>
+ <span class="n">item</span> <span class="n">make</span> <span class="n">processed</span><span class="o">-</span><span class="n">meat</span><span class="p">,</span>
+ <span class="n">protein</span> <span class="n">make</span> <span class="n">processed</span><span class="o">-</span><span class="n">meat</span><span class="p">,</span>
+ <span class="n">item</span> <span class="n">make</span> <span class="n">food</span><span class="p">,</span>
+ <span class="n">protein</span> <span class="n">make</span> <span class="n">food</span><span class="p">,</span>
+ <span class="n">animal</span><span class="o">-</span><span class="n">product</span> <span class="n">make</span> <span class="n">meat</span><span class="o">-</span><span class="n">product</span><span class="p">,</span>
+ <span class="n">animal</span><span class="o">-</span><span class="n">product</span> <span class="n">make</span> <span class="n">item</span><span class="p">,</span>
+ <span class="n">ingredient</span> <span class="n">make</span> <span class="n">meat</span><span class="o">-</span><span class="n">product</span><span class="p">,</span>
+ <span class="n">ingredient</span> <span class="n">make</span> <span class="n">item</span><span class="p">,</span>
+ <span class="n">item</span> <span class="n">make</span> <span class="n">meat</span><span class="o">-</span><span class="n">product</span><span class="p">,</span>
+ <span class="n">protein</span> <span class="n">make</span> <span class="n">meat</span><span class="o">-</span><span class="n">product</span><span class="p">,</span>
+ <span class="n">item</span> <span class="n">make</span> <span class="n">item</span><span class="p">,</span>
+ <span class="n">protein</span> <span class="n">make</span> <span class="n">item</span><span class="p">,</span>
+ <span class="n">it</span> <span class="n">be</span> <span class="n">sweet</span><span class="p">,</span>
+ <span class="n">__PERSON__0</span> <span class="n">give</span> <span class="n">__NUMBER__0</span><span class="p">,</span>
+ <span class="n">__PERSON__0</span> <span class="n">like</span> <span class="n">inorganic</span><span class="o">-</span><span class="n">contaminant</span><span class="p">,</span>
+ <span class="n">__PERSON__0</span> <span class="n">like</span> <span class="n">ingredient</span><span class="p">,</span>
+ <span class="n">__PERSON__0</span> <span class="n">like</span> <span class="n">seasoning</span><span class="p">,</span>
+ <span class="n">__PERSON__0</span> <span class="n">like</span> <span class="n">item</span><span class="p">,</span>
+ <span class="n">__PERSON__0</span> <span class="n">like</span> <span class="n">substance</span><span class="p">,</span>
+ <span class="n">__PERSON__0</span> <span class="n">look</span><span class="p">,</span>
+ <span class="n">__PERSON__0</span> <span class="n">order</span><span class="p">,</span>
+ <span class="n">__PERSON__0</span> <span class="n">be</span> <span class="n">area</span><span class="p">,</span>
+ <span class="n">__PERSON__0</span> <span class="n">be</span> <span class="n">information</span><span class="p">,</span>
+ <span class="n">__PERSON__0</span> <span class="n">be</span> <span class="n">place</span><span class="p">,</span>
+ <span class="n">__PERSON__0</span> <span class="n">be</span> <span class="n">location</span><span class="p">,</span>
+ <span class="n">__PERSON__0</span> <span class="n">be</span> <span class="n">feature</span><span class="p">]</span>
+<span class="o">--------------------------------------------------------------------------------</span>
+<span class="n">concept_instance_pairs</span><span class="p">:</span>
+<span class="p">[(</span><span class="n">__PERSON__0</span> <span class="n">think</span><span class="p">,</span> <span class="n">i</span> <span class="n">think</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">food</span> <span class="n">toast</span><span class="p">,</span> <span class="n">the</span> <span class="n">bread</span> <span class="n">have</span> <span class="n">be</span> <span class="n">toast</span><span class="p">,</span> <span class="mf">0.17291806206742577</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">carbohydrate</span> <span class="n">toast</span><span class="p">,</span> <span class="n">the</span> <span class="n">bread</span> <span class="n">have</span> <span class="n">be</span> <span class="n">toast</span><span class="p">,</span> <span class="mf">0.047555257870060284</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">item</span> <span class="n">toast</span><span class="p">,</span> <span class="n">the</span> <span class="n">bread</span> <span class="n">have</span> <span class="n">be</span> <span class="n">toast</span><span class="p">,</span> <span class="mf">0.041638758651484704</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">starchy</span><span class="o">-</span><span class="n">food</span> <span class="n">toast</span><span class="p">,</span> <span class="n">the</span> <span class="n">bread</span> <span class="n">have</span> <span class="n">be</span> <span class="n">toast</span><span class="p">,</span> <span class="mf">0.04085733422638982</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">product</span> <span class="n">toast</span><span class="p">,</span> <span class="n">the</span> <span class="n">bread</span> <span class="n">have</span> <span class="n">be</span> <span class="n">toast</span><span class="p">,</span> <span class="mf">0.031033712882339807</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">__PERSON__0</span> <span class="n">smell</span> <span class="n">amazing</span><span class="p">,</span> <span class="n">they</span> <span class="n">smell</span> <span class="n">amazing</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">meat</span> <span class="n">have</span> <span class="n">flavor</span><span class="p">,</span> <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span> <span class="mf">0.13801169590643275</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">sausage</span> <span class="n">have</span> <span class="n">ingredient</span><span class="p">,</span> <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span> <span class="mf">0.1330749354005168</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">processed</span><span class="o">-</span><span class="n">meat</span> <span class="n">have</span> <span class="n">flavor</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span>
+  <span class="mf">0.09395711500974659</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">food</span> <span class="n">have</span> <span class="n">flavor</span><span class="p">,</span> <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span> <span class="mf">0.08070175438596491</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">sausage</span> <span class="n">have</span> <span class="n">additive</span><span class="p">,</span> <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span> <span class="mf">0.06847545219638243</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">sausage</span> <span class="n">have</span> <span class="n">excipients</span><span class="p">,</span> <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span> <span class="mf">0.050387596899224806</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">sausage</span> <span class="n">have</span> <span class="n">factor</span><span class="p">,</span> <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span> <span class="mf">0.04909560723514212</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">sausage</span> <span class="n">have</span> <span class="n">characteristic</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span>
+  <span class="mf">0.040051679586563305</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">meat</span><span class="o">-</span><span class="n">product</span> <span class="n">have</span> <span class="n">flavor</span><span class="p">,</span> <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span> <span class="mf">0.03391812865497076</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">item</span> <span class="n">have</span> <span class="n">flavor</span><span class="p">,</span> <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span> <span class="mf">0.030019493177387915</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">meat</span> <span class="n">have</span> <span class="n">ingredient</span><span class="p">,</span> <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span> <span class="mf">0.018365897517264307</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">processed</span><span class="o">-</span><span class="n">meat</span> <span class="n">have</span> <span class="n">ingredient</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span>
+  <span class="mf">0.012503337010340954</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">food</span> <span class="n">have</span> <span class="n">ingredient</span><span class="p">,</span> <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span> <span class="mf">0.010739380751620654</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">meat</span> <span class="n">have</span> <span class="n">additive</span><span class="p">,</span> <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span> <span class="mf">0.009450413285582604</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">meat</span> <span class="n">have</span> <span class="n">excipients</span><span class="p">,</span> <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span> <span class="mf">0.006954077700711728</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">meat</span> <span class="n">have</span> <span class="n">factor</span><span class="p">,</span> <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span> <span class="mf">0.006775768016078094</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">processed</span><span class="o">-</span><span class="n">meat</span> <span class="n">have</span> <span class="n">additive</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span>
+  <span class="mf">0.006433755937359909</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">meat</span> <span class="n">have</span> <span class="n">characteristic</span><span class="p">,</span> <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span> <span class="mf">0.005527600223642655</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">food</span> <span class="n">have</span> <span class="n">additive</span><span class="p">,</span> <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span> <span class="mf">0.005526089124620336</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">processed</span><span class="o">-</span><span class="n">meat</span> <span class="n">have</span> <span class="n">excipients</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span>
+  <span class="mf">0.004734273236925215</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">processed</span><span class="o">-</span><span class="n">meat</span> <span class="n">have</span> <span class="n">factor</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span>
+  <span class="mf">0.004612881615465595</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">meat</span><span class="o">-</span><span class="n">product</span> <span class="n">have</span> <span class="n">ingredient</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span>
+  <span class="mf">0.004513652779666651</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">food</span> <span class="n">have</span> <span class="n">excipients</span><span class="p">,</span> <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span> <span class="mf">0.004066367469060248</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">item</span> <span class="n">have</span> <span class="n">ingredient</span><span class="p">,</span> <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span> <span class="mf">0.0039948421153371515</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">food</span> <span class="n">have</span> <span class="n">factor</span><span class="p">,</span> <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span> <span class="mf">0.003962101636520241</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">processed</span><span class="o">-</span><span class="n">meat</span> <span class="n">have</span> <span class="n">characteristic</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span>
+  <span class="mf">0.003763140265248248</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">food</span> <span class="n">have</span> <span class="n">characteristic</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span>
+  <span class="mf">0.0032322408087401967</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">meat</span><span class="o">-</span><span class="n">product</span> <span class="n">have</span> <span class="n">additive</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span>
+  <span class="mf">0.002322559197304199</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">item</span> <span class="n">have</span> <span class="n">additive</span><span class="p">,</span> <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span> <span class="mf">0.0020555983700278548</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">meat</span><span class="o">-</span><span class="n">product</span> <span class="n">have</span> <span class="n">excipients</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span>
+  <span class="mf">0.0017090529942427124</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">meat</span><span class="o">-</span><span class="n">product</span> <span class="n">have</span> <span class="n">factor</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span>
+  <span class="mf">0.0016652311225954636</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">item</span> <span class="n">have</span> <span class="n">excipients</span><span class="p">,</span> <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span> <span class="mf">0.0015126101213412515</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">item</span> <span class="n">have</span> <span class="n">factor</span><span class="p">,</span> <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span> <span class="mf">0.0014738252464350657</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">meat</span><span class="o">-</span><span class="n">product</span> <span class="n">have</span> <span class="n">characteristic</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span>
+  <span class="mf">0.00135847802106472</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">item</span> <span class="n">have</span> <span class="n">characteristic</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span>
+  <span class="mf">0.0012023311220917638</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">__PERSON__0</span> <span class="k">try</span> <span class="n">baked</span><span class="o">-</span><span class="n">good</span><span class="p">,</span> <span class="n">i</span> <span class="n">would</span> <span class="k">try</span> <span class="n">the</span> <span class="n">pastry</span><span class="p">,</span> <span class="mf">0.29160382101558574</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">__PERSON__0</span> <span class="k">try</span> <span class="n">food</span><span class="p">,</span> <span class="n">i</span> <span class="n">would</span> <span class="k">try</span> <span class="n">the</span> <span class="n">pastry</span><span class="p">,</span> <span class="mf">0.10155857214680744</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">__PERSON__0</span> <span class="k">try</span> <span class="n">item</span><span class="p">,</span> <span class="n">i</span> <span class="n">would</span> <span class="k">try</span> <span class="n">the</span> <span class="n">pastry</span><span class="p">,</span> <span class="mf">0.026646556058320763</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">__PERSON__0</span> <span class="k">try</span> <span class="n">sweet</span><span class="p">,</span> <span class="n">i</span> <span class="n">would</span> <span class="k">try</span> <span class="n">the</span> <span class="n">pastry</span><span class="p">,</span> <span class="mf">0.02262443438914027</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">__PERSON__0</span> <span class="k">try</span> <span class="n">product</span><span class="p">,</span> <span class="n">i</span> <span class="n">would</span> <span class="k">try</span> <span class="n">the</span> <span class="n">pastry</span><span class="p">,</span> <span class="mf">0.016591251885369532</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">food</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.21908471275559882</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">egg</span> <span class="n">make</span> <span class="n">meat</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.13801169590643275</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">egg</span> <span class="n">make</span> <span class="n">processed</span><span class="o">-</span><span class="n">meat</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.09395711500974659</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">egg</span> <span class="n">make</span> <span class="n">food</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.08070175438596491</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">animal</span><span class="o">-</span><span class="n">product</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.04327599264308125</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">egg</span> <span class="n">make</span> <span class="n">meat</span><span class="o">-</span><span class="n">product</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.03391812865497076</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">ingredient</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.03321432435356486</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">food</span> <span class="n">make</span> <span class="n">meat</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.030236252754573874</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">egg</span> <span class="n">make</span> <span class="n">item</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.030019493177387915</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">item</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.027480255328356594</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">protein</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.025749215622633343</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">food</span> <span class="n">make</span> <span class="n">processed</span><span class="o">-</span><span class="n">meat</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.020584567553255093</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">food</span> <span class="n">make</span> <span class="n">food</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.01768052067852201</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">food</span> <span class="n">make</span> <span class="n">meat</span><span class="o">-</span><span class="n">product</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.0074309434735817135</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">food</span> <span class="n">make</span> <span class="n">item</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.00657681203983669</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">animal</span><span class="o">-</span><span class="n">product</span> <span class="n">make</span> <span class="n">meat</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.00597259313670595</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">ingredient</span> <span class="n">make</span> <span class="n">meat</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.004583965232421818</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">animal</span><span class="o">-</span><span class="n">product</span> <span class="n">make</span> <span class="n">processed</span><span class="o">-</span><span class="n">meat</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.004066087417926932</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">item</span> <span class="n">make</span> <span class="n">meat</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.0037925966418082785</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">protein</span> <span class="n">make</span> <span class="n">meat</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.0035536929163400405</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">animal</span><span class="o">-</span><span class="n">product</span> <span class="n">make</span> <span class="n">food</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.0034924485290907673</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">ingredient</span> <span class="n">make</span> <span class="n">processed</span><span class="o">-</span><span class="n">meat</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.003120722093258921</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">ingredient</span> <span class="n">make</span> <span class="n">food</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.0026804542460771644</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">item</span> <span class="n">make</span> <span class="n">processed</span><span class="o">-</span><span class="n">meat</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.002581965510383602</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">protein</span> <span class="n">make</span> <span class="n">processed</span><span class="o">-</span><span class="n">meat</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.0024193220136665247</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">item</span> <span class="n">make</span> <span class="n">food</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.0022177048159726376</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">protein</span> <span class="n">make</span> <span class="n">food</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.0020780068748090068</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">animal</span><span class="o">-</span><span class="n">product</span> <span class="n">make</span> <span class="n">meat</span><span class="o">-</span><span class="n">product</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.0014678406861395978</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">animal</span><span class="o">-</span><span class="n">product</span> <span class="n">make</span> <span class="n">item</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.001299123365893667</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">ingredient</span> <span class="n">make</span> <span class="n">meat</span><span class="o">-</span><span class="n">product</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.0011265677266121413</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">ingredient</span> <span class="n">make</span> <span class="n">item</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.0009970771833233895</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">item</span> <span class="n">make</span> <span class="n">meat</span><span class="o">-</span><span class="n">product</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.0009320788356986446</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">protein</span> <span class="n">make</span> <span class="n">meat</span><span class="o">-</span><span class="n">product</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.0008733652082530607</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">item</span> <span class="n">make</span> <span class="n">item</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.0008249433373424787</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">protein</span> <span class="n">make</span> <span class="n">item</span><span class="p">,</span>
+  <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">,</span>
+  <span class="mf">0.0007729784027067319</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">it</span> <span class="n">be</span> <span class="n">sweet</span><span class="p">,</span> <span class="n">it</span> <span class="n">be</span> <span class="n">very</span> <span class="n">sweet</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">__PERSON__0</span> <span class="n">give</span> <span class="n">__NUMBER__0</span><span class="p">,</span> <span class="n">i</span> <span class="n">would</span> <span class="n">have</span> <span class="n">give</span> <span class="n">a</span> <span class="n">four</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">__PERSON__0</span> <span class="n">like</span> <span class="n">inorganic</span><span class="o">-</span><span class="n">contaminant</span><span class="p">,</span>
+  <span class="n">i</span> <span class="n">would</span> <span class="n">have</span> <span class="n">like</span> <span class="n">a</span> <span class="n">little</span> <span class="n">salt</span> <span class="n">on</span> <span class="n">egg</span><span class="p">,</span>
+  <span class="mf">0.2110783349721403</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">__PERSON__0</span> <span class="n">like</span> <span class="n">ingredient</span><span class="p">,</span>
+  <span class="n">i</span> <span class="n">would</span> <span class="n">have</span> <span class="n">like</span> <span class="n">a</span> <span class="n">little</span> <span class="n">salt</span> <span class="n">on</span> <span class="n">egg</span><span class="p">,</span>
+  <span class="mf">0.06014421501147165</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">__PERSON__0</span> <span class="n">like</span> <span class="n">seasoning</span><span class="p">,</span>
+  <span class="n">i</span> <span class="n">would</span> <span class="n">have</span> <span class="n">like</span> <span class="n">a</span> <span class="n">little</span> <span class="n">salt</span> <span class="n">on</span> <span class="n">egg</span><span class="p">,</span>
+  <span class="mf">0.0429367420517863</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">__PERSON__0</span> <span class="n">like</span> <span class="n">item</span><span class="p">,</span>
+  <span class="n">i</span> <span class="n">would</span> <span class="n">have</span> <span class="n">like</span> <span class="n">a</span> <span class="n">little</span> <span class="n">salt</span> <span class="n">on</span> <span class="n">egg</span><span class="p">,</span>
+  <span class="mf">0.025401507702392658</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">__PERSON__0</span> <span class="n">like</span> <span class="n">substance</span><span class="p">,</span>
+  <span class="n">i</span> <span class="n">would</span> <span class="n">have</span> <span class="n">like</span> <span class="n">a</span> <span class="n">little</span> <span class="n">salt</span> <span class="n">on</span> <span class="n">egg</span><span class="p">,</span>
+  <span class="mf">0.022943297279580464</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">__PERSON__0</span> <span class="n">look</span><span class="p">,</span> <span class="n">they</span> <span class="n">look</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">__PERSON__0</span> <span class="n">order</span><span class="p">,</span> <span class="n">i</span> <span class="n">order</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">__PERSON__0</span> <span class="n">be</span> <span class="n">area</span><span class="p">,</span> <span class="n">i</span> <span class="n">be</span> <span class="n">back</span> <span class="ow">in</span> <span class="n">town</span><span class="p">,</span> <span class="mf">0.06364922206506365</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">__PERSON__0</span> <span class="n">be</span> <span class="n">information</span><span class="p">,</span> <span class="n">i</span> <span class="n">be</span> <span class="n">back</span> <span class="ow">in</span> <span class="n">town</span><span class="p">,</span> <span class="mf">0.033946251768033946</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">__PERSON__0</span> <span class="n">be</span> <span class="n">place</span><span class="p">,</span> <span class="n">i</span> <span class="n">be</span> <span class="n">back</span> <span class="ow">in</span> <span class="n">town</span><span class="p">,</span> <span class="mf">0.03253182461103253</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">__PERSON__0</span> <span class="n">be</span> <span class="n">location</span><span class="p">,</span> <span class="n">i</span> <span class="n">be</span> <span class="n">back</span> <span class="ow">in</span> <span class="n">town</span><span class="p">,</span> <span class="mf">0.0297029702970297</span><span class="p">),</span>
+ <span class="p">(</span><span class="n">__PERSON__0</span> <span class="n">be</span> <span class="n">feature</span><span class="p">,</span> <span class="n">i</span> <span class="n">be</span> <span class="n">back</span> <span class="ow">in</span> <span class="n">town</span><span class="p">,</span> <span class="mf">0.026874115983026876</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>From the conceptualization results, we can find each eventuality would result in multiple concepts. You can use these to make your eventuality representation meaningful.</p>
+<p>we do not show build_concept_relations because it requires the concept database. If you are interested, you can use build_concept_relations(aser.database.kg_connection.ASERConceptConnection, List[aser.relation.Relations]).</p>
+<p>Do not forget to close your database connections to make the databases available for other processes.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">aser_conceptualizer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">aser_extractor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="client-server-mode">
+<h2><a class="toc-backref" href="#id4">Client/Server Mode</a><a class="headerlink" href="#client-server-mode" title="Permalink to this headline">¶</a></h2>
+<p>You can start aser server from command line</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ aser-server -n_workers <span class="m">1</span> -n_concurrent_back_socks <span class="m">10</span> <span class="se">\</span>
+    -port <span class="m">8000</span> -port_out <span class="m">8001</span> <span class="se">\</span>
+    -corenlp_path <span class="s2">&quot;stanford-corenlp-3.9.2&quot;</span> -base_corenlp_port <span class="m">9000</span> <span class="se">\</span>
+    -aser_kg_dir <span class="s2">&quot;core&quot;</span> -concept_kg_dir <span class="s2">&quot;concept&quot;</span> -probase_path <span class="s2">&quot;probase.txt&quot;</span>
+</pre></div>
+</div>
+<p>Please wait patiently until  <cite>“Loading Server Finished in xx s”</cite> shows up in your console</p>
+<p>Now you can access ASER by <cite>ASERClient</cite> from your python code</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">aser.client</span> <span class="kn">import</span> <span class="n">ASERClient</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">ASERClient</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">8000</span><span class="p">,</span> <span class="n">port_out</span><span class="o">=</span><span class="mi">8001</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And you can extract the eventualities</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;I came here for breakfast before a conference, I was excited to try some local breakfast places. I think the highlight of my breakfast was the freshly squeezed orange juice: it was very sweet, natural, and definitely the champion of the day. I ordered the local fresh eggs on ciabatta with the house made sausage. I would have given a four if the bread had been toasted, but it wasnt. The sausage had good flavor, but I would have liked a little salt on my eggs. All in all a good breakfast. If I am back in town I would try the pastries, they looked and smelled amazing.&quot;</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">extract_eventualities</span><span class="p">(</span><span class="n">text</span><span class="p">)</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>It will finally give you this output:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[[],</span>
+ <span class="p">[</span><span class="n">i</span> <span class="n">think</span><span class="p">,</span> <span class="n">it</span> <span class="n">be</span> <span class="n">very</span> <span class="n">sweet</span><span class="p">],</span>
+ <span class="p">[</span><span class="n">i</span> <span class="n">order</span><span class="p">,</span> <span class="n">the</span> <span class="n">local</span> <span class="n">fresh</span> <span class="n">egg</span> <span class="n">on</span> <span class="n">ciabatta</span> <span class="n">make</span> <span class="n">sausage</span><span class="p">],</span>
+ <span class="p">[</span><span class="n">i</span> <span class="n">would</span> <span class="n">have</span> <span class="n">give</span> <span class="n">a</span> <span class="n">four</span><span class="p">,</span> <span class="n">the</span> <span class="n">bread</span> <span class="n">have</span> <span class="n">be</span> <span class="n">toast</span><span class="p">],</span>
+ <span class="p">[</span><span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span><span class="p">,</span> <span class="n">i</span> <span class="n">would</span> <span class="n">have</span> <span class="n">like</span> <span class="n">a</span> <span class="n">little</span> <span class="n">salt</span> <span class="n">on</span> <span class="n">egg</span><span class="p">],</span>
+ <span class="p">[],</span>
+ <span class="p">[</span><span class="n">i</span> <span class="n">be</span> <span class="n">back</span> <span class="ow">in</span> <span class="n">town</span><span class="p">,</span> <span class="n">i</span> <span class="n">would</span> <span class="k">try</span> <span class="n">the</span> <span class="n">pastry</span><span class="p">,</span> <span class="n">they</span> <span class="n">look</span><span class="p">,</span> <span class="n">they</span> <span class="n">smell</span> <span class="n">amazing</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>Let’s try the relation extraction:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">e1</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">extract_eventualities</span><span class="p">(</span><span class="s2">&quot;The sausage had good flavor.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">e2</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">extract_eventualities</span><span class="p">(</span><span class="s2">&quot;I would have liked a little salt on my eggs.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">e1</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">e2</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">predict_eventuality_relation</span><span class="p">(</span><span class="n">e1</span><span class="p">,</span> <span class="n">e2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And the output should look like the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">the</span> <span class="n">sausage</span> <span class="n">have</span> <span class="n">good</span> <span class="n">flavor</span>
+<span class="n">i</span> <span class="n">would</span> <span class="n">have</span> <span class="n">like</span> <span class="n">a</span> <span class="n">little</span> <span class="n">salt</span> <span class="n">on</span> <span class="n">egg</span>
+<span class="p">(</span><span class="mf">253e8</span><span class="n">b127b833c3aa7d79e2b91ce030299a646d6</span><span class="p">,</span> <span class="mi">8</span><span class="n">dd8fbc06d2810add7b2cfd637a78f90fa2e5e9e</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Contrast&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;Co_Occurrence&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>And we can retrieve the KG to see what eventualities are connected to <cite>e1</cite> (the sausage have good flavor):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">fetch_related_eventualities</span><span class="p">(</span><span class="n">e1</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>We get the same relation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[(</span><span class="n">i</span> <span class="n">would</span> <span class="n">have</span> <span class="n">like</span> <span class="n">a</span> <span class="n">little</span> <span class="n">salt</span> <span class="n">on</span> <span class="n">egg</span><span class="p">,</span>
+  <span class="p">(</span><span class="mf">253e8</span><span class="n">b127b833c3aa7d79e2b91ce030299a646d6</span><span class="p">,</span> <span class="mi">8</span><span class="n">dd8fbc06d2810add7b2cfd637a78f90fa2e5e9e</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Contrast&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;Co_Occurrence&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">}))]</span>
+</pre></div>
+</div>
+<p>Conceptualization is powerful to aggregate eventuality information and relations, we can also use the server to do conceptualizatoin and retrieval.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">c1</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">conceptualize_eventuality</span><span class="p">(</span><span class="n">e1</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">c2</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">conceptualize_eventuality</span><span class="p">(</span><span class="n">e2</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">c1</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">c2</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">predict_concept_relation</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>And we can find the <em>contrast</em> relation between c1 (meat have flavor) and c2 (__PERSON__0 like inorganic-contaminant):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">meat</span> <span class="n">have</span> <span class="n">flavor</span>
+<span class="n">__PERSON__0</span> <span class="n">like</span> <span class="n">inorganic</span><span class="o">-</span><span class="n">contaminant</span>
+<span class="p">(</span><span class="mi">5</span><span class="n">a49d855f23b29d0a769d638a0944c0d35815ca9</span><span class="p">,</span> <span class="mf">86e7181</span><span class="n">b3e449dd70dd9bd0eebcca5b73b432a8c</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Contrast&#39;</span><span class="p">:</span> <span class="mf">0.02687880595658219</span><span class="p">,</span> <span class="s1">&#39;Co_Occurrence&#39;</span><span class="p">:</span> <span class="mf">0.02687880595658219</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Similarly, we can retrieve the concept KG to fetch all neighbors of c1:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">fetch_related_concepts</span><span class="p">(</span><span class="n">c1</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>And we are surprising that the concept graph is much denser and more meaningful.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[(</span><span class="n">__PERSON__0</span> <span class="n">like</span> <span class="n">additive</span><span class="p">,</span>
+  <span class="p">(</span><span class="mi">5</span><span class="n">a49d855f23b29d0a769d638a0944c0d35815ca9</span><span class="p">,</span> <span class="mf">2342e1896</span><span class="n">c34cac33974473c5b52ac22d7182fe9</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Contrast&#39;</span><span class="p">:</span> <span class="mf">0.0019171057650086054</span><span class="p">,</span> <span class="s1">&#39;Co_Occurrence&#39;</span><span class="p">:</span> <span class="mf">0.0019171057650086054</span><span class="p">})),</span>
+ <span class="p">(</span><span class="n">__PERSON__0</span> <span class="n">like</span> <span class="n">item</span><span class="p">,</span>
+  <span class="p">(</span><span class="mi">5</span><span class="n">a49d855f23b29d0a769d638a0944c0d35815ca9</span><span class="p">,</span> <span class="n">e8809e959614713c0622e23b0ab5dc06e2f2bf46</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Contrast&#39;</span><span class="p">:</span> <span class="mf">0.0020252501927783217</span><span class="p">,</span> <span class="s1">&#39;Co_Occurrence&#39;</span><span class="p">:</span> <span class="mf">0.0020252501927783217</span><span class="p">})),</span>
+ <span class="p">(</span><span class="n">__PERSON__0</span> <span class="n">like</span> <span class="n">seasoning</span><span class="p">,</span>
+  <span class="p">(</span><span class="mi">5</span><span class="n">a49d855f23b29d0a769d638a0944c0d35815ca9</span><span class="p">,</span> <span class="mi">69864</span><span class="n">d92726be0d4b7f52fd4f32e38ad1f97974e</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Contrast&#39;</span><span class="p">:</span> <span class="mf">0.002413587001587757</span><span class="p">,</span> <span class="s1">&#39;Co_Occurrence&#39;</span><span class="p">:</span> <span class="mf">0.002413587001587757</span><span class="p">})),</span>
+ <span class="p">(</span><span class="n">__PERSON__0</span> <span class="n">like</span> <span class="n">ingredient</span><span class="p">,</span>
+  <span class="p">(</span><span class="mi">5</span><span class="n">a49d855f23b29d0a769d638a0944c0d35815ca9</span><span class="p">,</span> <span class="mi">58004</span><span class="n">d785a3ee08eac2f51ea4cbc44bba3a1ba22</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Contrast&#39;</span><span class="p">:</span> <span class="mf">0.003976765548440927</span><span class="p">,</span> <span class="s1">&#39;Co_Occurrence&#39;</span><span class="p">:</span> <span class="mf">0.003976765548440927</span><span class="p">})),</span>
+ <span class="p">(</span><span class="n">__PERSON__0</span> <span class="n">like</span> <span class="n">inorganic</span><span class="o">-</span><span class="n">contaminant</span><span class="p">,</span>
+  <span class="p">(</span><span class="mi">5</span><span class="n">a49d855f23b29d0a769d638a0944c0d35815ca9</span><span class="p">,</span> <span class="mf">86e7181</span><span class="n">b3e449dd70dd9bd0eebcca5b73b432a8c</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Contrast&#39;</span><span class="p">:</span> <span class="mf">0.02687880595658219</span><span class="p">,</span> <span class="s1">&#39;Co_Occurrence&#39;</span><span class="p">:</span> <span class="mf">0.02687880595658219</span><span class="p">}))]</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../api/database.html" class="btn btn-neutral float-right" title="Database" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../index.html" class="btn btn-neutral float-left" title="ASER (Activities, States, Events, and their Relations)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, KnowComp.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

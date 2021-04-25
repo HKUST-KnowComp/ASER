@@ -1,0 +1,919 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>aser.extract.eventuality_extractor &mdash; ASER 2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> ASER
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/get-started.html">Get Started</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/database.html">Database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/extractor.html">Extractor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/conceptualizer.html">Conceptualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/aser-cs.html">Server/Client</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ASER</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>aser.extract.eventuality_extractor</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for aser.extract.eventuality_extractor</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">bisect</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span><span class="p">,</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span><span class="p">,</span> <span class="n">permutations</span>
+<span class="kn">from</span> <span class="nn">aser.eventuality</span> <span class="kn">import</span> <span class="n">Eventuality</span>
+<span class="kn">from</span> <span class="nn">aser.extract.rule</span> <span class="kn">import</span> <span class="n">ALL_EVENTUALITY_RULES</span>
+<span class="kn">from</span> <span class="nn">aser.extract.utils</span> <span class="kn">import</span> <span class="n">parse_sentense_with_stanford</span><span class="p">,</span> <span class="n">get_corenlp_client</span><span class="p">,</span> <span class="n">get_clauses</span><span class="p">,</span> <span class="n">powerset</span>
+<span class="kn">from</span> <span class="nn">aser.extract.utils</span> <span class="kn">import</span> <span class="n">ANNOTATORS</span>
+<span class="kn">from</span> <span class="nn">aser.extract.discourse_parser</span> <span class="kn">import</span> <span class="n">ConnectiveExtractor</span>
+<span class="kn">from</span> <span class="nn">aser.extract.discourse_parser</span> <span class="kn">import</span> <span class="n">SyntaxTree</span>
+
+
+<div class="viewcode-block" id="BaseEventualityExtractor"><a class="viewcode-back" href="../../../api/extractor.html#aser.extract.eventuality_extractor.BaseEventualityExtractor">[docs]</a><span class="k">class</span> <span class="nc">BaseEventualityExtractor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Base ASER eventuality extractor to extract eventualities</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">corenlp_path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">corenlp_port</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param corenlp_path: corenlp path, e.g., /home/xliucr/stanford-corenlp-3.9.2</span>
+<span class="sd">        :type corenlp_path: str (default = &quot;&quot;)</span>
+<span class="sd">        :param corenlp_port: corenlp port, e.g., 9000</span>
+<span class="sd">        :type corenlp_port: int (default = 0)</span>
+<span class="sd">        :param kw: other parameters</span>
+<span class="sd">        :type kw: Dict[str, object]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">corenlp_path</span> <span class="o">=</span> <span class="n">corenlp_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">corenlp_port</span> <span class="o">=</span> <span class="n">corenlp_port</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">annotators</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;annotators&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">ANNOTATORS</span><span class="p">))</span>
+
+        <span class="n">_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_externel_corenlp</span> <span class="o">=</span> <span class="n">get_corenlp_client</span><span class="p">(</span><span class="n">corenlp_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">corenlp_path</span><span class="p">,</span> <span class="n">corenlp_port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">corenlp_port</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BaseEventualityExtractor.close"><a class="viewcode-back" href="../../../api/extractor.html#aser.extract.eventuality_extractor.BaseEventualityExtractor.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Close the extractor safely</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_externel_corenlp</span><span class="p">:</span>
+            <span class="n">corenlp_client</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">get_corenlp_client</span><span class="p">(</span><span class="n">corenlp_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">corenlp_path</span><span class="p">,</span> <span class="n">corenlp_port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">corenlp_port</span><span class="p">)</span>
+            <span class="n">corenlp_client</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<div class="viewcode-block" id="BaseEventualityExtractor.parse_text"><a class="viewcode-back" href="../../../api/extractor.html#aser.extract.eventuality_extractor.BaseEventualityExtractor.parse_text">[docs]</a>    <span class="k">def</span> <span class="nf">parse_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">annotators</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Parse a raw text by corenlp</span>
+
+<span class="sd">        :param text: a raw text</span>
+<span class="sd">        :type text: str</span>
+<span class="sd">        :param annotators: annotators for corenlp, please refer to https://stanfordnlp.github.io/CoreNLP/annotators.html</span>
+<span class="sd">        :type annotators: Union[List, None] (default = None)</span>
+<span class="sd">        :return: the parsed result</span>
+<span class="sd">        :rtype: List[Dict[str, object]]</span>
+
+<span class="sd">        .. highlight:: python</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            Input:</span>
+
+<span class="sd">            &quot;My army will find your boat. In the meantime, I&#39;m sure we could find you suitable accommodations.&quot;</span>
+
+<span class="sd">            Output:</span>
+
+<span class="sd">            [{&#39;dependencies&#39;: [(1, &#39;nmod:poss&#39;, 0),</span>
+<span class="sd">                               (3, &#39;nsubj&#39;, 1),</span>
+<span class="sd">                               (3, &#39;aux&#39;, 2),</span>
+<span class="sd">                               (3, &#39;dobj&#39;, 5),</span>
+<span class="sd">                               (3, &#39;punct&#39;, 6),</span>
+<span class="sd">                               (5, &#39;nmod:poss&#39;, 4)],</span>
+<span class="sd">              &#39;lemmas&#39;: [&#39;my&#39;, &#39;army&#39;, &#39;will&#39;, &#39;find&#39;, &#39;you&#39;, &#39;boat&#39;, &#39;.&#39;],</span>
+<span class="sd">              &#39;mentions&#39;: [],</span>
+<span class="sd">              &#39;ners&#39;: [&#39;O&#39;, &#39;O&#39;, &#39;O&#39;, &#39;O&#39;, &#39;O&#39;, &#39;O&#39;, &#39;O&#39;],</span>
+<span class="sd">              &#39;parse&#39;: &#39;(ROOT (S (NP (PRP$ My) (NN army)) (VP (MD will) (VP (VB find) (NP &#39;</span>
+<span class="sd">                       &#39;(PRP$ your) (NN boat)))) (. .)))&#39;,</span>
+<span class="sd">              &#39;pos_tags&#39;: [&#39;PRP$&#39;, &#39;NN&#39;, &#39;MD&#39;, &#39;VB&#39;, &#39;PRP$&#39;, &#39;NN&#39;, &#39;.&#39;],</span>
+<span class="sd">              &#39;text&#39;: &#39;My army will find your boat.&#39;,</span>
+<span class="sd">              &#39;tokens&#39;: [&#39;My&#39;, &#39;army&#39;, &#39;will&#39;, &#39;find&#39;, &#39;your&#39;, &#39;boat&#39;, &#39;.&#39;]},</span>
+<span class="sd">             {&#39;dependencies&#39;: [(2, &#39;case&#39;, 0),</span>
+<span class="sd">                               (2, &#39;det&#39;, 1),</span>
+<span class="sd">                               (6, &#39;nmod:in&#39;, 2),</span>
+<span class="sd">                               (6, &#39;punct&#39;, 3),</span>
+<span class="sd">                               (6, &#39;nsubj&#39;, 4),</span>
+<span class="sd">                               (6, &#39;cop&#39;, 5),</span>
+<span class="sd">                               (6, &#39;ccomp&#39;, 9),</span>
+<span class="sd">                               (6, &#39;punct&#39;, 13),</span>
+<span class="sd">                               (9, &#39;nsubj&#39;, 7),</span>
+<span class="sd">                               (9, &#39;aux&#39;, 8),</span>
+<span class="sd">                               (9, &#39;iobj&#39;, 10),</span>
+<span class="sd">                               (9, &#39;dobj&#39;, 12),</span>
+<span class="sd">                               (12, &#39;amod&#39;, 11)],</span>
+<span class="sd">              &#39;lemmas&#39;: [&#39;in&#39;,</span>
+<span class="sd">                         &#39;the&#39;,</span>
+<span class="sd">                         &#39;meantime&#39;,</span>
+<span class="sd">                         &#39;,&#39;,</span>
+<span class="sd">                         &#39;I&#39;,</span>
+<span class="sd">                         &#39;be&#39;,</span>
+<span class="sd">                         &#39;sure&#39;,</span>
+<span class="sd">                         &#39;we&#39;,</span>
+<span class="sd">                         &#39;could&#39;,</span>
+<span class="sd">                         &#39;find&#39;,</span>
+<span class="sd">                         &#39;you&#39;,</span>
+<span class="sd">                         &#39;suitable&#39;,</span>
+<span class="sd">                         &#39;accommodation&#39;,</span>
+<span class="sd">                         &#39;.&#39;],</span>
+<span class="sd">              &#39;mentions&#39;: [],</span>
+<span class="sd">              &#39;ners&#39;: [&#39;O&#39;,</span>
+<span class="sd">                       &#39;O&#39;,</span>
+<span class="sd">                       &#39;O&#39;,</span>
+<span class="sd">                       &#39;O&#39;,</span>
+<span class="sd">                       &#39;O&#39;,</span>
+<span class="sd">                       &#39;O&#39;,</span>
+<span class="sd">                       &#39;O&#39;,</span>
+<span class="sd">                       &#39;O&#39;,</span>
+<span class="sd">                       &#39;O&#39;,</span>
+<span class="sd">                       &#39;O&#39;,</span>
+<span class="sd">                       &#39;O&#39;,</span>
+<span class="sd">                       &#39;O&#39;,</span>
+<span class="sd">                       &#39;O&#39;,</span>
+<span class="sd">                       &#39;O&#39;],</span>
+<span class="sd">              &#39;parse&#39;: &#39;(ROOT (S (PP (IN In) (NP (DT the) (NN meantime))) (, ,) (NP (PRP &#39;</span>
+<span class="sd">                       &quot;I)) (VP (VBP &#39;m) (ADJP (JJ sure) (SBAR (S (NP (PRP we)) (VP (MD &quot;</span>
+<span class="sd">                       &#39;could) (VP (VB find) (NP (PRP you)) (NP (JJ suitable) (NNS &#39;</span>
+<span class="sd">                       &#39;accommodations)))))))) (. .)))&#39;,</span>
+<span class="sd">              &#39;pos_tags&#39;: [&#39;IN&#39;,</span>
+<span class="sd">                           &#39;DT&#39;,</span>
+<span class="sd">                           &#39;NN&#39;,</span>
+<span class="sd">                           &#39;,&#39;,</span>
+<span class="sd">                           &#39;PRP&#39;,</span>
+<span class="sd">                           &#39;VBP&#39;,</span>
+<span class="sd">                           &#39;JJ&#39;,</span>
+<span class="sd">                           &#39;PRP&#39;,</span>
+<span class="sd">                           &#39;MD&#39;,</span>
+<span class="sd">                           &#39;VB&#39;,</span>
+<span class="sd">                           &#39;PRP&#39;,</span>
+<span class="sd">                           &#39;JJ&#39;,</span>
+<span class="sd">                           &#39;NNS&#39;,</span>
+<span class="sd">                           &#39;.&#39;],</span>
+<span class="sd">              &#39;text&#39;: &quot;In the meantime, I&#39;m sure we could find you suitable &quot;</span>
+<span class="sd">                      &#39;accommodations.&#39;,</span>
+<span class="sd">              &#39;tokens&#39;: [&#39;In&#39;,</span>
+<span class="sd">                         &#39;the&#39;,</span>
+<span class="sd">                         &#39;meantime&#39;,</span>
+<span class="sd">                         &#39;,&#39;,</span>
+<span class="sd">                         &#39;I&#39;,</span>
+<span class="sd">                         &quot;&#39;m&quot;,</span>
+<span class="sd">                         &#39;sure&#39;,</span>
+<span class="sd">                         &#39;we&#39;,</span>
+<span class="sd">                         &#39;could&#39;,</span>
+<span class="sd">                         &#39;find&#39;,</span>
+<span class="sd">                         &#39;you&#39;,</span>
+<span class="sd">                         &#39;suitable&#39;,</span>
+<span class="sd">                         &#39;accommodations&#39;,</span>
+<span class="sd">                         &#39;.&#39;]}]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">annotators</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">annotators</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">annotators</span>
+
+        <span class="n">corenlp_client</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">get_corenlp_client</span><span class="p">(</span>
+            <span class="n">corenlp_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">corenlp_path</span><span class="p">,</span> <span class="n">corenlp_port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">corenlp_port</span><span class="p">,</span> <span class="n">annotators</span><span class="o">=</span><span class="n">annotators</span>
+        <span class="p">)</span>
+        <span class="n">parsed_result</span> <span class="o">=</span> <span class="n">parse_sentense_with_stanford</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">corenlp_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">annotators</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">parsed_result</span></div>
+
+<div class="viewcode-block" id="BaseEventualityExtractor.extract_from_text"><a class="viewcode-back" href="../../../api/extractor.html#aser.extract.eventuality_extractor.BaseEventualityExtractor.extract_from_text">[docs]</a>    <span class="k">def</span> <span class="nf">extract_from_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="s2">&quot;Eventuality&quot;</span><span class="p">,</span> <span class="n">in_order</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">annotators</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Extract eventualities from a raw text</span>
+
+<span class="sd">        :param text: a raw text</span>
+<span class="sd">        :type text: str</span>
+<span class="sd">        :param output_format: which format to return, &quot;Eventuality&quot; or &quot;json&quot;</span>
+<span class="sd">        :type output_format: str (default = &quot;Eventuality&quot;)</span>
+<span class="sd">        :param in_order: whether the returned order follows the input token order</span>
+<span class="sd">        :type in_order: bool (default = True)</span>
+<span class="sd">        :param annotators: annotators for corenlp, please refer to https://stanfordnlp.github.io/CoreNLP/annotators.html</span>
+<span class="sd">        :type annotators: Union[List, None] (default = None)</span>
+<span class="sd">        :param kw: other parameters</span>
+<span class="sd">        :type kw: Dict[str, object]</span>
+<span class="sd">        :return: the extracted eventualities</span>
+<span class="sd">        :rtype: Union[List[List[aser.eventuality.Eventuality]], List[List[Dict[str, object]]], List[aser.eventuality.Eventuality], List[Dict[str, object]]]</span>
+
+<span class="sd">        .. highlight:: python</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            Input:</span>
+
+<span class="sd">            &quot;My army will find your boat. In the meantime, I&#39;m sure we could find you suitable accommodations.&quot;</span>
+
+<span class="sd">            Output:</span>
+
+<span class="sd">            [[my army will find you boat],</span>
+<span class="sd">             [i be sure, we could find you suitable accommodation]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">output_format</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Eventuality&quot;</span><span class="p">,</span> <span class="s2">&quot;json&quot;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Error: extract_from_text only supports Eventuality or json.&quot;</span><span class="p">)</span>
+        <span class="n">parsed_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_text</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">annotators</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_from_parsed_result</span><span class="p">(</span><span class="n">parsed_result</span><span class="p">,</span> <span class="n">output_format</span><span class="p">,</span> <span class="n">in_order</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseEventualityExtractor.extract_from_parsed_result"><a class="viewcode-back" href="../../../api/extractor.html#aser.extract.eventuality_extractor.BaseEventualityExtractor.extract_from_parsed_result">[docs]</a>    <span class="k">def</span> <span class="nf">extract_from_parsed_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed_result</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="s2">&quot;Eventuality&quot;</span><span class="p">,</span> <span class="n">in_order</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Extract eventualities from the parsed result</span>
+
+<span class="sd">        :param parsed_result: the parsed result returned by corenlp</span>
+<span class="sd">        :type parsed_result: List[Dict[str, object]]</span>
+<span class="sd">        :param output_format: which format to return, &quot;Eventuality&quot; or &quot;json&quot;</span>
+<span class="sd">        :type output_format: str (default = &quot;Eventuality&quot;)</span>
+<span class="sd">        :param in_order: whether the returned order follows the input token order</span>
+<span class="sd">        :type in_order: bool (default = True)</span>
+<span class="sd">        :param kw: other parameters</span>
+<span class="sd">        :type kw: Dict[str, object]</span>
+<span class="sd">        :return: the extracted eventualities</span>
+<span class="sd">        :rtype: Union[List[List[aser.eventuality.Eventuality]], List[List[Dict[str, object]]], List[aser.eventuality.Eventuality], List[Dict[str, object]]]</span>
+
+<span class="sd">        .. highlight:: python</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            Input:</span>
+
+<span class="sd">            [{&#39;dependencies&#39;: [(1, &#39;nmod:poss&#39;, 0),</span>
+<span class="sd">                               (3, &#39;nsubj&#39;, 1),</span>
+<span class="sd">                               (3, &#39;aux&#39;, 2),</span>
+<span class="sd">                               (3, &#39;dobj&#39;, 5),</span>
+<span class="sd">                               (3, &#39;punct&#39;, 6),</span>
+<span class="sd">                               (5, &#39;nmod:poss&#39;, 4)],</span>
+<span class="sd">              &#39;lemmas&#39;: [&#39;my&#39;, &#39;army&#39;, &#39;will&#39;, &#39;find&#39;, &#39;you&#39;, &#39;boat&#39;, &#39;.&#39;],</span>
+<span class="sd">              &#39;mentions&#39;: [],</span>
+<span class="sd">              &#39;ners&#39;: [&#39;O&#39;, &#39;O&#39;, &#39;O&#39;, &#39;O&#39;, &#39;O&#39;, &#39;O&#39;, &#39;O&#39;],</span>
+<span class="sd">              &#39;parse&#39;: &#39;(ROOT (S (NP (PRP$ My) (NN army)) (VP (MD will) (VP (VB find) (NP &#39;</span>
+<span class="sd">                       &#39;(PRP$ your) (NN boat)))) (. .)))&#39;,</span>
+<span class="sd">              &#39;pos_tags&#39;: [&#39;PRP$&#39;, &#39;NN&#39;, &#39;MD&#39;, &#39;VB&#39;, &#39;PRP$&#39;, &#39;NN&#39;, &#39;.&#39;],</span>
+<span class="sd">              &#39;text&#39;: &#39;My army will find your boat.&#39;,</span>
+<span class="sd">              &#39;tokens&#39;: [&#39;My&#39;, &#39;army&#39;, &#39;will&#39;, &#39;find&#39;, &#39;your&#39;, &#39;boat&#39;, &#39;.&#39;]},</span>
+<span class="sd">             {&#39;dependencies&#39;: [(2, &#39;case&#39;, 0),</span>
+<span class="sd">                               (2, &#39;det&#39;, 1),</span>
+<span class="sd">                               (6, &#39;nmod:in&#39;, 2),</span>
+<span class="sd">                               (6, &#39;punct&#39;, 3),</span>
+<span class="sd">                               (6, &#39;nsubj&#39;, 4),</span>
+<span class="sd">                               (6, &#39;cop&#39;, 5),</span>
+<span class="sd">                               (6, &#39;ccomp&#39;, 9),</span>
+<span class="sd">                               (6, &#39;punct&#39;, 13),</span>
+<span class="sd">                               (9, &#39;nsubj&#39;, 7),</span>
+<span class="sd">                               (9, &#39;aux&#39;, 8),</span>
+<span class="sd">                               (9, &#39;iobj&#39;, 10),</span>
+<span class="sd">                               (9, &#39;dobj&#39;, 12),</span>
+<span class="sd">                               (12, &#39;amod&#39;, 11)],</span>
+<span class="sd">              &#39;lemmas&#39;: [&#39;in&#39;,</span>
+<span class="sd">                         &#39;the&#39;,</span>
+<span class="sd">                         &#39;meantime&#39;,</span>
+<span class="sd">                         &#39;,&#39;,</span>
+<span class="sd">                         &#39;I&#39;,</span>
+<span class="sd">                         &#39;be&#39;,</span>
+<span class="sd">                         &#39;sure&#39;,</span>
+<span class="sd">                         &#39;we&#39;,</span>
+<span class="sd">                         &#39;could&#39;,</span>
+<span class="sd">                         &#39;find&#39;,</span>
+<span class="sd">                         &#39;you&#39;,</span>
+<span class="sd">                         &#39;suitable&#39;,</span>
+<span class="sd">                         &#39;accommodation&#39;,</span>
+<span class="sd">                         &#39;.&#39;],</span>
+<span class="sd">              &#39;mentions&#39;: [],</span>
+<span class="sd">              &#39;ners&#39;: [&#39;O&#39;,</span>
+<span class="sd">                       &#39;O&#39;,</span>
+<span class="sd">                       &#39;O&#39;,</span>
+<span class="sd">                       &#39;O&#39;,</span>
+<span class="sd">                       &#39;O&#39;,</span>
+<span class="sd">                       &#39;O&#39;,</span>
+<span class="sd">                       &#39;O&#39;,</span>
+<span class="sd">                       &#39;O&#39;,</span>
+<span class="sd">                       &#39;O&#39;,</span>
+<span class="sd">                       &#39;O&#39;,</span>
+<span class="sd">                       &#39;O&#39;,</span>
+<span class="sd">                       &#39;O&#39;,</span>
+<span class="sd">                       &#39;O&#39;,</span>
+<span class="sd">                       &#39;O&#39;],</span>
+<span class="sd">              &#39;parse&#39;: &#39;(ROOT (S (PP (IN In) (NP (DT the) (NN meantime))) (, ,) (NP (PRP &#39;</span>
+<span class="sd">                       &quot;I)) (VP (VBP &#39;m) (ADJP (JJ sure) (SBAR (S (NP (PRP we)) (VP (MD &quot;</span>
+<span class="sd">                       &#39;could) (VP (VB find) (NP (PRP you)) (NP (JJ suitable) (NNS &#39;</span>
+<span class="sd">                       &#39;accommodations)))))))) (. .)))&#39;,</span>
+<span class="sd">              &#39;pos_tags&#39;: [&#39;IN&#39;,</span>
+<span class="sd">                           &#39;DT&#39;,</span>
+<span class="sd">                           &#39;NN&#39;,</span>
+<span class="sd">                           &#39;,&#39;,</span>
+<span class="sd">                           &#39;PRP&#39;,</span>
+<span class="sd">                           &#39;VBP&#39;,</span>
+<span class="sd">                           &#39;JJ&#39;,</span>
+<span class="sd">                           &#39;PRP&#39;,</span>
+<span class="sd">                           &#39;MD&#39;,</span>
+<span class="sd">                           &#39;VB&#39;,</span>
+<span class="sd">                           &#39;PRP&#39;,</span>
+<span class="sd">                           &#39;JJ&#39;,</span>
+<span class="sd">                           &#39;NNS&#39;,</span>
+<span class="sd">                           &#39;.&#39;],</span>
+<span class="sd">              &#39;text&#39;: &quot;In the meantime, I&#39;m sure we could find you suitable &quot;</span>
+<span class="sd">                      &#39;accommodations.&#39;,</span>
+<span class="sd">              &#39;tokens&#39;: [&#39;In&#39;,</span>
+<span class="sd">                         &#39;the&#39;,</span>
+<span class="sd">                         &#39;meantime&#39;,</span>
+<span class="sd">                         &#39;,&#39;,</span>
+<span class="sd">                         &#39;I&#39;,</span>
+<span class="sd">                         &quot;&#39;m&quot;,</span>
+<span class="sd">                         &#39;sure&#39;,</span>
+<span class="sd">                         &#39;we&#39;,</span>
+<span class="sd">                         &#39;could&#39;,</span>
+<span class="sd">                         &#39;find&#39;,</span>
+<span class="sd">                         &#39;you&#39;,</span>
+<span class="sd">                         &#39;suitable&#39;,</span>
+<span class="sd">                         &#39;accommodations&#39;,</span>
+<span class="sd">                         &#39;.&#39;]}]</span>
+
+<span class="sd">            Output:</span>
+
+<span class="sd">            [[my army will find you boat],</span>
+<span class="sd">             [i be sure, we could find you suitable accommodation]]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">output_format</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Eventuality&quot;</span><span class="p">,</span> <span class="s2">&quot;json&quot;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Error: extract_from_parsed_result only supports Eventuality or json.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+
+
+<div class="viewcode-block" id="SeedRuleEventualityExtractor"><a class="viewcode-back" href="../../../api/extractor.html#aser.extract.eventuality_extractor.SeedRuleEventualityExtractor">[docs]</a><span class="k">class</span> <span class="nc">SeedRuleEventualityExtractor</span><span class="p">(</span><span class="n">BaseEventualityExtractor</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; ASER eventuality extractor based on rules to extract eventualities  (for ASER v1.0)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">corenlp_path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">corenlp_port</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param corenlp_path: corenlp path, e.g., /home/xliucr/stanford-corenlp-3.9.2</span>
+<span class="sd">        :type corenlp_path: str (default = &quot;&quot;)</span>
+<span class="sd">        :param corenlp_port: corenlp port, e.g., 9000</span>
+<span class="sd">        :type corenlp_port: int (default = 0)</span>
+<span class="sd">        :param kw: other parameters, e.g., &quot;skip_words&quot; to drop sentences that contain such words</span>
+<span class="sd">        :type kw: Dict[str, object]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">corenlp_path</span><span class="p">,</span> <span class="n">corenlp_port</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">skip_words</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;skip_words&quot;</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">skip_words</span><span class="p">,</span> <span class="nb">set</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">skip_words</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">skip_words</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SeedRuleEventualityExtractor.extract_from_parsed_result"><a class="viewcode-back" href="../../../api/extractor.html#aser.extract.eventuality_extractor.SeedRuleEventualityExtractor.extract_from_parsed_result">[docs]</a>    <span class="k">def</span> <span class="nf">extract_from_parsed_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed_result</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="s2">&quot;Eventuality&quot;</span><span class="p">,</span> <span class="n">in_order</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">output_format</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Eventuality&quot;</span><span class="p">,</span> <span class="s2">&quot;json&quot;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Error: extract_from_parsed_result only supports Eventuality or json.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parsed_result</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parsed_result</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">is_single_sent</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">parsed_result</span> <span class="o">=</span> <span class="p">[</span><span class="n">parsed_result</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">is_single_sent</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="n">eventuality_rules</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;eventuality_rules&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">eventuality_rules</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">eventuality_rules</span> <span class="o">=</span> <span class="n">ALL_EVENTUALITY_RULES</span>
+
+        <span class="n">para_eventualities</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">parsed_result</span><span class="p">))]</span>
+        <span class="k">for</span> <span class="n">sent_parsed_result</span><span class="p">,</span> <span class="n">sent_eventualities</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">parsed_result</span><span class="p">,</span> <span class="n">para_eventualities</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_words</span> <span class="ow">and</span> <span class="nb">set</span><span class="p">(</span><span class="n">sent_parsed_result</span><span class="p">[</span><span class="s2">&quot;tokens&quot;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_words</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">seed_rule_eventualities</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="c1"># print(sent_parsed_result[&quot;tokens&quot;])</span>
+            <span class="k">for</span> <span class="n">rule_name</span> <span class="ow">in</span> <span class="n">eventuality_rules</span><span class="p">:</span>
+                <span class="n">tmp_eventualities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_eventualities_from_dependencies_with_single_rule</span><span class="p">(</span>
+                    <span class="n">sent_parsed_result</span><span class="p">,</span> <span class="n">eventuality_rules</span><span class="p">[</span><span class="n">rule_name</span><span class="p">],</span> <span class="n">rule_name</span>
+                <span class="p">)</span>
+                <span class="n">seed_rule_eventualities</span><span class="p">[</span><span class="n">rule_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp_eventualities</span>
+                <span class="c1"># print(&quot;rule&quot;, rule_name, tmp_eventualities)</span>
+            <span class="n">seed_rule_eventualities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_special_case</span><span class="p">(</span><span class="n">seed_rule_eventualities</span><span class="p">)</span>
+            <span class="c1"># print(&quot;-------------&quot;)</span>
+            <span class="k">for</span> <span class="n">eventualities</span> <span class="ow">in</span> <span class="n">seed_rule_eventualities</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">sent_eventualities</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">eventualities</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">in_order</span><span class="p">:</span>
+            <span class="n">para_eventualities</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="nb">sorted</span><span class="p">(</span><span class="n">sent_eventualities</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">e</span><span class="o">.</span><span class="n">position</span><span class="p">)</span> <span class="k">for</span> <span class="n">sent_eventualities</span> <span class="ow">in</span> <span class="n">para_eventualities</span>
+            <span class="p">]</span>
+            <span class="k">if</span> <span class="n">output_format</span> <span class="o">==</span> <span class="s2">&quot;json&quot;</span><span class="p">:</span>
+                <span class="n">para_eventualities</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="p">[</span><span class="n">eventuality</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">eventuality</span> <span class="ow">in</span> <span class="n">sent_eventualities</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">sent_eventualities</span> <span class="ow">in</span> <span class="n">para_eventualities</span>
+                <span class="p">]</span>
+            <span class="k">if</span> <span class="n">is_single_sent</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">para_eventualities</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">para_eventualities</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">eid2eventuality</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">eventuality</span> <span class="ow">in</span> <span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">para_eventualities</span><span class="p">):</span>
+                <span class="n">eid</span> <span class="o">=</span> <span class="n">eventuality</span><span class="o">.</span><span class="n">eid</span>
+                <span class="k">if</span> <span class="n">eid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">eid2eventuality</span><span class="p">:</span>
+                    <span class="n">eid2eventuality</span><span class="p">[</span><span class="n">eid</span><span class="p">]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">eventuality</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">eid2eventuality</span><span class="p">[</span><span class="n">eid</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">eventuality</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">output_format</span> <span class="o">==</span> <span class="s2">&quot;Eventuality&quot;</span><span class="p">:</span>
+                <span class="n">eventualities</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">eid2eventuality</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">e</span><span class="o">.</span><span class="n">eid</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">output_format</span> <span class="o">==</span> <span class="s2">&quot;json&quot;</span><span class="p">:</span>
+                <span class="n">eventualities</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">eventuality</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">eventuality</span> <span class="ow">in</span> <span class="n">eid2eventuality</span><span class="o">.</span><span class="n">values</span><span class="p">()],</span>
+                    <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;eid&quot;</span><span class="p">]</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="n">eventualities</span></div>
+
+    <span class="k">def</span> <span class="nf">_extract_eventualities_from_dependencies_with_single_rule</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">sent_parsed_result</span><span class="p">,</span> <span class="n">eventuality_rule</span><span class="p">,</span> <span class="n">rule_name</span>
+    <span class="p">):</span>
+        <span class="n">local_eventualities</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">verb_positions</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sent_parsed_result</span><span class="p">[</span><span class="s2">&quot;pos_tags&quot;</span><span class="p">])</span> <span class="k">if</span> <span class="n">tag</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;VB&quot;</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">verb_position</span> <span class="ow">in</span> <span class="n">verb_positions</span><span class="p">:</span>
+            <span class="n">tmp_e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_eventuality_with_fixed_target</span><span class="p">(</span>
+                <span class="n">sent_parsed_result</span><span class="p">,</span> <span class="n">eventuality_rule</span><span class="p">,</span> <span class="n">verb_position</span><span class="p">,</span> <span class="n">rule_name</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">tmp_e</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">local_eventualities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmp_e</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">local_eventualities</span>
+
+    <span class="k">def</span> <span class="nf">_extract_eventuality_with_fixed_target</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sent_parsed_result</span><span class="p">,</span> <span class="n">eventuality_rule</span><span class="p">,</span> <span class="n">verb_position</span><span class="p">,</span> <span class="n">rule_name</span><span class="p">):</span>
+        <span class="n">selected_edges</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">selected_skeleton_edges</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">local_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;V1&#39;</span><span class="p">:</span> <span class="n">verb_position</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">tmp_rule_r</span> <span class="ow">in</span> <span class="n">eventuality_rule</span><span class="o">.</span><span class="n">positive_rules</span><span class="p">:</span>
+            <span class="n">foundmatch</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">dep_r</span> <span class="ow">in</span> <span class="n">sent_parsed_result</span><span class="p">[</span><span class="s2">&quot;dependencies&quot;</span><span class="p">]:</span>
+                <span class="n">decision</span><span class="p">,</span> <span class="n">local_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match_rule_r_and_dep_r</span><span class="p">(</span><span class="n">tmp_rule_r</span><span class="p">,</span> <span class="n">dep_r</span><span class="p">,</span> <span class="n">local_dict</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">decision</span><span class="p">:</span>
+                    <span class="n">selected_edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dep_r</span><span class="p">)</span>
+                    <span class="n">selected_skeleton_edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dep_r</span><span class="p">)</span>
+                    <span class="n">foundmatch</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">foundmatch</span><span class="p">:</span>
+                <span class="c1"># print(&#39;Miss one positive relation&#39;)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">for</span> <span class="n">tmp_rule_r</span> <span class="ow">in</span> <span class="n">eventuality_rule</span><span class="o">.</span><span class="n">possible_rules</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">dep_r</span> <span class="ow">in</span> <span class="n">sent_parsed_result</span><span class="p">[</span><span class="s2">&quot;dependencies&quot;</span><span class="p">]:</span>
+                <span class="n">decision</span><span class="p">,</span> <span class="n">local_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match_rule_r_and_dep_r</span><span class="p">(</span><span class="n">tmp_rule_r</span><span class="p">,</span> <span class="n">dep_r</span><span class="p">,</span> <span class="n">local_dict</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">decision</span><span class="p">:</span>
+                    <span class="n">selected_edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dep_r</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">tmp_rule_r</span> <span class="ow">in</span> <span class="n">eventuality_rule</span><span class="o">.</span><span class="n">negative_rules</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">dep_r</span> <span class="ow">in</span> <span class="n">sent_parsed_result</span><span class="p">[</span><span class="s2">&quot;dependencies&quot;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">dep_r</span> <span class="ow">in</span> <span class="n">selected_edges</span><span class="p">:</span>
+                    <span class="c1"># print(&#39;This edge is selected by the positive example, so we will skip it&#39;)</span>
+                    <span class="k">continue</span>
+                <span class="n">decision</span><span class="p">,</span> <span class="n">local_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match_rule_r_and_dep_r</span><span class="p">(</span><span class="n">tmp_rule_r</span><span class="p">,</span> <span class="n">dep_r</span><span class="p">,</span> <span class="n">local_dict</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">decision</span><span class="p">:</span>
+                    <span class="c1"># print(&#39;found one negative relation&#39;)</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">selected_edges</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">event</span> <span class="o">=</span> <span class="n">Eventuality</span><span class="p">(</span>
+                <span class="n">pattern</span><span class="o">=</span><span class="n">rule_name</span><span class="p">,</span>
+                <span class="n">dependencies</span><span class="o">=</span><span class="n">selected_edges</span><span class="p">,</span>
+                <span class="n">skeleton_dependencies</span><span class="o">=</span><span class="n">selected_skeleton_edges</span><span class="p">,</span>
+                <span class="n">parsed_result</span><span class="o">=</span><span class="n">sent_parsed_result</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">event</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">event</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">event</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_match_rule_r_and_dep_r</span><span class="p">(</span><span class="n">rule_r</span><span class="p">,</span> <span class="n">dep_r</span><span class="p">,</span> <span class="n">current_dict</span><span class="p">):</span>
+        <span class="n">tmp_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">val</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">current_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">if</span> <span class="n">rule_r</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;-&#39;</span><span class="p">:</span>
+            <span class="n">tmp_relations</span> <span class="o">=</span> <span class="n">rule_r</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">rule_r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">current_dict</span> <span class="ow">and</span> <span class="n">dep_r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">current_dict</span><span class="p">[</span><span class="n">rule_r</span><span class="p">[</span><span class="mi">0</span><span class="p">]]:</span>
+                <span class="k">if</span> <span class="n">dep_r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">tmp_relations</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="n">current_dict</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># print(dep_r[1])</span>
+                    <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">tmp_dict</span>
+        <span class="k">if</span> <span class="n">rule_r</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;+&#39;</span><span class="p">:</span>
+            <span class="n">tmp_relations</span> <span class="o">=</span> <span class="n">rule_r</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">rule_r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">current_dict</span> <span class="ow">and</span> <span class="n">dep_r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">current_dict</span><span class="p">[</span><span class="n">rule_r</span><span class="p">[</span><span class="mi">0</span><span class="p">]]:</span>
+                <span class="k">if</span> <span class="n">dep_r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">tmp_relations</span><span class="p">:</span>
+                    <span class="n">tmp_dict</span><span class="p">[</span><span class="n">rule_r</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="n">dep_r</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                    <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">tmp_dict</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># print(dep_r[1])</span>
+                    <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="n">current_dict</span>
+        <span class="k">if</span> <span class="n">rule_r</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;^&#39;</span><span class="p">:</span>
+            <span class="n">tmp_dep_r</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="n">tmp_dep_r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dep_r</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+            <span class="n">tmp_dep_r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dep_r</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">tmp_dep_r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dep_r</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">tmp_rule_r</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="n">tmp_rule_r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rule_r</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+            <span class="n">tmp_rule_r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rule_r</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">:])</span>
+            <span class="n">tmp_rule_r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rule_r</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">tmp_rule_r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">tmp_dep_r</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">tmp_rule_r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">current_dict</span> <span class="ow">and</span> <span class="n">tmp_dep_r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">current_dict</span><span class="p">[</span><span class="n">tmp_rule_r</span><span class="p">[</span><span class="mi">0</span><span class="p">]]:</span>
+                    <span class="k">if</span> <span class="n">tmp_rule_r</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tmp_dict</span><span class="p">:</span>
+                        <span class="n">tmp_dict</span><span class="p">[</span><span class="n">tmp_rule_r</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="n">tmp_dep_r</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                        <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">tmp_dict</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tmp_dep_r</span> <span class="o">=</span> <span class="n">dep_r</span>
+            <span class="n">tmp_rule_r</span> <span class="o">=</span> <span class="n">rule_r</span>
+            <span class="k">if</span> <span class="n">tmp_rule_r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">tmp_dep_r</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">tmp_rule_r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">current_dict</span> <span class="ow">and</span> <span class="n">tmp_dep_r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">current_dict</span><span class="p">[</span><span class="n">tmp_rule_r</span><span class="p">[</span><span class="mi">0</span><span class="p">]]:</span>
+                    <span class="k">if</span> <span class="n">tmp_rule_r</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tmp_dict</span><span class="p">:</span>
+                        <span class="n">tmp_dict</span><span class="p">[</span><span class="n">tmp_rule_r</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="n">tmp_dep_r</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                        <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">tmp_dict</span>
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="n">current_dict</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_filter_special_case</span><span class="p">(</span><span class="n">extracted_eventualities</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">extracted_eventualities</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">extracted_eventualities</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">v</span> <span class="k">if</span> <span class="s2">&quot;|&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">words</span><span class="p">]</span>
+
+        <span class="n">extracted_eventualities</span><span class="p">[</span><span class="s1">&#39;s-v-a&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">extracted_eventualities</span><span class="p">[</span><span class="s1">&#39;s-be-o&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">extracted_eventualities</span><span class="p">[</span><span class="s1">&#39;s-v-be-o&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">extracted_eventualities</span><span class="p">[</span><span class="s1">&#39;s-v-o-be-o&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">extracted_eventualities</span><span class="p">[</span><span class="s1">&#39;s-v-v&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">tmp_s_v_v</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="n">tmp_s_v_a</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">extracted_eventualities</span><span class="p">[</span><span class="s1">&#39;s-v-v&#39;</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">dependencies</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;xcomp&#39;</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="s1">&#39;VB&#39;</span> <span class="ow">in</span> <span class="n">edge</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]:</span>
+                            <span class="n">tmp_s_v_v</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="s1">&#39;JJ&#39;</span> <span class="ow">in</span> <span class="n">edge</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]:</span>
+                            <span class="n">e</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="s1">&#39;s-v-a&#39;</span>
+                            <span class="n">tmp_s_v_a</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                        <span class="k">break</span>
+            <span class="n">extracted_eventualities</span><span class="p">[</span><span class="s1">&#39;s-v-v&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp_s_v_v</span>
+            <span class="n">extracted_eventualities</span><span class="p">[</span><span class="s1">&#39;s-v-a&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp_s_v_a</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">extracted_eventualities</span><span class="p">[</span><span class="s1">&#39;s-v-be-a&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">tmp_s_v_be_a</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="n">tmp_s_v_be_o</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">extracted_eventualities</span><span class="p">[</span><span class="s1">&#39;s-v-be-a&#39;</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">dependencies</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;xcomp&#39;</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="s1">&#39;JJ&#39;</span> <span class="ow">in</span> <span class="n">edge</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]:</span>
+                            <span class="n">tmp_s_v_be_a</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="s1">&#39;NN&#39;</span> <span class="ow">in</span> <span class="n">edge</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]:</span>
+                            <span class="n">e</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="s1">&#39;s-v-be-o&#39;</span>
+                            <span class="n">tmp_s_v_be_o</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                        <span class="k">break</span>
+            <span class="n">extracted_eventualities</span><span class="p">[</span><span class="s1">&#39;s-v-be-a&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp_s_v_be_a</span>
+            <span class="n">extracted_eventualities</span><span class="p">[</span><span class="s1">&#39;s-v-be-o&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp_s_v_be_o</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">extracted_eventualities</span><span class="p">[</span><span class="s1">&#39;s-be-a&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">tmp_s_be_a</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="n">tmp_s_be_o</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">extracted_eventualities</span><span class="p">[</span><span class="s1">&#39;s-be-a&#39;</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">dependencies</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;cop&#39;</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="s1">&#39;JJ&#39;</span> <span class="ow">in</span> <span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]:</span>
+                            <span class="n">tmp_s_be_a</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="s1">&#39;NN&#39;</span> <span class="ow">in</span> <span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]:</span>
+                            <span class="n">e</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="s1">&#39;s-be-o&#39;</span>
+                            <span class="n">tmp_s_be_o</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                        <span class="k">break</span>
+            <span class="n">extracted_eventualities</span><span class="p">[</span><span class="s1">&#39;s-be-a&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp_s_be_a</span>
+            <span class="n">extracted_eventualities</span><span class="p">[</span><span class="s1">&#39;s-be-o&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp_s_be_o</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">extracted_eventualities</span><span class="p">[</span><span class="s1">&#39;s-v-o-be-a&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">tmp_s_v_o_be_a</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="n">tmp_s_v_o_be_o</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">extracted_eventualities</span><span class="p">[</span><span class="s1">&#39;s-v-o-be-a&#39;</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">dependencies</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;xcomp&#39;</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="s1">&#39;JJ&#39;</span> <span class="ow">in</span> <span class="n">edge</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]:</span>
+                            <span class="n">tmp_s_v_o_be_a</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="s1">&#39;NN&#39;</span> <span class="ow">in</span> <span class="n">edge</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]:</span>
+                            <span class="n">e</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="s1">&#39;s-v-o-be-o&#39;</span>
+                            <span class="n">tmp_s_v_o_be_o</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                        <span class="k">break</span>
+            <span class="n">extracted_eventualities</span><span class="p">[</span><span class="s1">&#39;s-v-o-be-a&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp_s_v_o_be_a</span>
+            <span class="n">extracted_eventualities</span><span class="p">[</span><span class="s1">&#39;s-v-o-be-o&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp_s_v_o_be_o</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">extracted_eventualities</span><span class="p">[</span><span class="s1">&#39;s-v&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">tmp_s_v</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">extracted_eventualities</span><span class="p">[</span><span class="s1">&#39;s-v&#39;</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">dependencies</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;nsubj&#39;</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">edge</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;be&#39;</span><span class="p">:</span>
+                            <span class="n">tmp_s_v</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="n">extracted_eventualities</span><span class="p">[</span><span class="s1">&#39;s-v&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp_s_v</span>
+
+        <span class="k">return</span> <span class="n">extracted_eventualities</span></div>
+
+
+<div class="viewcode-block" id="DiscourseEventualityExtractor"><a class="viewcode-back" href="../../../api/extractor.html#aser.extract.eventuality_extractor.DiscourseEventualityExtractor">[docs]</a><span class="k">class</span> <span class="nc">DiscourseEventualityExtractor</span><span class="p">(</span><span class="n">BaseEventualityExtractor</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; ASER eventuality extractor based on constituency analysis to extract eventualities  (for ASER v2.0)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">corenlp_path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">corenlp_port</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">corenlp_path</span><span class="p">,</span> <span class="n">corenlp_port</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seed_rule_eventuality_extractor</span> <span class="o">=</span> <span class="n">SeedRuleEventualityExtractor</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conn_extractor</span> <span class="o">=</span> <span class="n">ConnectiveExtractor</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DiscourseEventualityExtractor.extract_from_parsed_result"><a class="viewcode-back" href="../../../api/extractor.html#aser.extract.eventuality_extractor.DiscourseEventualityExtractor.extract_from_parsed_result">[docs]</a>    <span class="k">def</span> <span class="nf">extract_from_parsed_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed_result</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="s2">&quot;Eventuality&quot;</span><span class="p">,</span> <span class="n">in_order</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">output_format</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Eventuality&quot;</span><span class="p">,</span> <span class="s2">&quot;json&quot;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Error: extract_from_parsed_result only supports Eventuality or json.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parsed_result</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parsed_result</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">is_single_sent</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">parsed_result</span> <span class="o">=</span> <span class="p">[</span><span class="n">parsed_result</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">is_single_sent</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="n">syntax_tree_cache</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;syntax_tree_cache&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span>
+
+        <span class="n">para_eventualities</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">parsed_result</span><span class="p">))]</span>
+        <span class="n">para_clauses</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_clauses</span><span class="p">(</span><span class="n">parsed_result</span><span class="p">,</span> <span class="n">syntax_tree_cache</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">sent_parsed_result</span><span class="p">,</span> <span class="n">sent_clauses</span><span class="p">,</span> <span class="n">sent_eventualities</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+            <span class="n">parsed_result</span><span class="p">,</span> <span class="n">para_clauses</span><span class="p">,</span> <span class="n">para_eventualities</span>
+        <span class="p">):</span>
+            <span class="k">for</span> <span class="n">clause</span> <span class="ow">in</span> <span class="n">sent_clauses</span><span class="p">:</span>
+                <span class="n">len_clause</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">clause</span><span class="p">)</span>
+                <span class="n">idx_mapping</span> <span class="o">=</span> <span class="p">{</span><span class="n">j</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">clause</span><span class="p">)}</span>
+                <span class="n">indices_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">clause</span><span class="p">)</span>
+                <span class="n">clause_parsed_result</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;dependencies&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="n">idx_mapping</span><span class="p">[</span><span class="n">dep</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">dep</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">idx_mapping</span><span class="p">[</span><span class="n">dep</span><span class="p">[</span><span class="mi">2</span><span class="p">]])</span> <span class="k">for</span> <span class="n">dep</span> <span class="ow">in</span> <span class="n">sent_parsed_result</span><span class="p">[</span><span class="s2">&quot;dependencies&quot;</span><span class="p">]</span> \
+                        <span class="k">if</span> <span class="n">dep</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">indices_set</span> <span class="ow">and</span> <span class="n">dep</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">in</span> <span class="n">indices_set</span><span class="p">],</span>
+                    <span class="s2">&quot;tokens&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">sent_parsed_result</span><span class="p">[</span><span class="s2">&quot;tokens&quot;</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">clause</span><span class="p">],</span>
+                    <span class="s2">&quot;pos_tags&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">sent_parsed_result</span><span class="p">[</span><span class="s2">&quot;pos_tags&quot;</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">clause</span><span class="p">],</span>
+                    <span class="s2">&quot;lemmas&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">sent_parsed_result</span><span class="p">[</span><span class="s2">&quot;lemmas&quot;</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">clause</span><span class="p">]}</span>
+                <span class="k">if</span> <span class="s2">&quot;ners&quot;</span> <span class="ow">in</span> <span class="n">sent_parsed_result</span><span class="p">:</span>
+                    <span class="n">clause_parsed_result</span><span class="p">[</span><span class="s2">&quot;ners&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">sent_parsed_result</span><span class="p">[</span><span class="s2">&quot;ners&quot;</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">clause</span><span class="p">]</span>
+                <span class="k">if</span> <span class="s2">&quot;mentions&quot;</span> <span class="ow">in</span> <span class="n">sent_parsed_result</span><span class="p">:</span>
+                    <span class="n">clause_parsed_result</span><span class="p">[</span><span class="s2">&quot;mentions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+                    <span class="k">for</span> <span class="n">mention</span> <span class="ow">in</span> <span class="n">sent_parsed_result</span><span class="p">[</span><span class="s2">&quot;mentions&quot;</span><span class="p">]:</span>
+                        <span class="n">start_idx</span> <span class="o">=</span> <span class="n">bisect</span><span class="o">.</span><span class="n">bisect_left</span><span class="p">(</span><span class="n">clause</span><span class="p">,</span> <span class="n">mention</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">])</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">start_idx</span> <span class="o">&lt;</span> <span class="n">len_clause</span> <span class="ow">and</span> <span class="n">clause</span><span class="p">[</span><span class="n">start_idx</span><span class="p">]</span> <span class="o">==</span> <span class="n">mention</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">]):</span>
+                            <span class="k">continue</span>
+                        <span class="n">end_idx</span> <span class="o">=</span> <span class="n">bisect</span><span class="o">.</span><span class="n">bisect_left</span><span class="p">(</span><span class="n">clause</span><span class="p">,</span> <span class="n">mention</span><span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">end_idx</span> <span class="o">&lt;</span> <span class="n">len_clause</span> <span class="ow">and</span> <span class="n">clause</span><span class="p">[</span><span class="n">end_idx</span><span class="p">]</span> <span class="o">==</span> <span class="n">mention</span><span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                            <span class="k">continue</span>
+                        <span class="n">mention</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">mention</span><span class="p">)</span>
+                        <span class="n">mention</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">start_idx</span>
+                        <span class="n">mention</span><span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">end_idx</span> <span class="o">+</span> <span class="mi">1</span>
+                        <span class="n">clause_parsed_result</span><span class="p">[</span><span class="s2">&quot;mentions&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mention</span><span class="p">)</span>
+                <span class="n">eventualities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seed_rule_eventuality_extractor</span><span class="o">.</span><span class="n">extract_from_parsed_result</span><span class="p">(</span>
+                    <span class="n">clause_parsed_result</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="s2">&quot;Eventuality&quot;</span><span class="p">,</span> <span class="n">in_order</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)</span>
+                <span class="n">len_existed_eventualities</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sent_eventualities</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">eventualities</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">raw_sent_mapping</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="n">e</span><span class="o">.</span><span class="n">raw_sent_mapping</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">clause</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+                    <span class="n">e</span><span class="o">.</span><span class="n">eid</span> <span class="o">=</span> <span class="n">Eventuality</span><span class="o">.</span><span class="n">generate_eid</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                    <span class="n">existed_eventuality</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="k">for</span> <span class="n">e_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">len_existed_eventualities</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">sent_eventualities</span><span class="p">[</span><span class="n">e_idx</span><span class="p">]</span><span class="o">.</span><span class="n">eid</span> <span class="o">==</span> <span class="n">e</span><span class="o">.</span><span class="n">eid</span> <span class="ow">and</span> \
+                            <span class="n">sent_eventualities</span><span class="p">[</span><span class="n">e_idx</span><span class="p">]</span><span class="o">.</span><span class="n">raw_sent_mapping</span> <span class="o">==</span> <span class="n">e</span><span class="o">.</span><span class="n">raw_sent_mapping</span><span class="p">:</span>
+                            <span class="n">existed_eventuality</span> <span class="o">=</span> <span class="kc">True</span>
+                            <span class="k">break</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">existed_eventuality</span><span class="p">:</span>
+                        <span class="n">sent_eventualities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">in_order</span><span class="p">:</span>
+            <span class="n">para_eventualities</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="nb">sorted</span><span class="p">(</span><span class="n">sent_eventualities</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">e</span><span class="o">.</span><span class="n">position</span><span class="p">)</span> <span class="k">for</span> <span class="n">sent_eventualities</span> <span class="ow">in</span> <span class="n">para_eventualities</span>
+            <span class="p">]</span>
+            <span class="k">if</span> <span class="n">output_format</span> <span class="o">==</span> <span class="s2">&quot;json&quot;</span><span class="p">:</span>
+                <span class="n">para_eventualities</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="p">[</span><span class="n">eventuality</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">eventuality</span> <span class="ow">in</span> <span class="n">sent_eventualities</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">sent_eventualities</span> <span class="ow">in</span> <span class="n">para_eventualities</span>
+                <span class="p">]</span>
+            <span class="k">if</span> <span class="n">is_single_sent</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">para_eventualities</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">para_eventualities</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">eid2eventuality</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">eventuality</span> <span class="ow">in</span> <span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">para_eventualities</span><span class="p">):</span>
+                <span class="n">eid</span> <span class="o">=</span> <span class="n">eventuality</span><span class="o">.</span><span class="n">eid</span>
+                <span class="k">if</span> <span class="n">eid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">eid2eventuality</span><span class="p">:</span>
+                    <span class="n">eid2eventuality</span><span class="p">[</span><span class="n">eid</span><span class="p">]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">eventuality</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">eid2eventuality</span><span class="p">[</span><span class="n">eid</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">eventuality</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">output_format</span> <span class="o">==</span> <span class="s2">&quot;Eventuality&quot;</span><span class="p">:</span>
+                <span class="n">eventualities</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">eid2eventuality</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">e</span><span class="o">.</span><span class="n">eid</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">output_format</span> <span class="o">==</span> <span class="s2">&quot;json&quot;</span><span class="p">:</span>
+                <span class="n">eventualities</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">eventuality</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">eventuality</span> <span class="ow">in</span> <span class="n">eid2eventuality</span><span class="o">.</span><span class="n">values</span><span class="p">()],</span>
+                    <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;eid&quot;</span><span class="p">]</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="n">eventualities</span></div>
+
+    <span class="k">def</span> <span class="nf">_extract_clauses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed_result</span><span class="p">,</span> <span class="n">syntax_tree_cache</span><span class="p">):</span>
+        <span class="n">para_arguments</span> <span class="o">=</span> <span class="p">[</span><span class="nb">set</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">parsed_result</span><span class="p">))]</span>
+        <span class="n">connectives</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn_extractor</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">parsed_result</span><span class="p">,</span> <span class="n">syntax_tree_cache</span><span class="p">)</span>
+        <span class="n">para_connectives</span> <span class="o">=</span> <span class="p">[</span><span class="nb">set</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">parsed_result</span><span class="p">))]</span>
+        <span class="k">for</span> <span class="n">connective</span> <span class="ow">in</span> <span class="n">connectives</span><span class="p">:</span>
+            <span class="n">sent_idx</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">connective</span><span class="p">[</span><span class="s2">&quot;sent_idx&quot;</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">connective</span><span class="p">[</span><span class="s2">&quot;indices&quot;</span><span class="p">])</span>
+            <span class="n">para_connectives</span><span class="p">[</span><span class="n">sent_idx</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">sent_idx</span><span class="p">,</span> <span class="n">sent_parsed_result</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">parsed_result</span><span class="p">):</span>
+            <span class="n">sent_connectives</span> <span class="o">=</span> <span class="n">para_connectives</span><span class="p">[</span><span class="n">sent_idx</span><span class="p">]</span>
+            <span class="n">sent_arguments</span> <span class="o">=</span> <span class="n">para_arguments</span><span class="p">[</span><span class="n">sent_idx</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">sent_idx</span> <span class="ow">in</span> <span class="n">syntax_tree_cache</span><span class="p">:</span>
+                <span class="n">syntax_tree</span> <span class="o">=</span> <span class="n">syntax_tree_cache</span><span class="p">[</span><span class="n">sent_idx</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">syntax_tree</span> <span class="o">=</span> <span class="n">syntax_tree_cache</span><span class="p">[</span><span class="n">sent_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">SyntaxTree</span><span class="p">(</span><span class="n">sent_parsed_result</span><span class="p">[</span><span class="s2">&quot;parse&quot;</span><span class="p">])</span>
+
+            <span class="c1"># more but slower</span>
+            <span class="c1"># for indices in powerset(sent_connectives):</span>
+            <span class="c1">#     indices = set(chain.from_iterable(indices))</span>
+            <span class="c1">#     sent_arguments.update(get_clauses(sent_parsed_result, syntax_tree, sep_indices=indices))</span>
+            <span class="n">sent_arguments</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                <span class="n">get_clauses</span><span class="p">(</span><span class="n">sent_parsed_result</span><span class="p">,</span> <span class="n">syntax_tree</span><span class="p">,</span> <span class="n">sep_indices</span><span class="o">=</span><span class="nb">set</span><span class="p">(</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">sent_connectives</span><span class="p">)))</span>
+            <span class="p">)</span>
+        <span class="c1"># print(&quot;&#39;clause indices&#39;:&quot;, para_arguments)</span>
+        <span class="k">return</span> <span class="n">para_arguments</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, KnowComp.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
