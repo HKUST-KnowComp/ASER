@@ -4,7 +4,7 @@ import pprint
 import bisect
 from collections import Counter
 from copy import copy
-from aser.object import JsonSerializedObject
+from .object import JsonSerializedObject
 
 
 class Eventuality(JsonSerializedObject):

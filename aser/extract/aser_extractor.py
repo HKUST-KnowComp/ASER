@@ -1,9 +1,9 @@
 from copy import copy, deepcopy
 from itertools import chain
-from aser.extract.eventuality_extractor import SeedRuleEventualityExtractor, DiscourseEventualityExtractor
-from aser.extract.relation_extractor import SeedRuleRelationExtractor, DiscourseRelationExtractor
-from aser.extract.utils import parse_sentense_with_stanford, get_corenlp_client
-from aser.extract.utils import ANNOTATORS
+from .eventuality_extractor import SeedRuleEventualityExtractor, DiscourseEventualityExtractor
+from .relation_extractor import SeedRuleRelationExtractor, DiscourseRelationExtractor
+from .utils import parse_sentense_with_stanford, get_corenlp_client
+from .utils import ANNOTATORS
 
 
 class BaseASERExtractor(object):
@@ -754,7 +754,7 @@ class SeedRuleASERExtractor(BaseASERExtractor):
             if "depparse" not in kw["annotators"]:
                 kw["annotator"].append("depparse")
         super().__init__(corenlp_path, corenlp_port, **kw)
-        from aser.extract.rule import CLAUSE_WORDS
+        from .rule import CLAUSE_WORDS
         self.eventuality_extractor = SeedRuleEventualityExtractor(
             corenlp_path=self.corenlp_path, corenlp_port=self.corenlp_port, skip_words=CLAUSE_WORDS, **kw
         )

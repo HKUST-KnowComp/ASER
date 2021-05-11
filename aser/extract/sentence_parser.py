@@ -1,7 +1,7 @@
 import time
 import ujson as json
-from aser.extract.utils import get_corenlp_client, parse_sentense_with_stanford
-from aser.extract.utils import ANNOTATORS, MAX_LEN
+from .utils import get_corenlp_client, parse_sentense_with_stanford
+from .utils import ANNOTATORS, MAX_LEN
 
 
 class SentenceParser:

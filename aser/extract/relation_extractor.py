@@ -1,10 +1,10 @@
 from itertools import chain
 from copy import deepcopy
-from aser.extract.discourse_parser import ConnectiveExtractor, ArgumentPositionClassifier, \
+from .discourse_parser import ConnectiveExtractor, ArgumentPositionClassifier, \
     SSArgumentExtractor, PSArgumentExtractor, ExplicitSenseClassifier
-from aser.relation import Relation, relation_senses
-from aser.extract.rule import SEED_CONNECTIVE_DICT
-from aser.extract.utils import EMPTY_SENT_PARSED_RESULT
+from .rule import SEED_CONNECTIVE_DICT
+from .utils import EMPTY_SENT_PARSED_RESULT
+from ..relation import Relation, relation_senses
 
 
 class BaseRelationExtractor(object):

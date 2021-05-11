@@ -1,5 +1,6 @@
 import ujson as json
 
+
 class JsonSerializedObject(object):
     """ Object that supports json serialization
 

@@ -5,16 +5,16 @@ import multiprocessing
 import math
 from collections import Counter, defaultdict
 from tqdm import tqdm
-from aser.extract.sentence_parser import SentenceParser
-from aser.extract.parsed_reader import ParsedReader
-from aser.extract.aser_extractor import BaseASERExtractor, SeedRuleASERExtractor, DiscourseASERExtractor
-from aser.conceptualize.aser_conceptualizer import SeedRuleASERConceptualizer, ProbaseASERConceptualizer
-from aser.extract.utils import EMPTY_SENT_PARSED_RESULT
-from aser.extract.utils import iter_files
-from aser.utils.logging import init_logger, close_logger
-from aser.database.kg_connection import ASERKGConnection, ASERConceptConnection
-from aser.conceptualize.utils import conceptualize_eventualities, build_concept_relations
-from aser.extract.utils import extract_file
+from ..conceptualize.aser_conceptualizer import SeedRuleASERConceptualizer, ProbaseASERConceptualizer
+from ..conceptualize.utils import conceptualize_eventualities, build_concept_relations
+from ..database.kg_connection import ASERKGConnection, ASERConceptConnection
+from ..extract.aser_extractor import BaseASERExtractor, SeedRuleASERExtractor, DiscourseASERExtractor
+from ..extract.parsed_reader import ParsedReader
+from ..extract.sentence_parser import SentenceParser
+from ..extract.utils import EMPTY_SENT_PARSED_RESULT
+from ..extract.utils import extract_file
+from ..extract.utils import iter_files
+from ..utils.logging import init_logger, close_logger
 
 MAX_THREADS = 1024
 

@@ -6,10 +6,9 @@ from typing import List
 from multiprocessing import Pool
 from shutil import copyfile
 from tqdm import tqdm
-
-from aser.extract.utils import get_corenlp_client, parse_sentense_with_stanford
-from aser.extract.entity_linker import LinkSharedSource, Mention, Entity, str_contain, acronym, DisjointSet, base_url, link
-from aser.utils.config import get_raw_process_parser
+from .utils import get_corenlp_client, parse_sentense_with_stanford
+from .entity_linker import LinkSharedSource, Mention, Entity, str_contain, acronym, DisjointSet, base_url, link
+from ..utils.config import get_raw_process_parser
 
 
 # ------------------- class section -------------------

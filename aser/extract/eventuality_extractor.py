@@ -1,12 +1,12 @@
 import bisect
 from copy import copy, deepcopy
 from itertools import chain, permutations
-from aser.eventuality import Eventuality
-from aser.extract.rule import ALL_EVENTUALITY_RULES
-from aser.extract.utils import parse_sentense_with_stanford, get_corenlp_client, get_clauses, powerset
-from aser.extract.utils import ANNOTATORS
-from aser.extract.discourse_parser import ConnectiveExtractor
-from aser.extract.discourse_parser import SyntaxTree
+from .discourse_parser import ConnectiveExtractor
+from .discourse_parser import SyntaxTree
+from .rule import ALL_EVENTUALITY_RULES
+from .utils import parse_sentense_with_stanford, get_corenlp_client, get_clauses, powerset
+from .utils import ANNOTATORS
+from ..eventuality import Eventuality
 
 
 class BaseEventualityExtractor(object):

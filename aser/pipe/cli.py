@@ -1,8 +1,8 @@
-import os
-from aser.pipe import ASERPipe
-from aser.utils.config import get_pipe_args_parser
-
 def main():
+    import os
+    from aser.pipe import ASERPipe
+    from aser.utils.config import get_pipe_args_parser
+
     parser = get_pipe_args_parser()
     args = parser.parse_args()
     if args.raw_dir.endswith(os.sep):

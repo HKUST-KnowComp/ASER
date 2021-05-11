@@ -3,8 +3,8 @@ import pprint
 import time
 import pickle
 from tqdm import tqdm
-from aser.object import JsonSerializedObject
 from collections import Counter
+from .object import JsonSerializedObject
 
 
 class ASERConcept(JsonSerializedObject):

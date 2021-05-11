@@ -15,8 +15,8 @@ from scipy import sparse
 from copy import deepcopy, copy
 from ete3 import Tree
 from itertools import chain
-from aser.extract.utils import PUNCTUATION_SET, CLAUSE_SEPARATOR_SET
-from aser.extract.utils import index_from, get_clauses, strip_punctuations, get_prev_token_index, get_next_token_index
+from .utils import index_from, get_clauses, strip_punctuations, get_prev_token_index, get_next_token_index
+from .utils import PUNCTUATION_SET, CLAUSE_SEPARATOR_SET
 """
 Most of these features and models are borrowed from https://github.com/lanmanok/conll2015_discourse
 

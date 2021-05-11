@@ -10,13 +10,13 @@ import zmq
 import zmq.decorators as zmqd
 from collections import OrderedDict
 from multiprocessing import Process
-from aser.eventuality import Eventuality
-from aser.relation import Relation
-from aser.concept import ASERConcept
-from aser.database.kg_connection import ASERKGConnection, ASERConceptConnection
-from aser.extract.aser_extractor import SeedRuleASERExtractor, DiscourseASERExtractor
-from aser.conceptualize.aser_conceptualizer import SeedRuleASERConceptualizer, ProbaseASERConceptualizer
-from aser.utils.config import ASERCmd, ASERError
+from ..concept import ASERConcept
+from ..conceptualize.aser_conceptualizer import SeedRuleASERConceptualizer, ProbaseASERConceptualizer
+from ..database.kg_connection import ASERKGConnection, ASERConceptConnection
+from ..eventuality import Eventuality
+from ..extract.aser_extractor import SeedRuleASERExtractor, DiscourseASERExtractor
+from ..relation import Relation
+from ..utils.config import ASERCmd, ASERError
 
 CACHESIZE = 512
 DECODINGERROR = None

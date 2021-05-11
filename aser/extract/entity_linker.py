@@ -1,11 +1,11 @@
 import os
 import time
 import random
+import ujson as json
 from typing import List, Set
 from collections import OrderedDict
 from nltk.tokenize import word_tokenize
 from multiprocessing import Manager
-import ujson as json
 
 stop_words = set(corpus.stopwords.words('english'))
 

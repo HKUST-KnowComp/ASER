@@ -1,14 +1,16 @@
 import hashlib
 import pprint
-from aser.object import JsonSerializedObject
+from .object import JsonSerializedObject
 
 relation_senses = [
-    'Precedence', 'Succession', 'Synchronous',
-    'Reason', 'Result',
-    'Condition', 'Contrast', 'Concession',
-    'Conjunction', 'Instantiation', 'Restatement', 
-    'ChosenAlternative', 'Alternative', 'Exception',
-    'Co_Occurrence']
+    "Precedence", "Succession", "Synchronous",
+    "Reason", "Result",
+    "Condition", "Contrast", "Concession",
+    "Conjunction", "Instantiation", "Restatement",
+    "ChosenAlternative", "Alternative", "Exception",
+    "Co_Occurrence"
+]
+
 
 class Relation(JsonSerializedObject):
     """ ASER Relation
@@ -28,7 +30,7 @@ class Relation(JsonSerializedObject):
         self.hid = hid
         self.tid = tid
         self.rid = Relation.generate_rid(self.hid, self.tid)
-        
+
         self.relations = dict()
         self.update(relations)
 
