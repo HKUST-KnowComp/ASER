@@ -276,10 +276,6 @@ def parse_sentense_with_stanford(input_sentence, corenlp_client, annotators=None
     return parsed_rst_list
 
 
-
-
-
-
 def iter_files(path):
     """ Walk through all files located under a root path
 
