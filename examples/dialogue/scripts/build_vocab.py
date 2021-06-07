@@ -3,7 +3,7 @@ from dialogue.toolbox.vocab import Vocabulary, UNK_WORD, PAD_WORD, BOS_WORD, EOS
 import sys
 import torch
 from tqdm import tqdm
-import ujson as json
+import json
 
 WORD_VOCAB_SIZE = 15000
 ASER_VOCAB_SIZE = 40000

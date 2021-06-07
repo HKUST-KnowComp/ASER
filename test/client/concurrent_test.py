@@ -1,4 +1,4 @@
-import ujson as json
+import json
 from multiprocessing import Pool
 import traceback
 import time

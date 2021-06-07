@@ -750,9 +750,9 @@ class SeedRuleASERExtractor(BaseASERExtractor):
         if "annotators" not in kw:
             kw["annotators"] = list(ANNOTATORS)
             if "parse" in kw["annotators"]:
-                kw["annotators"].pop("parse")
+                kw["annotators"].remove("parse")
             if "depparse" not in kw["annotators"]:
-                kw["annotator"].append("depparse")
+                kw["annotators"].append("depparse")
         super().__init__(corenlp_path, corenlp_port, **kw)
         from .rule import CLAUSE_WORDS
         self.eventuality_extractor = SeedRuleEventualityExtractor(
@@ -769,7 +769,7 @@ class DiscourseASERExtractor(BaseASERExtractor):
         if "annotators" not in kw:
             kw["annotators"] = list(ANNOTATORS)
             if "depparse" in kw["annotators"]:
-                kw["annotator"].pop("depparse")
+                kw["annotators"].remove("depparse")
             if "parse" not in kw["annotators"]:
                 kw["annotators"].append("parse")
         super().__init__(corenlp_path, corenlp_port, **kw)

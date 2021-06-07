@@ -1,4 +1,4 @@
-import ujson as json
+import json
 
 
 class JsonSerializedObject(object):

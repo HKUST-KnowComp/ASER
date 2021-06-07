@@ -1,5 +1,5 @@
 import time
-import ujson as json
+import json
 from .utils import get_corenlp_client, parse_sentense_with_stanford
 from .utils import ANNOTATORS, MAX_LEN
 

@@ -1,5 +1,5 @@
 import sys
-import ujson as json
+import json
 from tqdm import tqdm
 from aser.eventuality import Eventuality
 from aser.conceptualize.aser_conceptualizer import ASERSeedConceptualizer, ASERProbaseConceptualizer

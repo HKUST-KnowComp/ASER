@@ -1,7 +1,7 @@
 import os
 import time
 import random
-import ujson as json
+import json
 from typing import List, Set
 from collections import OrderedDict
 from nltk.tokenize import word_tokenize

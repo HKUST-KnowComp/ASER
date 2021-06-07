@@ -4,7 +4,7 @@ import random
 import socket
 import time
 import traceback
-import ujson as json
+import json
 import uuid
 import zmq
 import zmq.decorators as zmqd

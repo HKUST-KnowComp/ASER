@@ -3,7 +3,7 @@ import os
 import torch
 import torch.utils.data
 from tqdm import tqdm
-import ujson as json
+import json
 from dialogue.toolbox.utils import padding_list, chunks
 
 

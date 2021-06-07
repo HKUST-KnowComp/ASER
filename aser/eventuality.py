@@ -1,5 +1,5 @@
 import hashlib
-import ujson as json
+import json
 import pprint
 import bisect
 from collections import Counter

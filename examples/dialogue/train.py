@@ -2,7 +2,7 @@ import argparse
 import os
 import time
 import torch
-import ujson as json
+import json
 from dialogue.Trainer import Trainer
 from dialogue.io.DialogueDataset import DialogueDatasetIterator
 from dialogue.toolbox.config import Config

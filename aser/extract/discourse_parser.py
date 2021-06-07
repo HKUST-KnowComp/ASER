@@ -1,6 +1,6 @@
 import re
 import os
-import ujson as json
+import json
 import bisect
 import time
 import subprocess

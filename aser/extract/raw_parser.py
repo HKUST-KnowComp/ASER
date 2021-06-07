@@ -1,7 +1,7 @@
 import os
 import math
 import errno
-import ujson as json
+import json
 from typing import List
 from multiprocessing import Pool
 from shutil import copyfile

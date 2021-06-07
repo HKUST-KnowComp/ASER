@@ -1,7 +1,7 @@
 import time
 import uuid
 import zmq
-import ujson as json
+import json
 from functools import wraps
 from ..concept import ASERConcept
 from ..eventuality import Eventuality

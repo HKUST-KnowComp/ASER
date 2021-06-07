@@ -1,7 +1,7 @@
 from multiprocessing import Pool
 import torch
 from torch.autograd import Variable
-import ujson as json
+import json
 
 
 def batch_unpadding(_input, lens, right=True):

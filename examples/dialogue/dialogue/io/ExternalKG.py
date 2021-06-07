@@ -4,7 +4,7 @@ import random
 import sys
 import time
 from tqdm import tqdm_notebook as tqdm
-import ujson as json
+import json
 from aser.database.db_API_skeleton_words import KG_Connection, preprocess_event
 from aser.database.connection_v2 import relation_senses
 
