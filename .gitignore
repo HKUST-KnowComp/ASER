@@ -114,3 +114,6 @@ venv.bak/
 
 # data
 data
+
+# sys
+.DS_Store

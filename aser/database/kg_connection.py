@@ -864,7 +864,7 @@ class ASERKGConnection(object):
         )
 
     """
-    Addtional APIs
+    Additional APIs
     """
 
     def get_related_eventualities(self, eventuality):
@@ -880,7 +880,7 @@ class ASERKGConnection(object):
             return []
         if isinstance(eventuality, Eventuality):
             eid = eventuality.eid
-        if isinstance(eventuality, dict):
+        elif isinstance(eventuality, dict):
             eid = eventuality["eid"]
         elif isinstance(eventuality, str):
             eid = eventuality
