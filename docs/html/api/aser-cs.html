@@ -1,70 +1,34 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>Server/Client &mdash; ASER 2.0 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="About" href="../about/index.html" />
     <link rel="prev" title="Conceptualization" href="conceptualizer.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../index.html" class="icon icon-home"> ASER
-          
-
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -72,23 +36,12 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <p class="caption"><span class="caption-text">Tutorial</span></p>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial/get-started.html">Get Started</a></li>
 </ul>
-<p class="caption"><span class="caption-text">API Reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="database.html">Database</a></li>
 <li class="toctree-l1"><a class="reference internal" href="extractor.html">Extractor</a></li>
@@ -102,94 +55,53 @@
 </ul>
 </li>
 </ul>
-<p class="caption"><span class="caption-text">About</span></p>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../about/index.html">About</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">ASER</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>Server/Client</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../_sources/api/aser-cs.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="server-client">
-<h1>Server/Client<a class="headerlink" href="#server-client" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-aser.server">
-<span id="aser-server"></span><h2>ASER server<a class="headerlink" href="#module-aser.server" title="Permalink to this headline">¶</a></h2>
+             
+  <section id="server-client">
+<h1>Server/Client<a class="headerlink" href="#server-client" title="Permalink to this headline"></a></h1>
+<section id="module-aser.server">
+<span id="aser-server"></span><h2>ASER server<a class="headerlink" href="#module-aser.server" title="Permalink to this headline"></a></h2>
 <dl class="py class">
-<dt id="aser.server.ASERDataBase">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">aser.server.</span></code><code class="sig-name descname"><span class="pre">ASERDataBase</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_sender_addr_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sink_addr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERDataBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERDataBase" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.server.ASERDataBase">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">aser.server.</span></span><span class="sig-name descname"><span class="pre">ASERDataBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_sender_addr_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sink_addr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERDataBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERDataBase" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.context.Process</span></code></p>
 <p>Process to provide DB retrieval functions</p>
 <dl class="py method">
-<dt id="aser.server.ASERDataBase.close">
-<code class="sig-name descname"><span class="pre">close</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERDataBase.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERDataBase.close" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.server.ASERDataBase.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERDataBase.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERDataBase.close" title="Permalink to this definition"></a></dt>
 <dd><p>Close the process safely</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="aser.server.ASERDataBase.handle_exact_match_concept">
-<code class="sig-name descname"><span class="pre">handle_exact_match_concept</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERDataBase.handle_exact_match_concept"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERDataBase.handle_exact_match_concept" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.server.ASERDataBase.handle_exact_match_concept">
+<span class="sig-name descname"><span class="pre">handle_exact_match_concept</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERDataBase.handle_exact_match_concept"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERDataBase.handle_exact_match_concept" title="Permalink to this definition"></a></dt>
 <dd><p>Retrieve the extract match concept from DB</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -199,14 +111,14 @@
 <dd class="field-even"><p>the exact matched concept or None</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Union[aser.concept.ASERConcept, None]</p>
+<dd class="field-odd"><p>Union[<a class="reference internal" href="object.html#aser.concept.ASERConcept" title="aser.concept.ASERConcept">aser.concept.ASERConcept</a>, None]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="aser.server.ASERDataBase.handle_exact_match_concept_relation">
-<code class="sig-name descname"><span class="pre">handle_exact_match_concept_relation</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERDataBase.handle_exact_match_concept_relation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERDataBase.handle_exact_match_concept_relation" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.server.ASERDataBase.handle_exact_match_concept_relation">
+<span class="sig-name descname"><span class="pre">handle_exact_match_concept_relation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERDataBase.handle_exact_match_concept_relation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERDataBase.handle_exact_match_concept_relation" title="Permalink to this definition"></a></dt>
 <dd><p>Retrieve the extract match relation between concepts from DB</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -216,14 +128,14 @@
 <dd class="field-even"><p>the exact matched relation or None</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Union[aser.relation.Relation, None]</p>
+<dd class="field-odd"><p>Union[<a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a>, None]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="aser.server.ASERDataBase.handle_exact_match_eventuality">
-<code class="sig-name descname"><span class="pre">handle_exact_match_eventuality</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERDataBase.handle_exact_match_eventuality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERDataBase.handle_exact_match_eventuality" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.server.ASERDataBase.handle_exact_match_eventuality">
+<span class="sig-name descname"><span class="pre">handle_exact_match_eventuality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERDataBase.handle_exact_match_eventuality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERDataBase.handle_exact_match_eventuality" title="Permalink to this definition"></a></dt>
 <dd><p>Retrieve the extract match eventuality from DB</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -233,14 +145,14 @@
 <dd class="field-even"><p>the exact matched eventuality or None</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Union[aser.eventuality.Eventuality, None]</p>
+<dd class="field-odd"><p>Union[<a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality">aser.eventuality.Eventuality</a>, None]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="aser.server.ASERDataBase.handle_exact_match_eventuality_relation">
-<code class="sig-name descname"><span class="pre">handle_exact_match_eventuality_relation</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERDataBase.handle_exact_match_eventuality_relation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERDataBase.handle_exact_match_eventuality_relation" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.server.ASERDataBase.handle_exact_match_eventuality_relation">
+<span class="sig-name descname"><span class="pre">handle_exact_match_eventuality_relation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERDataBase.handle_exact_match_eventuality_relation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERDataBase.handle_exact_match_eventuality_relation" title="Permalink to this definition"></a></dt>
 <dd><p>Retrieve the extract match relation between eventualities from DB</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -250,14 +162,14 @@
 <dd class="field-even"><p>the exact matched relation or None</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Union[aser.relation.Relation, None]</p>
+<dd class="field-odd"><p>Union[<a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a>, None]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="aser.server.ASERDataBase.handle_fetch_related_concepts">
-<code class="sig-name descname"><span class="pre">handle_fetch_related_concepts</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERDataBase.handle_fetch_related_concepts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERDataBase.handle_fetch_related_concepts" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.server.ASERDataBase.handle_fetch_related_concepts">
+<span class="sig-name descname"><span class="pre">handle_fetch_related_concepts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERDataBase.handle_fetch_related_concepts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERDataBase.handle_fetch_related_concepts" title="Permalink to this definition"></a></dt>
 <dd><p>Fetch all related concepts of the given concept</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -267,14 +179,14 @@
 <dd class="field-even"><p>all related concepts associated with corresponding relations</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>List[Tuple[aser.concept.ASERConcept, aser.relation.Relation]]</p>
+<dd class="field-odd"><p>List[Tuple[<a class="reference internal" href="object.html#aser.concept.ASERConcept" title="aser.concept.ASERConcept">aser.concept.ASERConcept</a>, <a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a>]]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="aser.server.ASERDataBase.handle_fetch_related_eventualities">
-<code class="sig-name descname"><span class="pre">handle_fetch_related_eventualities</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERDataBase.handle_fetch_related_eventualities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERDataBase.handle_fetch_related_eventualities" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.server.ASERDataBase.handle_fetch_related_eventualities">
+<span class="sig-name descname"><span class="pre">handle_fetch_related_eventualities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERDataBase.handle_fetch_related_eventualities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERDataBase.handle_fetch_related_eventualities" title="Permalink to this definition"></a></dt>
 <dd><p>Fetch all related eventualities of the given eventuality</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -284,22 +196,22 @@
 <dd class="field-even"><p>all related eventualities associated with corresponding relations</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>List[Tuple[aser.eventuality.Eventuality, aser.relation.Relation]]</p>
+<dd class="field-odd"><p>List[Tuple[<a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality">aser.eventuality.Eventuality</a>, <a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a>]]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="aser.server.ASERDataBase.run">
-<code class="sig-name descname"><span class="pre">run</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERDataBase.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERDataBase.run" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.server.ASERDataBase.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERDataBase.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERDataBase.run" title="Permalink to this definition"></a></dt>
 <dd><p>Method to be run in sub-process; can be overridden in sub-class</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="aser.server.ASERServer">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">aser.server.</span></code><code class="sig-name descname"><span class="pre">ASERServer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERServer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERServer" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.server.ASERServer">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">aser.server.</span></span><span class="sig-name descname"><span class="pre">ASERServer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERServer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERServer" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>ASER server to provide extraction, conceptualization, and retrieval functions</p>
 <dl class="field-list simple">
@@ -308,79 +220,79 @@
 </dd>
 </dl>
 <dl class="py method">
-<dt id="aser.server.ASERServer.close">
-<code class="sig-name descname"><span class="pre">close</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERServer.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERServer.close" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.server.ASERServer.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERServer.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERServer.close" title="Permalink to this definition"></a></dt>
 <dd><p>Clase the server safely</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="aser.server.ASERServer.run">
-<code class="sig-name descname"><span class="pre">run</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERServer.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERServer.run" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.server.ASERServer.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERServer.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERServer.run" title="Permalink to this definition"></a></dt>
 <dd><p>Start the server</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="aser.server.ASERSink">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">aser.server.</span></code><code class="sig-name descname"><span class="pre">ASERSink</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sink_addr_receiver_addr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERSink"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERSink" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.server.ASERSink">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">aser.server.</span></span><span class="sig-name descname"><span class="pre">ASERSink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sink_addr_receiver_addr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERSink"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERSink" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.context.Process</span></code></p>
 <p>Process to forward messages</p>
 <dl class="py method">
-<dt id="aser.server.ASERSink.run">
-<code class="sig-name descname"><span class="pre">run</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERSink.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERSink.run" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.server.ASERSink.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERSink.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERSink.run" title="Permalink to this definition"></a></dt>
 <dd><p>Method to be run in sub-process; can be overridden in sub-class</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="aser.server.ASERWorker">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">aser.server.</span></code><code class="sig-name descname"><span class="pre">ASERWorker</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">worker_addr_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sink_addr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERWorker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERWorker" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.server.ASERWorker">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">aser.server.</span></span><span class="sig-name descname"><span class="pre">ASERWorker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">worker_addr_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sink_addr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERWorker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERWorker" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.context.Process</span></code></p>
 <p>Process to serve extraction and conceptualization functions</p>
 <dl class="py method">
-<dt id="aser.server.ASERWorker.close">
-<code class="sig-name descname"><span class="pre">close</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERWorker.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERWorker.close" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.server.ASERWorker.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERWorker.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERWorker.close" title="Permalink to this definition"></a></dt>
 <dd><p>Close the process safely</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="aser.server.ASERWorker.handle_conceptualize_eventuality">
-<code class="sig-name descname"><span class="pre">handle_conceptualize_eventuality</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eventuality</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERWorker.handle_conceptualize_eventuality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERWorker.handle_conceptualize_eventuality" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.server.ASERWorker.handle_conceptualize_eventuality">
+<span class="sig-name descname"><span class="pre">handle_conceptualize_eventuality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eventuality</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERWorker.handle_conceptualize_eventuality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERWorker.handle_conceptualize_eventuality" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="aser.server.ASERWorker.handle_extract_eventualities">
-<code class="sig-name descname"><span class="pre">handle_extract_eventualities</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERWorker.handle_extract_eventualities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERWorker.handle_extract_eventualities" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.server.ASERWorker.handle_extract_eventualities">
+<span class="sig-name descname"><span class="pre">handle_extract_eventualities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERWorker.handle_extract_eventualities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERWorker.handle_extract_eventualities" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="aser.server.ASERWorker.handle_extract_eventualities_and_relations">
-<code class="sig-name descname"><span class="pre">handle_extract_eventualities_and_relations</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERWorker.handle_extract_eventualities_and_relations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERWorker.handle_extract_eventualities_and_relations" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.server.ASERWorker.handle_extract_eventualities_and_relations">
+<span class="sig-name descname"><span class="pre">handle_extract_eventualities_and_relations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERWorker.handle_extract_eventualities_and_relations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERWorker.handle_extract_eventualities_and_relations" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="aser.server.ASERWorker.handle_extract_relations">
-<code class="sig-name descname"><span class="pre">handle_extract_relations</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERWorker.handle_extract_relations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERWorker.handle_extract_relations" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.server.ASERWorker.handle_extract_relations">
+<span class="sig-name descname"><span class="pre">handle_extract_relations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERWorker.handle_extract_relations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERWorker.handle_extract_relations" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="aser.server.ASERWorker.handle_parse_text">
-<code class="sig-name descname"><span class="pre">handle_parse_text</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERWorker.handle_parse_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERWorker.handle_parse_text" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.server.ASERWorker.handle_parse_text">
+<span class="sig-name descname"><span class="pre">handle_parse_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERWorker.handle_parse_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERWorker.handle_parse_text" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="aser.server.ASERWorker.run">
-<code class="sig-name descname"><span class="pre">run</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERWorker.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERWorker.run" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.server.ASERWorker.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERWorker.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERWorker.run" title="Permalink to this definition"></a></dt>
 <dd><p>Method to be run in sub-process; can be overridden in sub-class</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
-<dt id="aser.server.is_port_occupied">
-<code class="sig-prename descclassname"><span class="pre">aser.server.</span></code><code class="sig-name descname"><span class="pre">is_port_occupied</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'127.0.0.1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">80</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#is_port_occupied"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.is_port_occupied" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.server.is_port_occupied">
+<span class="sig-prename descclassname"><span class="pre">aser.server.</span></span><span class="sig-name descname"><span class="pre">is_port_occupied</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'127.0.0.1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">80</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#is_port_occupied"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.is_port_occupied" title="Permalink to this definition"></a></dt>
 <dd><p>Check whether the ip:port is occupied</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -399,8 +311,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt id="aser.server.sockets_ipc_bind">
-<code class="sig-prename descclassname"><span class="pre">aser.server.</span></code><code class="sig-name descname"><span class="pre">sockets_ipc_bind</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">socket</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#sockets_ipc_bind"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.sockets_ipc_bind" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.server.sockets_ipc_bind">
+<span class="sig-prename descclassname"><span class="pre">aser.server.</span></span><span class="sig-name descname"><span class="pre">sockets_ipc_bind</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">socket</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#sockets_ipc_bind"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.sockets_ipc_bind" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>socket</strong> (<em>zmq.sugar.socket.Socket</em>) – a socket</p>
@@ -429,8 +341,8 @@
                    <span class="p">[</span><span class="o">-</span><span class="n">log_path</span> <span class="n">LOG_PATH</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments">
-<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<section id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline"></a></h3>
 <dl class="option-list">
 <dt><kbd>-n_workers</kbd></dt>
 <dd><p>Number of ASER workers, same as num of corenlp workers</p>
@@ -482,13 +394,13 @@
 <p>Default: “./.server.log”</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="module-aser.client">
-<span id="aser-client"></span><h2>ASER client<a class="headerlink" href="#module-aser.client" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="module-aser.client">
+<span id="aser-client"></span><h2>ASER client<a class="headerlink" href="#module-aser.client" title="Permalink to this headline"></a></h2>
 <dl class="py class">
-<dt id="aser.client.ASERClient">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">aser.client.</span></code><code class="sig-name descname"><span class="pre">ASERClient</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'localhost'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.client.ASERClient">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">aser.client.</span></span><span class="sig-name descname"><span class="pre">ASERClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'localhost'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A client object of ASER</p>
 <dl class="field-list simple">
@@ -502,65 +414,65 @@
 </dd>
 </dl>
 <dl class="py method">
-<dt id="aser.client.ASERClient.close">
-<code class="sig-name descname"><span class="pre">close</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.close" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.client.ASERClient.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.close" title="Permalink to this definition"></a></dt>
 <dd><p>Close the client safely</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="aser.client.ASERClient.conceptualize_eventuality">
-<code class="sig-name descname"><span class="pre">conceptualize_eventuality</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eventuality</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.conceptualize_eventuality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.conceptualize_eventuality" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.client.ASERClient.conceptualize_eventuality">
+<span class="sig-name descname"><span class="pre">conceptualize_eventuality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eventuality</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.conceptualize_eventuality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.conceptualize_eventuality" title="Permalink to this definition"></a></dt>
 <dd><p>Conceptualize an eventuality by sending a request to ASERServer</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>eventuality</strong> (<em>aser.eventuality.Eventuality</em>) – an eventuality</p>
+<dd class="field-odd"><p><strong>eventuality</strong> (<a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality"><em>aser.eventuality.Eventuality</em></a>) – an eventuality</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>a list of (conceptualized eventuality, score) pair</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>List[Tuple[aser.concept.ASERConcept, float]]</p>
+<dd class="field-odd"><p>List[Tuple[<a class="reference internal" href="object.html#aser.concept.ASERConcept" title="aser.concept.ASERConcept">aser.concept.ASERConcept</a>, float]]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="aser.client.ASERClient.exact_match_concept">
-<code class="sig-name descname"><span class="pre">exact_match_concept</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.exact_match_concept"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.exact_match_concept" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.client.ASERClient.exact_match_concept">
+<span class="sig-name descname"><span class="pre">exact_match_concept</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.exact_match_concept"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.exact_match_concept" title="Permalink to this definition"></a></dt>
 <dd><p>Retrieve the extract match concept by sending a DB retrieval request</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data</strong> (<em>Union</em><em>[</em><em>aser.concept.ASERConcept</em><em>, </em><em>str</em><em>]</em>) – a concept or cid</p>
+<dd class="field-odd"><p><strong>data</strong> (<em>Union</em><em>[</em><a class="reference internal" href="object.html#aser.concept.ASERConcept" title="aser.concept.ASERConcept"><em>aser.concept.ASERConcept</em></a><em>, </em><em>str</em><em>]</em>) – a concept or cid</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>the exact matched concept or None</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Union[aser.concept.ASERConcept, None]</p>
+<dd class="field-odd"><p>Union[<a class="reference internal" href="object.html#aser.concept.ASERConcept" title="aser.concept.ASERConcept">aser.concept.ASERConcept</a>, None]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="aser.client.ASERClient.exact_match_eventuality">
-<code class="sig-name descname"><span class="pre">exact_match_eventuality</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.exact_match_eventuality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.exact_match_eventuality" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.client.ASERClient.exact_match_eventuality">
+<span class="sig-name descname"><span class="pre">exact_match_eventuality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.exact_match_eventuality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.exact_match_eventuality" title="Permalink to this definition"></a></dt>
 <dd><p>Retrieve the extract match eventuality by sending a DB retrieval request</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data</strong> (<em>Union</em><em>[</em><em>aser.eventuality.Eventuality</em><em>, </em><em>str</em><em>]</em>) – an eventuality or eid</p>
+<dd class="field-odd"><p><strong>data</strong> (<em>Union</em><em>[</em><a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality"><em>aser.eventuality.Eventuality</em></a><em>, </em><em>str</em><em>]</em>) – an eventuality or eid</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>the exact matched eventuality or None</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Union[aser.eventuality.Eventuality, None]</p>
+<dd class="field-odd"><p>Union[<a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality">aser.eventuality.Eventuality</a>, None]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="aser.client.ASERClient.extract_eventualities">
-<code class="sig-name descname"><span class="pre">extract_eventualities</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.extract_eventualities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.extract_eventualities" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.client.ASERClient.extract_eventualities">
+<span class="sig-name descname"><span class="pre">extract_eventualities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.extract_eventualities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.extract_eventualities" title="Permalink to this definition"></a></dt>
 <dd><p>Extract eventualities by sending a request to ASERServer</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -570,14 +482,14 @@
 <dd class="field-even"><p>the extracted eventualities</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>List[List[aser.eventuality.Eventuality]]</p>
+<dd class="field-odd"><p>List[List[<a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality">aser.eventuality.Eventuality</a>]]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="aser.client.ASERClient.extract_eventualities_and_relations">
-<code class="sig-name descname"><span class="pre">extract_eventualities_and_relations</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.extract_eventualities_and_relations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.extract_eventualities_and_relations" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.client.ASERClient.extract_eventualities_and_relations">
+<span class="sig-name descname"><span class="pre">extract_eventualities_and_relations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.extract_eventualities_and_relations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.extract_eventualities_and_relations" title="Permalink to this definition"></a></dt>
 <dd><p>Extract both eventualities and relations by sending a request to ASERServer</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -587,65 +499,65 @@
 <dd class="field-even"><p>the extracted eventualities and relations</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Tuple[Union[List[List[aser.eventuality.Eventuality]], List[List[Dict[str, object]]], List[aser.eventuality.Eventuality], List[Dict[str, object]]], Union[List[List[aser.relation.Relation]], List[List[Dict[str, object]]], List[aser.relation.Relation], List[Dict[str, object]]]]</p>
+<dd class="field-odd"><p>Tuple[Union[List[List[<a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality">aser.eventuality.Eventuality</a>]], List[List[Dict[str, object]]], List[<a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality">aser.eventuality.Eventuality</a>], List[Dict[str, object]]], Union[List[List[<a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a>]], List[List[Dict[str, object]]], List[<a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a>], List[Dict[str, object]]]]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="aser.client.ASERClient.extract_relations">
-<code class="sig-name descname"><span class="pre">extract_relations</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.extract_relations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.extract_relations" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.client.ASERClient.extract_relations">
+<span class="sig-name descname"><span class="pre">extract_relations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.extract_relations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.extract_relations" title="Permalink to this definition"></a></dt>
 <dd><p>Extract relations by sending a request to ASERServer</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>Tuple</em><em>[</em><em>List</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>]</em><em>, </em><em>List</em><em>[</em><em>List</em><em>[</em><em>aser.eventuality.Eventuality</em><em>]</em><em>]</em><em>]</em><em>]</em>) – a raw text or a parsed result of a paragraph associated with extracted eventualities</p>
+<dd class="field-odd"><p><strong>data</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>Tuple</em><em>[</em><em>List</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>]</em><em>, </em><em>List</em><em>[</em><em>List</em><em>[</em><a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality"><em>aser.eventuality.Eventuality</em></a><em>]</em><em>]</em><em>]</em><em>]</em>) – a raw text or a parsed result of a paragraph associated with extracted eventualities</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>the extracted relations</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>List[List[aser.relation.Relation]]</p>
+<dd class="field-odd"><p>List[List[<a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a>]]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="aser.client.ASERClient.fetch_related_concepts">
-<code class="sig-name descname"><span class="pre">fetch_related_concepts</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.fetch_related_concepts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.fetch_related_concepts" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.client.ASERClient.fetch_related_concepts">
+<span class="sig-name descname"><span class="pre">fetch_related_concepts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.fetch_related_concepts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.fetch_related_concepts" title="Permalink to this definition"></a></dt>
 <dd><p>Fetch all related concepts of the given concept</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>aser.concept.ASERConcept</em><em>]</em>) – the given concept or cid</p>
+<dd class="field-odd"><p><strong>data</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="object.html#aser.concept.ASERConcept" title="aser.concept.ASERConcept"><em>aser.concept.ASERConcept</em></a><em>]</em>) – the given concept or cid</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>all related concepts associated with corresponding relations</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>List[Tuple[aser.concept.ASERConcept, aser.relation.Relation]]</p>
+<dd class="field-odd"><p>List[Tuple[<a class="reference internal" href="object.html#aser.concept.ASERConcept" title="aser.concept.ASERConcept">aser.concept.ASERConcept</a>, <a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a>]]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="aser.client.ASERClient.fetch_related_eventualities">
-<code class="sig-name descname"><span class="pre">fetch_related_eventualities</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.fetch_related_eventualities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.fetch_related_eventualities" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.client.ASERClient.fetch_related_eventualities">
+<span class="sig-name descname"><span class="pre">fetch_related_eventualities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.fetch_related_eventualities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.fetch_related_eventualities" title="Permalink to this definition"></a></dt>
 <dd><p>Fetch all related eventualities of the given eventuality</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>aser.eventuality.Eventuality</em><em>]</em>) – the given eventuality or eid</p>
+<dd class="field-odd"><p><strong>data</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality"><em>aser.eventuality.Eventuality</em></a><em>]</em>) – the given eventuality or eid</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>all related eventualities associated with corresponding relations</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>List[Tuple[aser.eventuality.Eventuality, aser.relation.Relation]]</p>
+<dd class="field-odd"><p>List[Tuple[<a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality">aser.eventuality.Eventuality</a>, <a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a>]]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="aser.client.ASERClient.parse_text">
-<code class="sig-name descname"><span class="pre">parse_text</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.parse_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.parse_text" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.client.ASERClient.parse_text">
+<span class="sig-name descname"><span class="pre">parse_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.parse_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.parse_text" title="Permalink to this definition"></a></dt>
 <dd><p>Parse a raw text by sending a request to ASERServer</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -661,96 +573,79 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="aser.client.ASERClient.predict_concept_relation">
-<code class="sig-name descname"><span class="pre">predict_concept_relation</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">concept1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">concept2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.predict_concept_relation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.predict_concept_relation" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.client.ASERClient.predict_concept_relation">
+<span class="sig-name descname"><span class="pre">predict_concept_relation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">concept1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">concept2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.predict_concept_relation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.predict_concept_relation" title="Permalink to this definition"></a></dt>
 <dd><p>Predict the relation between two conceptualized eventualities by sending a DB retrieval request</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>concept1</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>aser.concept.ASERConcept</em><em>]</em>) – one concept or cid as the head</p></li>
-<li><p><strong>concept2</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>aser.concept.ASERConcept</em><em>]</em>) – the other concept or cid as the head</p></li>
+<li><p><strong>concept1</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="object.html#aser.concept.ASERConcept" title="aser.concept.ASERConcept"><em>aser.concept.ASERConcept</em></a><em>]</em>) – one concept or cid as the head</p></li>
+<li><p><strong>concept2</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="object.html#aser.concept.ASERConcept" title="aser.concept.ASERConcept"><em>aser.concept.ASERConcept</em></a><em>]</em>) – the other concept or cid as the head</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>the relation stored in concept KG</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>aser.relation.Relation</p>
+<dd class="field-odd"><p><a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="aser.client.ASERClient.predict_eventuality_relation">
-<code class="sig-name descname"><span class="pre">predict_eventuality_relation</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eventuality1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eventuality2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.predict_eventuality_relation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.predict_eventuality_relation" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="aser.client.ASERClient.predict_eventuality_relation">
+<span class="sig-name descname"><span class="pre">predict_eventuality_relation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eventuality1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eventuality2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.predict_eventuality_relation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.predict_eventuality_relation" title="Permalink to this definition"></a></dt>
 <dd><p>Predict the relation between two eventualities by sending a DB retrieval request</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>eventuality1</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>aser.eventuality.Eventuality</em><em>]</em>) – one eventuality or eid as the head</p></li>
-<li><p><strong>eventuality2</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>aser.eventuality.Eventuality</em><em>]</em>) – the other eventuality or eid as the tail</p></li>
+<li><p><strong>eventuality1</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality"><em>aser.eventuality.Eventuality</em></a><em>]</em>) – one eventuality or eid as the head</p></li>
+<li><p><strong>eventuality2</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality"><em>aser.eventuality.Eventuality</em></a><em>]</em>) – the other eventuality or eid as the tail</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>the relation stored in KG</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>aser.relation.Relation</p>
+<dd class="field-odd"><p><a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 </dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="../about/index.html" class="btn btn-neutral float-right" title="About" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="conceptualizer.html" class="btn btn-neutral float-left" title="Conceptualization" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../about/index.html" class="btn btn-neutral float-right" title="About" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2019, KnowComp.
-
-    </p>
+    <p>&#169; Copyright 2019, KnowComp.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

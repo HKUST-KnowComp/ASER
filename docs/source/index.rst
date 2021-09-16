@@ -93,6 +93,7 @@ Publications
    :maxdepth: 2
    :caption: API Reference
 
+   api/object
    api/database
    api/extractor
    api/conceptualizer

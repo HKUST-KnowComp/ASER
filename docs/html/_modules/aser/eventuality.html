@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>aser.eventuality &mdash; ASER 2.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> ASER
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/get-started.html">Get Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/database.html">Database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/extractor.html">Extractor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/conceptualizer.html">Conceptualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/aser-cs.html">Server/Client</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">ASER</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>aser.eventuality</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for aser.eventuality</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">pprint</span>
+<span class="kn">import</span> <span class="nn">bisect</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
+<span class="kn">from</span> <span class="nn">.object</span> <span class="kn">import</span> <span class="n">JsonSerializedObject</span>
+
+
+<div class="viewcode-block" id="Eventuality"><a class="viewcode-back" href="../../api/object.html#aser.eventuality.Eventuality">[docs]</a><span class="k">class</span> <span class="nc">Eventuality</span><span class="p">(</span><span class="n">JsonSerializedObject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; ASER Eventuality</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;unknown&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skeleton_dependencies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parsed_result</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param pattern: the corresponding pattern</span>
+<span class="sd">        :type pattern: str</span>
+<span class="sd">        :param dependencies: the corresponding dependencies (e.g., [(1, &quot;nsubj&quot;, 0)])</span>
+<span class="sd">        :type dependencies: List[Tuple[int, str, int]]</span>
+<span class="sd">        :param skeleton_dependencies: the corresponding dependencies without optional edges (e.g., [(1, &quot;nsubj&quot;, 0)])</span>
+<span class="sd">        :type skeleton_dependencies: List[Tuple[int, str, int]]</span>
+<span class="sd">        :param parsed_result: the parsed result of a sentence</span>
+<span class="sd">        :type parsed_result: Dict[str, object]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eid</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dependencies</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">words</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pos_tags</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ners</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mentions</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_skeleton_dependency_indices</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_skeleton_indices</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verb_indices</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_sent_mapping</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_phrase_segment_indices</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frequency</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="k">if</span> <span class="n">dependencies</span> <span class="ow">and</span> <span class="n">skeleton_dependencies</span> <span class="ow">and</span> <span class="n">parsed_result</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_construct</span><span class="p">(</span><span class="n">dependencies</span><span class="p">,</span> <span class="n">skeleton_dependencies</span><span class="p">,</span> <span class="n">parsed_result</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Eventuality.generate_eid"><a class="viewcode-back" href="../../api/object.html#aser.eventuality.Eventuality.generate_eid">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">generate_eid</span><span class="p">(</span><span class="n">eventuality</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Generate the eid to an eventuality</span>
+
+<span class="sd">        :param eventuality: the given eventuality</span>
+<span class="sd">        :type eventuality: aser.eventuality.Eventuality</span>
+<span class="sd">        :return: the unique eid to the eventuality</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">([</span><span class="n">eventuality</span><span class="o">.</span><span class="n">dependencies</span><span class="p">,</span> <span class="n">eventuality</span><span class="o">.</span><span class="n">words</span><span class="p">,</span> <span class="n">eventuality</span><span class="o">.</span><span class="n">pos_tags</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha1</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Eventuality.update"><a class="viewcode-back" href="../../api/object.html#aser.eventuality.Eventuality.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;  Update the eventuality (&#39;s frequency)</span>
+
+<span class="sd">        :param x: the given frequency or eventuality</span>
+<span class="sd">        :type x: Union[float, aser.eventuality.Eventuality]</span>
+<span class="sd">        :return: the updated eventuality</span>
+<span class="sd">        :rtype: aser.eventuality.Eventuality</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">frequency</span> <span class="o">+=</span> <span class="n">x</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">Eventuality</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">eid</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">eid</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ners</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">_ners</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">ner</span><span class="p">,</span> <span class="n">x_ner</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ners</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">_ners</span><span class="p">)):</span>
+                            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ner</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x_ner</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">ner</span> <span class="o">==</span> <span class="n">x_ner</span><span class="p">:</span>
+                                <span class="k">continue</span>
+                            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ner</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_ners</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">({</span><span class="n">ner</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency</span><span class="p">})</span>
+                            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x_ner</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                                <span class="n">x_ner</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">({</span><span class="n">x_ner</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">frequency</span><span class="p">})</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_ners</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">x_ner</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mentions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">_mentions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">s_t</span><span class="p">,</span> <span class="n">x_mention</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">_mentions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_mentions</span><span class="p">[</span><span class="n">s_t</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_mention</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">frequency</span> <span class="o">+=</span> <span class="n">x</span><span class="o">.</span><span class="n">frequency</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Error: the input of Eventuality.update is invalid.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">words</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">repr_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;eid&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">eid</span><span class="p">,</span>
+            <span class="s2">&quot;pattern&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span>
+            <span class="s2">&quot;verbs&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbs</span><span class="p">,</span>
+            <span class="s2">&quot;skeleton_words&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">skeleton_words</span><span class="p">,</span>
+            <span class="s2">&quot;words&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">words</span><span class="p">,</span>
+            <span class="s2">&quot;skeleton_dependencies&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">skeleton_dependencies</span><span class="p">,</span>
+            <span class="s2">&quot;dependencies&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dependencies</span><span class="p">,</span>
+            <span class="s2">&quot;pos_tags&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos_tags</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ners</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">repr_dict</span><span class="p">[</span><span class="s2">&quot;ners&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ners</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mentions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">repr_dict</span><span class="p">[</span><span class="s2">&quot;mentions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mentions</span>
+        <span class="n">repr_dict</span><span class="p">[</span><span class="s2">&quot;frequency&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency</span>
+        <span class="k">return</span> <span class="n">pprint</span><span class="o">.</span><span class="n">pformat</span><span class="p">(</span><span class="n">repr_dict</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">words</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">dependencies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_render_dependencies</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dependencies</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ners</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ners</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_ner</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ners</span><span class="p">))]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">mentions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ners</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">_mentions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">len_words</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">words</span><span class="p">)</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">len_words</span><span class="p">:</span>
+            <span class="n">ner</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_ner</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ner</span> <span class="o">==</span> <span class="s2">&quot;O&quot;</span><span class="p">:</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">continue</span>
+            <span class="n">j</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">while</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">len_words</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_ner</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="n">ner</span><span class="p">:</span>
+                <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">mention</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mentions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">),</span> <span class="p">{</span>
+                    <span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="n">i</span><span class="p">,</span>
+                    <span class="s2">&quot;end&quot;</span><span class="p">:</span> <span class="n">j</span><span class="p">,</span>
+                    <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">words</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">j</span><span class="p">],</span>
+                    <span class="s2">&quot;ner&quot;</span><span class="p">:</span> <span class="n">ner</span><span class="p">,</span>
+                    <span class="s2">&quot;link&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="s2">&quot;entity&quot;</span><span class="p">:</span> <span class="kc">None</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+            <span class="n">_mentions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mention</span><span class="p">)</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">j</span>
+        <span class="k">return</span> <span class="n">_mentions</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_raw_dependencies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_sent_mapping</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dependencies</span>
+        <span class="n">new_dependencies</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">governor</span><span class="p">,</span> <span class="n">dep</span><span class="p">,</span> <span class="n">dependent</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dependencies</span><span class="p">:</span>
+            <span class="n">new_dependencies</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_sent_mapping</span><span class="p">[</span><span class="n">governor</span><span class="p">],</span> <span class="n">dep</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_sent_mapping</span><span class="p">[</span><span class="n">dependent</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">new_dependencies</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">raw_dependencies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_sent_mapping</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dependencies</span>
+        <span class="n">tmp_dependencies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dependencies</span>
+        <span class="n">new_dependencies</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">governor</span><span class="p">,</span> <span class="n">dep</span><span class="p">,</span> <span class="n">dependent</span> <span class="ow">in</span> <span class="n">tmp_dependencies</span><span class="p">:</span>
+            <span class="n">g_pos</span><span class="p">,</span> <span class="n">g_word</span><span class="p">,</span> <span class="n">g_tag</span> <span class="o">=</span> <span class="n">governor</span>
+            <span class="n">d_pos</span><span class="p">,</span> <span class="n">d_word</span><span class="p">,</span> <span class="n">d_tag</span> <span class="o">=</span> <span class="n">dependent</span>
+            <span class="n">new_dependencies</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_sent_mapping</span><span class="p">[</span><span class="n">g_pos</span><span class="p">],</span> <span class="n">g_word</span><span class="p">,</span> <span class="n">g_tag</span><span class="p">),</span> <span class="n">dep</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_sent_mapping</span><span class="p">[</span><span class="n">d_pos</span><span class="p">],</span> <span class="n">d_word</span><span class="p">,</span> <span class="n">d_tag</span><span class="p">))</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_dependencies</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">skeleton_dependencies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">dependencies</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_dependencies</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_skeleton_dependency_indices</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_render_dependencies</span><span class="p">(</span><span class="n">dependencies</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">skeleton_words</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">words</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_skeleton_indices</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">skeleton_pos_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pos_tags</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_skeleton_indices</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">skeleton_ners</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ners</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_ner</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_skeleton_indices</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">verbs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">words</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_verb_indices</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">position</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: this property returns average position of eventuality in a sentence.</span>
+<span class="sd">                 this property only make sense when this eventuality are constructed while</span>
+<span class="sd">                 extraction, instead of recovered from database.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">positions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">governor</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">dependent</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dependencies</span><span class="p">:</span>
+            <span class="n">positions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_sent_mapping</span><span class="p">[</span><span class="n">governor</span><span class="p">])</span>
+            <span class="n">positions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_sent_mapping</span><span class="p">[</span><span class="n">dependent</span><span class="p">])</span>
+        <span class="n">avg_position</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">positions</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">positions</span><span class="p">)</span> <span class="k">if</span> <span class="n">positions</span> <span class="k">else</span> <span class="mf">0.0</span>
+        <span class="k">return</span> <span class="n">avg_position</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">phrases</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">words</span><span class="p">[</span><span class="n">st</span><span class="p">:</span><span class="n">end</span><span class="p">])</span> <span class="k">for</span> <span class="n">st</span><span class="p">,</span> <span class="n">end</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phrase_segment_indices</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">phrases_ners</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">_tmp_ners</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">_range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phrase_segment_indices</span><span class="p">:</span>
+            <span class="n">_tmp_ners</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ners</span><span class="p">[</span><span class="n">_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+
+        <span class="k">return</span> <span class="n">_tmp_ners</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">skeleton_phrases</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">phrase_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">_range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phrase_segment_indices</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">*</span><span class="n">_range</span><span class="p">):</span>
+                <span class="n">phrase_dict</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">_range</span>
+
+        <span class="n">_skeleton_tokens</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_skeleton_indices</span><span class="p">:</span>
+            <span class="n">st</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">phrase_dict</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+            <span class="n">_skeleton_tokens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">words</span><span class="p">[</span><span class="n">st</span><span class="p">:</span><span class="n">end</span><span class="p">]))</span>
+
+        <span class="k">return</span> <span class="n">_skeleton_tokens</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">skeleton_phrases_ners</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">skeleton_ners</span>
+
+    <span class="k">def</span> <span class="nf">_construct</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dependencies</span><span class="p">,</span> <span class="n">skeleton_dependencies</span><span class="p">,</span> <span class="n">parsed_result</span><span class="p">):</span>
+        <span class="n">word_indices</span> <span class="o">=</span> <span class="n">Eventuality</span><span class="o">.</span><span class="n">extract_indices_from_dependencies</span><span class="p">(</span><span class="n">dependencies</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">parsed_result</span><span class="p">[</span><span class="s2">&quot;pos_tags&quot;</span><span class="p">][</span><span class="n">word_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">==</span> <span class="s2">&quot;IN&quot;</span><span class="p">:</span>
+            <span class="n">poped_idx</span> <span class="o">=</span> <span class="n">word_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dependencies</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">dependencies</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">poped_idx</span> <span class="ow">or</span> \
+                    <span class="n">dependencies</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="n">poped_idx</span><span class="p">:</span>
+                    <span class="n">dependencies</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">skeleton_dependencies</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">skeleton_dependencies</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">poped_idx</span> <span class="ow">or</span> \
+                    <span class="n">skeleton_dependencies</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="n">poped_idx</span><span class="p">:</span>
+                    <span class="n">skeleton_dependencies</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">word_indices</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">len_words</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">word_indices</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">words</span> <span class="o">=</span> <span class="p">[</span><span class="n">parsed_result</span><span class="p">[</span><span class="s2">&quot;lemmas&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">word_indices</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pos_tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">parsed_result</span><span class="p">[</span><span class="s2">&quot;pos_tags&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">word_indices</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;ners&quot;</span> <span class="ow">in</span> <span class="n">parsed_result</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ners</span> <span class="o">=</span> <span class="p">[</span><span class="n">parsed_result</span><span class="p">[</span><span class="s2">&quot;ners&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">word_indices</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;mentions&quot;</span> <span class="ow">in</span> <span class="n">parsed_result</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mentions</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">mention</span> <span class="ow">in</span> <span class="n">parsed_result</span><span class="p">[</span><span class="s2">&quot;mentions&quot;</span><span class="p">]:</span>
+                <span class="n">start_idx</span> <span class="o">=</span> <span class="n">bisect</span><span class="o">.</span><span class="n">bisect_left</span><span class="p">(</span><span class="n">word_indices</span><span class="p">,</span> <span class="n">mention</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">])</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">start_idx</span> <span class="o">&lt;</span> <span class="n">len_words</span> <span class="ow">and</span> <span class="n">word_indices</span><span class="p">[</span><span class="n">start_idx</span><span class="p">]</span> <span class="o">==</span> <span class="n">mention</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">]):</span>
+                    <span class="k">continue</span>
+                <span class="n">end_idx</span> <span class="o">=</span> <span class="n">bisect</span><span class="o">.</span><span class="n">bisect_left</span><span class="p">(</span><span class="n">word_indices</span><span class="p">,</span> <span class="n">mention</span><span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">end_idx</span> <span class="o">&lt;</span> <span class="n">len_words</span> <span class="ow">and</span> <span class="n">word_indices</span><span class="p">[</span><span class="n">end_idx</span><span class="p">]</span> <span class="o">==</span> <span class="n">mention</span><span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="k">continue</span>
+                <span class="n">mention</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">mention</span><span class="p">)</span>
+                <span class="n">mention</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">start_idx</span>
+                <span class="n">mention</span><span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">end_idx</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">mention</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">words</span><span class="p">[</span><span class="n">mention</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">]:</span><span class="n">mention</span><span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">]])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_mentions</span><span class="p">[(</span><span class="n">mention</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">],</span> <span class="n">mention</span><span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">])]</span> <span class="o">=</span> <span class="n">mention</span>
+        <span class="n">dependencies</span><span class="p">,</span> <span class="n">raw2reset_idx</span><span class="p">,</span> <span class="n">reset2raw_idx</span> <span class="o">=</span> <span class="n">Eventuality</span><span class="o">.</span><span class="n">sort_dependencies_position</span><span class="p">(</span>
+            <span class="n">dependencies</span><span class="p">,</span> <span class="n">reset_position</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dependencies</span> <span class="o">=</span> <span class="n">dependencies</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_sent_mapping</span> <span class="o">=</span> <span class="n">reset2raw_idx</span>
+
+        <span class="n">skeleton_word_indices</span> <span class="o">=</span> <span class="n">Eventuality</span><span class="o">.</span><span class="n">extract_indices_from_dependencies</span><span class="p">(</span><span class="n">skeleton_dependencies</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_skeleton_indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">raw2reset_idx</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">skeleton_word_indices</span><span class="p">]</span>
+
+        <span class="n">_skeleton_dependencies</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">Eventuality</span><span class="o">.</span><span class="n">sort_dependencies_position</span><span class="p">(</span>
+            <span class="n">skeleton_dependencies</span><span class="p">,</span> <span class="n">reset_position</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="n">skeleton_dependency_indices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">ptr</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">dep</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dependencies</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">ptr</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">_skeleton_dependencies</span><span class="p">):</span>
+                <span class="k">break</span>
+            <span class="n">skeleton_dep</span> <span class="o">=</span> <span class="n">_skeleton_dependencies</span><span class="p">[</span><span class="n">ptr</span><span class="p">]</span>
+            <span class="n">skeleton_dep</span> <span class="o">=</span> <span class="p">(</span><span class="n">raw2reset_idx</span><span class="p">[</span><span class="n">skeleton_dep</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">skeleton_dep</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">raw2reset_idx</span><span class="p">[</span><span class="n">skeleton_dep</span><span class="p">[</span><span class="mi">2</span><span class="p">]])</span>
+            <span class="k">if</span> <span class="n">dep</span> <span class="o">==</span> <span class="n">skeleton_dep</span><span class="p">:</span>
+                <span class="n">skeleton_dependency_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="n">ptr</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_skeleton_dependency_indices</span> <span class="o">=</span> <span class="n">skeleton_dependency_indices</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verb_indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pos_tags</span><span class="p">)</span> <span class="k">if</span> <span class="n">tag</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;VB&#39;</span><span class="p">)]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_phrase_segment_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phrase_segment</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">eid</span> <span class="o">=</span> <span class="n">Eventuality</span><span class="o">.</span><span class="n">generate_eid</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Eventuality.to_dict"><a class="viewcode-back" href="../../api/object.html#aser.eventuality.Eventuality.to_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Convert an eventuality to a dictionary</span>
+
+<span class="sd">        :param kw: other parameters</span>
+<span class="sd">        :type kw: Dict[str, object]</span>
+<span class="sd">        :return: the converted dictionary that contains necessary information</span>
+<span class="sd">        :rtype: Dict[str, object]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">minimum</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;minimum&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">minimum</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;_dependencies&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dependencies</span><span class="p">,</span>
+                <span class="s2">&quot;words&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">words</span><span class="p">,</span>
+                <span class="s2">&quot;pos_tags&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos_tags</span><span class="p">,</span>
+                <span class="s2">&quot;_ners&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ners</span><span class="p">,</span>
+                <span class="s2">&quot;_mentions&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">):</span> <span class="n">v</span>
+                              <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mentions</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>  <span class="c1"># key cannot be tuple</span>
+                <span class="s2">&quot;_verb_indices&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_verb_indices</span><span class="p">,</span>
+                <span class="s2">&quot;_skeleton_indices&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_skeleton_indices</span><span class="p">,</span>
+                <span class="s2">&quot;_skeleton_dependency_indices&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_skeleton_dependency_indices</span>
+            <span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>  <span class="c1"># shadow copy</span>
+            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;_mentions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">):</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;_mentions&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>  <span class="c1"># key cannot be tuple</span>
+        <span class="k">return</span> <span class="n">d</span></div>
+
+<div class="viewcode-block" id="Eventuality.decode"><a class="viewcode-back" href="../../api/object.html#aser.eventuality.Eventuality.decode">[docs]</a>    <span class="k">def</span> <span class="nf">decode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Decode the eventuality</span>
+
+<span class="sd">        :param msg: the encoded bytes</span>
+<span class="sd">        :type msg: bytes</span>
+<span class="sd">        :param encoding: the encoding format</span>
+<span class="sd">        :type encoding: str (default = &quot;utf-8&quot;)</span>
+<span class="sd">        :param kw: other parameters</span>
+<span class="sd">        :type kw: Dict[str, object]</span>
+<span class="sd">        :return: the decoded bytes</span>
+<span class="sd">        :rtype: bytes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">encoding</span> <span class="o">==</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">:</span>
+            <span class="n">decoded_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">encoding</span> <span class="o">==</span> <span class="s2">&quot;ascii&quot;</span><span class="p">:</span>
+            <span class="n">decoded_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">decoded_dict</span> <span class="o">=</span> <span class="n">msg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">decoded_dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_sent_mapping</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_sent_mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">raw_sent_mapping</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_sent_mapping</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ners</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ner</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ners</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ner</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_ners</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="n">ner</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mentions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mentions</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_mentions</span><span class="p">[</span><span class="nb">eval</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mentions</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_phrase_segment_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phrase_segment</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+    <span class="k">def</span> <span class="nf">_render_dependencies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dependencies</span><span class="p">):</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">governor_idx</span><span class="p">,</span> <span class="n">dep</span><span class="p">,</span> <span class="n">dependent_idx</span> <span class="ow">in</span> <span class="n">dependencies</span><span class="p">:</span>
+            <span class="n">edge</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">(</span><span class="n">governor_idx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">words</span><span class="p">[</span><span class="n">governor_idx</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos_tags</span><span class="p">[</span><span class="n">governor_idx</span><span class="p">]),</span> <span class="n">dep</span><span class="p">,</span>
+                <span class="p">(</span><span class="n">dependent_idx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">words</span><span class="p">[</span><span class="n">dependent_idx</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos_tags</span><span class="p">[</span><span class="n">dependent_idx</span><span class="p">])</span>
+            <span class="p">)</span>
+            <span class="n">edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">edges</span>
+
+    <span class="k">def</span> <span class="nf">_get_ner</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="n">ner</span> <span class="o">=</span> <span class="s2">&quot;O&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos_tags</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;VB&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ners</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">ner</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ners</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ners</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">most_common</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;O&quot;</span><span class="p">:</span>
+                        <span class="n">ner</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="k">break</span>
+        <span class="k">return</span> <span class="n">ner</span>
+
+    <span class="k">def</span> <span class="nf">_pos_compound_segment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">tmp_compound_tuples</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">governor_idx</span><span class="p">,</span> <span class="n">dep</span><span class="p">,</span> <span class="n">dependent_idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dependencies</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dep</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;compound&quot;</span><span class="p">):</span>
+                <span class="n">tmp_compound_tuples</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">governor_idx</span><span class="p">,</span> <span class="n">dependent_idx</span><span class="p">))</span>
+
+        <span class="n">compound_tuples</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmp_compound_tuples</span><span class="p">):</span>
+                <span class="k">break</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmp_compound_tuples</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">compound_tuples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">tmp_compound_tuples</span><span class="p">[</span><span class="n">i</span><span class="p">])))</span>
+                <span class="k">break</span>
+            <span class="n">s1</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">tmp_compound_tuples</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmp_compound_tuples</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">break</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">s2</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">tmp_compound_tuples</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">s1</span> <span class="o">&amp;</span> <span class="n">s2</span><span class="p">:</span>
+                    <span class="n">s1</span> <span class="o">|=</span> <span class="n">s2</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">break</span>
+            <span class="n">compound_tuples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">s1</span><span class="p">)))</span>
+
+        <span class="n">segment_rst</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">ptr</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">words</span><span class="p">):</span>
+                <span class="k">break</span>
+            <span class="k">if</span> <span class="n">ptr</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">compound_tuples</span><span class="p">)</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">==</span> <span class="n">compound_tuples</span><span class="p">[</span><span class="n">ptr</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">segment_rst</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">compound_tuples</span><span class="p">[</span><span class="n">ptr</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">compound_tuples</span><span class="p">[</span><span class="n">ptr</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="n">compound_tuples</span><span class="p">[</span><span class="n">ptr</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">ptr</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">segment_rst</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">segment_rst</span>
+
+    <span class="k">def</span> <span class="nf">_ner_compound_segment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ners</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">words</span><span class="p">))]</span>
+        <span class="n">compound_tuples</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_skeleton_indices</span><span class="p">:</span>
+            <span class="n">ner</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_ner</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ner</span> <span class="o">!=</span> <span class="s2">&quot;O&quot;</span><span class="p">:</span>
+                <span class="n">st</span> <span class="o">=</span> <span class="n">idx</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="k">while</span> <span class="n">st</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_ner</span><span class="p">(</span><span class="n">st</span><span class="p">)</span> <span class="o">==</span> <span class="n">ner</span><span class="p">:</span>
+                    <span class="n">st</span> <span class="o">-=</span> <span class="mi">1</span>
+
+                <span class="n">end</span> <span class="o">=</span> <span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">post_tokens</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+                <span class="k">while</span> <span class="n">end</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">words</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_ner</span><span class="p">(</span><span class="n">end</span><span class="p">)</span> <span class="o">==</span> <span class="n">ner</span><span class="p">:</span>
+                    <span class="n">post_tokens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">words</span><span class="p">[</span><span class="n">end</span><span class="p">])</span>
+                    <span class="n">end</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">compound_tuples</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">st</span><span class="p">,</span> <span class="n">end</span><span class="p">))</span>
+
+        <span class="n">segment_rst</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">ptr</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">words</span><span class="p">):</span>
+                <span class="k">break</span>
+            <span class="k">if</span> <span class="n">ptr</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">compound_tuples</span><span class="p">)</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">==</span> <span class="n">compound_tuples</span><span class="p">[</span><span class="n">ptr</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">segment_rst</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">compound_tuples</span><span class="p">[</span><span class="n">ptr</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">compound_tuples</span><span class="p">[</span><span class="n">ptr</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="n">compound_tuples</span><span class="p">[</span><span class="n">ptr</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">ptr</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">segment_rst</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">segment_rst</span>
+
+    <span class="k">def</span> <span class="nf">_phrase_segment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pos_compound_segment</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Eventuality.sort_dependencies_position"><a class="viewcode-back" href="../../api/object.html#aser.eventuality.Eventuality.sort_dependencies_position">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">sort_dependencies_position</span><span class="p">(</span><span class="n">dependencies</span><span class="p">,</span> <span class="n">reset_position</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Fix absolute positions into relevant positions and sort them</span>
+
+<span class="sd">        :param dependencies: the input dependencies</span>
+<span class="sd">        :type dependencies: List[Tuple[int, str, int]]</span>
+<span class="sd">        :param reset_position: whether to reset positions</span>
+<span class="sd">        :type reset_position: bool (default = True)</span>
+<span class="sd">        :return: the new dependencies, the position mapping, and the inversed mapping</span>
+<span class="sd">        :rtype: Tuple[List[Tuple[int, str, int], Union[Dict[int, int], None], Union[Dict[int, int], None]]</span>
+
+<span class="sd">        .. highlight:: python</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            Input:</span>
+
+<span class="sd">                [(8, &quot;cop&quot;, 7), (8, &quot;nsubj&quot;, 6)]</span>
+
+<span class="sd">            Output:</span>
+
+<span class="sd">                [(2, &#39;nsubj&#39;, 0), (2, &#39;cop&#39;, 1)], {6: 0, 7: 1, 8: 2}, {0: 6, 1: 7, 2: 8}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">tmp_dependencies</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">triplet</span> <span class="ow">in</span> <span class="n">dependencies</span><span class="p">:</span>
+            <span class="n">tmp_dependencies</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">triplet</span><span class="p">))</span>
+        <span class="n">new_dependencies</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">reset_position</span><span class="p">:</span>
+            <span class="n">positions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">governor</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">dependent</span> <span class="ow">in</span> <span class="n">tmp_dependencies</span><span class="p">:</span>
+                <span class="n">positions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">governor</span><span class="p">)</span>
+                <span class="n">positions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">dependent</span><span class="p">)</span>
+            <span class="n">positions</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">positions</span><span class="p">)</span>
+            <span class="n">position_map</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">positions</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">positions</span><span class="p">))))</span>
+
+            <span class="k">for</span> <span class="n">governor</span><span class="p">,</span> <span class="n">dep</span><span class="p">,</span> <span class="n">dependent</span> <span class="ow">in</span> <span class="n">tmp_dependencies</span><span class="p">:</span>
+                <span class="n">new_dependencies</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">position_map</span><span class="p">[</span><span class="n">governor</span><span class="p">],</span> <span class="n">dep</span><span class="p">,</span> <span class="n">position_map</span><span class="p">[</span><span class="n">dependent</span><span class="p">]))</span>
+            <span class="n">new_dependencies</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+            <span class="k">return</span> <span class="n">new_dependencies</span><span class="p">,</span> <span class="n">position_map</span><span class="p">,</span> <span class="p">{</span><span class="n">val</span><span class="p">:</span> <span class="n">key</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">position_map</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new_dependencies</span> <span class="o">=</span> <span class="nb">list</span><span class="p">([</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">tmp_dependencies</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]))])</span>
+            <span class="k">return</span> <span class="n">new_dependencies</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Eventuality.extract_indices_from_dependencies"><a class="viewcode-back" href="../../api/object.html#aser.eventuality.Eventuality.extract_indices_from_dependencies">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">extract_indices_from_dependencies</span><span class="p">(</span><span class="n">dependencies</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Extract indices from dependencies</span>
+
+<span class="sd">        :param dependencies: the input dependencies</span>
+<span class="sd">        :type dependencies: List[Tuple[int, str, int]]</span>
+<span class="sd">        :return: the involved indices</span>
+<span class="sd">        :rtype: List[int]</span>
+
+<span class="sd">        .. highlight:: python</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            Input:</span>
+
+<span class="sd">                [(8, &quot;cop&quot;, 7), (8, &quot;nsubj&quot;, 6)]</span>
+
+<span class="sd">            Output:</span>
+
+<span class="sd">                [6, 7, 8]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">word_positions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">governor_pos</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">dependent_pos</span> <span class="ow">in</span> <span class="n">dependencies</span><span class="p">:</span>
+            <span class="n">word_positions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">governor_pos</span><span class="p">)</span>
+            <span class="n">word_positions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">dependent_pos</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">word_positions</span><span class="p">))</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, KnowComp.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

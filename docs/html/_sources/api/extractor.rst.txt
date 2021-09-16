@@ -1,7 +1,7 @@
 Extractor
 ================================================================================
 
-aser_extractor API
+aser_extractor
 --------------------------------------------------------------------------------
 
 .. automodule:: aser.extract.aser_extractor
@@ -9,7 +9,7 @@ aser_extractor API
    :undoc-members:
    :show-inheritance:
 
-eventuality_extractor API
+eventuality_extractor
 --------------------------------------------------------------------------------
 
 .. automodule:: aser.extract.eventuality_extractor
@@ -17,7 +17,7 @@ eventuality_extractor API
    :undoc-members:
    :show-inheritance:
 
-relation_extractor API
+relation_extractor
 --------------------------------------------------------------------------------
 
 .. automodule:: aser.extract.relation_extractor
@@ -25,7 +25,7 @@ relation_extractor API
    :undoc-members:
    :show-inheritance:
 
-parsed_reader API
+parsed_reader
 --------------------------------------------------------------------------------
 
 .. automodule:: aser.extract.parsed_reader
@@ -33,7 +33,7 @@ parsed_reader API
    :undoc-members:
    :show-inheritance:
 
-sentence_reader API
+sentence_reader
 --------------------------------------------------------------------------------
 
 .. automodule:: aser.extract.sentence_parser

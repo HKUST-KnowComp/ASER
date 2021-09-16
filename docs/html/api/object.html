@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Object &mdash; ASER 2.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ASER
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/get-started.html">Get Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="database.html">Database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extractor.html">Extractor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conceptualizer.html">Conceptualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aser-cs.html">Server/Client</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../about/index.html">About</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ASER</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Object</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/object.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="object">
+<h1>Object<a class="headerlink" href="#object" title="Permalink to this headline"></a></h1>
+<section id="module-aser.eventuality">
+<span id="eventuality"></span><h2>eventuality<a class="headerlink" href="#module-aser.eventuality" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="aser.eventuality.Eventuality">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">aser.eventuality.</span></span><span class="sig-name descname"><span class="pre">Eventuality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'unknown'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dependencies</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skeleton_dependencies</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parsed_result</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/eventuality.html#Eventuality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.eventuality.Eventuality" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">aser.object.JsonSerializedObject</span></code></p>
+<p>ASER Eventuality</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pattern</strong> (<em>str</em>) – the corresponding pattern</p></li>
+<li><p><strong>dependencies</strong> (<em>List</em><em>[</em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>str</em><em>, </em><em>int</em><em>]</em><em>]</em>) – the corresponding dependencies (e.g., [(1, “nsubj”, 0)])</p></li>
+<li><p><strong>skeleton_dependencies</strong> (<em>List</em><em>[</em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>str</em><em>, </em><em>int</em><em>]</em><em>]</em>) – the corresponding dependencies without optional edges (e.g., [(1, “nsubj”, 0)])</p></li>
+<li><p><strong>parsed_result</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em>) – the parsed result of a sentence</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="aser.eventuality.Eventuality.decode">
+<span class="sig-name descname"><span class="pre">decode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'utf-8'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/eventuality.html#Eventuality.decode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.eventuality.Eventuality.decode" title="Permalink to this definition"></a></dt>
+<dd><p>Decode the eventuality</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<em>bytes</em>) – the encoded bytes</p></li>
+<li><p><strong>encoding</strong> (<em>str</em><em> (</em><em>default = &quot;utf-8&quot;</em><em>)</em>) – the encoding format</p></li>
+<li><p><strong>kw</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em>) – other parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the decoded bytes</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bytes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="aser.eventuality.Eventuality.dependencies">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">dependencies</span></span><a class="headerlink" href="#aser.eventuality.Eventuality.dependencies" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aser.eventuality.Eventuality.extract_indices_from_dependencies">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">extract_indices_from_dependencies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dependencies</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/eventuality.html#Eventuality.extract_indices_from_dependencies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.eventuality.Eventuality.extract_indices_from_dependencies" title="Permalink to this definition"></a></dt>
+<dd><p>Extract indices from dependencies</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dependencies</strong> (<em>List</em><em>[</em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>str</em><em>, </em><em>int</em><em>]</em><em>]</em>) – the input dependencies</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the involved indices</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[int]</p>
+</dd>
+</dl>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Input</span><span class="p">:</span>
+
+    <span class="p">[(</span><span class="mi">8</span><span class="p">,</span> <span class="s2">&quot;cop&quot;</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="s2">&quot;nsubj&quot;</span><span class="p">,</span> <span class="mi">6</span><span class="p">)]</span>
+
+<span class="n">Output</span><span class="p">:</span>
+
+    <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aser.eventuality.Eventuality.generate_eid">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">generate_eid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eventuality</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/eventuality.html#Eventuality.generate_eid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.eventuality.Eventuality.generate_eid" title="Permalink to this definition"></a></dt>
+<dd><p>Generate the eid to an eventuality</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>eventuality</strong> (<a class="reference internal" href="#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality"><em>aser.eventuality.Eventuality</em></a>) – the given eventuality</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the unique eid to the eventuality</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="aser.eventuality.Eventuality.mentions">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">mentions</span></span><a class="headerlink" href="#aser.eventuality.Eventuality.mentions" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="aser.eventuality.Eventuality.ners">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">ners</span></span><a class="headerlink" href="#aser.eventuality.Eventuality.ners" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="aser.eventuality.Eventuality.phrases">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">phrases</span></span><a class="headerlink" href="#aser.eventuality.Eventuality.phrases" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="aser.eventuality.Eventuality.phrases_ners">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">phrases_ners</span></span><a class="headerlink" href="#aser.eventuality.Eventuality.phrases_ners" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="aser.eventuality.Eventuality.position">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">position</span></span><a class="headerlink" href="#aser.eventuality.Eventuality.position" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>this property returns average position of eventuality in a sentence.
+this property only make sense when this eventuality are constructed while
+extraction, instead of recovered from database.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="aser.eventuality.Eventuality.raw_dependencies">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">raw_dependencies</span></span><a class="headerlink" href="#aser.eventuality.Eventuality.raw_dependencies" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="aser.eventuality.Eventuality.skeleton_dependencies">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">skeleton_dependencies</span></span><a class="headerlink" href="#aser.eventuality.Eventuality.skeleton_dependencies" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="aser.eventuality.Eventuality.skeleton_ners">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">skeleton_ners</span></span><a class="headerlink" href="#aser.eventuality.Eventuality.skeleton_ners" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="aser.eventuality.Eventuality.skeleton_phrases">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">skeleton_phrases</span></span><a class="headerlink" href="#aser.eventuality.Eventuality.skeleton_phrases" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="aser.eventuality.Eventuality.skeleton_phrases_ners">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">skeleton_phrases_ners</span></span><a class="headerlink" href="#aser.eventuality.Eventuality.skeleton_phrases_ners" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="aser.eventuality.Eventuality.skeleton_pos_tags">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">skeleton_pos_tags</span></span><a class="headerlink" href="#aser.eventuality.Eventuality.skeleton_pos_tags" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="aser.eventuality.Eventuality.skeleton_words">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">skeleton_words</span></span><a class="headerlink" href="#aser.eventuality.Eventuality.skeleton_words" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aser.eventuality.Eventuality.sort_dependencies_position">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">sort_dependencies_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dependencies</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reset_position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/eventuality.html#Eventuality.sort_dependencies_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.eventuality.Eventuality.sort_dependencies_position" title="Permalink to this definition"></a></dt>
+<dd><p>Fix absolute positions into relevant positions and sort them</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dependencies</strong> (<em>List</em><em>[</em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>str</em><em>, </em><em>int</em><em>]</em><em>]</em>) – the input dependencies</p></li>
+<li><p><strong>reset_position</strong> (<em>bool</em><em> (</em><em>default = True</em><em>)</em>) – whether to reset positions</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the new dependencies, the position mapping, and the inversed mapping</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Tuple[List[Tuple[int, str, int], Union[Dict[int, int], None], Union[Dict[int, int], None]]</p>
+</dd>
+</dl>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Input</span><span class="p">:</span>
+
+    <span class="p">[(</span><span class="mi">8</span><span class="p">,</span> <span class="s2">&quot;cop&quot;</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="s2">&quot;nsubj&quot;</span><span class="p">,</span> <span class="mi">6</span><span class="p">)]</span>
+
+<span class="n">Output</span><span class="p">:</span>
+
+    <span class="p">[(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;nsubj&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;cop&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span> <span class="p">{</span><span class="mi">6</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">7</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mi">8</span><span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aser.eventuality.Eventuality.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/eventuality.html#Eventuality.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.eventuality.Eventuality.to_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Convert an eventuality to a dictionary</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>kw</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em>) – other parameters</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the converted dictionary that contains necessary information</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[str, object]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aser.eventuality.Eventuality.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/eventuality.html#Eventuality.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.eventuality.Eventuality.update" title="Permalink to this definition"></a></dt>
+<dd><p>Update the eventuality (‘s frequency)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><a class="reference internal" href="#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality"><em>aser.eventuality.Eventuality</em></a><em>]</em>) – the given frequency or eventuality</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the updated eventuality</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality">aser.eventuality.Eventuality</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="aser.eventuality.Eventuality.verbs">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">verbs</span></span><a class="headerlink" href="#aser.eventuality.Eventuality.verbs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-aser.relation">
+<span id="relation"></span><h2>relation<a class="headerlink" href="#module-aser.relation" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="aser.relation.Relation">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">aser.relation.</span></span><span class="sig-name descname"><span class="pre">Relation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/relation.html#Relation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.relation.Relation" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">aser.object.JsonSerializedObject</span></code></p>
+<p>ASER Relation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hid</strong> (<em>str</em>) – the unique eid to the head eventuality or conceptualied eventuality</p></li>
+<li><p><strong>tid</strong> (<em>str</em>) – the unique eid to the tail eventuality or conceptualied eventuality</p></li>
+<li><p><strong>relations</strong> (<em>Union</em><em>[</em><em>None</em><em>, </em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>float</em><em>]</em><em>, </em><a class="reference internal" href="#aser.relation.Relation" title="aser.relation.Relation"><em>aser.relation.Relation</em></a><em>]</em>) – the corresponding relations</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="aser.relation.Relation.generate_rid">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">generate_rid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/relation.html#Relation.generate_rid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.relation.Relation.generate_rid" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hid</strong> (<em>str</em>) – the unique eid to the head eventuality or conceptualied eventuality</p></li>
+<li><p><strong>tid</strong> (<em>str</em>) – the unique eid to the tail eventuality or conceptualied eventuality</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the unique rid to the pair</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aser.relation.Relation.to_triplets">
+<span class="sig-name descname"><span class="pre">to_triplets</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/relation.html#Relation.to_triplets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.relation.Relation.to_triplets" title="Permalink to this definition"></a></dt>
+<dd><p>Convert a relation to triplets</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a list of triplets</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[Tuple[str, str]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aser.relation.Relation.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/relation.html#Relation.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.relation.Relation.update" title="Permalink to this definition"></a></dt>
+<dd><p>Update the relation (‘s frequency)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>Union</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>float</em><em>]</em><em>, </em><em>Tuple</em><em>[</em><em>str</em><em>]</em><em>, </em><a class="reference internal" href="#aser.relation.Relation" title="aser.relation.Relation"><em>aser.relation.Relation</em></a><em>]</em>) – the given relation</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the updated relation</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-aser.concept">
+<span id="concept"></span><h2>concept<a class="headerlink" href="#module-aser.concept" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="aser.concept.ASERConcept">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">aser.concept.</span></span><span class="sig-name descname"><span class="pre">ASERConcept</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">words</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instances</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/concept.html#ASERConcept"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.concept.ASERConcept" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">aser.object.JsonSerializedObject</span></code></p>
+<p>ASER Conceptualied Eventuality</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>words</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the word list of a concept</p></li>
+<li><p><strong>instances</strong> (<em>List</em><em>[</em><em>Tuple</em><em>[</em><em>str</em><em>, </em><em>str</em><em>, </em><em>float</em><em>]</em><em>]</em>) – a list of (eid, pattern, score)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="aser.concept.ASERConcept.generate_cid">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">generate_cid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">concept_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/concept.html#ASERConcept.generate_cid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.concept.ASERConcept.generate_cid" title="Permalink to this definition"></a></dt>
+<dd><p>Generate the cid to a concept</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>concept_str</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – concept representation (words connected by ” “)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the corresponding unique cid</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aser.concept.ASERConcept.instantiate">
+<span class="sig-name descname"><span class="pre">instantiate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kg_conn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/concept.html#ASERConcept.instantiate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.concept.ASERConcept.instantiate" title="Permalink to this definition"></a></dt>
+<dd><p>Retrieve the instances that are associated with this concept</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>kg_conn</strong> (<a class="reference internal" href="database.html#aser.database.kg_connection.ASERKGConnection" title="aser.database.kg_connection.ASERKGConnection"><em>aser.database.kg_connection.ASERKGConnection</em></a>) – an KG connection to ASER</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a list of (eid, pattern, score)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Tuple[str, str, float]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="aser.concept.ASERConcept.pattern">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">pattern</span></span><a class="headerlink" href="#aser.concept.ASERConcept.pattern" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="aser.concept.ASERConceptInstancePair">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">aser.concept.</span></span><span class="sig-name descname"><span class="pre">ASERConceptInstancePair</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'unknown'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/concept.html#ASERConceptInstancePair"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.concept.ASERConceptInstancePair" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">aser.object.JsonSerializedObject</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cid</strong> (<em>str</em>) – the unique cid to the conceptualized eventuality</p></li>
+<li><p><strong>eid</strong> (<em>str</em>) – the unique eid to the eventuality</p></li>
+<li><p><strong>pattern</strong> (<em>str</em>) – the corresponding pattern</p></li>
+<li><p><strong>score</strong> (<em>float</em>) – the conceptualization probability</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="aser.concept.ASERConceptInstancePair.generate_pid">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">generate_pid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/concept.html#ASERConceptInstancePair.generate_pid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.concept.ASERConceptInstancePair.generate_pid" title="Permalink to this definition"></a></dt>
+<dd><p>Generate the pid to a pair</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cid</strong> (<em>str</em>) – the unique cid to the conceptualized eventuality</p></li>
+<li><p><strong>eid</strong> (<em>str</em>) – the unique eid to the eventuality</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the unique pid to the pair</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="aser.concept.ProbaseConcept">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">aser.concept.</span></span><span class="sig-name descname"><span class="pre">ProbaseConcept</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_concept_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/concept.html#ProbaseConcept"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.concept.ProbaseConcept" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Copied from <a class="reference external" href="https://github.com/ScarletPan/probase-concept">https://github.com/ScarletPan/probase-concept</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data_concept_path</strong> (<em>str</em>) – Probase .txt file path</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="aser.concept.ProbaseConcept.concept_size">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">concept_size</span></span><a class="headerlink" href="#aser.concept.ProbaseConcept.concept_size" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aser.concept.ProbaseConcept.conceptualize">
+<span class="sig-name descname"><span class="pre">conceptualize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'likelihood'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/concept.html#ProbaseConcept.conceptualize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.concept.ProbaseConcept.conceptualize" title="Permalink to this definition"></a></dt>
+<dd><p>Conceptualize the given instance</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<em>str</em>) – the given instance</p></li>
+<li><p><strong>score_method</strong> (<em>str</em>) – the method to compute sscores (“likelihood” or “pmi”)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a list of (concept, score)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Tuple[<a class="reference internal" href="#aser.concept.ProbaseConcept" title="aser.concept.ProbaseConcept">aser.concept.ProbaseConcept</a>, float]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aser.concept.ProbaseConcept.get_concept_chain">
+<span class="sig-name descname"><span class="pre">get_concept_chain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_chain_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/concept.html#ProbaseConcept.get_concept_chain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.concept.ProbaseConcept.get_concept_chain" title="Permalink to this definition"></a></dt>
+<dd><p>Conceptualize the given instance in a chain</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<em>str</em>) – the given instance</p></li>
+<li><p><strong>max_chain_length</strong> (<em>int</em><em> (</em><em>default = 5</em><em>)</em>) – the maximum length of the chain</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a chain that contains concepts</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aser.concept.ProbaseConcept.get_concept_freq">
+<span class="sig-name descname"><span class="pre">get_concept_freq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">concept</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/concept.html#ProbaseConcept.get_concept_freq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.concept.ProbaseConcept.get_concept_freq" title="Permalink to this definition"></a></dt>
+<dd><p>Get the frequency of a concept</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>concept</strong> (<em>str</em>) – the given concept</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the corresponding frequency</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aser.concept.ProbaseConcept.get_instance_freq">
+<span class="sig-name descname"><span class="pre">get_instance_freq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/concept.html#ProbaseConcept.get_instance_freq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.concept.ProbaseConcept.get_instance_freq" title="Permalink to this definition"></a></dt>
+<dd><p>Get the frequency of an instance</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>instance</strong> (<em>str</em>) – the given instance</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the corresponding frequency</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="aser.concept.ProbaseConcept.instance_size">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">instance_size</span></span><a class="headerlink" href="#aser.concept.ProbaseConcept.instance_size" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aser.concept.ProbaseConcept.instantiate">
+<span class="sig-name descname"><span class="pre">instantiate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">concept</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/concept.html#ProbaseConcept.instantiate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.concept.ProbaseConcept.instantiate" title="Permalink to this definition"></a></dt>
+<dd><p>Retrieve all instances of a concept</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>concept</strong> (<em>str</em>) – the given concept</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a list of instances</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Tuple[str, float]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aser.concept.ProbaseConcept.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/concept.html#ProbaseConcept.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.concept.ProbaseConcept.load" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file_name</strong> (<em>str</em>) – the file name to load the probase concepts</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aser.concept.ProbaseConcept.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/concept.html#ProbaseConcept.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.concept.ProbaseConcept.save" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file_name</strong> (<em>str</em>) – the file name to save the probase concepts</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, KnowComp.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

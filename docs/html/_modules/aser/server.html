@@ -1,68 +1,31 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>aser.server &mdash; ASER 2.0 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
-    
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../../index.html" class="icon icon-home"> ASER
-          
-
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -70,93 +33,47 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <p class="caption"><span class="caption-text">Tutorial</span></p>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorial/get-started.html">Get Started</a></li>
 </ul>
-<p class="caption"><span class="caption-text">API Reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../api/database.html">Database</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/extractor.html">Extractor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/conceptualizer.html">Conceptualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/aser-cs.html">Server/Client</a></li>
 </ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About</a></li>
+</ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">ASER</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-        
           <li><a href="../index.html">Module code</a> &raquo;</li>
-        
       <li>aser.server</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <h1>Source code for aser.server</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">multiprocessing</span>
 <span class="kn">import</span> <span class="nn">os</span>
@@ -164,19 +81,19 @@
 <span class="kn">import</span> <span class="nn">socket</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">traceback</span>
-<span class="kn">import</span> <span class="nn">ujson</span> <span class="k">as</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">uuid</span>
 <span class="kn">import</span> <span class="nn">zmq</span>
 <span class="kn">import</span> <span class="nn">zmq.decorators</span> <span class="k">as</span> <span class="nn">zmqd</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Process</span>
-<span class="kn">from</span> <span class="nn">aser.eventuality</span> <span class="kn">import</span> <span class="n">Eventuality</span>
-<span class="kn">from</span> <span class="nn">aser.relation</span> <span class="kn">import</span> <span class="n">Relation</span>
-<span class="kn">from</span> <span class="nn">aser.concept</span> <span class="kn">import</span> <span class="n">ASERConcept</span>
-<span class="kn">from</span> <span class="nn">aser.database.kg_connection</span> <span class="kn">import</span> <span class="n">ASERKGConnection</span><span class="p">,</span> <span class="n">ASERConceptConnection</span>
-<span class="kn">from</span> <span class="nn">aser.extract.aser_extractor</span> <span class="kn">import</span> <span class="n">SeedRuleASERExtractor</span><span class="p">,</span> <span class="n">DiscourseASERExtractor</span>
-<span class="kn">from</span> <span class="nn">aser.conceptualize.aser_conceptualizer</span> <span class="kn">import</span> <span class="n">SeedRuleASERConceptualizer</span><span class="p">,</span> <span class="n">ProbaseASERConceptualizer</span>
-<span class="kn">from</span> <span class="nn">aser.utils.config</span> <span class="kn">import</span> <span class="n">ASERCmd</span><span class="p">,</span> <span class="n">ASERError</span>
+<span class="kn">from</span> <span class="nn">..concept</span> <span class="kn">import</span> <span class="n">ASERConcept</span>
+<span class="kn">from</span> <span class="nn">..conceptualize.aser_conceptualizer</span> <span class="kn">import</span> <span class="n">SeedRuleASERConceptualizer</span><span class="p">,</span> <span class="n">ProbaseASERConceptualizer</span>
+<span class="kn">from</span> <span class="nn">..database.kg_connection</span> <span class="kn">import</span> <span class="n">ASERKGConnection</span><span class="p">,</span> <span class="n">ASERConceptConnection</span>
+<span class="kn">from</span> <span class="nn">..eventuality</span> <span class="kn">import</span> <span class="n">Eventuality</span>
+<span class="kn">from</span> <span class="nn">..extract.aser_extractor</span> <span class="kn">import</span> <span class="n">SeedRuleASERExtractor</span><span class="p">,</span> <span class="n">DiscourseASERExtractor</span>
+<span class="kn">from</span> <span class="nn">..relation</span> <span class="kn">import</span> <span class="n">Relation</span>
+<span class="kn">from</span> <span class="nn">..utils.config</span> <span class="kn">import</span> <span class="n">ASERCmd</span><span class="p">,</span> <span class="n">ASERError</span>
 
 <span class="n">CACHESIZE</span> <span class="o">=</span> <span class="mi">512</span>
 <span class="n">DECODINGERROR</span> <span class="o">=</span> <span class="kc">None</span>
@@ -778,46 +695,30 @@
 </pre></div>
 
            </div>
-           
           </div>
           <footer>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2019, KnowComp.
-
-    </p>
+    <p>&#169; Copyright 2019, KnowComp.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

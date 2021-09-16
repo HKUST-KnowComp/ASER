@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>aser.concept &mdash; ASER 2.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> ASER
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/get-started.html">Get Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/database.html">Database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/extractor.html">Extractor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/conceptualizer.html">Conceptualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/aser-cs.html">Server/Client</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">ASER</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>aser.concept</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for aser.concept</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">import</span> <span class="nn">pprint</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+<span class="kn">from</span> <span class="nn">.object</span> <span class="kn">import</span> <span class="n">JsonSerializedObject</span>
+
+
+<div class="viewcode-block" id="ASERConcept"><a class="viewcode-back" href="../../api/object.html#aser.concept.ASERConcept">[docs]</a><span class="k">class</span> <span class="nc">ASERConcept</span><span class="p">(</span><span class="n">JsonSerializedObject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; ASER Conceptualied Eventuality</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">words</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">instances</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param words: the word list of a concept</span>
+<span class="sd">        :type words: List[str]</span>
+<span class="sd">        :param instances: a list of (eid, pattern, score)</span>
+<span class="sd">        :type instances: List[Tuple[str, str, float]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">words</span> <span class="o">=</span> <span class="n">words</span> <span class="k">if</span> <span class="n">words</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instances</span> <span class="o">=</span> <span class="n">instances</span> <span class="k">if</span> <span class="n">instances</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cid</span> <span class="o">=</span> <span class="n">ASERConcept</span><span class="o">.</span><span class="n">generate_cid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">())</span>
+
+<div class="viewcode-block" id="ASERConcept.generate_cid"><a class="viewcode-back" href="../../api/object.html#aser.concept.ASERConcept.generate_cid">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">generate_cid</span><span class="p">(</span><span class="n">concept_str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Generate the cid to a concept</span>
+
+<span class="sd">        :param concept_str: concept representation (words connected by &quot; &quot;)</span>
+<span class="sd">        :type concept_str: List[str]</span>
+<span class="sd">        :return: the corresponding unique cid</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha1</span><span class="p">(</span><span class="n">concept_str</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instances</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">cnter</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">([</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">instances</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">cnter</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">words</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">words</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ASERConcept.instantiate"><a class="viewcode-back" href="../../api/object.html#aser.concept.ASERConcept.instantiate">[docs]</a>    <span class="k">def</span> <span class="nf">instantiate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kg_conn</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Retrieve the instances that are associated with this concept</span>
+
+<span class="sd">        :param kg_conn: an KG connection to ASER</span>
+<span class="sd">        :type kg_conn: aser.database.kg_connection.ASERKGConnection</span>
+<span class="sd">        :return: a list of (eid, pattern, score)</span>
+<span class="sd">        :rtype: List[Tuple[str, str, float]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">kg_conn</span><span class="p">:</span>
+            <span class="n">eventualities</span> <span class="o">=</span> <span class="n">kg_conn</span><span class="o">.</span><span class="n">get_exact_match_eventualities</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">instances</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">eventualities</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">instances</span></div></div>
+
+<div class="viewcode-block" id="ASERConceptInstancePair"><a class="viewcode-back" href="../../api/object.html#aser.concept.ASERConceptInstancePair">[docs]</a><span class="k">class</span> <span class="nc">ASERConceptInstancePair</span><span class="p">(</span><span class="n">JsonSerializedObject</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cid</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">eid</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;unknown&quot;</span><span class="p">,</span> <span class="n">score</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param cid: the unique cid to the conceptualized eventuality</span>
+<span class="sd">        :type cid: str</span>
+<span class="sd">        :param eid: the unique eid to the eventuality</span>
+<span class="sd">        :type eid: str</span>
+<span class="sd">        :param pattern: the corresponding pattern</span>
+<span class="sd">        :type pattern: str</span>
+<span class="sd">        :param score: the conceptualization probability</span>
+<span class="sd">        :type score: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cid</span> <span class="o">=</span> <span class="n">cid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eid</span> <span class="o">=</span> <span class="n">eid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="n">score</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pid</span> <span class="o">=</span> <span class="n">ASERConceptInstancePair</span><span class="o">.</span><span class="n">generate_pid</span><span class="p">(</span><span class="n">cid</span><span class="p">,</span> <span class="n">eid</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ASERConceptInstancePair.generate_pid"><a class="viewcode-back" href="../../api/object.html#aser.concept.ASERConceptInstancePair.generate_pid">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">generate_pid</span><span class="p">(</span><span class="n">cid</span><span class="p">,</span> <span class="n">eid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Generate the pid to a pair</span>
+
+<span class="sd">        :param cid: the unique cid to the conceptualized eventuality</span>
+<span class="sd">        :type cid: str</span>
+<span class="sd">        :param eid: the unique eid to the eventuality</span>
+<span class="sd">        :type eid: str</span>
+<span class="sd">        :return: the unique pid to the pair</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">cid</span> <span class="o">+</span> <span class="s2">&quot;$&quot;</span> <span class="o">+</span> <span class="n">eid</span>
+        <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha1</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">repr_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;pid&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pid</span><span class="p">,</span>
+            <span class="s2">&quot;cid&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cid</span><span class="p">,</span>
+            <span class="s2">&quot;eid&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">eid</span><span class="p">,</span>
+            <span class="s2">&quot;pattern&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span>
+            <span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">score</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">pprint</span><span class="o">.</span><span class="n">pformat</span><span class="p">(</span><span class="n">repr_dict</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ProbaseConcept"><a class="viewcode-back" href="../../api/object.html#aser.concept.ProbaseConcept">[docs]</a><span class="k">class</span> <span class="nc">ProbaseConcept</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Copied from https://github.com/ScarletPan/probase-concept</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_concept_path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param data_concept_path: Probase .txt file path</span>
+<span class="sd">        :type data_concept_path: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">concept2idx</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx2concept</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">concept_inverted_list</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instance2idx</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx2instance</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instance_inverted_list</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">data_concept_path</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_load_raw_data</span><span class="p">(</span><span class="n">data_concept_path</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_load_raw_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_concept_path</span><span class="p">):</span>
+        <span class="n">st</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[probase-conceptualize] Loading Probase files...&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">data_concept_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">triplet_lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">]</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[probase-conceptualize] Building index...&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">triplet_lines</span><span class="p">):</span>
+            <span class="n">concept</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">freq</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">concept</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">concept2idx</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">concept2idx</span><span class="p">[</span><span class="n">concept</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">concept2idx</span><span class="p">)</span>
+            <span class="n">concept_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">concept2idx</span><span class="p">[</span><span class="n">concept</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">instance</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance2idx</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">instance2idx</span><span class="p">[</span><span class="n">instance</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance2idx</span><span class="p">)</span>
+            <span class="n">instance_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance2idx</span><span class="p">[</span><span class="n">instance</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">concept_idx</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">concept_inverted_list</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">concept_inverted_list</span><span class="p">[</span><span class="n">concept_idx</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">concept_inverted_list</span><span class="p">[</span><span class="n">concept_idx</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">instance_idx</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">freq</span><span class="p">)))</span>
+            <span class="k">if</span> <span class="n">instance_idx</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_inverted_list</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">instance_inverted_list</span><span class="p">[</span><span class="n">instance_idx</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">instance_inverted_list</span><span class="p">[</span><span class="n">instance_idx</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">concept_idx</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">freq</span><span class="p">)))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx2concept</span> <span class="o">=</span> <span class="p">{</span><span class="n">val</span><span class="p">:</span> <span class="n">key</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">concept2idx</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx2instance</span> <span class="o">=</span> <span class="p">{</span><span class="n">val</span><span class="p">:</span> <span class="n">key</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance2idx</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[probase-conceptualize] Loading data finished in </span><span class="si">{:.2f}</span><span class="s2"> s&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">st</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="ProbaseConcept.conceptualize"><a class="viewcode-back" href="../../api/object.html#aser.concept.ProbaseConcept.conceptualize">[docs]</a>    <span class="k">def</span> <span class="nf">conceptualize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">score_method</span><span class="o">=</span><span class="s2">&quot;likelihood&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Conceptualize the given instance</span>
+
+<span class="sd">        :param instance:  the given instance</span>
+<span class="sd">        :type instance: str</span>
+<span class="sd">        :param score_method: the method to compute sscores (&quot;likelihood&quot; or &quot;pmi&quot;)</span>
+<span class="sd">        :type score_method: str</span>
+<span class="sd">        :return: a list of (concept, score)</span>
+<span class="sd">        :rtype: List[Tuple[aser.concept.ProbaseConcept, float]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">instance</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance2idx</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="n">instance_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance2idx</span><span class="p">[</span><span class="n">instance</span><span class="p">]</span>
+        <span class="n">instance_freq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_instance_freq</span><span class="p">(</span><span class="n">instance_idx</span><span class="p">)</span>
+        <span class="n">concept_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_inverted_list</span><span class="p">[</span><span class="n">instance_idx</span><span class="p">]</span>
+        <span class="n">rst_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">concept_idx</span><span class="p">,</span> <span class="n">co_occurrence</span> <span class="ow">in</span> <span class="n">concept_list</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">score_method</span> <span class="o">==</span> <span class="s2">&quot;pmi&quot;</span><span class="p">:</span>
+                <span class="n">score</span> <span class="o">=</span> <span class="n">co_occurrence</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_concept_freq</span><span class="p">(</span><span class="n">concept_idx</span><span class="p">)</span> <span class="o">/</span> <span class="n">instance_freq</span>
+            <span class="k">elif</span> <span class="n">score_method</span> <span class="o">==</span> <span class="s2">&quot;likelihood&quot;</span><span class="p">:</span>
+                <span class="n">score</span> <span class="o">=</span> <span class="n">co_occurrence</span> <span class="o">/</span> <span class="n">instance_freq</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+            <span class="n">rst_list</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">idx2concept</span><span class="p">[</span><span class="n">concept_idx</span><span class="p">],</span> <span class="n">score</span><span class="p">))</span>
+        <span class="n">rst_list</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rst_list</span></div>
+
+<div class="viewcode-block" id="ProbaseConcept.instantiate"><a class="viewcode-back" href="../../api/object.html#aser.concept.ProbaseConcept.instantiate">[docs]</a>    <span class="k">def</span> <span class="nf">instantiate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">concept</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Retrieve all instances of a concept</span>
+
+<span class="sd">        :param concept: the given concept</span>
+<span class="sd">        :type concept: str</span>
+<span class="sd">        :return: a list of instances</span>
+<span class="sd">        :rtype: List[Tuple[str, float]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">concept</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">concept2idx</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="n">concept_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">concept2idx</span><span class="p">[</span><span class="n">concept</span><span class="p">]</span>
+        <span class="n">rst_list</span> <span class="o">=</span> <span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx2instance</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">freq</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">freq</span>
+                    <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">concept_inverted_list</span><span class="p">[</span><span class="n">concept_idx</span><span class="p">]]</span>
+        <span class="n">rst_list</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rst_list</span></div>
+
+<div class="viewcode-block" id="ProbaseConcept.get_concept_chain"><a class="viewcode-back" href="../../api/object.html#aser.concept.ProbaseConcept.get_concept_chain">[docs]</a>    <span class="k">def</span> <span class="nf">get_concept_chain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">max_chain_length</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Conceptualize the given instance in a chain</span>
+
+<span class="sd">        :param instance: the given instance</span>
+<span class="sd">        :type instance: str</span>
+<span class="sd">        :param max_chain_length: the maximum length of the chain</span>
+<span class="sd">        :type max_chain_length: int (default = 5)</span>
+<span class="sd">        :return: a chain that contains concepts</span>
+<span class="sd">        :rtype: List[str]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">instance</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">concept2idx</span><span class="p">:</span>
+            <span class="n">chain</span> <span class="o">=</span> <span class="p">[</span><span class="n">instance</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">chain</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">tmp_instance</span> <span class="o">=</span> <span class="n">instance</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">concepts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conceptualize</span><span class="p">(</span><span class="n">tmp_instance</span><span class="p">,</span> <span class="n">score_method</span><span class="o">=</span><span class="s2">&quot;likelihood&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">concepts</span><span class="p">:</span>
+                <span class="n">chain</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">concepts</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">chain</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">max_chain_length</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">tmp_instance</span> <span class="o">=</span> <span class="n">chain</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">chain</span> <span class="ow">and</span> <span class="n">chain</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">instance</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">instance</span><span class="p">]</span> <span class="o">+</span> <span class="n">chain</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">chain</span></div>
+
+<div class="viewcode-block" id="ProbaseConcept.get_concept_freq"><a class="viewcode-back" href="../../api/object.html#aser.concept.ProbaseConcept.get_concept_freq">[docs]</a>    <span class="k">def</span> <span class="nf">get_concept_freq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">concept</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get the frequency of a concept</span>
+
+<span class="sd">        :param concept: the given concept</span>
+<span class="sd">        :type concept: str</span>
+<span class="sd">        :return: the corresponding frequency</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">concept</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">concept</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">concept2idx</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mi">0</span>
+            <span class="n">concept</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">concept2idx</span><span class="p">[</span><span class="n">concept</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">concept</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">concept</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx2concept</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">([</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">concept_inverted_list</span><span class="p">[</span><span class="n">concept</span><span class="p">]])</span></div>
+
+<div class="viewcode-block" id="ProbaseConcept.get_instance_freq"><a class="viewcode-back" href="../../api/object.html#aser.concept.ProbaseConcept.get_instance_freq">[docs]</a>    <span class="k">def</span> <span class="nf">get_instance_freq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get the frequency of an instance</span>
+
+<span class="sd">        :param instance: the given instance</span>
+<span class="sd">        :type instance: str</span>
+<span class="sd">        :return: the corresponding frequency</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">instance</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance2idx</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mi">0</span>
+            <span class="n">instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance2idx</span><span class="p">[</span><span class="n">instance</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">instance</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx2instance</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">([</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_inverted_list</span><span class="p">[</span><span class="n">instance</span><span class="p">]])</span></div>
+
+<div class="viewcode-block" id="ProbaseConcept.save"><a class="viewcode-back" href="../../api/object.html#aser.concept.ProbaseConcept.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param file_name: the file name to save the probase concepts</span>
+<span class="sd">        :type file_name: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ProbaseConcept.load"><a class="viewcode-back" href="../../api/object.html#aser.concept.ProbaseConcept.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param file_name: the file name to load the probase concepts</span>
+<span class="sd">        :type file_name: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">tmp_dict</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">tmp_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">concept_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">concept2idx</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">instance_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance2idx</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, KnowComp.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
