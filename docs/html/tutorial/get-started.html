@@ -18,7 +18,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Database" href="../api/database.html" />
+    <link rel="next" title="Object" href="../api/object.html" />
     <link rel="prev" title="ASER (Activities, States, Events, and their Relations)" href="../index.html" /> 
 </head>
 
@@ -49,6 +49,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/object.html">Object</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/database.html">Database</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/extractor.html">Extractor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/conceptualizer.html">Conceptualization</a></li>
@@ -123,7 +124,7 @@
 <span class="kn">import</span> <span class="nn">zipfile</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 
-<span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlretrieve</span><span class="p">(</span><span class="s2">&quot;https://concept.research.microsoft.com/Home/DownloadData?key=t9RdYhnkv94TFcd8tkVdzF9cEwNFdaFe&amp;h=602979237&quot;</span><span class="p">,</span> <span class="s2">&quot;probase.zip&quot;</span><span class="p">)</span>
+<span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlretrieve</span><span class="p">(</span><span class="s2">&quot;https://concept.research.microsoft.com/Home/StartDownload&quot;</span><span class="p">,</span> <span class="s2">&quot;probase.zip&quot;</span><span class="p">)</span>
 <span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="s2">&quot;probase.zip&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">zip_ref</span><span class="p">:</span>
     <span class="n">zip_ref</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="s2">&quot;./&quot;</span><span class="p">)</span>
 <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="s2">&quot;data-concept/data-concept-instance-relations.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;probase.txt&quot;</span><span class="p">)</span>
@@ -167,7 +168,7 @@
 <section id="step-by-step-extraction">
 <h2><a class="toc-backref" href="#id3">Step-by-step extraction</a><a class="headerlink" href="#step-by-step-extraction" title="Permalink to this headline"></a></h2>
 <p>Let’s see how to utilize an ASER extractor and a conceptualizer.
-We provide two kinds of ASERExtractors: the SeedRuleASERExtractor corresponding to the WWW”2020and a new DiscourseASERExtractor which is implemented based on a discourse parsing system.</p>
+We provide two kinds of ASERExtractors: the SeedRuleASERExtractor corresponding to the WWW”2020 and a new DiscourseASERExtractor which is implemented based on a discourse parsing system.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
 <span class="kn">from</span> <span class="nn">aser.extract.aser_extractor</span> <span class="kn">import</span> <span class="n">SeedRuleASERExtractor</span><span class="p">,</span> <span class="n">DiscourseASERExtractor</span>
 
@@ -687,7 +688,7 @@ We provide two kinds of ASERExtractors: the SeedRuleASERExtractor corresponding 
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../index.html" class="btn btn-neutral float-left" title="ASER (Activities, States, Events, and their Relations)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../api/database.html" class="btn btn-neutral float-right" title="Database" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../api/object.html" class="btn btn-neutral float-right" title="Object" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

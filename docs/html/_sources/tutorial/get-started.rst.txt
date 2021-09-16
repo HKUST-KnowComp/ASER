@@ -50,7 +50,7 @@ To run ASER conceptualizatoin, you need to download Probase from https://concept
     import zipfile
     import shutil
 
-    urllib.request.urlretrieve("https://concept.research.microsoft.com/Home/DownloadData?key=t9RdYhnkv94TFcd8tkVdzF9cEwNFdaFe&h=602979237", "probase.zip")
+    urllib.request.urlretrieve("https://concept.research.microsoft.com/Home/StartDownload", "probase.zip")
     with zipfile.ZipFile("probase.zip", "r") as zip_ref:
         zip_ref.extractall("./")
     shutil.move("data-concept/data-concept-instance-relations.txt", "probase.txt")
@@ -100,7 +100,7 @@ Step-by-step extraction
 --------------------------------------------------------------------------------
 
 Let's see how to utilize an ASER extractor and a conceptualizer.
-We provide two kinds of ASERExtractors: the SeedRuleASERExtractor corresponding to the WWW"2020and a new DiscourseASERExtractor which is implemented based on a discourse parsing system.
+We provide two kinds of ASERExtractors: the SeedRuleASERExtractor corresponding to the WWW"2020 and a new DiscourseASERExtractor which is implemented based on a discourse parsing system.
 
 .. highlight:: python
 .. code-block:: python
