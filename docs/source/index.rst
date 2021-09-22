@@ -29,11 +29,15 @@ Related Projects
 
 * `ASER Extraction, Conceptualization, Usage, and APIs <https://github.com/HKUST-KnowComp/ASER>`_
 
+* `Benchmarking Commonsense Knowledge Base Population <https://github.com/HKUST-KnowComp/CSKB-Population>`_
+
 * `Transfer to OMCS <https://github.com/HKUST-KnowComp/TransOMCS>`_
 
 * `Transfer to ATOMIC <https://github.com/HKUST-KnowComp/DISCOS-commonsense>`_
 
 * `Eventuality Entailment Graph <https://github.com/HKUST-KnowComp/ASER-EEG>`_
+
+* `ASER AMIE <https://github.com/HKUST-KnowComp/ASER_AMIE>`_
 
 * `Selectional Preference Annotation (SP-10K) <https://github.com/HKUST-KnowComp/SP-10K>`_
 
@@ -56,6 +60,8 @@ Talks
 
 Publications
 --------------------------------------------------------------------------------
+
+* Tianqing Fang, Weiqi Wang, Sehyun Choi, Shibo Hao, Hongming Zhang, Yangqiu Song, and Bin He. Benchmarking Commonsense Knowledge Base Population with an Effective Evaluation Dataset. Conference on Empirical Methods in Natural Language Processing (EMNLP), 2021. [`pdf <https://arxiv.org/abs/2109.07679>`_]
 
 * Hongming Zhang\*, Xin Liu\*, Haojie Pan\*, Haowen Ke, Jiefu Ou, Tianqing Fang, and Yangqiu Song. ASER: Towards Large-scale Commonsense Knowledge Acquisition via Higher-order Selectional Preference over Eventualities. HKUST Technical Report, April 5th, 2021. [`pdf <https://arxiv.org/abs/2104.02137>`_]
 

@@ -16,6 +16,6 @@ The main contributors are:
 
 * Haowen Ke, Mphil student, HKUST.
 
-* `Jiefu Ou <https://github.com/JefferyO>`_, Undergraduate student, HKUST.
+* `Jiefu Ou <https://github.com/JefferyO>`_, Master student, CMU.
 
 * `Tianqing Fang <http://fangtq.com/>`_, PhD student, HKUST.
