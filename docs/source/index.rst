@@ -47,15 +47,19 @@ Related Projects
 Talks
 --------------------------------------------------------------------------------
 
-* 2021 April: An Overview of Commonsense Knowledge Graph Construction and Reasoning at HKUST. Presented by Yangqiu Song. [`pdf <http://home.cse.ust.hk/~yqsong/papers/ASER-2021.04-ReminUniversity.pdf>`_] [`ppt <http://home.cse.ust.hk/~yqsong/papers/ASER-2021.04-ReminUniversity.pptx>`_]
+* 2021 Novermber: CCKS Tutorial. Commonsense Knowledge Acquisition and Reasoning. Presented by Yangqiu Song. [`pdf <http://home.cse.ust.hk/~yqsong/papers/CCKS2021Tutorial-Commonsense-YangqiuSong.pdf>`_] [`ppt <http://home.cse.ust.hk/~yqsong/papers/CCKS2021Tutorial-Commonsense-YangqiuSong.pptx>`_]
+
+* 2021 September: Huawei Workshop on Commonsense. Commonsense Knowledge Base Population. Presented by Yangqiu Song. [`pdf <http://home.cse.ust.hk/~yqsong/papers/CSKBP-YangqiuSong.pdf>`_] [`ppt <http://home.cse.ust.hk/~yqsong/papers/CSKBP-YangqiuSong.pptx>`_]
+
+* 2021 April: Renmin University and THU. An Overview of Commonsense Knowledge Graph Construction and Reasoning at HKUST. Presented by Yangqiu Song. [`pdf <http://home.cse.ust.hk/~yqsong/papers/ASER-2021.04-ReminUniversity.pdf>`_] [`ppt <http://home.cse.ust.hk/~yqsong/papers/ASER-2021.04-ReminUniversity.pptx>`_]
 
 * 2020 September: NLP with Friends. Commonsense Reasoning from the Angle of Eventualities. Presented by Hongming Zhang. [`ppt <https://hkustconnect-my.sharepoint.com/:p:/g/personal/hzhangal_connect_ust_hk/EbZn6BSgoENIhvuiKWxaZTABh3KfB0IqOqRUI83xgahBvA?e=rlKGvJ>`_] [`video <https://www.youtube.com/watch?v=pI-SiaKsR8w>`_]
 
-* 2020 Summer: Knowledge Works at Fudan. ASER: Building a Commonsense Knowledge Graph by Higher-order Selectional Preference. Presented by Yangqiu Song. [`pdf <http://home.cse.ust.hk/~yqsong/papers/ASER-202007-KnowledgeWorks.pdf>`_] [`ppt <http://home.cse.ust.hk/~yqsong/papers/ASER-202007-KnowledgeWorks.pptx>`_]
+* 2020 July: Knowledge Works at Fudan and THU. ASER: Building a Commonsense Knowledge Graph by Higher-order Selectional Preference. Presented by Yangqiu Song. [`pdf <http://home.cse.ust.hk/~yqsong/papers/ASER-202007-KnowledgeWorks.pdf>`_] [`ppt <http://home.cse.ust.hk/~yqsong/papers/ASER-202007-KnowledgeWorks.pptx>`_]
 
-* 2019 October: Microsoft Research Asia (MSRA). Event-centric Commonsense Reasoning with Structured Knowledge. Presented by Hongming Zhang. [`pdf <https://hkustconnect-my.sharepoint.com/:b:/g/personal/hzhangal_connect_ust_hk/ETe0bW0XPTBBs62-xDi3Qi8B0gqdzQMPZa5VFCEtwEky1Q?e=a3yXjiJ>`_]
+* 2019 October: MSRA. Event-centric Commonsense Reasoning with Structured Knowledge. Presented by Hongming Zhang. [`pdf <https://hkustconnect-my.sharepoint.com/:b:/g/personal/hzhangal_connect_ust_hk/ETe0bW0XPTBBs62-xDi3Qi8B0gqdzQMPZa5VFCEtwEky1Q?e=a3yXjiJ>`_]
 
-* 2019 Summer: ASER: A Large scale Eventuality Knowledge Graph. Presented by Yangqiu Song. [`pdf <http://home.cse.ust.hk/~yqsong/papers/ASER-YangqiuSong.pdf>`_] [`ppt <http://home.cse.ust.hk/~yqsong/papers/ASER-YangqiuSong.pptx>`_]
+* 2019 July: HIT Event Reasoning Workhop, BUPT, PKU, Beihang. ASER: A Large scale Eventuality Knowledge Graph. Presented by Yangqiu Song. [`pdf <http://home.cse.ust.hk/~yqsong/papers/ASER-YangqiuSong.pdf>`_] [`ppt <http://home.cse.ust.hk/~yqsong/papers/ASER-YangqiuSong.pptx>`_]
 
 
 Publications
