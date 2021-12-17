@@ -391,11 +391,12 @@ class ASERKGConnection(object):
             for idx, eid in enumerate(eids):
                 if eid not in self.eids:
                     exact_match_eventualities.append(None)
-                exact_match_eventuality = self.eid2eventuality_cache.get(eid, None)
-                exact_match_eventualities.append(exact_match_eventuality)
-                if not exact_match_eventuality:
-                    missed_indices.append(idx)
-                    missed_eids.append(eid)
+                else:
+                    exact_match_eventuality = self.eid2eventuality_cache.get(eid, None)
+                    exact_match_eventualities.append(exact_match_eventuality)
+                    if not exact_match_eventuality:
+                        missed_indices.append(idx)
+                        missed_eids.append(eid)
             for idx, exact_match_eventuality in enumerate(self._get_eventualities_and_store_in_cache(missed_eids)):
                 exact_match_eventualities[missed_indices[idx]] = exact_match_eventuality
         return exact_match_eventualities
