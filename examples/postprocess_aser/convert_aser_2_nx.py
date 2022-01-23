@@ -1,7 +1,4 @@
-import sys
 import time
-
-sys.path.append('../')
 
 import argparse
 import networkx as nx
