@@ -1,3 +1,4 @@
+sys.path.append('../')
 try:
     import ujson as json
 except:
