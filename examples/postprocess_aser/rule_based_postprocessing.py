@@ -99,6 +99,7 @@ def find_URL(string):
     url = re.findall(URL_REGEX,string)
     return bool([x[0] for x in url])
 
+
 def find_number(string):
     return any(char.isdigit() for char in string)
 
