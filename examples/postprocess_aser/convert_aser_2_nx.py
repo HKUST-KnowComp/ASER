@@ -25,8 +25,8 @@ print('time:', time.time() - st)
 G_aser = nx.DiGraph()
 for node in tqdm(kg_conn.merged_eventuality_cache):
     G_aser.add_node(node,
-                    freq=kg_conn.get_event_frequency(node),
-                    info=kg_conn.get_event_info(node))
+                    freq=kg_conn.get_event_frequency(node))
+                    # info=kg_conn.get_event_info(node))
 
 # traverse all the nodes, and get it's all neighbors
 gather_relations = lambda key, successor_dict: \
