@@ -895,6 +895,7 @@ class ASERKGConnection(object):
         info_list = list()
         for e in event_list:
             info = e.to_tuple()
+#             info = e.to_dict(minimum=True)
             info_list.append(info)
         info_list = list(set(info_list))
         return info_list
