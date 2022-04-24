@@ -16,12 +16,12 @@ In total, ASER (full) contains 438 million eventualities and 648 million edges b
 With the help of Probase (now called Microsoft Concept Graph), ASER (concept) contains 15 million conceptualized eventualities and 224 million edges between conceptualied eventualities.
 
 
-Data
+Data Download
 --------------------------------------------------------------------------------
 
-* `ASER 2.0 <https://arxiv.org/abs/2104.02137>`_ [`data <https://hkustconnect-my.sharepoint.com/:f:/g/personal/xliucr_connect_ust_hk/EnlOIunfqNRKsCQIBSXe9pQBL0KhLxTNMSNSJ3Mzt0bmhA?e=xm86PF>`_] [`code <https://github.com/HKUST-KnowComp/ASER/tree/master>`_]
+* `ASER 2.0 <https://arxiv.org/abs/2104.02137>`_ [`aws <https://data.dgl.ai/dataset/ASER/README.txt>`_] [`onedrive <https://hkustconnect-my.sharepoint.com/:f:/g/personal/xliucr_connect_ust_hk/EnlOIunfqNRKsCQIBSXe9pQBL0KhLxTNMSNSJ3Mzt0bmhA?e=xm86PF>`_] [`code <https://github.com/HKUST-KnowComp/ASER/tree/master>`_]
 
-* `ASER 1.0 <https://arxiv.org/abs/1905.00270>`_ [`data <https://hkustconnect-my.sharepoint.com/:f:/g/personal/xliucr_connect_ust_hk/EoNC-hFNEsNLrZvg73i14e8BMAUDR20TmuLY0W-6tFhKEQ?e=BveOrc>`_] [`code <https://github.com/HKUST-KnowComp/ASER/tree/release/1.0>`_]
+* `ASER 1.0 <https://arxiv.org/abs/1905.00270>`_ [`onedrive <https://hkustconnect-my.sharepoint.com/:f:/g/personal/xliucr_connect_ust_hk/EoNC-hFNEsNLrZvg73i14e8BMAUDR20TmuLY0W-6tFhKEQ?e=BveOrc>`_] [`code <https://github.com/HKUST-KnowComp/ASER/tree/release/1.0>`_]
 
 
 Related Projects
