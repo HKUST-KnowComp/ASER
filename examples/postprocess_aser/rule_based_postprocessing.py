@@ -62,7 +62,7 @@ def add_update_edges(new_G, edge_attr, con_head, con_tail):
     relations = edge_attr["relations"]
     if new_G.has_edge(con_head, con_tail):
         new_G.add_edge(con_head, con_tail,
-                       relation=merge_rel_dict(new_G[con_head][con_tail]["relation"],
+                       relation=merge_rel_dict(new_G[con_head][con_tail]["relations"],
                                                relations)
                        )
     else:
@@ -106,13 +106,18 @@ def find_number(string):
 
 def filter_main(args):
     G_aser = nx.read_gpickle(args.input_nx_path)
+    
+    logs = []
+    def print_log(printstr):
+        print(printstr)
+        logs.append(printstr)
 
     if args.pronoun_norm:
         G_aser_conceptualized = get_normalized_graph(G_aser)
-        print("Before Conceptualization: Number of Edges: {}\tNumber of Nodes: {}".format(
+        print_log("Before pronoun normalization: Number of Edges: {}\tNumber of Nodes: {}".format(
             len(G_aser.edges),
             len(G_aser.nodes)))
-        print("After Conceptualization: Number of Edges: {}\tNumber of Nodes: {}".format(
+        print_log("After pronoun normalization: Number of Edges: {}\tNumber of Nodes: {}".format(
             len(G_aser_conceptualized.edges),
             len(G_aser_conceptualized.nodes)))
         print()
@@ -124,8 +129,8 @@ def filter_main(args):
         all_filtered_nodes = list(set(deg_nodes_sorted[:1000]) - set(top1000_kept_nodes))
         G_aser_top1000_filter.remove_nodes_from(all_filtered_nodes)
         G_aser = G_aser_top1000_filter
-        print("{} nodes filtered in top1000-degree step".format(len(all_filtered_nodes)))
-        print("After top1000-degree filtering: Number of Edges: {}\tNumber of Nodes: {}".format(
+        print_log("{} nodes filtered in top1000-degree step".format(len(all_filtered_nodes)))
+        print_log("After top1000-degree filtering: Number of Edges: {}\tNumber of Nodes: {}".format(
             len(G_aser.edges),
             len(G_aser.nodes)
         ))
@@ -151,13 +156,14 @@ def filter_main(args):
             if all(t in stopword_list for t in tokens):
                 all_filtered_nodes.append(node)
             # rule out simple nodes, which is usually very frequent, like "I do", "You know"
-            if len(tokens) <= 2 and any(kw in tokens for kw in ["say", "do", "know", "tell", "think", ]):
+#             if len(tokens) <= 2 and any(kw in tokens for kw in ["say", "do", "know", "tell", "think", ]):
+            if len(tokens) <= 2 and any(kw in tokens for kw in ["say", "do", "tell"]):
                 all_filtered_nodes.append(node)
         G_aser_rules = G_aser.copy()
         G_aser_rules.remove_nodes_from(all_filtered_nodes)
         G_aser = G_aser_rules
-        print("{} nodes filtered in key words step".format(len(all_filtered_nodes)))
-        print("After key word filtering: Number of Edges: {}\tNumber of Nodes: {}".format(
+        print_log("{} nodes filtered in key words step".format(len(all_filtered_nodes)))
+        print_log("After key word filtering: Number of Edges: {}\tNumber of Nodes: {}".format(
             len(G_aser.edges),
             len(G_aser.nodes)
         ))
@@ -178,16 +184,16 @@ def filter_main(args):
                 low_out_node_list.append(node)
             if out_degree >= high_threshold:
                 high_out_node_list.append(node)
-        print("{} nodes' in-degree lower than {}".format(len(low_in_node_list), low_threshold))
-        print("{} nodes' in-degree higher than {}".format(len(high_in_node_list), high_threshold))
-        print("{} nodes' out-degree lower than {}".format(len(low_out_node_list), low_threshold))
-        print("{} nodes' out-degree higher than {}".format(len(high_out_node_list), high_threshold))
+        print_log("{} nodes' in-degree lower than {}".format(len(low_in_node_list), low_threshold))
+        print_log("{} nodes' in-degree higher than {}".format(len(high_in_node_list), high_threshold))
+        print_log("{} nodes' out-degree lower than {}".format(len(low_out_node_list), low_threshold))
+        print_log("{} nodes' out-degree higher than {}".format(len(high_out_node_list), high_threshold))
         G_aser_by_degree = G_aser.copy()
         all_filtered_nodes = set(chain(low_in_node_list, high_in_node_list, low_out_node_list, high_out_node_list))
         G_aser_by_degree.remove_nodes_from(all_filtered_nodes)
         G_aser = G_aser_by_degree
-        print("{} nodes filtered in low/high in/out-degree step".format(len(all_filtered_nodes)))
-        print("After low/high in/out-degree filtering: Number of Edges: {}\tNumber of Nodes: {}".format(
+        print_log("{} nodes filtered in low/high in/out-degree step".format(len(all_filtered_nodes)))
+        print_log("After low/high in/out-degree filtering: Number of Edges: {}\tNumber of Nodes: {}".format(
             len(G_aser.edges),
             len(G_aser.nodes)
         ))
@@ -200,18 +206,23 @@ def filter_main(args):
                 nodes_with_URL.append(node)
             if args.filter_by_number and find_number(node):
                 nodes_with_number.append(node)
-        print("{} nodes contain URL".format(len(nodes_with_URL)))
-        print("{} nodes contain number".format(len(nodes_with_number)))
+        print_log("{} nodes contain URL".format(len(nodes_with_URL)))
+        print_log("{} nodes contain number".format(len(nodes_with_number)))
         G_aser_by_URL_number = G_aser.copy()
         all_filtered_nodes = set(chain(nodes_with_URL, nodes_with_number))
         G_aser_by_URL_number.remove_nodes_from(all_filtered_nodes)
         G_aser = G_aser_by_URL_number
-        print("{} nodes filtered in URL/number step".format(len(all_filtered_nodes)))
-        print("After URL/number filtering: Number of Edges: {}\tNumber of Nodes: {}".format(
+        print_log("{} nodes filtered in URL/number step".format(len(all_filtered_nodes)))
+        print_log("After URL/number filtering: Number of Edges: {}\tNumber of Nodes: {}".format(
             len(G_aser.edges),
             len(G_aser.nodes)
         ))
         print()
+    
+    if len(logs)>0:
+        print('Saving logs to file: logs.txt')
+        with open('logs.txt', 'w') as f:
+            f.write('\n'.join(logs))
     nx.write_gpickle(G_aser, args.output_nx_path)
 
 

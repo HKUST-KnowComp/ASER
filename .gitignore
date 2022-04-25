@@ -117,3 +117,4 @@ data
 
 # sys
 .DS_Store
+examples/postprocess_aser/private/*
