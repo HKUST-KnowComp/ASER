@@ -10,7 +10,7 @@ from kg_connection import ASERKGConnection
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--kg_path", type=str, default="/home/data/corpora/aser/database/filter_2.0/2/KG.db")
-parser.add_argument("--networkx_path", type=str, default="/home/data/jchengaj/aser_data/test.pickle")
+parser.add_argument("--networkx_path", type=str, default="/home/data/zwanggy/aser_graph/test.pickle")
 
 args = parser.parse_args()
 print(args)
@@ -25,8 +25,8 @@ print('time:', time.time() - st)
 G_aser = nx.DiGraph()
 for node in tqdm(kg_conn.merged_eventuality_cache):
     G_aser.add_node(node,
-                    freq=kg_conn.get_event_frequency(node),
-                    info=kg_conn.get_event_info(node))
+                    freq=kg_conn.get_event_frequency(node))
+                    # info=kg_conn.get_event_info(node))
 
 # traverse all the nodes, and get it's all neighbors
 gather_relations = lambda key, successor_dict: \
