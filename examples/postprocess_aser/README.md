@@ -10,3 +10,4 @@ All preprocessing code in this dir
        * eventualities starting with be, how, t, what, when, where, which, who, why, do, -lsb-, whatever, and if
        * nodes with low/high in/out-degree
        * nodes with URL or/and number
+3. normalize personal words in ASER: `aser_normalization.ipynb`
