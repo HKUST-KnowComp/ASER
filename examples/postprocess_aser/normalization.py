@@ -12,7 +12,6 @@ PP_PLURAL = ['they', 'we']
 ATOMIC_SINGULAR = ['PersonX', 'PersonY', 'PersonZ', 'PersonA', 'PersonB']
 ATOMIC_PLURAL = ['PeopleX', 'PeopleY']
 
-
 def get_substitution(rules, from_list):
     """
     This function will choose a single subject word that hasn't exist in the replacement rule dict we already have.
@@ -24,7 +23,6 @@ def get_substitution(rules, from_list):
         if i not in rules.values():
             return i
 
-
 def replace_by_dict(mapping, node_str):
     """
     This function replaces the string by the given replacement rule dict.
@@ -35,7 +33,6 @@ def replace_by_dict(mapping, node_str):
 
     return ' '.join([(mapping[i] if i in mapping else i)
                      for i in node_str.split(' ')])
-
 
 class BasicPronounNormalizer:
     ''' Basic pronoun normalizer used in CKGP. '''
@@ -104,7 +101,6 @@ class BasicPronounNormalizer:
             return rule, replaced_head, replaced_tail, replaced_head + ', ' + replaced_tail
         else:
             return rule
-
 
 class ParsingBasedNormalizer:
     '''
@@ -396,7 +392,6 @@ class ParsingBasedNormalizer:
             <dict> 'persons': grouped personal info, with each entry being a list of a given person's mentions
                     ...(TODO)
 
-
         TODO: 
         1- coreference relationship between NER results and Pronouns
         2- improve implementing subset relationship 
@@ -505,7 +500,6 @@ class ParsingBasedNormalizer:
                                 h_prp_coref in self.PRP_SUBSET[t_prp_coref]:
                                 return 't_subset_h'
                             
-
                     # TODO: other coreference?
             return 'diff'
 
@@ -573,9 +567,7 @@ class ParsingBasedNormalizer:
                     spans.pop(i+1)
                 else:
                     i += 1
-                
-
-
+            
         node_wrds = node.split(' ')
         norm_node_wrds = []
         p2indices = defaultdict(list)
@@ -588,12 +580,6 @@ class ParsingBasedNormalizer:
         norm_node_wrds.extend(node_wrds[last_j:])
         return {'norm_node': ' '.join(norm_node_wrds), 'p2i': dict(p2indices)}
 
-
-
-
-
-
-
     def proc_and_print(self, info_list):
         for info in info_list:
             info = eval(info)
@@ -604,4 +590,4 @@ class ParsingBasedNormalizer:
             if data:
                 subj = ' '.join(data['subj'][0][2])
                 objs = [' '.join(i[2]) for i in data['objs']]
-                print('【SUBJ】:{}\t【OBJS】: {}'.format(subj, ', '.join(objs)))
+                print('[SUBJ]:{}\t[OBJS]: {}'.format(subj, ', '.join(objs)))
