@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -86,13 +87,13 @@
            <div itemprop="articleBody">
              
   <section id="server-client">
-<h1>Server/Client<a class="headerlink" href="#server-client" title="Permalink to this headline"></a></h1>
+<h1>Server/Client<a class="headerlink" href="#server-client" title="Permalink to this heading"></a></h1>
 <section id="module-aser.server">
-<span id="aser-server"></span><h2>ASER server<a class="headerlink" href="#module-aser.server" title="Permalink to this headline"></a></h2>
+<span id="aser-server"></span><h2>ASER server<a class="headerlink" href="#module-aser.server" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="aser.server.ASERDataBase">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aser.server.</span></span><span class="sig-name descname"><span class="pre">ASERDataBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_sender_addr_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sink_addr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERDataBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERDataBase" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.context.Process</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Process</span></code></p>
 <p>Process to provide DB retrieval functions</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="aser.server.ASERDataBase.close">
@@ -237,7 +238,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="aser.server.ASERSink">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aser.server.</span></span><span class="sig-name descname"><span class="pre">ASERSink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sink_addr_receiver_addr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERSink"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERSink" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.context.Process</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Process</span></code></p>
 <p>Process to forward messages</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="aser.server.ASERSink.run">
@@ -250,7 +251,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="aser.server.ASERWorker">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aser.server.</span></span><span class="sig-name descname"><span class="pre">ASERWorker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">worker_addr_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sink_addr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERWorker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERWorker" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.context.Process</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Process</span></code></p>
 <p>Process to serve extraction and conceptualization functions</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="aser.server.ASERWorker.close">
@@ -331,19 +332,14 @@
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>aser-server --help
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">aser</span><span class="o">-</span><span class="n">server</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">n_workers</span> <span class="n">N_WORKERS</span><span class="p">]</span>
-                   <span class="p">[</span><span class="o">-</span><span class="n">n_concurrent_back_socks</span> <span class="n">N_CONCURRENT_BACK_SOCKS</span><span class="p">]</span>
-                   <span class="p">[</span><span class="o">-</span><span class="n">port</span> <span class="n">PORT</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">port_out</span> <span class="n">PORT_OUT</span><span class="p">]</span>
-                   <span class="p">[</span><span class="o">-</span><span class="n">corenlp_path</span> <span class="n">CORENLP_PATH</span><span class="p">]</span>
-                   <span class="p">[</span><span class="o">-</span><span class="n">base_corenlp_port</span> <span class="n">BASE_CORENLP_PORT</span><span class="p">]</span>
-                   <span class="p">[</span><span class="o">-</span><span class="n">aser_kg_dir</span> <span class="n">ASER_KG_DIR</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">concept_kg_dir</span> <span class="n">CONCEPT_KG_DIR</span><span class="p">]</span>
-                   <span class="p">[</span><span class="o">-</span><span class="n">concept_method</span> <span class="p">{</span><span class="n">probase</span><span class="p">,</span><span class="n">seed</span><span class="p">}]</span>
-                   <span class="p">[</span><span class="o">-</span><span class="n">probase_path</span> <span class="n">PROBASE_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">concept_topk</span> <span class="n">CONCEPT_TOPK</span><span class="p">]</span>
-                   <span class="p">[</span><span class="o">-</span><span class="n">log_path</span> <span class="n">LOG_PATH</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">aser</span><span class="o">-</span><span class="n">server</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">n_workers</span> <span class="n">N_WORKERS</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">n_concurrent_back_socks</span> <span class="n">N_CONCURRENT_BACK_SOCKS</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">port</span> <span class="n">PORT</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">-</span><span class="n">port_out</span> <span class="n">PORT_OUT</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">corenlp_path</span> <span class="n">CORENLP_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">base_corenlp_port</span> <span class="n">BASE_CORENLP_PORT</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">-</span><span class="n">aser_kg_dir</span> <span class="n">ASER_KG_DIR</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">concept_kg_dir</span> <span class="n">CONCEPT_KG_DIR</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">concept_method</span> <span class="p">{</span><span class="n">probase</span><span class="p">,</span><span class="n">seed</span><span class="p">}]</span>
+                   <span class="p">[</span><span class="o">-</span><span class="n">probase_path</span> <span class="n">PROBASE_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">concept_topk</span> <span class="n">CONCEPT_TOPK</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">log_path</span> <span class="n">LOG_PATH</span><span class="p">]</span>
 </pre></div>
 </div>
 <section id="Named Arguments">
-<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline"></a></h3>
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this heading"></a></h3>
 <dl class="option-list">
 <dt><kbd>-n_workers</kbd></dt>
 <dd><p>Number of ASER workers, same as num of corenlp workers</p>
@@ -398,7 +394,7 @@
 </section>
 </section>
 <section id="module-aser.client">
-<span id="aser-client"></span><h2>ASER client<a class="headerlink" href="#module-aser.client" title="Permalink to this headline"></a></h2>
+<span id="aser-client"></span><h2>ASER client<a class="headerlink" href="#module-aser.client" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="aser.client.ASERClient">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aser.client.</span></span><span class="sig-name descname"><span class="pre">ASERClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'localhost'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient" title="Permalink to this definition"></a></dt>

@@ -29,6 +29,8 @@ Related Projects
 
 * `ASER Extraction, Conceptualization, Usage, and APIs <https://github.com/HKUST-KnowComp/ASER>`_
 
+* `Abstract ATOMIC <https://github.com/HKUST-KnowComp/atomic-conceptualization>`_
+
 * `Benchmarking Commonsense Knowledge Base Population <https://github.com/HKUST-KnowComp/CSKB-Population>`_
 
 * `Transfer to OMCS <https://github.com/HKUST-KnowComp/TransOMCS>`_
@@ -65,11 +67,11 @@ Talks
 Publications
 --------------------------------------------------------------------------------
 
+* Hongming Zhang\*, Xin Liu\*, Haojie Pan\*, Haowen Ke, Jiefu Ou, Tianqing Fang, and Yangqiu Song. ASER: Towards Large-scale Commonsense Knowledge Acquisition via Higher-order Selectional Preference over Eventualities. Artificial Intelligence, Volume 309, August 2022, 103740. [`pdf <https://arxiv.org/abs/2104.02137>`_]
+
+* Changlong Yu, Hongming Zhang, Yangqiu Song, and Wilfred Ng. CoCoLM: COmplex COmmonsense Enhanced Language Model. Findings of ACL, 2022. [`pdf <https://arxiv.org/abs/2012.15643>`_]
+
 * Tianqing Fang, Weiqi Wang, Sehyun Choi, Shibo Hao, Hongming Zhang, Yangqiu Song, and Bin He. Benchmarking Commonsense Knowledge Base Population with an Effective Evaluation Dataset. Conference on Empirical Methods in Natural Language Processing (EMNLP), 2021. [`pdf <https://arxiv.org/abs/2109.07679>`_]
-
-* Hongming Zhang\*, Xin Liu\*, Haojie Pan\*, Haowen Ke, Jiefu Ou, Tianqing Fang, and Yangqiu Song. ASER: Towards Large-scale Commonsense Knowledge Acquisition via Higher-order Selectional Preference over Eventualities. HKUST Technical Report, April 5th, 2021. [`pdf <https://arxiv.org/abs/2104.02137>`_]
-
-* Changlong Yu, Hongming Zhang, Yangqiu Song, and Wilfred Ng. CoCoLM: COmplex COmmonsense Enhanced Language Model. HKUST Technical Report, 2021. [`pdf <https://arxiv.org/abs/2012.15643>`_]
 
 * Tianqing Fang, Hongming Zhang, Weiqi Wang, Yangqiu Song, and Bin He. DISCOS: Bridging the Gap between Discourse Knowledge and Commonsense Knowledge. The Web Conference (WWW), 2021. [`pdf <https://arxiv.org/abs/2101.00154>`_]
 
@@ -81,7 +83,7 @@ Publications
 
 * Mutian He, Yangqiu Song, Kun Xu, and Yu Dong. On the Role of Conceptualization in Commonsense Knowledge Graph Construction. HKUST Technical Report, March 6th, 2020. [`pdf <https://arxiv.org/abs/2003.03239>`_]
 
-* Hongming Zhang\*, Xin Liu\*, Haojie Pan\*, Yangqiu Song, and Cane Wing-Ki Leung. ASER: A Large-scale Eventuality Knowledge Graph. The Web Conference (WWW), 2020. (Previously a Technical Report at HKUST, May 2019) [`pdf <https://arxiv.org/abs/1905.00270>`_] [`ppt <http://home.cse.ust.hk/~yqsong/papers/ASER-WWW20.pptx>`_]
+* Hongming Zhang\*, Xin Liu\*, Haojie Pan\*, Yangqiu Song, and Cane Wing-Ki Leung. ASER: A Large-scale Eventuality Knowledge Graph. The Web Conference (WWW), 2020. [`pdf <https://arxiv.org/abs/1905.00270>`_] [`ppt <http://home.cse.ust.hk/~yqsong/papers/ASER-WWW20.pptx>`_]
 
 * Hongming Zhang, Hantian Ding, and Yangqiu Song. SP-10K: A Large-Scale Evaluation Set for Selectional Preference Acquisition. Annual Meeting of the Association for Computational Linguistics (ACL). 2019. [`pdf <https://arxiv.org/abs/1906.02123>`_]
 

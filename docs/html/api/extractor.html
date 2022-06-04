@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -86,9 +87,9 @@
            <div itemprop="articleBody">
              
   <section id="extractor">
-<h1>Extractor<a class="headerlink" href="#extractor" title="Permalink to this headline"></a></h1>
+<h1>Extractor<a class="headerlink" href="#extractor" title="Permalink to this heading"></a></h1>
 <section id="module-aser.extract.aser_extractor">
-<span id="aser-extractor"></span><h2>aser_extractor<a class="headerlink" href="#module-aser.extract.aser_extractor" title="Permalink to this headline"></a></h2>
+<span id="aser-extractor"></span><h2>aser_extractor<a class="headerlink" href="#module-aser.extract.aser_extractor" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="aser.extract.aser_extractor.BaseASERExtractor">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aser.extract.aser_extractor.</span></span><span class="sig-name descname"><span class="pre">BaseASERExtractor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corenlp_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corenlp_port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/extract/aser_extractor.html#BaseASERExtractor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.extract.aser_extractor.BaseASERExtractor" title="Permalink to this definition"></a></dt>
@@ -715,7 +716,7 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <dl class="py class">
 <dt class="sig sig-object py" id="aser.extract.aser_extractor.DiscourseASERExtractor">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aser.extract.aser_extractor.</span></span><span class="sig-name descname"><span class="pre">DiscourseASERExtractor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corenlp_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corenlp_port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/extract/aser_extractor.html#DiscourseASERExtractor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.extract.aser_extractor.DiscourseASERExtractor" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#aser.extract.aser_extractor.BaseASERExtractor" title="aser.extract.aser_extractor.BaseASERExtractor"><code class="xref py py-class docutils literal notranslate"><span class="pre">aser.extract.aser_extractor.BaseASERExtractor</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#aser.extract.aser_extractor.BaseASERExtractor" title="aser.extract.aser_extractor.BaseASERExtractor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseASERExtractor</span></code></a></p>
 <p>ASER Extractor based on discourse parsing to extract both eventualities and relations (for ASER v2.0)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -759,7 +760,7 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <dl class="py class">
 <dt class="sig sig-object py" id="aser.extract.aser_extractor.SeedRuleASERExtractor">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aser.extract.aser_extractor.</span></span><span class="sig-name descname"><span class="pre">SeedRuleASERExtractor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corenlp_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corenlp_port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/extract/aser_extractor.html#SeedRuleASERExtractor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.extract.aser_extractor.SeedRuleASERExtractor" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#aser.extract.aser_extractor.BaseASERExtractor" title="aser.extract.aser_extractor.BaseASERExtractor"><code class="xref py py-class docutils literal notranslate"><span class="pre">aser.extract.aser_extractor.BaseASERExtractor</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#aser.extract.aser_extractor.BaseASERExtractor" title="aser.extract.aser_extractor.BaseASERExtractor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseASERExtractor</span></code></a></p>
 <p>ASER Extractor based on rules to extract both eventualities and relations (for ASER v1.0)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -774,7 +775,7 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 
 </section>
 <section id="module-aser.extract.eventuality_extractor">
-<span id="eventuality-extractor"></span><h2>eventuality_extractor<a class="headerlink" href="#module-aser.extract.eventuality_extractor" title="Permalink to this headline"></a></h2>
+<span id="eventuality-extractor"></span><h2>eventuality_extractor<a class="headerlink" href="#module-aser.extract.eventuality_extractor" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="aser.extract.eventuality_extractor.BaseEventualityExtractor">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aser.extract.eventuality_extractor.</span></span><span class="sig-name descname"><span class="pre">BaseEventualityExtractor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corenlp_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corenlp_port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/extract/eventuality_extractor.html#BaseEventualityExtractor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.extract.eventuality_extractor.BaseEventualityExtractor" title="Permalink to this definition"></a></dt>
@@ -1072,7 +1073,7 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <dl class="py class">
 <dt class="sig sig-object py" id="aser.extract.eventuality_extractor.DiscourseEventualityExtractor">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aser.extract.eventuality_extractor.</span></span><span class="sig-name descname"><span class="pre">DiscourseEventualityExtractor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corenlp_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corenlp_port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/extract/eventuality_extractor.html#DiscourseEventualityExtractor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.extract.eventuality_extractor.DiscourseEventualityExtractor" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#aser.extract.eventuality_extractor.BaseEventualityExtractor" title="aser.extract.eventuality_extractor.BaseEventualityExtractor"><code class="xref py py-class docutils literal notranslate"><span class="pre">aser.extract.eventuality_extractor.BaseEventualityExtractor</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#aser.extract.eventuality_extractor.BaseEventualityExtractor" title="aser.extract.eventuality_extractor.BaseEventualityExtractor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEventualityExtractor</span></code></a></p>
 <p>ASER eventuality extractor based on constituency analysis to extract eventualities  (for ASER v2.0)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1209,7 +1210,7 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <dl class="py class">
 <dt class="sig sig-object py" id="aser.extract.eventuality_extractor.SeedRuleEventualityExtractor">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aser.extract.eventuality_extractor.</span></span><span class="sig-name descname"><span class="pre">SeedRuleEventualityExtractor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corenlp_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corenlp_port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/extract/eventuality_extractor.html#SeedRuleEventualityExtractor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.extract.eventuality_extractor.SeedRuleEventualityExtractor" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#aser.extract.eventuality_extractor.BaseEventualityExtractor" title="aser.extract.eventuality_extractor.BaseEventualityExtractor"><code class="xref py py-class docutils literal notranslate"><span class="pre">aser.extract.eventuality_extractor.BaseEventualityExtractor</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#aser.extract.eventuality_extractor.BaseEventualityExtractor" title="aser.extract.eventuality_extractor.BaseEventualityExtractor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEventualityExtractor</span></code></a></p>
 <p>ASER eventuality extractor based on rules to extract eventualities  (for ASER v1.0)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1345,7 +1346,7 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 
 </section>
 <section id="module-aser.extract.relation_extractor">
-<span id="relation-extractor"></span><h2>relation_extractor<a class="headerlink" href="#module-aser.extract.relation_extractor" title="Permalink to this headline"></a></h2>
+<span id="relation-extractor"></span><h2>relation_extractor<a class="headerlink" href="#module-aser.extract.relation_extractor" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="aser.extract.relation_extractor.BaseRelationExtractor">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aser.extract.relation_extractor.</span></span><span class="sig-name descname"><span class="pre">BaseRelationExtractor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/extract/relation_extractor.html#BaseRelationExtractor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.extract.relation_extractor.BaseRelationExtractor" title="Permalink to this definition"></a></dt>
@@ -1486,7 +1487,7 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <dl class="py class">
 <dt class="sig sig-object py" id="aser.extract.relation_extractor.DiscourseRelationExtractor">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aser.extract.relation_extractor.</span></span><span class="sig-name descname"><span class="pre">DiscourseRelationExtractor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/extract/relation_extractor.html#DiscourseRelationExtractor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.extract.relation_extractor.DiscourseRelationExtractor" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#aser.extract.relation_extractor.BaseRelationExtractor" title="aser.extract.relation_extractor.BaseRelationExtractor"><code class="xref py py-class docutils literal notranslate"><span class="pre">aser.extract.relation_extractor.BaseRelationExtractor</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#aser.extract.relation_extractor.BaseRelationExtractor" title="aser.extract.relation_extractor.BaseRelationExtractor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRelationExtractor</span></code></a></p>
 <p>ASER relation extractor based on discourse parsing to extract relations (for ASER v2.0)</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="aser.extract.relation_extractor.DiscourseRelationExtractor.extract_from_parsed_result">
@@ -1618,7 +1619,7 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <dl class="py class">
 <dt class="sig sig-object py" id="aser.extract.relation_extractor.SeedRuleRelationExtractor">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aser.extract.relation_extractor.</span></span><span class="sig-name descname"><span class="pre">SeedRuleRelationExtractor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/extract/relation_extractor.html#SeedRuleRelationExtractor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.extract.relation_extractor.SeedRuleRelationExtractor" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#aser.extract.relation_extractor.BaseRelationExtractor" title="aser.extract.relation_extractor.BaseRelationExtractor"><code class="xref py py-class docutils literal notranslate"><span class="pre">aser.extract.relation_extractor.BaseRelationExtractor</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#aser.extract.relation_extractor.BaseRelationExtractor" title="aser.extract.relation_extractor.BaseRelationExtractor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRelationExtractor</span></code></a></p>
 <p>ASER relation extractor based on rules to extract relations (for ASER v1.0)</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="aser.extract.relation_extractor.SeedRuleRelationExtractor.extract_from_parsed_result">
@@ -1749,7 +1750,7 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 
 </section>
 <section id="module-aser.extract.parsed_reader">
-<span id="parsed-reader"></span><h2>parsed_reader<a class="headerlink" href="#module-aser.extract.parsed_reader" title="Permalink to this headline"></a></h2>
+<span id="parsed-reader"></span><h2>parsed_reader<a class="headerlink" href="#module-aser.extract.parsed_reader" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="aser.extract.parsed_reader.ParsedReader">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aser.extract.parsed_reader.</span></span><span class="sig-name descname"><span class="pre">ParsedReader</span></span><a class="reference internal" href="../_modules/aser/extract/parsed_reader.html#ParsedReader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.extract.parsed_reader.ParsedReader" title="Permalink to this definition"></a></dt>
@@ -1818,7 +1819,7 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 
 </section>
 <section id="module-aser.extract.sentence_parser">
-<span id="sentence-reader"></span><h2>sentence_reader<a class="headerlink" href="#module-aser.extract.sentence_parser" title="Permalink to this headline"></a></h2>
+<span id="sentence-reader"></span><h2>sentence_reader<a class="headerlink" href="#module-aser.extract.sentence_parser" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="aser.extract.sentence_parser.SentenceParser">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aser.extract.sentence_parser.</span></span><span class="sig-name descname"><span class="pre">SentenceParser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corenlp_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corenlp_port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/extract/sentence_parser.html#SentenceParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.extract.sentence_parser.SentenceParser" title="Permalink to this definition"></a></dt>
