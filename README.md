@@ -17,7 +17,7 @@ The homepage of the project and data is [https://hkust-knowcomp.github.io/ASER](
 The online [demo](http://songcpu1.cse.ust.hk/aser/demo) is coming soon.
 
 
-* ASER 2.0 (arXiv:2104.02137): ASER: Towards Large-scale Commonsense Knowledge Acquisition via Higher-order Selectional Preference over Eventualities. [[pdf](https://arxiv.org/abs/2104.02137)] [[code branch](https://github.com/HKUST-KnowComp/ASER)]
+* ASER 2.0 (AIJ"2022): ASER: Towards Large-scale Commonsense Knowledge Acquisition via Higher-order Selectional Preference over Eventualities. [[pdf](https://arxiv.org/abs/2104.02137)] [[code branch](https://github.com/HKUST-KnowComp/ASER)]
 
 * ASER 1.0 (WWW"2020): ASER: A Large-scale Eventuality Knowledge Graph. [[pdf](https://arxiv.org/abs/1905.00270)] [[code branch](https://github.com/HKUST-KnowComp/ASER/tree/release/1.0)]
 
@@ -27,7 +27,7 @@ Please refer to the [get_started.ipynb](examples/get_started.ipynb) or [document
 
 ### References
 ```
-@article{ZhangLPKOFS21,
+@article{ZhangLPKOFS22,
   author    = {Hongming Zhang and
                Xin Liu and
                Haojie Pan and
@@ -36,12 +36,10 @@ Please refer to the [get_started.ipynb](examples/get_started.ipynb) or [document
                Tianqing Fang and
                Yangqiu Song},
   title     = {{ASER:} Towards Large-scale Commonsense Knowledge Acquisition via Higher-order Selectional Preference over Eventualities},
-  journal   = {CoRR},
-  volume    = {abs/2104.02137},
-  year      = {2021},
-  url       = {https://arxiv.org/abs/2104.02137},
-  archivePrefix = {arXiv},
-  eprint    = {2104.02137},
+  journal   = {Artificial Intelligence},
+  volume    = {309},
+  pages     = {103740},
+  year      = {2022},
 }
 
 @inproceedings{ZhangLPSL20,
