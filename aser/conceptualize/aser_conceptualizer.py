@@ -1,3 +1,5 @@
+import heapq
+from collections import defaultdict
 from itertools import combinations
 from ..concept import ASERConcept, ProbaseConcept
 
@@ -98,7 +100,7 @@ class ProbaseASERConceptualizer(BaseASERConceptualizer):
     """ ASER eventuality conceptualizer based on Probase and NERs
 
     """
-    def __init__(self, probase_path=None, probase_topk=None):
+    def __init__(self, probase_path=None, probase_topk=3):
         super().__init__()
         self.seed_conceptualizer = SeedRuleASERConceptualizer()
         self.probase = ProbaseConcept(probase_path)
@@ -131,19 +133,22 @@ class ProbaseASERConceptualizer(BaseASERConceptualizer):
         ]
         return concept_score_pairs
 
-    def _get_probase_concepts(self, skeleton_words, skeleton_pos_tags):
-        words, pos_tags = skeleton_words, skeleton_pos_tags
-        matched_probase_concepts = dict()
+    def _get_probase_concepts(self, words, pos_tags):
+        assert len(words) == len(pos_tags)
 
+        word2indices = defaultdict(list)
+        for idx, word in enumerate(words):
+            word2indices[word].append(idx)
+
+        word2concepts = dict()
         for i in range(len(pos_tags)):
-            if i >= len(words):
-                break
             word = words[i]
             tag = pos_tags[i]
+
             if tag.startswith("NN"):
                 if self.seed_conceptualizer.is_seed_concept(word) or self.seed_conceptualizer.is_pronoun(word):
                     continue
-                else:
+                elif word not in word2concepts:
                     concepts = self.probase.conceptualize(word, score_method="likelihood")
                     if concepts:
                         concept_set = set()
@@ -155,33 +160,49 @@ class ProbaseASERConceptualizer(BaseASERConceptualizer):
                                 concept_set.add(tmp)
                             if len(valid_indices) >= self.probase_topk:
                                 break
-                        matched_probase_concepts[i] = \
+                        word2concepts[word] = \
                             [(concepts[idx][0].replace(" ", "-"), concepts[idx][1]) for idx in valid_indices]
                     else:
                         continue
 
-        matched_indices = list(matched_probase_concepts.keys())
+        matched_words = list(word2concepts.keys())
+        replace_word_tuples = list()
+        for i in range(1, len(word2concepts) + 1):
+            replace_word_tuples.extend(list(combinations(matched_words, i)))
 
-        replace_indices_tuples = list()
-        for i in range(1, len(matched_indices) + 1):
-            replace_indices_tuples.extend(list(combinations(matched_indices, i)))
-
-        output_words_list = list()
-        for indices_tuple in replace_indices_tuples:
-            tmp_words_list = [[words, 1.0]]
-            for idx in indices_tuple:
+        output_words_heap = list()
+        max_len = self.probase_topk ** self.probase_topk
+        pre_min_score = 1.0
+        min_score = -1.0
+        pre_comb_len = 0
+        comb_len = 1
+        for word_tuples in replace_word_tuples:
+            tmp_words_list = [(1.0, words)]
+            for word in word_tuples:
                 new_tmp_words_list = list()
-                for tmp_words, prob in tmp_words_list:
-                    for concept, c_prob in matched_probase_concepts[idx]:
+                # can be further optimized...
+                for prob, tmp_words in tmp_words_list:
+                    for concept, c_prob in word2concepts[word]:
                         _tmp_words = tmp_words[:]
-                        _tmp_words[idx] = concept
-                        new_tmp_words_list.append([_tmp_words, prob * c_prob])
+                        for idx in word2indices[word]:
+                            _tmp_words[idx] = concept
+                        new_tmp_words_list.append((prob * c_prob, _tmp_words))
                 del tmp_words_list
                 tmp_words_list = new_tmp_words_list
-            output_words_list.extend(tmp_words_list)
 
-        for i, (output_words, score) in enumerate(output_words_list):
-            output_words_list[i] = [[word.replace(" ", "-") for word in output_words], score]
+            for tmp in tmp_words_list:
+                if len(output_words_heap) >= max_len:
+                    tmp = heapq.heappushpop(output_words_heap, tmp)
+                else:
+                    heapq.heappush(output_words_heap, tmp)
+                if min_score < tmp[0]:
+                    min_score = tmp[0]
+            comb_len = len(word_tuples)
+            if pre_min_score == min_score and pre_comb_len + 1 < comb_len and len(output_words_heap) >= max_len:
+                break
+            if pre_min_score != min_score:
+                pre_min_score = min_score
+                pre_comb_len = comb_len
 
-        output_words_list.sort(key=lambda x: x[1], reverse=True)
+        output_words_list = [heapq.heappop(output_words_heap)[::-1] for i in range(len(output_words_heap))][::-1]
         return output_words_list

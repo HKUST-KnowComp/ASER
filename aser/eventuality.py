@@ -4,6 +4,7 @@ import pprint
 import bisect
 from collections import Counter
 from copy import copy
+from itertools import chain
 from .object import JsonSerializedObject
 
 
@@ -208,34 +209,89 @@ class Eventuality(JsonSerializedObject):
 
     @property
     def phrases(self):
-        return [" ".join(self.words[st:end]) for st, end in self._phrase_segment_indices]
+        _tmp_phrases = list()
+        for _range in self._phrase_segment_indices:
+            st = min(_range)
+            end = max(_range) + 1
+            _tmp_phrases.append(" ".join(self.words[st:end]))
+        return _tmp_phrases
 
     @property
     def phrases_ners(self):
-        _tmp_ners = list()
+        _phrases_ners = list()
 
         for _range in self._phrase_segment_indices:
-            _tmp_ners.append(self._ners[_range[0]])
+            _phrases_ners.append(self._get_ner(_range[0]))
 
-        return _tmp_ners
+        return _phrases_ners
+
+    @property
+    def phrases_postags(self):
+        _phrases_postags = list()
+
+        for _range in self._phrase_segment_indices:
+            _phrases_postags.append(self.pos_tags[_range[0]])
+
+        return _phrases_postags
 
     @property
     def skeleton_phrases(self):
         phrase_dict = dict()
-        for _range in self._phrase_segment_indices:
-            for i in range(*_range):
-                phrase_dict[i] = _range
+        for i, _range in enumerate(self._phrase_segment_indices):
+            for j in _range:
+                phrase_dict[j] = i
 
-        _skeleton_tokens = list()
+        used_indices = set()
+        _skeleton_phrases = list()
         for idx in self._skeleton_indices:
-            st, end = phrase_dict[idx]
-            _skeleton_tokens.append(" ".join(self.words[st:end]))
+            if idx in used_indices:
+                continue
+            used_indices.add(idx)
+            _range = self._phrase_segment_indices[phrase_dict[idx]]
+            st = min(_range)
+            end = max(_range) + 1
+            _skeleton_phrases.append(" ".join(self.words[st:end]))
 
-        return _skeleton_tokens
+        return _skeleton_phrases
 
     @property
     def skeleton_phrases_ners(self):
-        return self.skeleton_ners
+        if self._ners is None:
+            return None
+
+        phrase_dict = dict()
+        for i, _range in enumerate(self._phrase_segment_indices):
+            for j in _range:
+                phrase_dict[j] = i
+
+        used_indices = set()
+        _skeleton_phrases_ners = list()
+        for idx in self._skeleton_indices:
+            if idx in used_indices:
+                continue
+            used_indices.add(idx)
+            _range = self._phrase_segment_indices[phrase_dict[idx]]
+            _skeleton_phrases_ners.append(self._get_ner(_range[0]))
+
+        return _skeleton_phrases_ners
+
+    @property
+    def skeleton_phrases_postags(self):
+        phrase_dict = dict()
+        for i, _range in enumerate(self._phrase_segment_indices):
+            for j in _range:
+                phrase_dict[j] = i
+
+        used_indices = set()
+        _skeleton_phrases_postags = list()
+        for idx in self._skeleton_indices:
+            if idx in used_indices:
+                continue
+            used_indices.add(idx)
+            _range = self._phrase_segment_indices[phrase_dict[idx]]
+            _skeleton_phrases_postags.append(self.pos_tags[_range[0]])
+
+        return _skeleton_phrases_postags
 
     def _construct(self, dependencies, skeleton_dependencies, parsed_result):
         word_indices = Eventuality.extract_indices_from_dependencies(dependencies)
@@ -385,46 +441,74 @@ class Eventuality(JsonSerializedObject):
                         break
         return ner
 
-    def _pos_compound_segment(self):
+    def _dep_compound_segment(self):
         tmp_compound_tuples = list()
         for governor_idx, dep, dependent_idx in self._dependencies:
             if dep.startswith("compound"):
                 tmp_compound_tuples.append((governor_idx, dependent_idx))
 
+        tmp_compound_tuples = sorted(tmp_compound_tuples)
         compound_tuples = list()
-        i = 0
-        while True:
-            if i >= len(tmp_compound_tuples):
-                break
-            if i == len(tmp_compound_tuples) - 1:
-                compound_tuples.append(tuple(sorted(tmp_compound_tuples[i])))
-                break
-            s1 = set(tmp_compound_tuples[i])
-            while True:
-                if i == len(tmp_compound_tuples) - 1:
-                    i += 1
-                    break
-                i += 1
-                s2 = set(tmp_compound_tuples[i])
-                if s1 & s2:
-                    s1 |= s2
+        used_indices = set()
+        for i in range(len(tmp_compound_tuples)):
+            if i in used_indices:
+                continue
+            s1 = tmp_compound_tuples[i]
+            for j in range(i+1, len(tmp_compound_tuples)):
+                if j in used_indices:
+                    continue
+                s2 = tmp_compound_tuples[j]
+                # s1[0] is the governor
+                if s2[0] in set(s1[1:]):
+                    s1 = s1 + s2[1:]
+                    used_indices.add(j)
+                # s2[0] is the governor
+                elif s1[0] in set(s2[1:]):
+                    s1 = s2 + s1[1:]
+                    used_indices.add(j)
+                # s1[0] and s2[0] are same
+                elif s1[0] == s2[0]:
+                    s1 = s1 + s2[1:]
+                    used_indices.add(j)
                 else:
                     break
-            compound_tuples.append(tuple(sorted(s1)))
+            used_indices.add(i)
+            # check continuous spans
+            sorted_s1 = sorted(s1)
+            if sorted_s1[-1] - sorted_s1[0] == len(sorted_s1) - 1:
+                compound_tuples.append(s1)
+            else:
+                s1s = []
+                k1 = 0
+                k2 = 1
+                len_s1 = len(sorted_s1)
+                indices = dict(zip(s1, range(len_s1)))
+                while k2 < len_s1:
+                    if sorted_s1[k2-1] + 1 != sorted_s1[k2]:
+                        # k1 to k2-1
+                        s1s.append(tuple([s1[indices[sorted_s1[k]]] for k in range(k1, k2)]))
+                        k1 = k2
+                    k2 += 1
+                if k1 != k2:
+                    s1s.append(tuple([s1[indices[sorted_s1[k]]] for k in range(k1, k2)]))
+                compound_tuples.extend(s1s)
+
+        compound_tuples.sort()
+        used_indices = set(chain.from_iterable(compound_tuples))
 
         segment_rst = list()
-        ptr = 0
-        i = 0
-        while True:
-            if i >= len(self.words):
-                break
-            if ptr < len(compound_tuples) and i == compound_tuples[ptr][0]:
-                segment_rst.append((compound_tuples[ptr][0], compound_tuples[ptr][-1] + 1))
-                i = compound_tuples[ptr][-1] + 1
-                ptr += 1
-            else:
-                segment_rst.append((i, i + 1))
-                i += 1
+        word_idx = 0
+        compound_idx = 0
+        num_words = len(self.words)
+        num_tuples = len(compound_tuples)
+        while word_idx < num_words:
+            if word_idx not in used_indices:
+                segment_rst.append((word_idx,))
+            elif word_idx in used_indices and compound_idx < num_tuples and word_idx == compound_tuples[compound_idx][0]:
+                segment_rst.append(compound_tuples[compound_idx])
+                compound_idx += 1
+            word_idx += 1
+
         return segment_rst
 
     def _ner_compound_segment(self):
@@ -452,16 +536,16 @@ class Eventuality(JsonSerializedObject):
             if i >= len(self.words):
                 break
             if ptr < len(compound_tuples) and i == compound_tuples[ptr][0]:
-                segment_rst.append((compound_tuples[ptr][0], compound_tuples[ptr][-1]))
+                segment_rst.append(tuple(range(compound_tuples[ptr][0], compound_tuples[ptr][-1])))
                 i = compound_tuples[ptr][-1]
                 ptr += 1
             else:
-                segment_rst.append((i, i + 1))
+                segment_rst.append((i,))
                 i += 1
         return segment_rst
 
     def _phrase_segment(self):
-        return self._pos_compound_segment()
+        return self._dep_compound_segment()
 
     @staticmethod
     def sort_dependencies_position(dependencies, reset_position=True):
