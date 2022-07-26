@@ -1,6 +1,7 @@
 ASER (Activities, States, Events, and their Relations)
 ================================================================================
 
+.. image:: _static/aser-logo.png
 .. image:: _static/aser-demo.png
 
 
@@ -49,6 +50,8 @@ Related Projects
 Talks
 --------------------------------------------------------------------------------
 
+* 2022 July: Amazon Search Science Team. Acquiring and Modeling Abstract Commonsense Knowledge via Conceptualization. [`pdf <http://home.cse.ust.hk/~yqsong/papers/202207-YangqiuSong-Conceptualization-Final.pdf>`_] [`ppt <http://home.cse.ust.hk/~yqsong/papers/202207-YangqiuSong-Conceptualization-Final.pptx>`_]
+
 * 2021 Novermber: CCKS Tutorial. Commonsense Knowledge Acquisition and Reasoning. Presented by Yangqiu Song. [`pdf <http://home.cse.ust.hk/~yqsong/papers/CCKS2021Tutorial-Commonsense-YangqiuSong.pdf>`_] [`ppt <http://home.cse.ust.hk/~yqsong/papers/CCKS2021Tutorial-Commonsense-YangqiuSong.pptx>`_]
 
 * 2021 September: Huawei Workshop on Commonsense. Commonsense Knowledge Base Population. Presented by Yangqiu Song. [`pdf <http://home.cse.ust.hk/~yqsong/papers/CSKBP-YangqiuSong.pdf>`_] [`ppt <http://home.cse.ust.hk/~yqsong/papers/CSKBP-YangqiuSong.pptx>`_]
@@ -66,6 +69,8 @@ Talks
 
 Publications
 --------------------------------------------------------------------------------
+
+* Mutian He, Tianqing Fang, Weiqi Wang, and Yangqiu Song. Acquiring and Modelling Abstract Commonsense Knowledge via Conceptualization. arXiv, abs/2206.01532, 2022. [`pdf <https://arxiv.org/pdf/2206.01532.pdf>`_]
 
 * Hongming Zhang\*, Xin Liu\*, Haojie Pan\*, Haowen Ke, Jiefu Ou, Tianqing Fang, and Yangqiu Song. ASER: Towards Large-scale Commonsense Knowledge Acquisition via Higher-order Selectional Preference over Eventualities. Artificial Intelligence, Volume 309, August 2022, 103740. [`pdf <https://arxiv.org/abs/2104.02137>`_]
 
