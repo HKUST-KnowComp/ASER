@@ -165,7 +165,7 @@ class BaseASERExtractor(object):
         parsed_result = parse_sentense_with_stanford(text, corenlp_client, self.annotators)
         return parsed_result
 
-    def extract_eventualities_from_parsed_result(self, parsed_result, output_format="Eventuality", in_order=True, **kw):
+    def extract_eventualities_from_parsed_result(self, parsed_result, output_format="Eventuality", in_order=True, use_lemma=True, **kw):
         """ Extract eventualities from the parsed result
 
         :param parsed_result: the parsed result returned by corenlp
@@ -174,6 +174,8 @@ class BaseASERExtractor(object):
         :type output_format: str (default = "Eventuality")
         :param in_order: whether the returned order follows the input token order
         :type in_order: bool (default = True)
+        :param use_lemma: whether the returned eventuality uses lemma
+        :type use_lemma: bool (default = True)
         :param kw: other parameters
         :type kw: Dict[str, object]
         :return: the extracted eventualities
@@ -288,10 +290,10 @@ class BaseASERExtractor(object):
             )
 
         return self.eventuality_extractor.extract_from_parsed_result(
-            parsed_result, output_format=output_format, in_order=in_order, **kw
+            parsed_result, output_format=output_format, in_order=in_order, use_lemma=use_lemma, **kw
         )
 
-    def extract_eventualities_from_text(self, text, output_format="Eventuality", in_order=True, annotators=None, **kw):
+    def extract_eventualities_from_text(self, text, output_format="Eventuality", in_order=True, use_lemma=True, annotators=None, **kw):
         """ Extract eventualities from a raw text
 
         :param text: a raw text
@@ -300,6 +302,8 @@ class BaseASERExtractor(object):
         :type output_format: str (default = "Eventuality")
         :param in_order: whether the returned order follows the input token order
         :type in_order: bool (default = True)
+        :param use_lemma: whether the returned eventuality uses lemma
+        :type use_lemma: bool (default = True)
         :param annotators: annotators for corenlp, please refer to https://stanfordnlp.github.io/CoreNLP/annotators.html
         :type annotators: Union[List, None] (default = None)
         :param kw: other parameters
@@ -325,7 +329,7 @@ class BaseASERExtractor(object):
 
         parsed_result = self.parse_text(text, annotators=annotators)
         return self.extract_eventualities_from_parsed_result(
-            parsed_result, output_format=output_format, in_order=in_order, **kw
+            parsed_result, output_format=output_format, in_order=in_order, use_lemma=use_lemma, **kw
         )
 
     def extract_relations_from_parsed_result(
@@ -503,6 +507,7 @@ class BaseASERExtractor(object):
         eventuality_output_format="Eventuality",
         relation_output_format="Relation",
         in_order=True,
+        use_lemma=True,
         **kw
     ):
         """ Extract both eventualities and relations from a parsed result
@@ -515,6 +520,8 @@ class BaseASERExtractor(object):
         :type relation_output_format: str (default = "Relation")
         :param in_order: whether the returned order follows the input token order
         :type in_order: bool (default = True)
+        :param use_lemma: whether the returned eventuality uses lemma
+        :type use_lemma: bool (default = True)
         :param kw: other parameters
         :type kw: Dict[str, object]
         :return: the extracted eventualities and relations
@@ -641,7 +648,7 @@ class BaseASERExtractor(object):
             is_single_sent = False
 
         para_eventualities = self.extract_eventualities_from_parsed_result(
-            parsed_result, output_format="Eventuality", in_order=True, **kw
+            parsed_result, output_format="Eventuality", in_order=True, use_lemma=use_lemma, **kw
         )
         para_relations = self.extract_relations_from_parsed_result(
             parsed_result, para_eventualities, output_format="Relation", in_order=True, **kw
@@ -692,6 +699,7 @@ class BaseASERExtractor(object):
         eventuality_output_format="Eventuality",
         relation_output_format="Relation",
         in_order=True,
+        use_lemma=True,
         annotators=None,
         **kw
     ):
@@ -705,6 +713,8 @@ class BaseASERExtractor(object):
         :type relation_output_format: str (default = "Relation")
         :param in_order: whether the returned order follows the input token order
         :type in_order: bool (default = True)
+        :param use_lemma: whether the returned eventuality uses lemma
+        :type use_lemma: bool (default = True)
         :param annotators: annotators for corenlp, please refer to https://stanfordnlp.github.io/CoreNLP/annotators.html
         :type annotators: Union[List, None] (default = None)
         :param kw: other parameters
@@ -738,6 +748,7 @@ class BaseASERExtractor(object):
             eventuality_output_format=eventuality_output_format,
             relation_output_format=relation_output_format,
             in_order=in_order,
+            use_lemma=use_lemma,
             **kw
         )
 
@@ -784,6 +795,7 @@ class DiscourseASERExtractor(BaseASERExtractor):
         eventuality_output_format="Eventuality",
         relation_output_format="Relation",
         in_order=True,
+        use_lemma=True,
         **kw
     ):
         """ Extract both eventualities and relations from a parsed result
@@ -796,6 +808,8 @@ class DiscourseASERExtractor(BaseASERExtractor):
         :type relation_output_format: str (default = "Relation")
         :param in_order: whether the returned order follows the input token order
         :type in_order: bool (default = True)
+        :param use_lemma: whether the returned eventuality uses lemma
+        :type use_lemma: bool (default = True)
         :param kw: other parameters (e.g., syntax_tree_cache)
         :type kw: Dict[str, object]
         :return: the extracted eventualities and relations
@@ -809,6 +823,7 @@ class DiscourseASERExtractor(BaseASERExtractor):
             eventuality_output_format=eventuality_output_format,
             relation_output_format=relation_output_format,
             in_order=in_order,
+            use_lemma=use_lemma,
             **kw
         )
 
@@ -823,7 +838,7 @@ class DiscourseASERExtractor(BaseASERExtractor):
 #         self.ps_extractor = PSArgumentExtractor(**kw)
 #         self.explicit_classifier = ExplicitSenseClassifier(**kw)
 
-#     def _extract_eventualities_from_clause(self, sent_parsed_result, clause):
+#     def _extract_eventualities_from_clause(self, sent_parsed_result, clause, use_lemma):
 #         len_clause = len(clause)
 #         idx_mapping = {j: i for i, j in enumerate(clause)}
 #         indices_set = set(clause)
@@ -850,7 +865,7 @@ class DiscourseASERExtractor(BaseASERExtractor):
 #                 mention["end"] = end_idx+1
 #                 clause_parsed_result["mentions"].append(mention)
 #         eventualities = self.eventuality_extractor.extract_from_parsed_result(
-#             clause_parsed_result, output_format="Eventuality", in_order=True)
+#             clause_parsed_result, output_format="Eventuality", in_order=True, use_lemma=use_lemma)
 #         for eventuality in eventualities:
 #             for k, v in eventuality.raw_sent_mapping.items():
 #                 eventuality.raw_sent_mapping[k] = clause[v]
@@ -870,7 +885,7 @@ class DiscourseASERExtractor(BaseASERExtractor):
 #                 existed_eventualities.append(new_e)
 
 #     def extract_eventualities_from_parsed_result(self, parsed_result,
-#                                                  output_format="Eventuality", in_order=True, **kw):
+#                                                  output_format="Eventuality", in_order=True, use_lemma=True, **kw):
 #         if output_format not in ["Eventuality", "json"]:
 #             raise NotImplementedError("Error: extract_from_parsed_result only supports Eventuality or json.")
 
@@ -888,7 +903,7 @@ class DiscourseASERExtractor(BaseASERExtractor):
 #         para_clauses = self._extract_clauses(parsed_result, syntax_tree_cache)
 #         for sent_parsed_result, sent_clauses, sent_eventualities in zip(parsed_result, para_clauses, para_eventualities):
 #             for clause in sent_clauses:
-#                 sent_eventualities.extend(self._extract_eventualities_from_clause(sent_parsed_result, clause))
+#                 sent_eventualities.extend(self._extract_eventualities_from_clause(sent_parsed_result, clause, use_lemma))
 
 #         if in_order:
 #             if output_format == "json":

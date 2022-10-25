@@ -16,6 +16,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -50,10 +51,59 @@
 <li class="toctree-l1"><a class="reference internal" href="conceptualizer.html">Conceptualization</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Server/Client</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-aser.server">ASER server</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#aser.server.ASERDataBase"><code class="docutils literal notranslate"><span class="pre">ASERDataBase</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#aser.server.ASERDataBase.close"><code class="docutils literal notranslate"><span class="pre">ASERDataBase.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.server.ASERDataBase.handle_exact_match_concept"><code class="docutils literal notranslate"><span class="pre">ASERDataBase.handle_exact_match_concept()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.server.ASERDataBase.handle_exact_match_concept_relation"><code class="docutils literal notranslate"><span class="pre">ASERDataBase.handle_exact_match_concept_relation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.server.ASERDataBase.handle_exact_match_eventuality"><code class="docutils literal notranslate"><span class="pre">ASERDataBase.handle_exact_match_eventuality()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.server.ASERDataBase.handle_exact_match_eventuality_relation"><code class="docutils literal notranslate"><span class="pre">ASERDataBase.handle_exact_match_eventuality_relation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.server.ASERDataBase.handle_fetch_related_concepts"><code class="docutils literal notranslate"><span class="pre">ASERDataBase.handle_fetch_related_concepts()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.server.ASERDataBase.handle_fetch_related_eventualities"><code class="docutils literal notranslate"><span class="pre">ASERDataBase.handle_fetch_related_eventualities()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.server.ASERDataBase.run"><code class="docutils literal notranslate"><span class="pre">ASERDataBase.run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#aser.server.ASERServer"><code class="docutils literal notranslate"><span class="pre">ASERServer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#aser.server.ASERServer.close"><code class="docutils literal notranslate"><span class="pre">ASERServer.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.server.ASERServer.run"><code class="docutils literal notranslate"><span class="pre">ASERServer.run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#aser.server.ASERSink"><code class="docutils literal notranslate"><span class="pre">ASERSink</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#aser.server.ASERSink.run"><code class="docutils literal notranslate"><span class="pre">ASERSink.run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#aser.server.ASERWorker"><code class="docutils literal notranslate"><span class="pre">ASERWorker</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#aser.server.ASERWorker.close"><code class="docutils literal notranslate"><span class="pre">ASERWorker.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.server.ASERWorker.handle_conceptualize_eventuality"><code class="docutils literal notranslate"><span class="pre">ASERWorker.handle_conceptualize_eventuality()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.server.ASERWorker.handle_extract_eventualities"><code class="docutils literal notranslate"><span class="pre">ASERWorker.handle_extract_eventualities()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.server.ASERWorker.handle_extract_eventualities_and_relations"><code class="docutils literal notranslate"><span class="pre">ASERWorker.handle_extract_eventualities_and_relations()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.server.ASERWorker.handle_extract_relations"><code class="docutils literal notranslate"><span class="pre">ASERWorker.handle_extract_relations()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.server.ASERWorker.handle_parse_text"><code class="docutils literal notranslate"><span class="pre">ASERWorker.handle_parse_text()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.server.ASERWorker.run"><code class="docutils literal notranslate"><span class="pre">ASERWorker.run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#aser.server.is_port_occupied"><code class="docutils literal notranslate"><span class="pre">is_port_occupied()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aser.server.sockets_ipc_bind"><code class="docutils literal notranslate"><span class="pre">sockets_ipc_bind()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-aser.client">ASER client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-aser.client">ASER client</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#aser.client.ASERClient"><code class="docutils literal notranslate"><span class="pre">ASERClient</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#aser.client.ASERClient.close"><code class="docutils literal notranslate"><span class="pre">ASERClient.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.client.ASERClient.conceptualize_eventuality"><code class="docutils literal notranslate"><span class="pre">ASERClient.conceptualize_eventuality()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.client.ASERClient.exact_match_concept"><code class="docutils literal notranslate"><span class="pre">ASERClient.exact_match_concept()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.client.ASERClient.exact_match_eventuality"><code class="docutils literal notranslate"><span class="pre">ASERClient.exact_match_eventuality()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.client.ASERClient.extract_eventualities"><code class="docutils literal notranslate"><span class="pre">ASERClient.extract_eventualities()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.client.ASERClient.extract_eventualities_and_relations"><code class="docutils literal notranslate"><span class="pre">ASERClient.extract_eventualities_and_relations()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.client.ASERClient.extract_relations"><code class="docutils literal notranslate"><span class="pre">ASERClient.extract_relations()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.client.ASERClient.fetch_related_concepts"><code class="docutils literal notranslate"><span class="pre">ASERClient.fetch_related_concepts()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.client.ASERClient.fetch_related_eventualities"><code class="docutils literal notranslate"><span class="pre">ASERClient.fetch_related_eventualities()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.client.ASERClient.parse_text"><code class="docutils literal notranslate"><span class="pre">ASERClient.parse_text()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.client.ASERClient.predict_concept_relation"><code class="docutils literal notranslate"><span class="pre">ASERClient.predict_concept_relation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.client.ASERClient.predict_eventuality_relation"><code class="docutils literal notranslate"><span class="pre">ASERClient.predict_eventuality_relation()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -332,10 +382,15 @@
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>aser-server --help
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">aser</span><span class="o">-</span><span class="n">server</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">n_workers</span> <span class="n">N_WORKERS</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">n_concurrent_back_socks</span> <span class="n">N_CONCURRENT_BACK_SOCKS</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">port</span> <span class="n">PORT</span><span class="p">]</span>
-                   <span class="p">[</span><span class="o">-</span><span class="n">port_out</span> <span class="n">PORT_OUT</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">corenlp_path</span> <span class="n">CORENLP_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">base_corenlp_port</span> <span class="n">BASE_CORENLP_PORT</span><span class="p">]</span>
-                   <span class="p">[</span><span class="o">-</span><span class="n">aser_kg_dir</span> <span class="n">ASER_KG_DIR</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">concept_kg_dir</span> <span class="n">CONCEPT_KG_DIR</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">concept_method</span> <span class="p">{</span><span class="n">probase</span><span class="p">,</span><span class="n">seed</span><span class="p">}]</span>
-                   <span class="p">[</span><span class="o">-</span><span class="n">probase_path</span> <span class="n">PROBASE_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">concept_topk</span> <span class="n">CONCEPT_TOPK</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">log_path</span> <span class="n">LOG_PATH</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">aser</span><span class="o">-</span><span class="n">server</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">n_workers</span> <span class="n">N_WORKERS</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">-</span><span class="n">n_concurrent_back_socks</span> <span class="n">N_CONCURRENT_BACK_SOCKS</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">-</span><span class="n">port</span> <span class="n">PORT</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">port_out</span> <span class="n">PORT_OUT</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">-</span><span class="n">corenlp_path</span> <span class="n">CORENLP_PATH</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">-</span><span class="n">base_corenlp_port</span> <span class="n">BASE_CORENLP_PORT</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">-</span><span class="n">aser_kg_dir</span> <span class="n">ASER_KG_DIR</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">concept_kg_dir</span> <span class="n">CONCEPT_KG_DIR</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">-</span><span class="n">concept_method</span> <span class="p">{</span><span class="n">probase</span><span class="p">,</span><span class="n">seed</span><span class="p">}]</span>
+                   <span class="p">[</span><span class="o">-</span><span class="n">probase_path</span> <span class="n">PROBASE_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">concept_topk</span> <span class="n">CONCEPT_TOPK</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">-</span><span class="n">log_path</span> <span class="n">LOG_PATH</span><span class="p">]</span>
 </pre></div>
 </div>
 <section id="Named Arguments">
@@ -397,7 +452,7 @@
 <span id="aser-client"></span><h2>ASER client<a class="headerlink" href="#module-aser.client" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="aser.client.ASERClient">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aser.client.</span></span><span class="sig-name descname"><span class="pre">ASERClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'localhost'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aser.client.</span></span><span class="sig-name descname"><span class="pre">ASERClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'localhost'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A client object of ASER</p>
 <dl class="field-list simple">

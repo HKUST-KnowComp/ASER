@@ -12,7 +12,7 @@ class Eventuality(JsonSerializedObject):
     """ ASER Eventuality
 
     """
-    def __init__(self, pattern="unknown", dependencies=None, skeleton_dependencies=None, parsed_result=None):
+    def __init__(self, pattern="unknown", dependencies=None, skeleton_dependencies=None, parsed_result=None, use_lemma=True):
         """
 
         :param pattern: the corresponding pattern
@@ -40,7 +40,7 @@ class Eventuality(JsonSerializedObject):
         self._phrase_segment_indices = None
         self.frequency = 1.0
         if dependencies and skeleton_dependencies and parsed_result:
-            self._construct(dependencies, skeleton_dependencies, parsed_result)
+            self._construct(dependencies, skeleton_dependencies, parsed_result, use_lemma)
 
     @staticmethod
     def generate_eid(eventuality):
@@ -293,7 +293,7 @@ class Eventuality(JsonSerializedObject):
 
         return _skeleton_phrases_postags
 
-    def _construct(self, dependencies, skeleton_dependencies, parsed_result):
+    def _construct(self, dependencies, skeleton_dependencies, parsed_result, use_lemma):
         word_indices = Eventuality.extract_indices_from_dependencies(dependencies)
         if parsed_result["pos_tags"][word_indices[0]] == "IN":
             poped_idx = word_indices[0]
@@ -307,7 +307,10 @@ class Eventuality(JsonSerializedObject):
                     skeleton_dependencies.pop(i)
             word_indices.pop(0)
         len_words = len(word_indices)
-        self.words = [parsed_result["lemmas"][i].lower() for i in word_indices]
+        if use_lemma:
+            self.words = [parsed_result["lemmas"][i].lower() for i in word_indices]
+        else:
+            self.words = [parsed_result["tokens"][i].lower() for i in word_indices]
         self.pos_tags = [parsed_result["pos_tags"][i] for i in word_indices]
         if "ners" in parsed_result:
             self._ners = [parsed_result["ners"][i] for i in word_indices]

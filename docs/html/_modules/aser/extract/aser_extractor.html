@@ -13,7 +13,9 @@
         <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -40,6 +42,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/object.html">Object</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../api/database.html">Database</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../api/extractor.html">Extractor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../api/conceptualizer.html">Conceptualization</a></li>
@@ -242,7 +245,7 @@
         <span class="n">parsed_result</span> <span class="o">=</span> <span class="n">parse_sentense_with_stanford</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">corenlp_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">annotators</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">parsed_result</span></div>
 
-<div class="viewcode-block" id="BaseASERExtractor.extract_eventualities_from_parsed_result"><a class="viewcode-back" href="../../../api/extractor.html#aser.extract.aser_extractor.BaseASERExtractor.extract_eventualities_from_parsed_result">[docs]</a>    <span class="k">def</span> <span class="nf">extract_eventualities_from_parsed_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed_result</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="s2">&quot;Eventuality&quot;</span><span class="p">,</span> <span class="n">in_order</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseASERExtractor.extract_eventualities_from_parsed_result"><a class="viewcode-back" href="../../../api/extractor.html#aser.extract.aser_extractor.BaseASERExtractor.extract_eventualities_from_parsed_result">[docs]</a>    <span class="k">def</span> <span class="nf">extract_eventualities_from_parsed_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed_result</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="s2">&quot;Eventuality&quot;</span><span class="p">,</span> <span class="n">in_order</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_lemma</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Extract eventualities from the parsed result</span>
 
 <span class="sd">        :param parsed_result: the parsed result returned by corenlp</span>
@@ -251,6 +254,8 @@
 <span class="sd">        :type output_format: str (default = &quot;Eventuality&quot;)</span>
 <span class="sd">        :param in_order: whether the returned order follows the input token order</span>
 <span class="sd">        :type in_order: bool (default = True)</span>
+<span class="sd">        :param use_lemma: whether the returned eventuality uses lemma</span>
+<span class="sd">        :type use_lemma: bool (default = True)</span>
 <span class="sd">        :param kw: other parameters</span>
 <span class="sd">        :type kw: Dict[str, object]</span>
 <span class="sd">        :return: the extracted eventualities</span>
@@ -365,10 +370,10 @@
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">eventuality_extractor</span><span class="o">.</span><span class="n">extract_from_parsed_result</span><span class="p">(</span>
-            <span class="n">parsed_result</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span> <span class="n">in_order</span><span class="o">=</span><span class="n">in_order</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span>
+            <span class="n">parsed_result</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span> <span class="n">in_order</span><span class="o">=</span><span class="n">in_order</span><span class="p">,</span> <span class="n">use_lemma</span><span class="o">=</span><span class="n">use_lemma</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="BaseASERExtractor.extract_eventualities_from_text"><a class="viewcode-back" href="../../../api/extractor.html#aser.extract.aser_extractor.BaseASERExtractor.extract_eventualities_from_text">[docs]</a>    <span class="k">def</span> <span class="nf">extract_eventualities_from_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="s2">&quot;Eventuality&quot;</span><span class="p">,</span> <span class="n">in_order</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">annotators</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseASERExtractor.extract_eventualities_from_text"><a class="viewcode-back" href="../../../api/extractor.html#aser.extract.aser_extractor.BaseASERExtractor.extract_eventualities_from_text">[docs]</a>    <span class="k">def</span> <span class="nf">extract_eventualities_from_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="s2">&quot;Eventuality&quot;</span><span class="p">,</span> <span class="n">in_order</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_lemma</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">annotators</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Extract eventualities from a raw text</span>
 
 <span class="sd">        :param text: a raw text</span>
@@ -377,6 +382,8 @@
 <span class="sd">        :type output_format: str (default = &quot;Eventuality&quot;)</span>
 <span class="sd">        :param in_order: whether the returned order follows the input token order</span>
 <span class="sd">        :type in_order: bool (default = True)</span>
+<span class="sd">        :param use_lemma: whether the returned eventuality uses lemma</span>
+<span class="sd">        :type use_lemma: bool (default = True)</span>
 <span class="sd">        :param annotators: annotators for corenlp, please refer to https://stanfordnlp.github.io/CoreNLP/annotators.html</span>
 <span class="sd">        :type annotators: Union[List, None] (default = None)</span>
 <span class="sd">        :param kw: other parameters</span>
@@ -402,7 +409,7 @@
 
         <span class="n">parsed_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_text</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">annotators</span><span class="o">=</span><span class="n">annotators</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_eventualities_from_parsed_result</span><span class="p">(</span>
-            <span class="n">parsed_result</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span> <span class="n">in_order</span><span class="o">=</span><span class="n">in_order</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span>
+            <span class="n">parsed_result</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span> <span class="n">in_order</span><span class="o">=</span><span class="n">in_order</span><span class="p">,</span> <span class="n">use_lemma</span><span class="o">=</span><span class="n">use_lemma</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseASERExtractor.extract_relations_from_parsed_result"><a class="viewcode-back" href="../../../api/extractor.html#aser.extract.aser_extractor.BaseASERExtractor.extract_relations_from_parsed_result">[docs]</a>    <span class="k">def</span> <span class="nf">extract_relations_from_parsed_result</span><span class="p">(</span>
@@ -580,6 +587,7 @@
         <span class="n">eventuality_output_format</span><span class="o">=</span><span class="s2">&quot;Eventuality&quot;</span><span class="p">,</span>
         <span class="n">relation_output_format</span><span class="o">=</span><span class="s2">&quot;Relation&quot;</span><span class="p">,</span>
         <span class="n">in_order</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">use_lemma</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kw</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Extract both eventualities and relations from a parsed result</span>
@@ -592,6 +600,8 @@
 <span class="sd">        :type relation_output_format: str (default = &quot;Relation&quot;)</span>
 <span class="sd">        :param in_order: whether the returned order follows the input token order</span>
 <span class="sd">        :type in_order: bool (default = True)</span>
+<span class="sd">        :param use_lemma: whether the returned eventuality uses lemma</span>
+<span class="sd">        :type use_lemma: bool (default = True)</span>
 <span class="sd">        :param kw: other parameters</span>
 <span class="sd">        :type kw: Dict[str, object]</span>
 <span class="sd">        :return: the extracted eventualities and relations</span>
@@ -718,7 +728,7 @@
             <span class="n">is_single_sent</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="n">para_eventualities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_eventualities_from_parsed_result</span><span class="p">(</span>
-            <span class="n">parsed_result</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="s2">&quot;Eventuality&quot;</span><span class="p">,</span> <span class="n">in_order</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span>
+            <span class="n">parsed_result</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="s2">&quot;Eventuality&quot;</span><span class="p">,</span> <span class="n">in_order</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_lemma</span><span class="o">=</span><span class="n">use_lemma</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span>
         <span class="p">)</span>
         <span class="n">para_relations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_relations_from_parsed_result</span><span class="p">(</span>
             <span class="n">parsed_result</span><span class="p">,</span> <span class="n">para_eventualities</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="s2">&quot;Relation&quot;</span><span class="p">,</span> <span class="n">in_order</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span>
@@ -769,6 +779,7 @@
         <span class="n">eventuality_output_format</span><span class="o">=</span><span class="s2">&quot;Eventuality&quot;</span><span class="p">,</span>
         <span class="n">relation_output_format</span><span class="o">=</span><span class="s2">&quot;Relation&quot;</span><span class="p">,</span>
         <span class="n">in_order</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">use_lemma</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">annotators</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kw</span>
     <span class="p">):</span>
@@ -782,6 +793,8 @@
 <span class="sd">        :type relation_output_format: str (default = &quot;Relation&quot;)</span>
 <span class="sd">        :param in_order: whether the returned order follows the input token order</span>
 <span class="sd">        :type in_order: bool (default = True)</span>
+<span class="sd">        :param use_lemma: whether the returned eventuality uses lemma</span>
+<span class="sd">        :type use_lemma: bool (default = True)</span>
 <span class="sd">        :param annotators: annotators for corenlp, please refer to https://stanfordnlp.github.io/CoreNLP/annotators.html</span>
 <span class="sd">        :type annotators: Union[List, None] (default = None)</span>
 <span class="sd">        :param kw: other parameters</span>
@@ -815,6 +828,7 @@
             <span class="n">eventuality_output_format</span><span class="o">=</span><span class="n">eventuality_output_format</span><span class="p">,</span>
             <span class="n">relation_output_format</span><span class="o">=</span><span class="n">relation_output_format</span><span class="p">,</span>
             <span class="n">in_order</span><span class="o">=</span><span class="n">in_order</span><span class="p">,</span>
+            <span class="n">use_lemma</span><span class="o">=</span><span class="n">use_lemma</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kw</span>
         <span class="p">)</span></div></div>
 
@@ -861,6 +875,7 @@
         <span class="n">eventuality_output_format</span><span class="o">=</span><span class="s2">&quot;Eventuality&quot;</span><span class="p">,</span>
         <span class="n">relation_output_format</span><span class="o">=</span><span class="s2">&quot;Relation&quot;</span><span class="p">,</span>
         <span class="n">in_order</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">use_lemma</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kw</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Extract both eventualities and relations from a parsed result</span>
@@ -873,6 +888,8 @@
 <span class="sd">        :type relation_output_format: str (default = &quot;Relation&quot;)</span>
 <span class="sd">        :param in_order: whether the returned order follows the input token order</span>
 <span class="sd">        :type in_order: bool (default = True)</span>
+<span class="sd">        :param use_lemma: whether the returned eventuality uses lemma</span>
+<span class="sd">        :type use_lemma: bool (default = True)</span>
 <span class="sd">        :param kw: other parameters (e.g., syntax_tree_cache)</span>
 <span class="sd">        :type kw: Dict[str, object]</span>
 <span class="sd">        :return: the extracted eventualities and relations</span>
@@ -886,6 +903,7 @@
             <span class="n">eventuality_output_format</span><span class="o">=</span><span class="n">eventuality_output_format</span><span class="p">,</span>
             <span class="n">relation_output_format</span><span class="o">=</span><span class="n">relation_output_format</span><span class="p">,</span>
             <span class="n">in_order</span><span class="o">=</span><span class="n">in_order</span><span class="p">,</span>
+            <span class="n">use_lemma</span><span class="o">=</span><span class="n">use_lemma</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kw</span>
         <span class="p">)</span></div></div>
 
@@ -900,7 +918,7 @@
 <span class="c1">#         self.ps_extractor = PSArgumentExtractor(**kw)</span>
 <span class="c1">#         self.explicit_classifier = ExplicitSenseClassifier(**kw)</span>
 
-<span class="c1">#     def _extract_eventualities_from_clause(self, sent_parsed_result, clause):</span>
+<span class="c1">#     def _extract_eventualities_from_clause(self, sent_parsed_result, clause, use_lemma):</span>
 <span class="c1">#         len_clause = len(clause)</span>
 <span class="c1">#         idx_mapping = {j: i for i, j in enumerate(clause)}</span>
 <span class="c1">#         indices_set = set(clause)</span>
@@ -927,7 +945,7 @@
 <span class="c1">#                 mention[&quot;end&quot;] = end_idx+1</span>
 <span class="c1">#                 clause_parsed_result[&quot;mentions&quot;].append(mention)</span>
 <span class="c1">#         eventualities = self.eventuality_extractor.extract_from_parsed_result(</span>
-<span class="c1">#             clause_parsed_result, output_format=&quot;Eventuality&quot;, in_order=True)</span>
+<span class="c1">#             clause_parsed_result, output_format=&quot;Eventuality&quot;, in_order=True, use_lemma=use_lemma)</span>
 <span class="c1">#         for eventuality in eventualities:</span>
 <span class="c1">#             for k, v in eventuality.raw_sent_mapping.items():</span>
 <span class="c1">#                 eventuality.raw_sent_mapping[k] = clause[v]</span>
@@ -947,7 +965,7 @@
 <span class="c1">#                 existed_eventualities.append(new_e)</span>
 
 <span class="c1">#     def extract_eventualities_from_parsed_result(self, parsed_result,</span>
-<span class="c1">#                                                  output_format=&quot;Eventuality&quot;, in_order=True, **kw):</span>
+<span class="c1">#                                                  output_format=&quot;Eventuality&quot;, in_order=True, use_lemma=True, **kw):</span>
 <span class="c1">#         if output_format not in [&quot;Eventuality&quot;, &quot;json&quot;]:</span>
 <span class="c1">#             raise NotImplementedError(&quot;Error: extract_from_parsed_result only supports Eventuality or json.&quot;)</span>
 
@@ -965,7 +983,7 @@
 <span class="c1">#         para_clauses = self._extract_clauses(parsed_result, syntax_tree_cache)</span>
 <span class="c1">#         for sent_parsed_result, sent_clauses, sent_eventualities in zip(parsed_result, para_clauses, para_eventualities):</span>
 <span class="c1">#             for clause in sent_clauses:</span>
-<span class="c1">#                 sent_eventualities.extend(self._extract_eventualities_from_clause(sent_parsed_result, clause))</span>
+<span class="c1">#                 sent_eventualities.extend(self._extract_eventualities_from_clause(sent_parsed_result, clause, use_lemma))</span>
 
 <span class="c1">#         if in_order:</span>
 <span class="c1">#             if output_format == &quot;json&quot;:</span>
