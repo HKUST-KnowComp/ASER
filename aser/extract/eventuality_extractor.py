@@ -161,7 +161,7 @@ class BaseEventualityExtractor(object):
         parsed_result = parse_sentense_with_stanford(text, corenlp_client, self.annotators)
         return parsed_result
 
-    def extract_from_text(self, text, output_format="Eventuality", in_order=True, annotators=None, **kw):
+    def extract_from_text(self, text, output_format="Eventuality", in_order=True, use_lemma=True, annotators=None, **kw):
         """ Extract eventualities from a raw text
 
         :param text: a raw text
@@ -170,6 +170,8 @@ class BaseEventualityExtractor(object):
         :type output_format: str (default = "Eventuality")
         :param in_order: whether the returned order follows the input token order
         :type in_order: bool (default = True)
+        :param use_lemma: whether the returned eventuality uses lemma
+        :type use_lemma: bool (default = True)
         :param annotators: annotators for corenlp, please refer to https://stanfordnlp.github.io/CoreNLP/annotators.html
         :type annotators: Union[List, None] (default = None)
         :param kw: other parameters
@@ -193,9 +195,9 @@ class BaseEventualityExtractor(object):
         if output_format not in ["Eventuality", "json"]:
             raise NotImplementedError("Error: extract_from_text only supports Eventuality or json.")
         parsed_result = self.parse_text(text, annotators)
-        return self.extract_from_parsed_result(parsed_result, output_format, in_order, **kw)
+        return self.extract_from_parsed_result(parsed_result, output_format, in_order, use_lemma, **kw)
 
-    def extract_from_parsed_result(self, parsed_result, output_format="Eventuality", in_order=True, **kw):
+    def extract_from_parsed_result(self, parsed_result, output_format="Eventuality", in_order=True, use_lemma=True, **kw):
         """ Extract eventualities from the parsed result
 
         :param parsed_result: the parsed result returned by corenlp
@@ -204,6 +206,8 @@ class BaseEventualityExtractor(object):
         :type output_format: str (default = "Eventuality")
         :param in_order: whether the returned order follows the input token order
         :type in_order: bool (default = True)
+        :param use_lemma: whether the returned eventuality uses lemma
+        :type use_lemma: bool (default = True)
         :param kw: other parameters
         :type kw: Dict[str, object]
         :return: the extracted eventualities
@@ -336,7 +340,7 @@ class SeedRuleEventualityExtractor(BaseEventualityExtractor):
         if not isinstance(self.skip_words, set):
             self.skip_words = set(self.skip_words)
 
-    def extract_from_parsed_result(self, parsed_result, output_format="Eventuality", in_order=True, **kw):
+    def extract_from_parsed_result(self, parsed_result, output_format="Eventuality", in_order=True, use_lemma=True, **kw):
         if output_format not in ["Eventuality", "json"]:
             raise NotImplementedError("Error: extract_from_parsed_result only supports Eventuality or json.")
 
@@ -360,7 +364,7 @@ class SeedRuleEventualityExtractor(BaseEventualityExtractor):
             # print(sent_parsed_result["tokens"])
             for rule_name in eventuality_rules:
                 tmp_eventualities = self._extract_eventualities_from_dependencies_with_single_rule(
-                    sent_parsed_result, eventuality_rules[rule_name], rule_name
+                    sent_parsed_result, eventuality_rules[rule_name], rule_name, use_lemma
                 )
                 seed_rule_eventualities[rule_name] = tmp_eventualities
                 # print("rule", rule_name, tmp_eventualities)
@@ -400,19 +404,19 @@ class SeedRuleEventualityExtractor(BaseEventualityExtractor):
             return eventualities
 
     def _extract_eventualities_from_dependencies_with_single_rule(
-        self, sent_parsed_result, eventuality_rule, rule_name
+        self, sent_parsed_result, eventuality_rule, rule_name, use_lemma
     ):
         local_eventualities = list()
         verb_positions = [i for i, tag in enumerate(sent_parsed_result["pos_tags"]) if tag.startswith("VB")]
         for verb_position in verb_positions:
             tmp_e = self._extract_eventuality_with_fixed_target(
-                sent_parsed_result, eventuality_rule, verb_position, rule_name
+                sent_parsed_result, eventuality_rule, verb_position, rule_name, use_lemma
             )
             if tmp_e is not None:
                 local_eventualities.append(tmp_e)
         return local_eventualities
 
-    def _extract_eventuality_with_fixed_target(self, sent_parsed_result, eventuality_rule, verb_position, rule_name):
+    def _extract_eventuality_with_fixed_target(self, sent_parsed_result, eventuality_rule, verb_position, rule_name, use_lemma):
         selected_edges = list()
         selected_skeleton_edges = list()
         local_dict = {'V1': verb_position}
@@ -450,7 +454,8 @@ class SeedRuleEventualityExtractor(BaseEventualityExtractor):
                 pattern=rule_name,
                 dependencies=selected_edges,
                 skeleton_dependencies=selected_skeleton_edges,
-                parsed_result=sent_parsed_result
+                parsed_result=sent_parsed_result,
+                use_lemma=use_lemma
             )
             if len(event) > 0:
                 return event
@@ -594,7 +599,7 @@ class DiscourseEventualityExtractor(BaseEventualityExtractor):
         self.seed_rule_eventuality_extractor = SeedRuleEventualityExtractor(**kw)
         self.conn_extractor = ConnectiveExtractor(**kw)
 
-    def extract_from_parsed_result(self, parsed_result, output_format="Eventuality", in_order=True, **kw):
+    def extract_from_parsed_result(self, parsed_result, output_format="Eventuality", in_order=True, use_lemma=True, **kw):
         if output_format not in ["Eventuality", "json"]:
             raise NotImplementedError("Error: extract_from_parsed_result only supports Eventuality or json.")
 
@@ -640,7 +645,7 @@ class DiscourseEventualityExtractor(BaseEventualityExtractor):
                         mention["end"] = end_idx + 1
                         clause_parsed_result["mentions"].append(mention)
                 eventualities = self.seed_rule_eventuality_extractor.extract_from_parsed_result(
-                    clause_parsed_result, output_format="Eventuality", in_order=True
+                    clause_parsed_result, output_format="Eventuality", in_order=True, use_lemma=use_lemma, **kw
                 )
                 len_existed_eventualities = len(sent_eventualities)
                 for e in eventualities:
