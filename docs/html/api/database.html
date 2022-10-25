@@ -16,6 +16,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -46,8 +47,98 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="object.html">Object</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Database</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#module-aser.database.db_connection">db_connection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-aser.database.kg_connection">kg_connection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-aser.database.db_connection">db_connection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#aser.database.db_connection.BaseDBConnection"><code class="docutils literal notranslate"><span class="pre">BaseDBConnection</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.db_connection.BaseDBConnection.close"><code class="docutils literal notranslate"><span class="pre">BaseDBConnection.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.db_connection.BaseDBConnection.create_table"><code class="docutils literal notranslate"><span class="pre">BaseDBConnection.create_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.db_connection.BaseDBConnection.get_columns"><code class="docutils literal notranslate"><span class="pre">BaseDBConnection.get_columns()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.db_connection.BaseDBConnection.get_rows_by_keys"><code class="docutils literal notranslate"><span class="pre">BaseDBConnection.get_rows_by_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.db_connection.BaseDBConnection.get_update_op"><code class="docutils literal notranslate"><span class="pre">BaseDBConnection.get_update_op()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.db_connection.BaseDBConnection.insert_row"><code class="docutils literal notranslate"><span class="pre">BaseDBConnection.insert_row()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.db_connection.BaseDBConnection.insert_rows"><code class="docutils literal notranslate"><span class="pre">BaseDBConnection.insert_rows()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.db_connection.BaseDBConnection.select_row"><code class="docutils literal notranslate"><span class="pre">BaseDBConnection.select_row()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.db_connection.BaseDBConnection.select_rows"><code class="docutils literal notranslate"><span class="pre">BaseDBConnection.select_rows()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.db_connection.BaseDBConnection.update_row"><code class="docutils literal notranslate"><span class="pre">BaseDBConnection.update_row()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.db_connection.BaseDBConnection.update_rows"><code class="docutils literal notranslate"><span class="pre">BaseDBConnection.update_rows()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#aser.database.db_connection.MongoDBConnection"><code class="docutils literal notranslate"><span class="pre">MongoDBConnection</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.db_connection.MongoDBConnection.close"><code class="docutils literal notranslate"><span class="pre">MongoDBConnection.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.db_connection.MongoDBConnection.create_table"><code class="docutils literal notranslate"><span class="pre">MongoDBConnection.create_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.db_connection.MongoDBConnection.get_columns"><code class="docutils literal notranslate"><span class="pre">MongoDBConnection.get_columns()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.db_connection.MongoDBConnection.get_rows_by_keys"><code class="docutils literal notranslate"><span class="pre">MongoDBConnection.get_rows_by_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.db_connection.MongoDBConnection.get_update_op"><code class="docutils literal notranslate"><span class="pre">MongoDBConnection.get_update_op()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.db_connection.MongoDBConnection.insert_row"><code class="docutils literal notranslate"><span class="pre">MongoDBConnection.insert_row()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.db_connection.MongoDBConnection.insert_rows"><code class="docutils literal notranslate"><span class="pre">MongoDBConnection.insert_rows()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.db_connection.MongoDBConnection.select_row"><code class="docutils literal notranslate"><span class="pre">MongoDBConnection.select_row()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.db_connection.MongoDBConnection.select_rows"><code class="docutils literal notranslate"><span class="pre">MongoDBConnection.select_rows()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.db_connection.MongoDBConnection.update_row"><code class="docutils literal notranslate"><span class="pre">MongoDBConnection.update_row()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.db_connection.MongoDBConnection.update_rows"><code class="docutils literal notranslate"><span class="pre">MongoDBConnection.update_rows()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#aser.database.db_connection.SqliteDBConnection"><code class="docutils literal notranslate"><span class="pre">SqliteDBConnection</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.db_connection.SqliteDBConnection.close"><code class="docutils literal notranslate"><span class="pre">SqliteDBConnection.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.db_connection.SqliteDBConnection.create_table"><code class="docutils literal notranslate"><span class="pre">SqliteDBConnection.create_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.db_connection.SqliteDBConnection.get_columns"><code class="docutils literal notranslate"><span class="pre">SqliteDBConnection.get_columns()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.db_connection.SqliteDBConnection.get_rows_by_keys"><code class="docutils literal notranslate"><span class="pre">SqliteDBConnection.get_rows_by_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.db_connection.SqliteDBConnection.get_update_op"><code class="docutils literal notranslate"><span class="pre">SqliteDBConnection.get_update_op()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.db_connection.SqliteDBConnection.insert_row"><code class="docutils literal notranslate"><span class="pre">SqliteDBConnection.insert_row()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.db_connection.SqliteDBConnection.insert_rows"><code class="docutils literal notranslate"><span class="pre">SqliteDBConnection.insert_rows()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.db_connection.SqliteDBConnection.select_row"><code class="docutils literal notranslate"><span class="pre">SqliteDBConnection.select_row()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.db_connection.SqliteDBConnection.select_rows"><code class="docutils literal notranslate"><span class="pre">SqliteDBConnection.select_rows()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.db_connection.SqliteDBConnection.update_row"><code class="docutils literal notranslate"><span class="pre">SqliteDBConnection.update_row()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.db_connection.SqliteDBConnection.update_rows"><code class="docutils literal notranslate"><span class="pre">SqliteDBConnection.update_rows()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-aser.database.kg_connection">kg_connection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#aser.database.kg_connection.ASERConceptConnection"><code class="docutils literal notranslate"><span class="pre">ASERConceptConnection</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERConceptConnection.close"><code class="docutils literal notranslate"><span class="pre">ASERConceptConnection.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERConceptConnection.get_concept_columns"><code class="docutils literal notranslate"><span class="pre">ASERConceptConnection.get_concept_columns()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERConceptConnection.get_concept_given_str"><code class="docutils literal notranslate"><span class="pre">ASERConceptConnection.get_concept_given_str()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERConceptConnection.get_concept_instance_pair_columns"><code class="docutils literal notranslate"><span class="pre">ASERConceptConnection.get_concept_instance_pair_columns()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERConceptConnection.get_concepts_by_keys"><code class="docutils literal notranslate"><span class="pre">ASERConceptConnection.get_concepts_by_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERConceptConnection.get_concepts_given_eventuality"><code class="docutils literal notranslate"><span class="pre">ASERConceptConnection.get_concepts_given_eventuality()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERConceptConnection.get_concepts_given_strs"><code class="docutils literal notranslate"><span class="pre">ASERConceptConnection.get_concepts_given_strs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERConceptConnection.get_eventualities_given_concept"><code class="docutils literal notranslate"><span class="pre">ASERConceptConnection.get_eventualities_given_concept()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERConceptConnection.get_exact_match_concept"><code class="docutils literal notranslate"><span class="pre">ASERConceptConnection.get_exact_match_concept()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERConceptConnection.get_exact_match_concepts"><code class="docutils literal notranslate"><span class="pre">ASERConceptConnection.get_exact_match_concepts()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERConceptConnection.get_exact_match_relation"><code class="docutils literal notranslate"><span class="pre">ASERConceptConnection.get_exact_match_relation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERConceptConnection.get_exact_match_relations"><code class="docutils literal notranslate"><span class="pre">ASERConceptConnection.get_exact_match_relations()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERConceptConnection.get_related_concepts"><code class="docutils literal notranslate"><span class="pre">ASERConceptConnection.get_related_concepts()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERConceptConnection.get_relation_columns"><code class="docutils literal notranslate"><span class="pre">ASERConceptConnection.get_relation_columns()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERConceptConnection.get_relations_by_keys"><code class="docutils literal notranslate"><span class="pre">ASERConceptConnection.get_relations_by_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERConceptConnection.init"><code class="docutils literal notranslate"><span class="pre">ASERConceptConnection.init()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERConceptConnection.insert_concept"><code class="docutils literal notranslate"><span class="pre">ASERConceptConnection.insert_concept()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERConceptConnection.insert_concept_instance_pair"><code class="docutils literal notranslate"><span class="pre">ASERConceptConnection.insert_concept_instance_pair()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERConceptConnection.insert_concept_instance_pairs"><code class="docutils literal notranslate"><span class="pre">ASERConceptConnection.insert_concept_instance_pairs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERConceptConnection.insert_concepts"><code class="docutils literal notranslate"><span class="pre">ASERConceptConnection.insert_concepts()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERConceptConnection.insert_relation"><code class="docutils literal notranslate"><span class="pre">ASERConceptConnection.insert_relation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERConceptConnection.insert_relations"><code class="docutils literal notranslate"><span class="pre">ASERConceptConnection.insert_relations()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#aser.database.kg_connection.ASERKGConnection"><code class="docutils literal notranslate"><span class="pre">ASERKGConnection</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERKGConnection.close"><code class="docutils literal notranslate"><span class="pre">ASERKGConnection.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERKGConnection.get_eventualities_by_keys"><code class="docutils literal notranslate"><span class="pre">ASERKGConnection.get_eventualities_by_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERKGConnection.get_eventuality_columns"><code class="docutils literal notranslate"><span class="pre">ASERKGConnection.get_eventuality_columns()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERKGConnection.get_exact_match_eventualities"><code class="docutils literal notranslate"><span class="pre">ASERKGConnection.get_exact_match_eventualities()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERKGConnection.get_exact_match_eventuality"><code class="docutils literal notranslate"><span class="pre">ASERKGConnection.get_exact_match_eventuality()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERKGConnection.get_exact_match_relation"><code class="docutils literal notranslate"><span class="pre">ASERKGConnection.get_exact_match_relation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERKGConnection.get_exact_match_relations"><code class="docutils literal notranslate"><span class="pre">ASERKGConnection.get_exact_match_relations()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERKGConnection.get_partial_match_eventualities"><code class="docutils literal notranslate"><span class="pre">ASERKGConnection.get_partial_match_eventualities()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERKGConnection.get_related_eventualities"><code class="docutils literal notranslate"><span class="pre">ASERKGConnection.get_related_eventualities()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERKGConnection.get_relation_columns"><code class="docutils literal notranslate"><span class="pre">ASERKGConnection.get_relation_columns()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERKGConnection.get_relations_by_keys"><code class="docutils literal notranslate"><span class="pre">ASERKGConnection.get_relations_by_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERKGConnection.init"><code class="docutils literal notranslate"><span class="pre">ASERKGConnection.init()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERKGConnection.insert_eventualities"><code class="docutils literal notranslate"><span class="pre">ASERKGConnection.insert_eventualities()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERKGConnection.insert_eventuality"><code class="docutils literal notranslate"><span class="pre">ASERKGConnection.insert_eventuality()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERKGConnection.insert_relation"><code class="docutils literal notranslate"><span class="pre">ASERKGConnection.insert_relation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.database.kg_connection.ASERKGConnection.insert_relations"><code class="docutils literal notranslate"><span class="pre">ASERKGConnection.insert_relations()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="extractor.html">Extractor</a></li>

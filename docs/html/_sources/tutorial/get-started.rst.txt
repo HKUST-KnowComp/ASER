@@ -117,12 +117,21 @@ We provide two kinds of ASERExtractors: the SeedRuleASERExtractor corresponding 
     )
 
     print("-" * 80)
-    print("In-order:")
-    pprint(aser_extractor.extract_from_text(text, in_order=True))
+    print("In-Order, Use-Lemma:")
+    pprint(aser_extractor.extract_from_text(text, in_order=True, use_lemma=True))
 
     print("-" * 80)
-    print("Out-of-Order:")
-    results = aser_extractor.extract_from_text(text, in_order=False)
+    print("Out-of-Order, Use-Lemma:")
+    results = aser_extractor.extract_from_text(text, in_order=False, use_lemma=True)
+    pprint(results)
+
+    print("-" * 80)
+    print("In-Order, Use-Token:")
+    pprint(aser_extractor.extract_from_text(text, in_order=True, use_lemma=False))
+
+    print("-" * 80)
+    print("Out-of-Order, Use-Token:")
+    results = aser_extractor.extract_from_text(text, in_order=False, use_lemma=False)
     pprint(results)
 
     eventualities, relations = results
@@ -135,7 +144,7 @@ If succeed, you can see the following outputs:
     Text:
     I came here for breakfast before a conference, I was excited to try some local breakfast places. I think the highlight of my breakfast was the freshly squeezed orange juice: it was very sweet, natural, and definitely the champion of the day. I ordered the local fresh eggs on ciabatta with the house made sausage. I would have given a four if the bread had been toasted, but it wasnt. The sausage had good flavor, but I would have liked a little salt on my eggs. All in all a good breakfast. If I am back in town I would try the pastries, they looked and smelled amazing.
     --------------------------------------------------------------------------------
-    In-order:
+    In-Order, Use-Lemma:
     ([[],
       [i think, it be very sweet],
       [i order, the local fresh egg on ciabatta make sausage],
@@ -166,7 +175,7 @@ If succeed, you can see the following outputs:
       [],
       []])
     --------------------------------------------------------------------------------
-    Out-of-Order:
+    Out-of-Order, Use-Lemma:
     ([i think,
       the bread have be toast,
       they smell amazing,
@@ -193,6 +202,65 @@ If succeed, you can see the following outputs:
       (010ec054737a144cb77e99954ff032bc5dff472c, 55704c606666f41a73ac5ae0eabe582892aa163c, {'Co_Occurrence': 1.0}),
       (a8eec375e86e467cf868a03f64ecd1f9d1fe5fee, dac82e8bc75bd0221e86194e6e3cd607a72aba7e, {'Condition': 0.25}),
       (2dd66bdf5849fe8d4a28d3355f0fc0a50b7f61e2, a8eec375e86e467cf868a03f64ecd1f9d1fe5fee, {'Co_Occurrence': 1.0})])
+    --------------------------------------------------------------------------------
+    In-Order, Use-Token:
+    ([[],
+      [i think, it was very sweet],
+      [i ordered, the local fresh eggs on ciabatta made sausage],
+      [i would have given a four, the bread had been toasted],
+      [the sausage had good flavor, i would have liked a little salt on eggs],
+      [],
+      [i am back in town, i would try the pastries, they looked, they smelled amazing]],
+     [[],
+      [(269dda803d3ec7cea532a0cb1ccda7c855a0c222, e9267b4cd6282aa5f1cf01e240dfd13279f19816, {'Co_Occurrence': 1.0})],
+      [(9a557e7b3187e7629dd58ef08d59763a934777aa, 53fafd88377265090d2c56afbc8e48554dfbaa38, {'Co_Occurrence': 1.0})],
+      [(253a172029987d5f0ffb80f3322f1232e382b98e, d888d6da459e385903daee9e25067bee341072ac, {'Co_Occurrence': 1.0, 'Condition': 1.0})],
+      [(15c20abb3accf6f91984efe35076c021fd4cf42f, bd34f0aa34b4bd0e5b316714b4159de0045bec45, {'Co_Occurrence': 1.0, 'Contrast': 1.0})],
+      [],
+      [(71f4fdf148e3652c357d6691e2ddd53ad9f6e291, d8cb5a2e631cc3ad3be6a86f1e452332b8f6c7f1, {'Co_Occurrence': 1.0}),
+      (71f4fdf148e3652c357d6691e2ddd53ad9f6e291, 5f9816d1ded488fee20664808c8cdbd954743a1c, {'Co_Occurrence': 1.0}),
+      (71f4fdf148e3652c357d6691e2ddd53ad9f6e291, 30cdf8d3e14cfe9e1ed372399a4dcf4c32fe9cc8, {'Co_Occurrence': 1.0}),
+      (d8cb5a2e631cc3ad3be6a86f1e452332b8f6c7f1, 5f9816d1ded488fee20664808c8cdbd954743a1c, {'Co_Occurrence': 1.0}),
+      (d8cb5a2e631cc3ad3be6a86f1e452332b8f6c7f1, 30cdf8d3e14cfe9e1ed372399a4dcf4c32fe9cc8, {'Co_Occurrence': 1.0}),
+      (5f9816d1ded488fee20664808c8cdbd954743a1c, 30cdf8d3e14cfe9e1ed372399a4dcf4c32fe9cc8, {'Co_Occurrence': 1.0}),
+      (5f9816d1ded488fee20664808c8cdbd954743a1c, 71f4fdf148e3652c357d6691e2ddd53ad9f6e291, {'Condition': 0.25}),
+      (5f9816d1ded488fee20664808c8cdbd954743a1c, d8cb5a2e631cc3ad3be6a86f1e452332b8f6c7f1, {'Condition': 0.25}),
+      (30cdf8d3e14cfe9e1ed372399a4dcf4c32fe9cc8, 71f4fdf148e3652c357d6691e2ddd53ad9f6e291, {'Condition': 0.25}),
+      (30cdf8d3e14cfe9e1ed372399a4dcf4c32fe9cc8, d8cb5a2e631cc3ad3be6a86f1e452332b8f6c7f1, {'Condition': 0.25})],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []])
+    --------------------------------------------------------------------------------
+    Out-of-Order, Use-Token:
+    ([the sausage had good flavor,
+      i would have given a four,
+      i think,
+      they smelled amazing,
+      the local fresh eggs on ciabatta made sausage,
+      they looked,
+      i am back in town,
+      i ordered,
+      i would have liked a little salt on eggs,
+      the bread had been toasted,
+      i would try the pastries,
+      it was very sweet],
+     [(71f4fdf148e3652c357d6691e2ddd53ad9f6e291, d8cb5a2e631cc3ad3be6a86f1e452332b8f6c7f1, {'Co_Occurrence': 1.0}),
+      (269dda803d3ec7cea532a0cb1ccda7c855a0c222, e9267b4cd6282aa5f1cf01e240dfd13279f19816, {'Co_Occurrence': 1.0}),
+      (d8cb5a2e631cc3ad3be6a86f1e452332b8f6c7f1, 5f9816d1ded488fee20664808c8cdbd954743a1c, {'Co_Occurrence': 1.0}),
+      (71f4fdf148e3652c357d6691e2ddd53ad9f6e291, 5f9816d1ded488fee20664808c8cdbd954743a1c, {'Co_Occurrence': 1.0}),
+      (5f9816d1ded488fee20664808c8cdbd954743a1c, 30cdf8d3e14cfe9e1ed372399a4dcf4c32fe9cc8, {'Co_Occurrence': 1.0}),
+      (30cdf8d3e14cfe9e1ed372399a4dcf4c32fe9cc8, 71f4fdf148e3652c357d6691e2ddd53ad9f6e291, {'Condition': 0.25}),
+      (5f9816d1ded488fee20664808c8cdbd954743a1c, d8cb5a2e631cc3ad3be6a86f1e452332b8f6c7f1, {'Condition': 0.25}),
+      (253a172029987d5f0ffb80f3322f1232e382b98e, d888d6da459e385903daee9e25067bee341072ac, {'Co_Occurrence': 1.0, 'Condition': 1.0}),
+      (5f9816d1ded488fee20664808c8cdbd954743a1c, 71f4fdf148e3652c357d6691e2ddd53ad9f6e291, {'Condition': 0.25}),
+      (9a557e7b3187e7629dd58ef08d59763a934777aa, 53fafd88377265090d2c56afbc8e48554dfbaa38, {'Co_Occurrence': 1.0}),
+      (15c20abb3accf6f91984efe35076c021fd4cf42f, bd34f0aa34b4bd0e5b316714b4159de0045bec45, {'Co_Occurrence': 1.0, 'Contrast': 1.0}),
+      (d8cb5a2e631cc3ad3be6a86f1e452332b8f6c7f1, 30cdf8d3e14cfe9e1ed372399a4dcf4c32fe9cc8, {'Co_Occurrence': 1.0}),
+      (71f4fdf148e3652c357d6691e2ddd53ad9f6e291, 30cdf8d3e14cfe9e1ed372399a4dcf4c32fe9cc8, {'Co_Occurrence': 1.0}),
+      (30cdf8d3e14cfe9e1ed372399a4dcf4c32fe9cc8, d8cb5a2e631cc3ad3be6a86f1e452332b8f6c7f1, {'Condition': 0.25})])
 
 As shown above, the in-order will keep the sentence order and token order so that it is a nested list. On the contrary, the out-of-order will return a set of eventualities and a set of relations.
 

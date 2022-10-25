@@ -16,6 +16,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -45,9 +46,68 @@
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Object</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#module-aser.eventuality">eventuality</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-aser.relation">relation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-aser.concept">concept</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-aser.eventuality">eventuality</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#aser.eventuality.Eventuality"><code class="docutils literal notranslate"><span class="pre">Eventuality</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#aser.eventuality.Eventuality.decode"><code class="docutils literal notranslate"><span class="pre">Eventuality.decode()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.eventuality.Eventuality.dependencies"><code class="docutils literal notranslate"><span class="pre">Eventuality.dependencies</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.eventuality.Eventuality.extract_indices_from_dependencies"><code class="docutils literal notranslate"><span class="pre">Eventuality.extract_indices_from_dependencies()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.eventuality.Eventuality.generate_eid"><code class="docutils literal notranslate"><span class="pre">Eventuality.generate_eid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.eventuality.Eventuality.mentions"><code class="docutils literal notranslate"><span class="pre">Eventuality.mentions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.eventuality.Eventuality.ners"><code class="docutils literal notranslate"><span class="pre">Eventuality.ners</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.eventuality.Eventuality.phrases"><code class="docutils literal notranslate"><span class="pre">Eventuality.phrases</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.eventuality.Eventuality.phrases_ners"><code class="docutils literal notranslate"><span class="pre">Eventuality.phrases_ners</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.eventuality.Eventuality.phrases_postags"><code class="docutils literal notranslate"><span class="pre">Eventuality.phrases_postags</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.eventuality.Eventuality.position"><code class="docutils literal notranslate"><span class="pre">Eventuality.position</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.eventuality.Eventuality.raw_dependencies"><code class="docutils literal notranslate"><span class="pre">Eventuality.raw_dependencies</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.eventuality.Eventuality.skeleton_dependencies"><code class="docutils literal notranslate"><span class="pre">Eventuality.skeleton_dependencies</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.eventuality.Eventuality.skeleton_ners"><code class="docutils literal notranslate"><span class="pre">Eventuality.skeleton_ners</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.eventuality.Eventuality.skeleton_phrases"><code class="docutils literal notranslate"><span class="pre">Eventuality.skeleton_phrases</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.eventuality.Eventuality.skeleton_phrases_ners"><code class="docutils literal notranslate"><span class="pre">Eventuality.skeleton_phrases_ners</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.eventuality.Eventuality.skeleton_phrases_postags"><code class="docutils literal notranslate"><span class="pre">Eventuality.skeleton_phrases_postags</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.eventuality.Eventuality.skeleton_pos_tags"><code class="docutils literal notranslate"><span class="pre">Eventuality.skeleton_pos_tags</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.eventuality.Eventuality.skeleton_words"><code class="docutils literal notranslate"><span class="pre">Eventuality.skeleton_words</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.eventuality.Eventuality.sort_dependencies_position"><code class="docutils literal notranslate"><span class="pre">Eventuality.sort_dependencies_position()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.eventuality.Eventuality.to_dict"><code class="docutils literal notranslate"><span class="pre">Eventuality.to_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.eventuality.Eventuality.update"><code class="docutils literal notranslate"><span class="pre">Eventuality.update()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.eventuality.Eventuality.verbs"><code class="docutils literal notranslate"><span class="pre">Eventuality.verbs</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-aser.relation">relation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#aser.relation.Relation"><code class="docutils literal notranslate"><span class="pre">Relation</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#aser.relation.Relation.generate_rid"><code class="docutils literal notranslate"><span class="pre">Relation.generate_rid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.relation.Relation.to_triplets"><code class="docutils literal notranslate"><span class="pre">Relation.to_triplets()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.relation.Relation.update"><code class="docutils literal notranslate"><span class="pre">Relation.update()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-aser.concept">concept</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#aser.concept.ASERConcept"><code class="docutils literal notranslate"><span class="pre">ASERConcept</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#aser.concept.ASERConcept.generate_cid"><code class="docutils literal notranslate"><span class="pre">ASERConcept.generate_cid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.concept.ASERConcept.instantiate"><code class="docutils literal notranslate"><span class="pre">ASERConcept.instantiate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.concept.ASERConcept.pattern"><code class="docutils literal notranslate"><span class="pre">ASERConcept.pattern</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#aser.concept.ASERConceptInstancePair"><code class="docutils literal notranslate"><span class="pre">ASERConceptInstancePair</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#aser.concept.ASERConceptInstancePair.generate_pid"><code class="docutils literal notranslate"><span class="pre">ASERConceptInstancePair.generate_pid()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#aser.concept.ProbaseConcept"><code class="docutils literal notranslate"><span class="pre">ProbaseConcept</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#aser.concept.ProbaseConcept.concept_size"><code class="docutils literal notranslate"><span class="pre">ProbaseConcept.concept_size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.concept.ProbaseConcept.conceptualize"><code class="docutils literal notranslate"><span class="pre">ProbaseConcept.conceptualize()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.concept.ProbaseConcept.get_concept_chain"><code class="docutils literal notranslate"><span class="pre">ProbaseConcept.get_concept_chain()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.concept.ProbaseConcept.get_concept_freq"><code class="docutils literal notranslate"><span class="pre">ProbaseConcept.get_concept_freq()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.concept.ProbaseConcept.get_instance_freq"><code class="docutils literal notranslate"><span class="pre">ProbaseConcept.get_instance_freq()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.concept.ProbaseConcept.instance_size"><code class="docutils literal notranslate"><span class="pre">ProbaseConcept.instance_size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.concept.ProbaseConcept.instantiate"><code class="docutils literal notranslate"><span class="pre">ProbaseConcept.instantiate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.concept.ProbaseConcept.load"><code class="docutils literal notranslate"><span class="pre">ProbaseConcept.load()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aser.concept.ProbaseConcept.save"><code class="docutils literal notranslate"><span class="pre">ProbaseConcept.save()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="database.html">Database</a></li>
@@ -90,7 +150,7 @@
 <span id="eventuality"></span><h2>eventuality<a class="headerlink" href="#module-aser.eventuality" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="aser.eventuality.Eventuality">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aser.eventuality.</span></span><span class="sig-name descname"><span class="pre">Eventuality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'unknown'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dependencies</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skeleton_dependencies</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parsed_result</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/eventuality.html#Eventuality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.eventuality.Eventuality" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aser.eventuality.</span></span><span class="sig-name descname"><span class="pre">Eventuality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'unknown'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dependencies</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skeleton_dependencies</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parsed_result</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_lemma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/eventuality.html#Eventuality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.eventuality.Eventuality" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonSerializedObject</span></code></p>
 <p>ASER Eventuality</p>
 <dl class="field-list simple">

@@ -15,6 +15,7 @@
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -91,7 +92,7 @@
     <span class="sd">&quot;&quot;&quot; ASER Eventuality</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;unknown&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skeleton_dependencies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parsed_result</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;unknown&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skeleton_dependencies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parsed_result</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_lemma</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        :param pattern: the corresponding pattern</span>
@@ -119,7 +120,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_phrase_segment_indices</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">frequency</span> <span class="o">=</span> <span class="mf">1.0</span>
         <span class="k">if</span> <span class="n">dependencies</span> <span class="ow">and</span> <span class="n">skeleton_dependencies</span> <span class="ow">and</span> <span class="n">parsed_result</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_construct</span><span class="p">(</span><span class="n">dependencies</span><span class="p">,</span> <span class="n">skeleton_dependencies</span><span class="p">,</span> <span class="n">parsed_result</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_construct</span><span class="p">(</span><span class="n">dependencies</span><span class="p">,</span> <span class="n">skeleton_dependencies</span><span class="p">,</span> <span class="n">parsed_result</span><span class="p">,</span> <span class="n">use_lemma</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Eventuality.generate_eid"><a class="viewcode-back" href="../../api/object.html#aser.eventuality.Eventuality.generate_eid">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">generate_eid</span><span class="p">(</span><span class="n">eventuality</span><span class="p">):</span>
@@ -372,7 +373,7 @@
 
         <span class="k">return</span> <span class="n">_skeleton_phrases_postags</span>
 
-    <span class="k">def</span> <span class="nf">_construct</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dependencies</span><span class="p">,</span> <span class="n">skeleton_dependencies</span><span class="p">,</span> <span class="n">parsed_result</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_construct</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dependencies</span><span class="p">,</span> <span class="n">skeleton_dependencies</span><span class="p">,</span> <span class="n">parsed_result</span><span class="p">,</span> <span class="n">use_lemma</span><span class="p">):</span>
         <span class="n">word_indices</span> <span class="o">=</span> <span class="n">Eventuality</span><span class="o">.</span><span class="n">extract_indices_from_dependencies</span><span class="p">(</span><span class="n">dependencies</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">parsed_result</span><span class="p">[</span><span class="s2">&quot;pos_tags&quot;</span><span class="p">][</span><span class="n">word_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">==</span> <span class="s2">&quot;IN&quot;</span><span class="p">:</span>
             <span class="n">poped_idx</span> <span class="o">=</span> <span class="n">word_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -386,7 +387,10 @@
                     <span class="n">skeleton_dependencies</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
             <span class="n">word_indices</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">len_words</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">word_indices</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">words</span> <span class="o">=</span> <span class="p">[</span><span class="n">parsed_result</span><span class="p">[</span><span class="s2">&quot;lemmas&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">word_indices</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">use_lemma</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">words</span> <span class="o">=</span> <span class="p">[</span><span class="n">parsed_result</span><span class="p">[</span><span class="s2">&quot;lemmas&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">word_indices</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">words</span> <span class="o">=</span> <span class="p">[</span><span class="n">parsed_result</span><span class="p">[</span><span class="s2">&quot;tokens&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">word_indices</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pos_tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">parsed_result</span><span class="p">[</span><span class="s2">&quot;pos_tags&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">word_indices</span><span class="p">]</span>
         <span class="k">if</span> <span class="s2">&quot;ners&quot;</span> <span class="ow">in</span> <span class="n">parsed_result</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_ners</span> <span class="o">=</span> <span class="p">[</span><span class="n">parsed_result</span><span class="p">[</span><span class="s2">&quot;ners&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">word_indices</span><span class="p">]</span>
