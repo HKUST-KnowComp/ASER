@@ -87,9 +87,10 @@ def get_corenlp_client(corenlp_path="", corenlp_port=0, annotators=None):
     if not annotators:
         annotators = list(ANNOTATORS)
 
+    os.environ["CORENLP_HOME"] = corenlp_path
+
     if is_port_occupied(port=corenlp_port):
         try:
-            os.environ["CORENLP_HOME"] = corenlp_path
             corenlp_client = CoreNLPClient(
                 annotators=annotators,
                 timeout=99999,

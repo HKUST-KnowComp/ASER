@@ -84,6 +84,8 @@ class ASERPipe(object):
         self.sentence_parsers = []
         self.aser_extractors = []
 
+        self.logger = init_logger(log_file=opt.log_path)
+
         for _id in range(self.n_extractors):
             corenlp_path = opt.corenlp_path
             corenlp_port = opt.base_corenlp_port + _id
@@ -104,8 +106,6 @@ class ASERPipe(object):
                 self.conceptualizer = SeedRuleASERConceptualizer()
             else:
                 raise ValueError("Error: %s = is not supported." % (opt.concept_method))
-
-        self.logger = init_logger(log_file=opt.log_path)
 
     def __del__(self):
         self.close()
