@@ -12,7 +12,7 @@ Besides, conceptualized eventualities in a more abstract level and their relatio
 In total, ASER (full) contains 438 million eventualities and 648 million edges between eventualities;
 ASER (core) contains 53 million eventualities and 52 million edges between eventualities.
 
-With the help of [Probase](https://concept.research.microsoft.com/)  (now called Microsoft Concept Graph), ASER (concept) contains 15 million conceptualized eventualities and 224 million edges between conceptualied eventualities. We also provide a copy of Probase [download](https://hkustconnect-my.sharepoint.com/:f:/g/personal/zwanggy_connect_ust_hk/Eq5-W3acwqpIrP2xX60C3cgBRxq8dZsgzEcuKl_60ZPaMw?e=DSs7Jb) 
+With the help of [Probase](https://www.microsoft.com/en-us/research/project/probase/)  (now called Microsoft Concept Graph), ASER (concept) contains 15 million conceptualized eventualities and 224 million edges between conceptualied eventualities. We also provide a copy of Probase [download](https://hkustconnect-my.sharepoint.com/:f:/g/personal/zwanggy_connect_ust_hk/Eq5-W3acwqpIrP2xX60C3cgBRxq8dZsgzEcuKl_60ZPaMw?e=DSs7Jb) 
 from MSRA's official website. All licenses are subject to MSRA's original release.
 
 The homepage of the project and data is [https://hkust-knowcomp.github.io/ASER](https://hkust-knowcomp.github.io/ASER/).
