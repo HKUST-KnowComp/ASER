@@ -42,6 +42,8 @@ Related Projects
 
 * `Eventuality Entailment Graph <https://github.com/HKUST-KnowComp/ASER-EEG>`_
 
+* `FolkScope: Intention Knowledge Graph Construction <https://github.com/HKUST-KnowComp/FolkScope>`_
+
 * `ASER AMIE <https://github.com/HKUST-KnowComp/ASER_AMIE>`_
 
 * `Selectional Preference Annotation (SP-10K) <https://github.com/HKUST-KnowComp/SP-10K>`_
@@ -72,7 +74,15 @@ Talks
 Publications
 --------------------------------------------------------------------------------
 
-* Mutian He, Tianqing Fang, Weiqi Wang, and Yangqiu Song. Acquiring and Modelling Abstract Commonsense Knowledge via Conceptualization. arXiv, abs/2206.01532, 2022. [`pdf <https://arxiv.org/pdf/2206.01532.pdf>`_]
+* Changlong Yu, Weiqi Wang, Xin Liu, Jiaxin Bai, Yangqiu Song, Zheng Li, Yifan Gao, Tianyu Cao, and Bing Yin. FolkScope: Intention Knowledge Graph Construction for E-commerce Commonsense Discovery. Findings of ACL. 2023. [`pdf <https://arxiv.org/abs/2211.08316>`_]
+
+* Tianqing Fang*, Quyet V. Do*, Sehyun Choi, Weiqi Wang, and Yangqiu Song. CKBP v2: An Expert-Annotated Evaluation Set for Commonsense Knowledge Base Population. arXiv, abs/2304.10392, 2023. [`pdf <https://arxiv.org/abs/2304.10392>`_]
+
+* Tianqing Fang, Quyet V. Do, Hongming Zhang, Yangqiu Song, Ginny Y. Wong, and Simon See. PseudoReasoner: Leveraging Pseudo Labels for Commonsense Knowledge Base Population. Findings of EMNLP. 2022. [`pdf <https://arxiv.org/abs/2210.07988>`_]
+
+* Zhaowei Wang, Hongming Zhang, Tianqing Fang, Yangqiu Song, Ginny Y. Wong, and Simon See. SubeventWriter: Iterative Sub-event Sequence Generation with Coherence Controller. Conference on Empirical Methods in Natural Language Processing (EMNLP). 2022. [`pdf <https://arxiv.org/abs/2210.06694>`_]
+
+* Mutian He, Tianqing Fang, Weiqi Wang, and Yangqiu Song. Acquiring and Modelling Abstract Commonsense Knowledge via Conceptualization. arXiv, abs/2206.01532, 2022. [`pdf <https://arxiv.org/abs/2206.01532>`_]
 
 * Hongming Zhang\*, Xin Liu\*, Haojie Pan\*, Haowen Ke, Jiefu Ou, Tianqing Fang, and Yangqiu Song. ASER: Towards Large-scale Commonsense Knowledge Acquisition via Higher-order Selectional Preference over Eventualities. Artificial Intelligence, Volume 309, August 2022, 103740. [`pdf <https://arxiv.org/abs/2104.02137>`_]
 

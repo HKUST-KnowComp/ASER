@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Extractor &mdash; ASER 2.0 documentation</title>
@@ -11,10 +11,9 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -29,11 +28,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> ASER
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ASER
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -144,8 +147,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Extractor</li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Extractor</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/api/extractor.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -166,7 +169,7 @@
 <p>Base ASER Extractor to extract both eventualities and relations.
 It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance of <cite>BaseRelationExtractor</cite>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>corenlp_path</strong> (<em>str</em><em> (</em><em>default = &quot;&quot;</em><em>)</em>) – corenlp path, e.g., /home/xliucr/stanford-corenlp-3.9.2</p></li>
 <li><p><strong>corenlp_port</strong> (<em>int</em><em> (</em><em>default = 0</em><em>)</em>) – corenlp port, e.g., 9000</p></li>
@@ -185,7 +188,7 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <span class="sig-name descname"><span class="pre">extract_eventualities_from_parsed_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parsed_result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Eventuality'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_lemma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/extract/aser_extractor.html#BaseASERExtractor.extract_eventualities_from_parsed_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.extract.aser_extractor.BaseASERExtractor.extract_eventualities_from_parsed_result" title="Permalink to this definition"></a></dt>
 <dd><p>Extract eventualities from the parsed result</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>parsed_result</strong> (<em>List</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>]</em>) – the parsed result returned by corenlp</p></li>
 <li><p><strong>output_format</strong> (<em>str</em><em> (</em><em>default = &quot;Eventuality&quot;</em><em>)</em>) – which format to return, “Eventuality” or “json”</p></li>
@@ -194,10 +197,10 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <li><p><strong>kw</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em>) – other parameters</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the extracted eventualities</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[List[List[<a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality">aser.eventuality.Eventuality</a>]], List[List[Dict[str, object]]], List[<a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality">aser.eventuality.Eventuality</a>], List[Dict[str, object]]]</p>
 </dd>
 </dl>
@@ -307,7 +310,7 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <span class="sig-name descname"><span class="pre">extract_eventualities_from_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Eventuality'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_lemma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/extract/aser_extractor.html#BaseASERExtractor.extract_eventualities_from_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.extract.aser_extractor.BaseASERExtractor.extract_eventualities_from_text" title="Permalink to this definition"></a></dt>
 <dd><p>Extract eventualities from a raw text</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>text</strong> (<em>str</em>) – a raw text</p></li>
 <li><p><strong>output_format</strong> (<em>str</em><em> (</em><em>default = &quot;Eventuality&quot;</em><em>)</em>) – which format to return, “Eventuality” or “json”</p></li>
@@ -317,10 +320,10 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <li><p><strong>kw</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em>) – other parameters</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the extracted eventualities</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[List[List[<a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality">aser.eventuality.Eventuality</a>]], List[List[Dict[str, object]]], List[<a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality">aser.eventuality.Eventuality</a>], List[Dict[str, object]]]</p>
 </dd>
 </dl>
@@ -341,7 +344,7 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <span class="sig-name descname"><span class="pre">extract_from_parsed_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parsed_result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eventuality_output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Eventuality'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relation_output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Relation'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_lemma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/extract/aser_extractor.html#BaseASERExtractor.extract_from_parsed_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.extract.aser_extractor.BaseASERExtractor.extract_from_parsed_result" title="Permalink to this definition"></a></dt>
 <dd><p>Extract both eventualities and relations from a parsed result</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>parsed_result</strong> (<em>List</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>]</em>) – the parsed result returned by corenlp</p></li>
 <li><p><strong>eventuality_output_format</strong> (<em>str</em><em> (</em><em>default = &quot;Eventuality&quot;</em><em>)</em>) – which format to return eventualities, “Eventuality” or “json”</p></li>
@@ -351,10 +354,10 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <li><p><strong>kw</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em>) – other parameters</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the extracted eventualities and relations</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Tuple[Union[List[List[<a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality">aser.eventuality.Eventuality</a>]], List[List[Dict[str, object]]], List[<a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality">aser.eventuality.Eventuality</a>], List[Dict[str, object]]], Union[List[List[<a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a>]], List[List[Dict[str, object]]], List[<a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a>], List[Dict[str, object]]]]</p>
 </dd>
 </dl>
@@ -469,7 +472,7 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <span class="sig-name descname"><span class="pre">extract_from_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eventuality_output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Eventuality'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relation_output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Relation'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_lemma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/extract/aser_extractor.html#BaseASERExtractor.extract_from_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.extract.aser_extractor.BaseASERExtractor.extract_from_text" title="Permalink to this definition"></a></dt>
 <dd><p>Extract both eventualities and relations from a raw text</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>text</strong> (<em>str</em>) – a raw text</p></li>
 <li><p><strong>eventuality_output_format</strong> (<em>str</em><em> (</em><em>default = &quot;Eventuality&quot;</em><em>)</em>) – which format to return eventualities, “Eventuality” or “json”</p></li>
@@ -480,12 +483,12 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <li><p><strong>kw</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em>) – other parameters</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the extracted eventualities and relations</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><dl class="field-list simple">
-<dt class="field-odd">rtype</dt>
+<dt class="field-odd">rtype<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Tuple[Union[List[List[aser.eventuality.Eventuality]], List[List[Dict[str, object]]], List[aser.eventuality.Eventuality], List[Dict[str, object]]], Union[List[List[aser.relation.Relation]], List[List[Dict[str, object]]], List[aser.relation.Relation], List[Dict[str, object]]]]</p>
 </dd>
 </dl>
@@ -512,7 +515,7 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <span class="sig-name descname"><span class="pre">extract_relations_from_parsed_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parsed_result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">para_eventualities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Relation'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/extract/aser_extractor.html#BaseASERExtractor.extract_relations_from_parsed_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.extract.aser_extractor.BaseASERExtractor.extract_relations_from_parsed_result" title="Permalink to this definition"></a></dt>
 <dd><p>Extract relations from a parsed result (of a paragraph) and extracted eventualities</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>parsed_result</strong> (<em>List</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>]</em>) – the parsed result returned by corenlp</p></li>
 <li><p><strong>para_eventualities</strong> (<em>List</em><em>[</em><a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality"><em>aser.eventuality.Eventuality</em></a><em>]</em>) – eventualities in the paragraph</p></li>
@@ -521,10 +524,10 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <li><p><strong>kw</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em>) – other parameters</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the extracted relations</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[List[List[<a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a>]], List[List[Dict[str, object]]], List[<a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a>], List[Dict[str, object]]]</p>
 </dd>
 </dl>
@@ -637,7 +640,7 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <span class="sig-name descname"><span class="pre">extract_relations_from_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Relation'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/extract/aser_extractor.html#BaseASERExtractor.extract_relations_from_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.extract.aser_extractor.BaseASERExtractor.extract_relations_from_text" title="Permalink to this definition"></a></dt>
 <dd><p>Extract relations from a raw text and extracted eventualities</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>text</strong> (<em>str</em>) – a raw text</p></li>
 <li><p><strong>output_format</strong> (<em>str</em><em> (</em><em>default = &quot;Relation&quot;</em><em>)</em>) – which format to return, “Relation” or “triplet”</p></li>
@@ -646,10 +649,10 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <li><p><strong>kw</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em>) – other parameters</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the extracted relations</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[List[List[<a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a>]], List[List[Dict[str, object]]], List[<a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a>], List[Dict[str, object]]]</p>
 </dd>
 </dl>
@@ -671,16 +674,16 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <span class="sig-name descname"><span class="pre">parse_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/extract/aser_extractor.html#BaseASERExtractor.parse_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.extract.aser_extractor.BaseASERExtractor.parse_text" title="Permalink to this definition"></a></dt>
 <dd><p>Parse a raw text by corenlp</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>text</strong> (<em>str</em>) – a raw text</p></li>
 <li><p><strong>annotators</strong> (<em>Union</em><em>[</em><em>List</em><em>, </em><em>None</em><em>] </em><em>(</em><em>default = None</em><em>)</em>) – annotators for corenlp, please refer to <a class="reference external" href="https://stanfordnlp.github.io/CoreNLP/annotators.html">https://stanfordnlp.github.io/CoreNLP/annotators.html</a></p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the parsed result</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List[Dict[str, object]]</p>
 </dd>
 </dl>
@@ -792,7 +795,7 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <dd><p>Bases: <a class="reference internal" href="#aser.extract.aser_extractor.BaseASERExtractor" title="aser.extract.aser_extractor.BaseASERExtractor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseASERExtractor</span></code></a></p>
 <p>ASER Extractor based on discourse parsing to extract both eventualities and relations (for ASER v2.0)</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>corenlp_path</strong> (<em>str</em><em> (</em><em>default = &quot;&quot;</em><em>)</em>) – corenlp path, e.g., /home/xliucr/stanford-corenlp-3.9.2</p></li>
 <li><p><strong>corenlp_port</strong> (<em>int</em><em> (</em><em>default = 0</em><em>)</em>) – corenlp port, e.g., 9000</p></li>
@@ -805,7 +808,7 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <span class="sig-name descname"><span class="pre">extract_from_parsed_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parsed_result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eventuality_output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Eventuality'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relation_output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Relation'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_lemma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/extract/aser_extractor.html#DiscourseASERExtractor.extract_from_parsed_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.extract.aser_extractor.DiscourseASERExtractor.extract_from_parsed_result" title="Permalink to this definition"></a></dt>
 <dd><p>Extract both eventualities and relations from a parsed result</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>parsed_result</strong> (<em>List</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>]</em>) – the parsed result returned by corenlp</p></li>
 <li><p><strong>eventuality_output_format</strong> (<em>str</em><em> (</em><em>default = &quot;Eventuality&quot;</em><em>)</em>) – which format to return eventualities, “Eventuality” or “json”</p></li>
@@ -815,12 +818,12 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <li><p><strong>kw</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em>) – other parameters (e.g., syntax_tree_cache)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the extracted eventualities and relations</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><dl class="field-list simple">
-<dt class="field-odd">rtype</dt>
+<dt class="field-odd">rtype<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Tuple[Union[List[List[aser.eventuality.Eventuality]], List[List[Dict[str, object]]], List[aser.eventuality.Eventuality], List[Dict[str, object]]], Union[List[List[aser.relation.Relation]], List[List[Dict[str, object]]], List[aser.relation.Relation], List[Dict[str, object]]]]</p>
 </dd>
 </dl>
@@ -837,7 +840,7 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <dd><p>Bases: <a class="reference internal" href="#aser.extract.aser_extractor.BaseASERExtractor" title="aser.extract.aser_extractor.BaseASERExtractor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseASERExtractor</span></code></a></p>
 <p>ASER Extractor based on rules to extract both eventualities and relations (for ASER v1.0)</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>corenlp_path</strong> (<em>str</em><em> (</em><em>default = &quot;&quot;</em><em>)</em>) – corenlp path, e.g., /home/xliucr/stanford-corenlp-3.9.2</p></li>
 <li><p><strong>corenlp_port</strong> (<em>int</em><em> (</em><em>default = 0</em><em>)</em>) – corenlp port, e.g., 9000</p></li>
@@ -856,7 +859,7 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Base ASER eventuality extractor to extract eventualities</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>corenlp_path</strong> (<em>str</em><em> (</em><em>default = &quot;&quot;</em><em>)</em>) – corenlp path, e.g., /home/xliucr/stanford-corenlp-3.9.2</p></li>
 <li><p><strong>corenlp_port</strong> (<em>int</em><em> (</em><em>default = 0</em><em>)</em>) – corenlp port, e.g., 9000</p></li>
@@ -875,7 +878,7 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <span class="sig-name descname"><span class="pre">extract_from_parsed_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parsed_result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Eventuality'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_lemma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/extract/eventuality_extractor.html#BaseEventualityExtractor.extract_from_parsed_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.extract.eventuality_extractor.BaseEventualityExtractor.extract_from_parsed_result" title="Permalink to this definition"></a></dt>
 <dd><p>Extract eventualities from the parsed result</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>parsed_result</strong> (<em>List</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>]</em>) – the parsed result returned by corenlp</p></li>
 <li><p><strong>output_format</strong> (<em>str</em><em> (</em><em>default = &quot;Eventuality&quot;</em><em>)</em>) – which format to return, “Eventuality” or “json”</p></li>
@@ -884,10 +887,10 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <li><p><strong>kw</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em>) – other parameters</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the extracted eventualities</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[List[List[<a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality">aser.eventuality.Eventuality</a>]], List[List[Dict[str, object]]], List[<a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality">aser.eventuality.Eventuality</a>], List[Dict[str, object]]]</p>
 </dd>
 </dl>
@@ -997,7 +1000,7 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <span class="sig-name descname"><span class="pre">extract_from_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Eventuality'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_lemma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/extract/eventuality_extractor.html#BaseEventualityExtractor.extract_from_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.extract.eventuality_extractor.BaseEventualityExtractor.extract_from_text" title="Permalink to this definition"></a></dt>
 <dd><p>Extract eventualities from a raw text</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>text</strong> (<em>str</em>) – a raw text</p></li>
 <li><p><strong>output_format</strong> (<em>str</em><em> (</em><em>default = &quot;Eventuality&quot;</em><em>)</em>) – which format to return, “Eventuality” or “json”</p></li>
@@ -1007,10 +1010,10 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <li><p><strong>kw</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em>) – other parameters</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the extracted eventualities</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[List[List[<a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality">aser.eventuality.Eventuality</a>]], List[List[Dict[str, object]]], List[<a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality">aser.eventuality.Eventuality</a>], List[Dict[str, object]]]</p>
 </dd>
 </dl>
@@ -1031,16 +1034,16 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <span class="sig-name descname"><span class="pre">parse_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/extract/eventuality_extractor.html#BaseEventualityExtractor.parse_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.extract.eventuality_extractor.BaseEventualityExtractor.parse_text" title="Permalink to this definition"></a></dt>
 <dd><p>Parse a raw text by corenlp</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>text</strong> (<em>str</em>) – a raw text</p></li>
 <li><p><strong>annotators</strong> (<em>Union</em><em>[</em><em>List</em><em>, </em><em>None</em><em>] </em><em>(</em><em>default = None</em><em>)</em>) – annotators for corenlp, please refer to <a class="reference external" href="https://stanfordnlp.github.io/CoreNLP/annotators.html">https://stanfordnlp.github.io/CoreNLP/annotators.html</a></p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the parsed result</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List[Dict[str, object]]</p>
 </dd>
 </dl>
@@ -1152,7 +1155,7 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <dd><p>Bases: <a class="reference internal" href="#aser.extract.eventuality_extractor.BaseEventualityExtractor" title="aser.extract.eventuality_extractor.BaseEventualityExtractor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEventualityExtractor</span></code></a></p>
 <p>ASER eventuality extractor based on constituency analysis to extract eventualities  (for ASER v2.0)</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>corenlp_path</strong> (<em>str</em><em> (</em><em>default = &quot;&quot;</em><em>)</em>) – corenlp path, e.g., /home/xliucr/stanford-corenlp-3.9.2</p></li>
 <li><p><strong>corenlp_port</strong> (<em>int</em><em> (</em><em>default = 0</em><em>)</em>) – corenlp port, e.g., 9000</p></li>
@@ -1165,7 +1168,7 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <span class="sig-name descname"><span class="pre">extract_from_parsed_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parsed_result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Eventuality'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_lemma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/extract/eventuality_extractor.html#DiscourseEventualityExtractor.extract_from_parsed_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.extract.eventuality_extractor.DiscourseEventualityExtractor.extract_from_parsed_result" title="Permalink to this definition"></a></dt>
 <dd><p>Extract eventualities from the parsed result</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>parsed_result</strong> (<em>List</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>]</em>) – the parsed result returned by corenlp</p></li>
 <li><p><strong>output_format</strong> (<em>str</em><em> (</em><em>default = &quot;Eventuality&quot;</em><em>)</em>) – which format to return, “Eventuality” or “json”</p></li>
@@ -1174,10 +1177,10 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <li><p><strong>kw</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em>) – other parameters</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the extracted eventualities</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[List[List[<a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality">aser.eventuality.Eventuality</a>]], List[List[Dict[str, object]]], List[<a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality">aser.eventuality.Eventuality</a>], List[Dict[str, object]]]</p>
 </dd>
 </dl>
@@ -1290,7 +1293,7 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <dd><p>Bases: <a class="reference internal" href="#aser.extract.eventuality_extractor.BaseEventualityExtractor" title="aser.extract.eventuality_extractor.BaseEventualityExtractor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEventualityExtractor</span></code></a></p>
 <p>ASER eventuality extractor based on rules to extract eventualities  (for ASER v1.0)</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>corenlp_path</strong> (<em>str</em><em> (</em><em>default = &quot;&quot;</em><em>)</em>) – corenlp path, e.g., /home/xliucr/stanford-corenlp-3.9.2</p></li>
 <li><p><strong>corenlp_port</strong> (<em>int</em><em> (</em><em>default = 0</em><em>)</em>) – corenlp port, e.g., 9000</p></li>
@@ -1303,7 +1306,7 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <span class="sig-name descname"><span class="pre">extract_from_parsed_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parsed_result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Eventuality'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_lemma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/extract/eventuality_extractor.html#SeedRuleEventualityExtractor.extract_from_parsed_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.extract.eventuality_extractor.SeedRuleEventualityExtractor.extract_from_parsed_result" title="Permalink to this definition"></a></dt>
 <dd><p>Extract eventualities from the parsed result</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>parsed_result</strong> (<em>List</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>]</em>) – the parsed result returned by corenlp</p></li>
 <li><p><strong>output_format</strong> (<em>str</em><em> (</em><em>default = &quot;Eventuality&quot;</em><em>)</em>) – which format to return, “Eventuality” or “json”</p></li>
@@ -1312,10 +1315,10 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <li><p><strong>kw</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em>) – other parameters</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the extracted eventualities</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[List[List[<a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality">aser.eventuality.Eventuality</a>]], List[List[Dict[str, object]]], List[<a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality">aser.eventuality.Eventuality</a>], List[Dict[str, object]]]</p>
 </dd>
 </dl>
@@ -1440,7 +1443,7 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <span class="sig-name descname"><span class="pre">extract_from_parsed_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parsed_result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">para_eventualities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Relation'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/extract/relation_extractor.html#BaseRelationExtractor.extract_from_parsed_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.extract.relation_extractor.BaseRelationExtractor.extract_from_parsed_result" title="Permalink to this definition"></a></dt>
 <dd><p>Extract relations from the parsed result</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>parsed_result</strong> (<em>List</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>]</em>) – the parsed result returned by corenlp</p></li>
 <li><p><strong>para_eventualities</strong> (<em>List</em><em>[</em><a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality"><em>aser.eventuality.Eventuality</em></a><em>]</em>) – eventualities in the paragraph</p></li>
@@ -1449,10 +1452,10 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <li><p><strong>kw</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em>) – other parameters</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the extracted relations</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[List[List[<a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a>]], List[List[Dict[str, object]]], List[<a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a>], List[Dict[str, object]]]</p>
 </dd>
 </dl>
@@ -1572,7 +1575,7 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <span class="sig-name descname"><span class="pre">extract_from_parsed_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parsed_result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">para_eventualities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'triplet'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/extract/relation_extractor.html#DiscourseRelationExtractor.extract_from_parsed_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.extract.relation_extractor.DiscourseRelationExtractor.extract_from_parsed_result" title="Permalink to this definition"></a></dt>
 <dd><p>Extract relations from the parsed result</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>parsed_result</strong> (<em>List</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>]</em>) – the parsed result returned by corenlp</p></li>
 <li><p><strong>para_eventualities</strong> (<em>List</em><em>[</em><a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality"><em>aser.eventuality.Eventuality</em></a><em>]</em>) – eventualities in the paragraph</p></li>
@@ -1581,10 +1584,10 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <li><p><strong>kw</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em>) – other parameters</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the extracted relations</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[List[List[<a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a>]], List[List[Dict[str, object]]], List[<a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a>], List[Dict[str, object]]]</p>
 </dd>
 </dl>
@@ -1704,7 +1707,7 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <span class="sig-name descname"><span class="pre">extract_from_parsed_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parsed_result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">para_eventualities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Relation'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/extract/relation_extractor.html#SeedRuleRelationExtractor.extract_from_parsed_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.extract.relation_extractor.SeedRuleRelationExtractor.extract_from_parsed_result" title="Permalink to this definition"></a></dt>
 <dd><p>Extract relations from the parsed result</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>parsed_result</strong> (<em>List</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>]</em>) – the parsed result returned by corenlp</p></li>
 <li><p><strong>para_eventualities</strong> (<em>List</em><em>[</em><a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality"><em>aser.eventuality.Eventuality</em></a><em>]</em>) – eventualities in the paragraph</p></li>
@@ -1713,10 +1716,10 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <li><p><strong>kw</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em>) – other parameters</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the extracted relations</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[List[List[<a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a>]], List[List[Dict[str, object]]], List[<a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a>], List[Dict[str, object]]]</p>
 </dd>
 </dl>
@@ -1843,17 +1846,17 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <dt class="sig sig-object py" id="aser.extract.parsed_reader.ParsedReader.generate_sid">
 <span class="sig-name descname"><span class="pre">generate_sid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sentence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_no</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/extract/parsed_reader.html#ParsedReader.generate_sid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.extract.parsed_reader.ParsedReader.generate_sid" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>sentence</strong> (<em>str</em>) – the raw text</p></li>
 <li><p><strong>file_name</strong> (<em>str</em>) – the file name</p></li>
 <li><p><strong>line_no</strong> (<em>int</em>) – the line number</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the corresponding sentence id</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1864,10 +1867,10 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <span class="sig-name descname"><span class="pre">get_parsed_paragraphs_from_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">processed_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/extract/parsed_reader.html#ParsedReader.get_parsed_paragraphs_from_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.extract.parsed_reader.ParsedReader.get_parsed_paragraphs_from_file" title="Permalink to this definition"></a></dt>
 <dd><p>This method retrieves all paragraphs from a processed file</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>processed_path</strong> (<em>str</em><em> or </em><em>None</em>) – the file path of the processed file</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>a list of lists of dicts</p>
 </dd>
 </dl>
@@ -1878,16 +1881,16 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <span class="sig-name descname"><span class="pre">get_parsed_sentence_and_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context_window_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/extract/parsed_reader.html#ParsedReader.get_parsed_sentence_and_context"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.extract.parsed_reader.ParsedReader.get_parsed_sentence_and_context" title="Permalink to this definition"></a></dt>
 <dd><p>Retrieve the parsed results of the corresponding sentence and its context</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>sid</strong> (<em>str</em>) – the sentence id</p></li>
 <li><p><strong>context_window_size</strong> (<em>int</em><em> (</em><em>default = 0</em><em>)</em>) – the context window size</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>a dictionary that contains the “sentence”, “left_context”, and “right_context”</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Dict[str, object]</p>
 </dd>
 </dl>
@@ -1904,7 +1907,7 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Sentence parser to process files that contain raw texts</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>corenlp_path</strong> (<em>str</em><em> (</em><em>default = &quot;&quot;</em><em>)</em>) – corenlp path, e.g., /home/xliucr/stanford-corenlp-3.9.2</p></li>
 <li><p><strong>corenlp_port</strong> (<em>int</em><em> (</em><em>default = 0</em><em>)</em>) – corenlp port, e.g., 9000</p></li>
@@ -1922,17 +1925,17 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <dt class="sig sig-object py" id="aser.extract.sentence_parser.SentenceParser.generate_sid">
 <span class="sig-name descname"><span class="pre">generate_sid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sentence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/extract/sentence_parser.html#SentenceParser.generate_sid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.extract.sentence_parser.SentenceParser.generate_sid" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>sentence</strong> (<em>str</em>) – the raw text</p></li>
 <li><p><strong>file_name</strong> (<em>str</em>) – the file name</p></li>
 <li><p><strong>line_no</strong> (<em>int</em>) – the line number</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the corresponding sentence id</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1942,17 +1945,17 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <dt class="sig sig-object py" id="aser.extract.sentence_parser.SentenceParser.parse">
 <span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paragraph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1024</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/extract/sentence_parser.html#SentenceParser.parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.extract.sentence_parser.SentenceParser.parse" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>paragraph</strong> (<em>str</em>) – a raw text</p></li>
 <li><p><strong>annotators</strong> (<em>Union</em><em>[</em><em>List</em><em>, </em><em>None</em><em>] </em><em>(</em><em>default = None</em><em>)</em>) – annotators for corenlp, please refer to <a class="reference external" href="https://stanfordnlp.github.io/CoreNLP/annotators.html">https://stanfordnlp.github.io/CoreNLP/annotators.html</a></p></li>
 <li><p><strong>max_len</strong> (<em>int</em><em> (</em><em>default = 1024</em><em>)</em>) – the max length of a paragraph (constituency parsing cannot handle super-long sentences)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the parsed result</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List[Dict[str, object]]</p>
 </dd>
 </dl>
@@ -1963,7 +1966,7 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <span class="sig-name descname"><span class="pre">parse_raw_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">processed_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1024</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/extract/sentence_parser.html#SentenceParser.parse_raw_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.extract.sentence_parser.SentenceParser.parse_raw_file" title="Permalink to this definition"></a></dt>
 <dd><p>Parse all raw texts in the given file</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>raw_path</strong> (<em>str</em>) – the file path that contains raw texts</p></li>
 <li><p><strong>processed_path</strong> (<em>str</em>) – the file path that stores the parsed result</p></li>
@@ -1971,10 +1974,10 @@ It includes an instance of <cite>BaseEventualityExtractor</cite> and an instance
 <li><p><strong>max_len</strong> (<em>int</em><em> (</em><em>default = 1024</em><em>)</em>) – the max length of a paragraph (constituency parsing cannot handle super-long sentences)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the parsed result</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List[List[Dict[str, object]]]</p>
 </dd>
 </dl>

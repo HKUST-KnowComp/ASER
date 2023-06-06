@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Server/Client &mdash; ASER 2.0 documentation</title>
@@ -11,10 +11,9 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -29,11 +28,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> ASER
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ASER
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -83,7 +86,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#aser.server.is_port_occupied"><code class="docutils literal notranslate"><span class="pre">is_port_occupied()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#aser.server.sockets_ipc_bind"><code class="docutils literal notranslate"><span class="pre">sockets_ipc_bind()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#named-arguments">Named Arguments</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-aser.client">ASER client</a><ul>
@@ -125,8 +128,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Server/Client</li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Server/Client</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/api/aser-cs.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -156,13 +159,13 @@
 <span class="sig-name descname"><span class="pre">handle_exact_match_concept</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERDataBase.handle_exact_match_concept"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERDataBase.handle_exact_match_concept" title="Permalink to this definition"></a></dt>
 <dd><p>Retrieve the extract match concept from DB</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>cid</strong> (<em>str</em>) – cid</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the exact matched concept or None</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[<a class="reference internal" href="object.html#aser.concept.ASERConcept" title="aser.concept.ASERConcept">aser.concept.ASERConcept</a>, None]</p>
 </dd>
 </dl>
@@ -173,13 +176,13 @@
 <span class="sig-name descname"><span class="pre">handle_exact_match_concept_relation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERDataBase.handle_exact_match_concept_relation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERDataBase.handle_exact_match_concept_relation" title="Permalink to this definition"></a></dt>
 <dd><p>Retrieve the extract match relation between concepts from DB</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>rid</strong> (<em>str</em>) – rid</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the exact matched relation or None</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[<a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a>, None]</p>
 </dd>
 </dl>
@@ -190,13 +193,13 @@
 <span class="sig-name descname"><span class="pre">handle_exact_match_eventuality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERDataBase.handle_exact_match_eventuality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERDataBase.handle_exact_match_eventuality" title="Permalink to this definition"></a></dt>
 <dd><p>Retrieve the extract match eventuality from DB</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>eid</strong> (<em>str</em>) – eid</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the exact matched eventuality or None</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[<a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality">aser.eventuality.Eventuality</a>, None]</p>
 </dd>
 </dl>
@@ -207,13 +210,13 @@
 <span class="sig-name descname"><span class="pre">handle_exact_match_eventuality_relation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERDataBase.handle_exact_match_eventuality_relation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERDataBase.handle_exact_match_eventuality_relation" title="Permalink to this definition"></a></dt>
 <dd><p>Retrieve the extract match relation between eventualities from DB</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>rid</strong> (<em>str</em>) – rid</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the exact matched relation or None</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[<a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a>, None]</p>
 </dd>
 </dl>
@@ -224,13 +227,13 @@
 <span class="sig-name descname"><span class="pre">handle_fetch_related_concepts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERDataBase.handle_fetch_related_concepts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERDataBase.handle_fetch_related_concepts" title="Permalink to this definition"></a></dt>
 <dd><p>Fetch all related concepts of the given concept</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>cid</strong> (<em>str</em>) – cid</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>all related concepts associated with corresponding relations</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List[Tuple[<a class="reference internal" href="object.html#aser.concept.ASERConcept" title="aser.concept.ASERConcept">aser.concept.ASERConcept</a>, <a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a>]]</p>
 </dd>
 </dl>
@@ -241,13 +244,13 @@
 <span class="sig-name descname"><span class="pre">handle_fetch_related_eventualities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#ASERDataBase.handle_fetch_related_eventualities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.ASERDataBase.handle_fetch_related_eventualities" title="Permalink to this definition"></a></dt>
 <dd><p>Fetch all related eventualities of the given eventuality</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>eid</strong> (<em>str</em>) – eid</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>all related eventualities associated with corresponding relations</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List[Tuple[<a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality">aser.eventuality.Eventuality</a>, <a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a>]]</p>
 </dd>
 </dl>
@@ -267,7 +270,7 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>ASER server to provide extraction, conceptualization, and retrieval functions</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>opt</strong> (<em>argparse.Namespace</em>) – the namespace that includes parameters</p>
 </dd>
 </dl>
@@ -347,16 +350,16 @@
 <span class="sig-prename descclassname"><span class="pre">aser.server.</span></span><span class="sig-name descname"><span class="pre">is_port_occupied</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'127.0.0.1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">80</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#is_port_occupied"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.is_port_occupied" title="Permalink to this definition"></a></dt>
 <dd><p>Check whether the ip:port is occupied</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ip</strong> (<em>str</em><em> (</em><em>default = &quot;127.0.0.1&quot;</em><em>)</em>) – the ip address</p></li>
 <li><p><strong>port</strong> (<em>int</em><em> (</em><em>default = 80</em><em>)</em>) – the port</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>whether is occupied</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
@@ -366,35 +369,30 @@
 <dt class="sig sig-object py" id="aser.server.sockets_ipc_bind">
 <span class="sig-prename descclassname"><span class="pre">aser.server.</span></span><span class="sig-name descname"><span class="pre">sockets_ipc_bind</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">socket</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/server.html#sockets_ipc_bind"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.server.sockets_ipc_bind" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>socket</strong> (<em>zmq.sugar.socket.Socket</em>) – a socket</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the bound address</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
 
 <p>You can get the aser-server usage via:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>aser-server --help
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>aser-server<span class="w"> </span>--help
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">aser</span><span class="o">-</span><span class="n">server</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">n_workers</span> <span class="n">N_WORKERS</span><span class="p">]</span>
-                   <span class="p">[</span><span class="o">-</span><span class="n">n_concurrent_back_socks</span> <span class="n">N_CONCURRENT_BACK_SOCKS</span><span class="p">]</span>
-                   <span class="p">[</span><span class="o">-</span><span class="n">port</span> <span class="n">PORT</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">port_out</span> <span class="n">PORT_OUT</span><span class="p">]</span>
-                   <span class="p">[</span><span class="o">-</span><span class="n">corenlp_path</span> <span class="n">CORENLP_PATH</span><span class="p">]</span>
-                   <span class="p">[</span><span class="o">-</span><span class="n">base_corenlp_port</span> <span class="n">BASE_CORENLP_PORT</span><span class="p">]</span>
-                   <span class="p">[</span><span class="o">-</span><span class="n">aser_kg_dir</span> <span class="n">ASER_KG_DIR</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">concept_kg_dir</span> <span class="n">CONCEPT_KG_DIR</span><span class="p">]</span>
-                   <span class="p">[</span><span class="o">-</span><span class="n">concept_method</span> <span class="p">{</span><span class="n">probase</span><span class="p">,</span><span class="n">seed</span><span class="p">}]</span>
-                   <span class="p">[</span><span class="o">-</span><span class="n">probase_path</span> <span class="n">PROBASE_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">concept_topk</span> <span class="n">CONCEPT_TOPK</span><span class="p">]</span>
-                   <span class="p">[</span><span class="o">-</span><span class="n">log_path</span> <span class="n">LOG_PATH</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">aser</span><span class="o">-</span><span class="n">server</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">n_workers</span> <span class="n">N_WORKERS</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">n_concurrent_back_socks</span> <span class="n">N_CONCURRENT_BACK_SOCKS</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">port</span> <span class="n">PORT</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">-</span><span class="n">port_out</span> <span class="n">PORT_OUT</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">corenlp_path</span> <span class="n">CORENLP_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">base_corenlp_port</span> <span class="n">BASE_CORENLP_PORT</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">-</span><span class="n">aser_kg_dir</span> <span class="n">ASER_KG_DIR</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">concept_kg_dir</span> <span class="n">CONCEPT_KG_DIR</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">concept_method</span> <span class="p">{</span><span class="n">probase</span><span class="p">,</span><span class="n">seed</span><span class="p">}]</span>
+                   <span class="p">[</span><span class="o">-</span><span class="n">probase_path</span> <span class="n">PROBASE_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">concept_topk</span> <span class="n">CONCEPT_TOPK</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">log_path</span> <span class="n">LOG_PATH</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="Named Arguments">
-<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this heading"></a></h3>
+<section id="named-arguments">
+<h3>Named Arguments<a class="headerlink" href="#named-arguments" title="Permalink to this heading"></a></h3>
 <dl class="option-list">
 <dt><kbd>-n_workers</kbd></dt>
 <dd><p>Number of ASER workers, same as num of corenlp workers</p>
@@ -456,7 +454,7 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A client object of ASER</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ip</strong> (<em>str</em>) – ip address of the server</p></li>
 <li><p><strong>port</strong> (<em>int</em>) – port for push request from a client to the server</p></li>
@@ -476,13 +474,13 @@
 <span class="sig-name descname"><span class="pre">conceptualize_eventuality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eventuality</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.conceptualize_eventuality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.conceptualize_eventuality" title="Permalink to this definition"></a></dt>
 <dd><p>Conceptualize an eventuality by sending a request to ASERServer</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>eventuality</strong> (<a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality"><em>aser.eventuality.Eventuality</em></a>) – an eventuality</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>a list of (conceptualized eventuality, score) pair</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List[Tuple[<a class="reference internal" href="object.html#aser.concept.ASERConcept" title="aser.concept.ASERConcept">aser.concept.ASERConcept</a>, float]]</p>
 </dd>
 </dl>
@@ -493,13 +491,13 @@
 <span class="sig-name descname"><span class="pre">exact_match_concept</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.exact_match_concept"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.exact_match_concept" title="Permalink to this definition"></a></dt>
 <dd><p>Retrieve the extract match concept by sending a DB retrieval request</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>data</strong> (<em>Union</em><em>[</em><a class="reference internal" href="object.html#aser.concept.ASERConcept" title="aser.concept.ASERConcept"><em>aser.concept.ASERConcept</em></a><em>, </em><em>str</em><em>]</em>) – a concept or cid</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the exact matched concept or None</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[<a class="reference internal" href="object.html#aser.concept.ASERConcept" title="aser.concept.ASERConcept">aser.concept.ASERConcept</a>, None]</p>
 </dd>
 </dl>
@@ -510,13 +508,13 @@
 <span class="sig-name descname"><span class="pre">exact_match_eventuality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.exact_match_eventuality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.exact_match_eventuality" title="Permalink to this definition"></a></dt>
 <dd><p>Retrieve the extract match eventuality by sending a DB retrieval request</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>data</strong> (<em>Union</em><em>[</em><a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality"><em>aser.eventuality.Eventuality</em></a><em>, </em><em>str</em><em>]</em>) – an eventuality or eid</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the exact matched eventuality or None</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[<a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality">aser.eventuality.Eventuality</a>, None]</p>
 </dd>
 </dl>
@@ -527,13 +525,13 @@
 <span class="sig-name descname"><span class="pre">extract_eventualities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.extract_eventualities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.extract_eventualities" title="Permalink to this definition"></a></dt>
 <dd><p>Extract eventualities by sending a request to ASERServer</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>data</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>]</em><em>]</em>) – a raw text or a parsed result of a paragraph</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the extracted eventualities</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List[List[<a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality">aser.eventuality.Eventuality</a>]]</p>
 </dd>
 </dl>
@@ -544,13 +542,13 @@
 <span class="sig-name descname"><span class="pre">extract_eventualities_and_relations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.extract_eventualities_and_relations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.extract_eventualities_and_relations" title="Permalink to this definition"></a></dt>
 <dd><p>Extract both eventualities and relations by sending a request to ASERServer</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>data</strong> (<em>List</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>]</em>) – a raw text or the parsed result returned by corenlp</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the extracted eventualities and relations</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Tuple[Union[List[List[<a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality">aser.eventuality.Eventuality</a>]], List[List[Dict[str, object]]], List[<a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality">aser.eventuality.Eventuality</a>], List[Dict[str, object]]], Union[List[List[<a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a>]], List[List[Dict[str, object]]], List[<a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a>], List[Dict[str, object]]]]</p>
 </dd>
 </dl>
@@ -561,13 +559,13 @@
 <span class="sig-name descname"><span class="pre">extract_relations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.extract_relations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.extract_relations" title="Permalink to this definition"></a></dt>
 <dd><p>Extract relations by sending a request to ASERServer</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>data</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>Tuple</em><em>[</em><em>List</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>object</em><em>]</em><em>]</em><em>, </em><em>List</em><em>[</em><em>List</em><em>[</em><a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality"><em>aser.eventuality.Eventuality</em></a><em>]</em><em>]</em><em>]</em><em>]</em>) – a raw text or a parsed result of a paragraph associated with extracted eventualities</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the extracted relations</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List[List[<a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a>]]</p>
 </dd>
 </dl>
@@ -578,13 +576,13 @@
 <span class="sig-name descname"><span class="pre">fetch_related_concepts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.fetch_related_concepts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.fetch_related_concepts" title="Permalink to this definition"></a></dt>
 <dd><p>Fetch all related concepts of the given concept</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>data</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="object.html#aser.concept.ASERConcept" title="aser.concept.ASERConcept"><em>aser.concept.ASERConcept</em></a><em>]</em>) – the given concept or cid</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>all related concepts associated with corresponding relations</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List[Tuple[<a class="reference internal" href="object.html#aser.concept.ASERConcept" title="aser.concept.ASERConcept">aser.concept.ASERConcept</a>, <a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a>]]</p>
 </dd>
 </dl>
@@ -595,13 +593,13 @@
 <span class="sig-name descname"><span class="pre">fetch_related_eventualities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.fetch_related_eventualities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.fetch_related_eventualities" title="Permalink to this definition"></a></dt>
 <dd><p>Fetch all related eventualities of the given eventuality</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>data</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality"><em>aser.eventuality.Eventuality</em></a><em>]</em>) – the given eventuality or eid</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>all related eventualities associated with corresponding relations</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List[Tuple[<a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality">aser.eventuality.Eventuality</a>, <a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a>]]</p>
 </dd>
 </dl>
@@ -612,13 +610,13 @@
 <span class="sig-name descname"><span class="pre">parse_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.parse_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.parse_text" title="Permalink to this definition"></a></dt>
 <dd><p>Parse a raw text by sending a request to ASERServer</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – a raw text</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the parsed result</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List[Dict[str, object]]</p>
 </dd>
 </dl>
@@ -629,16 +627,16 @@
 <span class="sig-name descname"><span class="pre">predict_concept_relation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">concept1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">concept2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.predict_concept_relation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.predict_concept_relation" title="Permalink to this definition"></a></dt>
 <dd><p>Predict the relation between two conceptualized eventualities by sending a DB retrieval request</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>concept1</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="object.html#aser.concept.ASERConcept" title="aser.concept.ASERConcept"><em>aser.concept.ASERConcept</em></a><em>]</em>) – one concept or cid as the head</p></li>
 <li><p><strong>concept2</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="object.html#aser.concept.ASERConcept" title="aser.concept.ASERConcept"><em>aser.concept.ASERConcept</em></a><em>]</em>) – the other concept or cid as the head</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the relation stored in concept KG</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a></p>
 </dd>
 </dl>
@@ -649,16 +647,16 @@
 <span class="sig-name descname"><span class="pre">predict_eventuality_relation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eventuality1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eventuality2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/aser/client.html#ASERClient.predict_eventuality_relation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aser.client.ASERClient.predict_eventuality_relation" title="Permalink to this definition"></a></dt>
 <dd><p>Predict the relation between two eventualities by sending a DB retrieval request</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>eventuality1</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality"><em>aser.eventuality.Eventuality</em></a><em>]</em>) – one eventuality or eid as the head</p></li>
 <li><p><strong>eventuality2</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="object.html#aser.eventuality.Eventuality" title="aser.eventuality.Eventuality"><em>aser.eventuality.Eventuality</em></a><em>]</em>) – the other eventuality or eid as the tail</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the relation stored in KG</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="object.html#aser.relation.Relation" title="aser.relation.Relation">aser.relation.Relation</a></p>
 </dd>
 </dl>
