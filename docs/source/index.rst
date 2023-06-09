@@ -75,6 +75,8 @@ Talks
 Publications
 --------------------------------------------------------------------------------
 
+* Jiaxin Bai, Xin Liu, Weiqi Wang, Chen Luo, and Yangqiu Song. Complex Query Answering on Eventuality Knowledge Graph with Implicit Logical Constraints. arXiv, abs/2305.19068, 2023. [`pdf <https://arxiv.org/abs/2305.19068>`_]
+
 * Changlong Yu, Weiqi Wang, Xin Liu, Jiaxin Bai, Yangqiu Song, Zheng Li, Yifan Gao, Tianyu Cao, and Bing Yin. FolkScope: Intention Knowledge Graph Construction for E-commerce Commonsense Discovery. Findings of ACL. 2023. [`pdf <https://arxiv.org/abs/2211.08316>`_]
 
 * Tianqing Fang*, Quyet V. Do*, Sehyun Choi, Weiqi Wang, and Yangqiu Song. CKBP v2: An Expert-Annotated Evaluation Set for Commonsense Knowledge Base Population. arXiv, abs/2304.10392, 2023. [`pdf <https://arxiv.org/abs/2304.10392>`_]
