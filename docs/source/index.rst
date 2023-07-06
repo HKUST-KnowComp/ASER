@@ -20,7 +20,7 @@ With the help of Probase (now called Microsoft Concept Graph), ASER (concept) co
 Data Download
 --------------------------------------------------------------------------------
 
-* ASER 2.1: using original text tokens as eventualities and checking the completeness via the dependency parser. [`onedrive <https://hkustconnect-my.sharepoint.com/:f:/g/personal/xliucr_connect_ust_hk/Erraz2_KGjFHtbP9bh2-HMoBjCKGYX887MMzLX2y7xbs0w?e=314jRS>`_] [`code <https://github.com/HKUST-KnowComp/ASER/tree/dev>`_]
+* ASER 2.1: using original text tokens as eventualities and checking the completeness via the dependency parser. [`aws <https://data.dgl.ai/dataset/ASER/README.txt>`_] [`onedrive <https://hkustconnect-my.sharepoint.com/:f:/g/personal/xliucr_connect_ust_hk/Erraz2_KGjFHtbP9bh2-HMoBjCKGYX887MMzLX2y7xbs0w?e=314jRS>`_] [`code <https://github.com/HKUST-KnowComp/ASER/tree/dev>`_]
 
 * `ASER 2.0 <https://arxiv.org/abs/2104.02137>`_ [`aws <https://data.dgl.ai/dataset/ASER/README.txt>`_] [`onedrive <https://hkustconnect-my.sharepoint.com/:f:/g/personal/xliucr_connect_ust_hk/EnlOIunfqNRKsCQIBSXe9pQBL0KhLxTNMSNSJ3Mzt0bmhA?e=xm86PF>`_] [`code <https://github.com/HKUST-KnowComp/ASER/tree/release/2.0>`_]
 
