@@ -55,6 +55,8 @@ Related Projects
 Talks
 --------------------------------------------------------------------------------
 
+* 2023 July: KDD-China. Activity (or Process), State, and Event-based Knowledge Graphs. [`pdf <http://home.cse.ust.hk/~yqsong/papers/2023-KDD-China-YangqiuSong-Final.pdf>`_] [`ppt <http://home.cse.ust.hk/~yqsong/papers/2023-KDD-China-YangqiuSong-Final.pptx>`_]
+
 * 2022 July: Amazon Search Science Team. Acquiring and Modeling Abstract Commonsense Knowledge via Conceptualization. [`pdf <http://home.cse.ust.hk/~yqsong/papers/202207-YangqiuSong-Conceptualization-Final.pdf>`_] [`ppt <http://home.cse.ust.hk/~yqsong/papers/202207-YangqiuSong-Conceptualization-Final.pptx>`_]
 
 * 2021 Novermber: CCKS Tutorial. Commonsense Knowledge Acquisition and Reasoning. Presented by Yangqiu Song. [`pdf <http://home.cse.ust.hk/~yqsong/papers/CCKS2021Tutorial-Commonsense-YangqiuSong.pdf>`_] [`ppt <http://home.cse.ust.hk/~yqsong/papers/CCKS2021Tutorial-Commonsense-YangqiuSong.pptx>`_]
