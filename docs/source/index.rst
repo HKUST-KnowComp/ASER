@@ -33,6 +33,8 @@ Related Projects
 
 * `ASER Extraction, Conceptualization, Usage, and APIs <https://github.com/HKUST-KnowComp/ASER>`_
 
+* `AbsPyramid: Bechmarking Abstraction Bbility of LLMs <https://github.com/HKUST-KnowComp/AbsPyramid>`_
+
 * `Abstract ATOMIC <https://github.com/HKUST-KnowComp/atomic-conceptualization>`_
 
 * `Benchmarking Commonsense Knowledge Base Population <https://github.com/HKUST-KnowComp/CSKB-Population>`_
@@ -77,7 +79,9 @@ Talks
 Publications
 --------------------------------------------------------------------------------
 
-* Jiaxin Bai, Xin Liu, Weiqi Wang, Chen Luo, and Yangqiu Song. Complex Query Answering on Eventuality Knowledge Graph with Implicit Logical Constraints. arXiv, abs/2305.19068, 2023. [`pdf <https://arxiv.org/abs/2305.19068>`_]
+* Zhaowei Wang, Haochen Shi, Weiqi Wang, Tianqing Fang, Hongming Zhang, Sehyun Choi, Xin Liu, and Yangqiu Song. AbsPyramid: Benchmarking the Abstraction Ability of Language Models with a Unified Entailment Graph. arXiv, 2311.09174, 2023. [`pdf <https://arxiv.org/abs/2311.09174>`_]
+
+* Jiaxin Bai, Xin Liu, Weiqi Wang, Chen Luo, and Yangqiu Song. Complex Query Answering on Eventuality Knowledge Graph with Implicit Logical Constraints. Conference on Neural Information Processing Systems (NeurIPS), 2023. [`pdf <https://arxiv.org/abs/2305.19068>`_]
 
 * Changlong Yu, Weiqi Wang, Xin Liu, Jiaxin Bai, Yangqiu Song, Zheng Li, Yifan Gao, Tianyu Cao, and Bing Yin. FolkScope: Intention Knowledge Graph Construction for E-commerce Commonsense Discovery. Findings of ACL. 2023. [`pdf <https://arxiv.org/abs/2211.08316>`_]
 

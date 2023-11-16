@@ -11,11 +11,11 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=60dbed4a"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -90,7 +90,7 @@
            <div itemprop="articleBody">
              
   <section id="get-started">
-<h1>Get Started<a class="headerlink" href="#get-started" title="Permalink to this heading"></a></h1>
+<h1>Get Started<a class="headerlink" href="#get-started" title="Link to this heading"></a></h1>
 <nav class="contents local" id="contents">
 <ul class="simple">
 <li><p><a class="reference internal" href="#installation" id="id1">Installation</a></p></li>
@@ -100,7 +100,7 @@
 </ul>
 </nav>
 <section id="installation">
-<h2><a class="toc-backref" href="#id1" role="doc-backlink">Installation</a><a class="headerlink" href="#installation" title="Permalink to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Installation</a><a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
 <p>Currently we only support setup from source. So the first step download this repo</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/HKUST-KnowComp/ASER.git
 </pre></div>
@@ -138,7 +138,7 @@
 </div>
 </section>
 <section id="local-pipeline-aser-pipe">
-<h2><a class="toc-backref" href="#id2" role="doc-backlink">Local Pipeline: aser-pipe</a><a class="headerlink" href="#local-pipeline-aser-pipe" title="Permalink to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Local Pipeline: aser-pipe</a><a class="headerlink" href="#local-pipeline-aser-pipe" title="Link to this heading"></a></h2>
 <p>Before getting started, We write three reviews from yelp into a file and want to run the pipepline to build KG.db and concept.db.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
 
@@ -171,7 +171,7 @@
 <p>Now, you can check the core, full, and concept directories.</p>
 </section>
 <section id="step-by-step-extraction">
-<h2><a class="toc-backref" href="#id3" role="doc-backlink">Step-by-step extraction</a><a class="headerlink" href="#step-by-step-extraction" title="Permalink to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Step-by-step extraction</a><a class="headerlink" href="#step-by-step-extraction" title="Link to this heading"></a></h2>
 <p>Let’s see how to utilize an ASER extractor and a conceptualizer.
 We provide two kinds of ASERExtractors: the SeedRuleASERExtractor corresponding to the WWW”2020 and a new DiscourseASERExtractor which is implemented based on a discourse parsing system.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
@@ -667,7 +667,7 @@ We provide two kinds of ASERExtractors: the SeedRuleASERExtractor corresponding 
 </div>
 </section>
 <section id="client-server-mode">
-<h2><a class="toc-backref" href="#id4" role="doc-backlink">Client/Server Mode</a><a class="headerlink" href="#client-server-mode" title="Permalink to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Client/Server Mode</a><a class="headerlink" href="#client-server-mode" title="Link to this heading"></a></h2>
 <p>You can start aser server from command line</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>aser-server<span class="w"> </span>-n_workers<span class="w"> </span><span class="m">1</span><span class="w"> </span>-n_concurrent_back_socks<span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>-port<span class="w"> </span><span class="m">8000</span><span class="w"> </span>-port_out<span class="w"> </span><span class="m">8001</span><span class="w"> </span><span class="se">\</span>
