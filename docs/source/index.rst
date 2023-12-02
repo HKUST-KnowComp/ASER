@@ -33,7 +33,7 @@ Related Projects
 
 * `ASER Extraction, Conceptualization, Usage, and APIs <https://github.com/HKUST-KnowComp/ASER>`_
 
-* `AbsPyramid: Bechmarking Abstraction Bbility of LLMs <https://github.com/HKUST-KnowComp/AbsPyramid>`_
+* `AbsPyramid: Bechmarking Abstraction Ability of LLMs <https://github.com/HKUST-KnowComp/AbsPyramid>`_
 
 * `Abstract ATOMIC <https://github.com/HKUST-KnowComp/atomic-conceptualization>`_
 
@@ -56,6 +56,8 @@ Related Projects
 
 Talks
 --------------------------------------------------------------------------------
+
+* 2023 November: Amazon/NVIDIA/Huawei/WeBank. Complex Query Answering on Neural Knowledge Graphs with Rich Semantics. [`pdf <http://home.cse.ust.hk/~yqsong/papers/CQA-RichSemantics-YangqiuSong-Final.pdf>`_] [`ppt <http://home.cse.ust.hk/~yqsong/papers/CQA-RichSemantics-YangqiuSong-Final.pptx>`_]
 
 * 2023 July: KDD-China. Activity (or Process), State, and Event-based Knowledge Graphs. [`pdf <http://home.cse.ust.hk/~yqsong/papers/2023-KDD-China-YangqiuSong-Final.pdf>`_] [`ppt <http://home.cse.ust.hk/~yqsong/papers/2023-KDD-China-YangqiuSong-Final.pptx>`_]
 
