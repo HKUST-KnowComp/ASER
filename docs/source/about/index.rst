@@ -14,7 +14,7 @@ The main contributors are:
 
 * `Haojie Pan <http://scarletpan.github.io/about/>`_ Algorithm Expert, Kuaishou Technology.
 
-* Haowen Ke, Mphil student, HKUST.
+* `Haowen Ke <https://www.linkedin.com/in/haowen-ke-b77ba0172/?originalSubdomain=cn/>`_, Algorithm Engineer, Didi.
 
 * `Jiefu Ou <https://github.com/JefferyO>`_, PhD student, JHU.
 

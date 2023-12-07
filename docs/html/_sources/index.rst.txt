@@ -83,15 +83,19 @@ Publications
 
 * Zhaowei Wang, Haochen Shi, Weiqi Wang, Tianqing Fang, Hongming Zhang, Sehyun Choi, Xin Liu, and Yangqiu Song. AbsPyramid: Benchmarking the Abstraction Ability of Language Models with a Unified Entailment Graph. arXiv, 2311.09174, 2023. [`pdf <https://arxiv.org/abs/2311.09174>`_]
 
+* Weiqi Wang*, Tianqing Fang*, Wenxuan Ding, Baixuan Xu, Xin Liu, Yangqiu Song, and Antoine Bosselut. 🚗CAR: Conceptualization-Augmented Reasoner for Zero-Shot Commonsense Question Answering. Findings of EMNLP, 2023. [`pdf <https://arxiv.org/pdf/2305.14869v2.pdf>`_]
+
 * Jiaxin Bai, Xin Liu, Weiqi Wang, Chen Luo, and Yangqiu Song. Complex Query Answering on Eventuality Knowledge Graph with Implicit Logical Constraints. Conference on Neural Information Processing Systems (NeurIPS), 2023. [`pdf <https://arxiv.org/abs/2305.19068>`_]
 
-* Changlong Yu, Weiqi Wang, Xin Liu, Jiaxin Bai, Yangqiu Song, Zheng Li, Yifan Gao, Tianyu Cao, and Bing Yin. FolkScope: Intention Knowledge Graph Construction for E-commerce Commonsense Discovery. Findings of ACL. 2023. [`pdf <https://arxiv.org/abs/2211.08316>`_]
+* Weiqi Wang*, Tianqing Fang*, Baixuan Xu, Chun Yi Louis Bo, Yangqiu Song, and Lei Chen. 🐈CAT: A Contextualized Conceptualization and Instantiation Framework for Commonsense Reasoning. Annual Meeting of the Association for Computational Linguistics (ACL), 2023. [`pdf <https://arxiv.org/abs/2305.04808>`_]
+
+* Changlong Yu, Weiqi Wang, Xin Liu, Jiaxin Bai, Yangqiu Song, Zheng Li, Yifan Gao, Tianyu Cao, and Bing Yin. FolkScope: Intention Knowledge Graph Construction for E-commerce Commonsense Discovery. Findings of ACL, 2023. [`pdf <https://arxiv.org/abs/2211.08316>`_]
 
 * Tianqing Fang*, Quyet V. Do*, Sehyun Choi, Weiqi Wang, and Yangqiu Song. CKBP v2: An Expert-Annotated Evaluation Set for Commonsense Knowledge Base Population. arXiv, abs/2304.10392, 2023. [`pdf <https://arxiv.org/abs/2304.10392>`_]
 
-* Tianqing Fang, Quyet V. Do, Hongming Zhang, Yangqiu Song, Ginny Y. Wong, and Simon See. PseudoReasoner: Leveraging Pseudo Labels for Commonsense Knowledge Base Population. Findings of EMNLP. 2022. [`pdf <https://arxiv.org/abs/2210.07988>`_]
+* Tianqing Fang, Quyet V. Do, Hongming Zhang, Yangqiu Song, Ginny Y. Wong, and Simon See. PseudoReasoner: Leveraging Pseudo Labels for Commonsense Knowledge Base Population. Findings of EMNLP, 2022. [`pdf <https://arxiv.org/abs/2210.07988>`_]
 
-* Zhaowei Wang, Hongming Zhang, Tianqing Fang, Yangqiu Song, Ginny Y. Wong, and Simon See. SubeventWriter: Iterative Sub-event Sequence Generation with Coherence Controller. Conference on Empirical Methods in Natural Language Processing (EMNLP). 2022. [`pdf <https://arxiv.org/abs/2210.06694>`_]
+* Zhaowei Wang, Hongming Zhang, Tianqing Fang, Yangqiu Song, Ginny Y. Wong, and Simon See. SubeventWriter: Iterative Sub-event Sequence Generation with Coherence Controller. Conference on Empirical Methods in Natural Language Processing (EMNLP), 2022. [`pdf <https://arxiv.org/abs/2210.06694>`_]
 
 * Mutian He, Tianqing Fang, Weiqi Wang, and Yangqiu Song. Acquiring and Modelling Abstract Commonsense Knowledge via Conceptualization. arXiv, abs/2206.01532, 2022. [`pdf <https://arxiv.org/abs/2206.01532>`_]
 
@@ -103,17 +107,17 @@ Publications
 
 * Tianqing Fang, Hongming Zhang, Weiqi Wang, Yangqiu Song, and Bin He. DISCOS: Bridging the Gap between Discourse Knowledge and Commonsense Knowledge. The Web Conference (WWW), 2021. [`pdf <https://arxiv.org/abs/2101.00154>`_]
 
-* Hongming Zhang, Muhao Chen, Haoyu Wang, Yangqiu Song, and Dan Roth. Analogous Process Structure Induction for Sub-event Sequence Prediction. Conference on Empirical Methods in Natural Language Processing (EMNLP). 2020. [`pdf <https://arxiv.org/abs/2010.08525>`_]
+* Hongming Zhang, Muhao Chen, Haoyu Wang, Yangqiu Song, and Dan Roth. Analogous Process Structure Induction for Sub-event Sequence Prediction. Conference on Empirical Methods in Natural Language Processing (EMNLP), 2020. [`pdf <https://arxiv.org/abs/2010.08525>`_]
 
-* Changlong Yu, Hongming Zhang, Yangqiu Song, Wilfred Ng, and Lifeng Shang . Enriching Large-Scale Eventuality Knowledge Graph with Entailment Relations. Conference on Automated Knowledge Base Construction (AKBC). 2020. [`pdf <https://openreview.net/forum?id=-oXaOxy6up>`_]
+* Changlong Yu, Hongming Zhang, Yangqiu Song, Wilfred Ng, and Lifeng Shang . Enriching Large-Scale Eventuality Knowledge Graph with Entailment Relations. Conference on Automated Knowledge Base Construction (AKBC), 2020. [`pdf <https://openreview.net/forum?id=-oXaOxy6up>`_]
 
-* Hongming Zhang, Daniel Khashabi, Yangqiu Song, and Dan Roth. TransOMCS: From Linguistic Graphs to Commonsense Knowledge. International Joint Conference on Artificial Intelligence (IJCAI). 2020. [`pdf <https://arxiv.org/abs/2005.00206>`_]
+* Hongming Zhang, Daniel Khashabi, Yangqiu Song, and Dan Roth. TransOMCS: From Linguistic Graphs to Commonsense Knowledge. International Joint Conference on Artificial Intelligence (IJCAI), 2020. [`pdf <https://arxiv.org/abs/2005.00206>`_]
 
 * Mutian He, Yangqiu Song, Kun Xu, and Yu Dong. On the Role of Conceptualization in Commonsense Knowledge Graph Construction. HKUST Technical Report, March 6th, 2020. [`pdf <https://arxiv.org/abs/2003.03239>`_]
 
 * Hongming Zhang\*, Xin Liu\*, Haojie Pan\*, Yangqiu Song, and Cane Wing-Ki Leung. ASER: A Large-scale Eventuality Knowledge Graph. The Web Conference (WWW), 2020. [`pdf <https://arxiv.org/abs/1905.00270>`_] [`ppt <http://home.cse.ust.hk/~yqsong/papers/ASER-WWW20.pptx>`_]
 
-* Hongming Zhang, Hantian Ding, and Yangqiu Song. SP-10K: A Large-Scale Evaluation Set for Selectional Preference Acquisition. Annual Meeting of the Association for Computational Linguistics (ACL). 2019. [`pdf <https://arxiv.org/abs/1906.02123>`_]
+* Hongming Zhang, Hantian Ding, and Yangqiu Song. SP-10K: A Large-Scale Evaluation Set for Selectional Preference Acquisition. Annual Meeting of the Association for Computational Linguistics (ACL), 2019. [`pdf <https://arxiv.org/abs/1906.02123>`_]
 
 
 .. Tutorial
