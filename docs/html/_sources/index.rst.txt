@@ -57,6 +57,8 @@ Related Projects
 Talks
 --------------------------------------------------------------------------------
 
+* 2024 April: HKUST. E-Commerce Commonsense Knowledge Graphs for Intention-based Recommendation. [`pdf <http://home.cse.ust.hk/~yqsong/papers/FolkScope-COSMO-YangqiuSong-Final.pdf>`_] [`ppt <http://home.cse.ust.hk/~yqsong/papers/FolkScope-COSMO-YangqiuSong-Final.pptx>`_]
+
 * 2023 November: Amazon/NVIDIA/Huawei/WeBank. Complex Query Answering on Neural Knowledge Graphs with Rich Semantics. [`pdf <http://home.cse.ust.hk/~yqsong/papers/CQA-RichSemantics-YangqiuSong-Final.pdf>`_] [`ppt <http://home.cse.ust.hk/~yqsong/papers/CQA-RichSemantics-YangqiuSong-Final.pptx>`_]
 
 * 2023 July: KDD-China. Activity (or Process), State, and Event-based Knowledge Graphs. [`pdf <http://home.cse.ust.hk/~yqsong/papers/2023-KDD-China-YangqiuSong-Final.pdf>`_] [`ppt <http://home.cse.ust.hk/~yqsong/papers/2023-KDD-China-YangqiuSong-Final.pptx>`_]
@@ -81,7 +83,9 @@ Talks
 Publications
 --------------------------------------------------------------------------------
 
-* Zhaowei Wang, Haochen Shi, Weiqi Wang, Tianqing Fang, Hongming Zhang, Sehyun Choi, Xin Liu, and Yangqiu Song. AbsPyramid: Benchmarking the Abstraction Ability of Language Models with a Unified Entailment Graph. arXiv, 2311.09174, 2023. [`pdf <https://arxiv.org/abs/2311.09174>`_]
+* Cheng Jiayang, Lin Qiu, Chunkit Chan, Xin Liu, Yangqiu Song, and Zheng Zhang. EventGround: Narrative Reasoning by Grounding to Eventuality-centric Knowledge Graphs. LREC-Coling, 2024. [`pdf <https://arxiv.org/abs/2404.00209>`_]
+
+* Zhaowei Wang, Haochen Shi, Weiqi Wang, Tianqing Fang, Hongming Zhang, Sehyun Choi, Xin Liu, and Yangqiu Song. AbsPyramid: Benchmarking the Abstraction Ability of Language Models with a Unified Entailment Graph. Findings of NAACL, 2024. [`pdf <https://arxiv.org/abs/2311.09174>`_]
 
 * Weiqi Wang*, Tianqing Fang*, Wenxuan Ding, Baixuan Xu, Xin Liu, Yangqiu Song, and Antoine Bosselut. 🚗CAR: Conceptualization-Augmented Reasoner for Zero-Shot Commonsense Question Answering. Findings of EMNLP, 2023. [`pdf <https://arxiv.org/pdf/2305.14869v2.pdf>`_]
 
